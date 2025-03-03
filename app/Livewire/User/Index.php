@@ -8,9 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Livewire\Attributes\Title;
 
-#[Title('Pengguna')]
 class Index extends Component
 {
     use WithPagination, LivewireAlert;
@@ -41,7 +39,7 @@ class Index extends Component
         View::share('title', 'Pengguna');
     }
 
-    #[Title('Pengguna')]
+
     public function render()
     {
         $users = User::when($this->search, function ($query) {
@@ -112,7 +110,6 @@ class Index extends Component
         $this->resetForm();
     }
 
-    // Tambahkan method ini di class Index
     public function confirmDelete(User $user)
     {
         // Jika role pemilik, block
@@ -138,7 +135,6 @@ class Index extends Component
         ]);
     }
 
-    // Method delete yang benar
     public function delete()
     {
 

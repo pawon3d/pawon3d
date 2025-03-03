@@ -15,11 +15,17 @@
             <flux:navlist.group heading="Platform" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
+
             <flux:navlist.item icon="user" :href="route('pengguna')" :current="request()->routeIs('pengguna')" wire:navigate>{{ __('Pengguna') }}</flux:navlist.item>
-            <flux:navlist.group heading="Account" expandable :expanded="false">
-                <flux:navlist.item href="#">Profile</flux:navlist.item>
-                <flux:navlist.item href="#">Settings</flux:navlist.item>
-                <flux:navlist.item href="#">Billing</flux:navlist.item>
+
+            <flux:navlist.group heading="Inventori" expandable :expanded="request()->routeIs('bahan-baku') || request()->routeIs('bahan-olahan')">
+                <flux:navlist.item icon="inbox" :href="route('bahan-baku')" :current="request()->routeIs('bahan-baku')" wire:navigate>{{ __('Bahan Baku') }}</flux:navlist.item>
+                <flux:navlist.item icon="archive-box" :href="route('bahan-olahan')" :current="request()->routeIs('bahan-olahan')" wire:navigate>{{ __('Bahan Baku Olahan') }}</flux:navlist.item>
+            </flux:navlist.group>
+
+            <flux:navlist.group heading="Produk" expandable :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
+                <flux:navlist.item icon="list-bullet" :href="route('kategori')" :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
+                <flux:navlist.item icon="inbox-stack" :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>{{ __('Daftar Produk') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
