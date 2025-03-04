@@ -63,50 +63,53 @@
             <div class="p-4 space-y-4">
                 <div>
                     <flux:input label="Nama Olahan" wire:model="name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                    @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <flux:input label="Jumlah" wire:model="quantity" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                    @error('quantity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="border-t pt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Bahan Baku</label>
                     @foreach($processedMaterialDetails as $index => $detail)
-                    <div class="grid grid-cols-12 gap-4 mb-2 items-center">
-                        <!-- Kolom Pilih Bahan -->
-                        <div class="col-span-5">
-                            <flux:select wire:change="setMaterial({{ $index }}, $event.target.value)" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
-                                @foreach($materials as $material)
-                                <option value="{{ $material->id }}" {{ $detail['material_id'] == $material->id ? 'selected' : '' }}>
-                                    {{ $material->name }}
-                                </option>
-                                @endforeach
-                            </flux:select>
-                            @error("processedMaterialDetails.{$index}.material_id")
-                            <div class="text-red-500 text-sm mt-1">Material harus dipilih</div>
-                            @enderror
-                        </div>
+                    <flux:input.group>
+                        <div class="flex gap-4 mb-2 items-center">
+                            <!-- Kolom Pilih Bahan -->
+                            <div class="w-full">
 
-                        <!-- Kolom Input Quantity -->
-                        <div class="col-span-4 relative">
-                            <flux:input type="number" wire:model="processedMaterialDetails.{{ $index }}.material_quantity" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                {{ $detail['material_unit'] }}
-                            </span>
-                        </div>
+                                <flux:select wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                    <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
+                                    @foreach($materials as $material)
+                                    <option value="{{ $material->id }}" {{ $detail['material_id'] == $material->id ? 'selected' : '' }}>
+                                        {{ $material->name }}
+                                    </option>
+                                    @endforeach
+                                </flux:select>
 
-                        <!-- Kolom Tombol Hapus -->
-                        <div class="col-span-3 text-right">
-                            <button type="button" wire:click="removeDetailRow({{ $index }})" class="text-red-600 hover:text-red-800">
-                                <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
+                            </div>
+
+                            <!-- Kolom Input Quantity -->
+                            <div class="relative">
+
+                                <flux:input type="number" wire:model="processedMaterialDetails.{{ $index }}.material_quantity" />
+                                <span class="flex items-center absolute top-0 right-0 px-2 py-2 text-gray-500">
+                                    {{ $detail['material_unit'] }}
+                                </span>
+                            </div>
+
+                            <!-- Kolom Tombol Hapus -->
+                            <div class="text-right">
+                                <button type="button" wire:click="removeDetailRow({{ $index }})" class="text-red-600 hover:text-red-800">
+                                    <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </flux:input.group>
+                    @error("processedMaterialDetails.{$index}.material_id")
+                    <div class="text-red-500 text-sm mt-1">Material harus dipilih</div>
+                    @enderror
                     @endforeach
 
                     <button type="button" wire:click="addDetailRow" class="mt-2 text-blue-600 hover:text-blue-800 flex items-center">
@@ -120,9 +123,7 @@
             </div>
 
             <div class="flex justify-end gap-2 px-4 py-3 bg-gray-50">
-                <button type="button" wire:click="$set('showAddModal', false)" class="px-4 py-2 border rounded-md">
-                    Batal
-                </button>
+
                 <flux:button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                     Simpan
                 </flux:button>
@@ -136,50 +137,53 @@
             <div class="p-4 space-y-4">
                 <div>
                     <flux:input label="Nama Olahan" wire:model="name" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                    @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <flux:input label="Jumlah" wire:model="quantity" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                    @error('quantity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="border-t pt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Bahan Baku</label>
                     @foreach($processedMaterialDetails as $index => $detail)
-                    <div class="grid grid-cols-12 gap-4 mb-2 items-center">
-                        <!-- Kolom Pilih Bahan -->
-                        <div class="col-span-5">
-                            <flux:select wire:change="setMaterial({{ $index }}, $event.target.value)" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
-                                @foreach($materials as $material)
-                                <option value="{{ $material->id }}" {{ $detail['material_id'] == $material->id ? 'selected' : '' }}>
-                                    {{ $material->name }}
-                                </option>
-                                @endforeach
-                            </flux:select>
-                            @error("processedMaterialDetails.{$index}.material_id")
-                            <div class="text-red-500 text-sm mt-1">Material harus dipilih</div>
-                            @enderror
-                        </div>
+                    <flux:input.group>
+                        <div class="flex gap-4 mb-2 items-center">
+                            <!-- Kolom Pilih Bahan -->
+                            <div class="w-full">
 
-                        <!-- Kolom Input Quantity -->
-                        <div class="col-span-4 relative">
-                            <flux:input type="number" wire:model="processedMaterialDetails.{{ $index }}.material_quantity" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
-                            <span class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                {{ $detail['material_unit'] }}
-                            </span>
-                        </div>
+                                <flux:select wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                    <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
+                                    @foreach($materials as $material)
+                                    <option value="{{ $material->id }}" {{ $detail['material_id'] == $material->id ? 'selected' : '' }}>
+                                        {{ $material->name }}
+                                    </option>
+                                    @endforeach
+                                </flux:select>
 
-                        <!-- Kolom Tombol Hapus -->
-                        <div class="col-span-3 text-right">
-                            <button type="button" wire:click="removeDetailRow({{ $index }})" class="text-red-600 hover:text-red-800">
-                                <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
+                            </div>
+
+                            <!-- Kolom Input Quantity -->
+                            <div class="relative">
+
+                                <flux:input type="number" wire:model="processedMaterialDetails.{{ $index }}.material_quantity" />
+                                <span class="flex items-center absolute top-0 right-0 px-2 py-2 text-gray-500">
+                                    {{ $detail['material_unit'] }}
+                                </span>
+                            </div>
+
+                            <!-- Kolom Tombol Hapus -->
+                            <div class="text-right">
+                                <button type="button" wire:click="removeDetailRow({{ $index }})" class="text-red-600 hover:text-red-800">
+                                    <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </flux:input.group>
+                    @error("processedMaterialDetails.{$index}.material_id")
+                    <div class="text-red-500 text-sm mt-1">Material harus dipilih</div>
+                    @enderror
                     @endforeach
 
                     <button type="button" wire:click="addDetailRow" class="mt-2 text-blue-600 hover:text-blue-800 flex items-center">
@@ -193,9 +197,6 @@
             </div>
 
             <div class="flex justify-end gap-2 px-4 py-3 bg-gray-50">
-                <button type="button" wire:click="$set('showAddModal', false)" class="px-4 py-2 border rounded-md">
-                    Batal
-                </button>
                 <flux:button type="submit" class="px-4 py-2">
                     Simpan
                 </flux:button>
