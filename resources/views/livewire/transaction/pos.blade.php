@@ -1,4 +1,5 @@
 <div>
+
     <div class="min-h-[calc(100vh-12rem)] bg-gray-100 p-6">
         <div class="tabs-container mb-6">
             <div class="flex justify-center gap-2 bg-white p-1 rounded-lg">
@@ -33,9 +34,9 @@
                         <div class="flex-grow">
                             <h3 class="text-sm font-semibold mb-2">{{ $product->name }}</h3>
                             @if($product->product_image)
-                            <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="w-full h-32 object-cover mb-2">
+                            <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="w-full max-h-32 object-cover mb-2">
                             @else
-                            <img src="{{ asset('img/no-image.jpg') }}" alt="{{ $product->name }}" class="w-full h-32 object-cover mb-2">
+                            <img src="{{ asset('img/no-image.jpg') }}" alt="{{ $product->name }}" class="w-full max-h-32 object-cover mb-2">
                             @endif
                         </div>
                         <div class="mt-auto">
@@ -104,7 +105,20 @@
                     @if($activeTab === 'order')
                     <div class="mb-4">
                         <label class="block mb-2">Jadwal Pengambilan</label>
-                        <input type="date" wire:model="schedule" class="w-full px-4 py-2 border rounded-lg" min="{{ now()->format('Y-m-d') }}">
+                        <div x-data x-init="
+         flatpickr($refs.input, {
+             dateFormat: 'd-m-Y',
+             onChange: function(selectedDates, dateStr, instance) {
+                 if (selectedDates.length > 0) {
+                     // Mengonversi tanggal ke format Y-m-d untuk disimpan
+                     let formatted = instance.formatDate(selectedDates[0], 'Y-m-d');
+                     @this.set('schedule', formatted);
+                 }
+             }
+         });
+     " class="relative">
+                            <input x-ref="input" type="text" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="Pilih tanggal" />
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
@@ -148,7 +162,7 @@
                                 Rp {{ number_format($totalAmount, 0, ',', '.') }}
                             </span>
                         </div>
-                        <button wire:click="processPayment" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                        <button wire:click="processPayment" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" wire:loading.attr="disabled">
                             Proses Pembayaran
                         </button>
                     </div>
