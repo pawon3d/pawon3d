@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
     Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
+    Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
 });
 
 require __DIR__ . '/auth.php';

@@ -27,6 +27,8 @@
                 <flux:navlist.item icon="list-bullet" :href="route('kategori')" :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
                 <flux:navlist.item icon="inbox-stack" :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>{{ __('Daftar Produk') }}</flux:navlist.item>
             </flux:navlist.group>
+
+            <flux:navlist.item icon="building-storefront" :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>{{ __('Point of Sale') }}</flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />
