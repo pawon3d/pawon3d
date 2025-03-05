@@ -1,6 +1,6 @@
 <div>
-
     <div class="min-h-[calc(100vh-12rem)] bg-gray-100 p-6">
+        <!-- Tabs -->
         <div class="tabs-container mb-6">
             <div class="flex justify-center gap-2 bg-white p-1 rounded-lg">
                 <button wire:click="switchTab('ready')" class="flex-1 px-4 py-2 text-center rounded-lg transition-colors duration-200 ease-in-out text-gray-700 {{ $activeTab === 'ready' ? 'bg-white text-blue-600 shadow-lg border-b-2 border-blue-600' : 'bg-transparent' }}">
@@ -40,7 +40,6 @@
                             @endif
                         </div>
                         <div class="mt-auto">
-
                             <p class="text-xs text-gray-500 mb-2">
                                 Rp {{ number_format($product->price, 0, ',', '.') }}
                             </p>
@@ -49,11 +48,8 @@
                                 Stok: {{ $product->stock }}
                             </p>
                             @endif
-                            <button wire:click="addToCart('{{ $product->id }}')" @class([ 'mt-auto w-full px-4 py-2 rounded-lg' , 'bg-blue-500 text-white hover:bg-blue-600'=>
-                                ($activeTab === 'ready' && $product->stock > 0) ||
-                                $activeTab === 'order',
-                                'bg-gray-300 cursor-not-allowed' =>
-                                $activeTab === 'ready' && $product->stock < 1 ]) @disabled($activeTab==='ready' && $product->stock < 1)>
+                            <button wire:click="addToCart('{{ $product->id }}')" @class([ 'mt-auto w-full px-4 py-2 rounded-lg' , 'bg-blue-500 text-white hover:bg-blue-600'=> ($activeTab === 'ready' && $product->stock > 0) || $activeTab === 'order',
+                                'bg-gray-300 cursor-not-allowed' => $activeTab === 'ready' && $product->stock < 1, ]) @disabled($activeTab==='ready' && $product->stock < 1)>
                                         Tambah
                             </button>
                         </div>
@@ -67,9 +63,7 @@
                 <div class="bg-white shadow rounded-lg p-4 sticky top-32">
                     <div class="flex justify-between gap-6 items-center mb-4">
                         <h2 class="text-lg font-semibold">Keranjang</h2>
-                        <button wire:click="clearCart" class="px-3 py-1 bg-red-500 text-white rounded-lg" @disabled(count($cart)===0)>
-                            <flux:icon.trash />
-                        </button>
+
                     </div>
 
                     @if(count($cart) > 0)
@@ -86,14 +80,9 @@
                                 <button wire:click="removeFromCart('{{ $item['product_id'] }}')" class="px-2 py-1 border rounded-lg">
                                     -
                                 </button>
-                                <button wire:click="addToCart('{{ $item['product_id'] }}')" @class([ 'px-2 py-1 border rounded-lg' , 'cursor-not-allowed bg-gray-100'=>
-                                    $activeTab === 'ready' &&
-                                    $item['quantity'] >= \App\Models\Product::find($item['product_id'])->stock
+                                <button wire:click="addToCart('{{ $item['product_id'] }}')" @class([ 'px-2 py-1 border rounded-lg' , 'cursor-not-allowed bg-gray-100'=> $activeTab === 'ready' && $item['quantity'] >= \App\Models\Product::find($item['product_id'])->stock,
                                     ])
-                                    @disabled(
-                                    $activeTab === 'ready' &&
-                                    $item['quantity'] >= \App\Models\Product::find($item['product_id'])->stock
-                                    )
+                                    @disabled($activeTab === 'ready' && $item['quantity'] >= \App\Models\Product::find($item['product_id'])->stock)
                                     >
                                     +
                                 </button>
@@ -106,17 +95,16 @@
                     <div class="mb-4">
                         <label class="block mb-2">Jadwal Pengambilan</label>
                         <div x-data x-init="
-         flatpickr($refs.input, {
-             dateFormat: 'd-m-Y',
-             onChange: function(selectedDates, dateStr, instance) {
-                 if (selectedDates.length > 0) {
-                     // Mengonversi tanggal ke format Y-m-d untuk disimpan
-                     let formatted = instance.formatDate(selectedDates[0], 'Y-m-d');
-                     @this.set('schedule', formatted);
-                 }
-             }
-         });
-     " class="relative">
+                                    flatpickr($refs.input, {
+                                        dateFormat: 'd-m-Y',
+                                        onChange: function(selectedDates, dateStr, instance) {
+                                            if (selectedDates.length > 0) {
+                                                let formatted = instance.formatDate(selectedDates[0], 'Y-m-d');
+                                                @this.set('schedule', formatted);
+                                            }
+                                        }
+                                    });
+                                " class="relative">
                             <input x-ref="input" type="text" wire:model="schedule" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="Pilih tanggal" />
                         </div>
                     </div>

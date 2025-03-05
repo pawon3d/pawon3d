@@ -29,6 +29,7 @@
             </flux:navlist.group>
 
             <flux:navlist.item icon="building-storefront" :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>{{ __('Point of Sale') }}</flux:navlist.item>
+            <flux:navlist.item icon="calculator" :href="route('transaksi')" :current="request()->routeIs('transaksi')" wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />
