@@ -20,9 +20,14 @@ class Production extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function transaction_details()
+    public function transaction_detail()
     {
         return $this->belongsTo(TransactionDetail::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 
     public static function boot()

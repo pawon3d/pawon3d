@@ -128,9 +128,11 @@
                             <td class="px-6 py-4">Rp {{ number_format($detail->price) }}</td>
                             @if($selectedTransaction->type === 'pesanan')
                             <td class="px-6 py-4">
-                                @foreach($detail->product->productions as $production)
-                                {{ $production->status  }}
-                                @endforeach
+                                @forelse($detail->productions as $production)
+                                <span class="text-xs capitalize">{{ $production->status }}</span>
+                                @empty
+                                <span class="text-xs">Belum Diproduksi</span>
+                                @endforelse
                             </td>
                             @endif
                         </tr>

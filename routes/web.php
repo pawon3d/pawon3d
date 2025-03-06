@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
     Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
+    Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
 });
 
 require __DIR__ . '/auth.php';

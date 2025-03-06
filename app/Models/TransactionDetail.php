@@ -25,6 +25,11 @@ class TransactionDetail extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function productions()
+    {
+        return $this->hasMany(Production::class);
+    }
+
     public static function boot()
     {
         parent::boot();

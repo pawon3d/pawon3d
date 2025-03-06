@@ -23,10 +23,13 @@
                 <flux:navlist.item icon="archive-box" :href="route('bahan-olahan')" :current="request()->routeIs('bahan-olahan')" wire:navigate>{{ __('Bahan Baku Olahan') }}</flux:navlist.item>
             </flux:navlist.group>
 
+
             <flux:navlist.group heading="Produk" expandable :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
                 <flux:navlist.item icon="list-bullet" :href="route('kategori')" :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
                 <flux:navlist.item icon="inbox-stack" :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>{{ __('Daftar Produk') }}</flux:navlist.item>
             </flux:navlist.group>
+
+            <flux:navlist.item icon="cube" :href="route('produksi')" :current="request()->routeIs('produksi')" wire:navigate>{{ __('Produksi') }}</flux:navlist.item>
 
             <flux:navlist.item icon="building-storefront" :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>{{ __('Point of Sale') }}</flux:navlist.item>
             <flux:navlist.item icon="calculator" :href="route('transaksi')" :current="request()->routeIs('transaksi')" wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
