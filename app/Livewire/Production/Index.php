@@ -19,6 +19,10 @@ class Index extends Component
     public $openEdit = false;
     public $productionId;
 
+    public $showDetailModal = false;
+    public $detailData = null;
+
+
     // Tentukan tab aktif: 'pesanan' atau 'siap_beli'
     public $activeTab = 'pesanan';
     public $typeFilter = 'all';
@@ -220,6 +224,33 @@ class Index extends Component
         // Ambil komposisi dari produk terkait
         $this->compositionList = $production->product->product_compositions ?? [];
         $this->openEdit = true;
+    }
+
+    public function openDetailModal($id)
+    {
+        $this->detailData = Production::with('product', 'product.product_compositions')->findOrFail($id);
+        $this->showDetailModal = true;
+    }
+
+    // Jika status bukan 'sedang dibuat', tombol Mulai akan memanggil method ini
+    public function startProduction()
+    {
+        if ($this->detailData && $this->detailData->status !== 'sedang dibuat') {
+            $this->detailData->update(['status' => 'sedang dibuat']);
+            $this->alert('success', 'Produksi telah dimulai.');
+        }
+        $this->showDetailModal = false;
+    }
+
+    // Jika status sudah 'sedang dibuat', tombol Batalkan Produksi memanggil method ini
+    public function cancelProduction()
+    {
+        if ($this->detailData && $this->detailData->status === 'sedang dibuat') {
+            // Misalnya, ubah status kembali ke "pending" atau status awal
+            $this->detailData->update(['status' => 'dibatalkan']);
+            $this->alert('success', 'Produksi telah dibatalkan.');
+        }
+        $this->showDetailModal = false;
     }
 
     private function resetForm()

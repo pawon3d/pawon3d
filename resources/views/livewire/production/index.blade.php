@@ -327,4 +327,81 @@
             </form>
         </div>
     </flux:modal>
+
+    <flux:modal name="detail-produksi" class="w-full max-w-lg" wire:model="showDetailModal">
+        @if($detailData)
+        <div class="space-y-4">
+            <div>
+                <flux:heading size="lg">Detail Produksi</flux:heading>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Produk</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ $detailData->product->name }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Jumlah Produksi</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ $detailData->count }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ $detailData->status }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Waktu Produksi</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ $detailData->time }}</p>
+                </div>
+            </div>
+
+            @if($detailData->product->product_compositions)
+            <div class="border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Komposisi Produk</label>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Jenis Bahan</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nama Bahan</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Satuan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($detailData->product->product_compositions as $composition)
+                            <tr>
+                                <td class="px-4 py-2 text-sm">
+                                    {{ $composition->material_id ? 'Bahan Baku' : 'Bahan Olahan' }}
+                                </td>
+                                <td class="px-4 py-2 text-sm">
+                                    @if($composition->material_id)
+                                    {{ \App\Models\Material::find($composition->material_id)->name ?? '-' }}
+                                    @else
+                                    {{ \App\Models\ProcessedMaterial::find($composition->processed_material_id)->name ?? '-' }}
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2 text-sm">
+                                    {{ $composition->material_id ? $composition->material_quantity : $composition->processed_material_quantity }}
+                                </td>
+                                <td class="px-4 py-2 text-sm">
+                                    {{ $composition->material_unit ?? '-' }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+
+            <div class="flex justify-between gap-2 mt-6">
+                <flux:button type="button" wire:click="$set('showDetailModal', false)" class="btn-secondary">Tutup</flux:button>
+                @if($detailData->status !== 'sedang dibuat')
+                <flux:button type="button" wire:click="startProduction" class="btn-primary">Mulai</flux:button>
+                @else
+                <flux:button type="button" wire:click="cancelProduction" class="btn-secondary">Batalkan Produksi</flux:button>
+                @endif
+            </div>
+        </div>
+        @endif
+    </flux:modal>
 </div>
