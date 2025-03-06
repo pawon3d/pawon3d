@@ -31,7 +31,7 @@ class Index extends Component
 
     public function render()
     {
-        $transactions = Transaction::with(['user'])
+        $transactions = Transaction::with(['user', 'details.product.productions'])
             ->when($this->search, function ($query) {
                 $query->whereHas('user', function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%');
@@ -60,7 +60,7 @@ class Index extends Component
 
     public function showDetail($transactionId)
     {
-        $this->selectedTransaction = Transaction::with(['user'])
+        $this->selectedTransaction = Transaction::with(['user', 'details.product.productions'])
             ->find($transactionId);
         $this->showDetailModal = true;
     }

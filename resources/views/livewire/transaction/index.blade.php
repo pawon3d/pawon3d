@@ -112,9 +112,9 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gambar</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                            {{-- @if($selectedTransaction->type === 'pesanan')
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Produksi</th>
-                                @endif --}}
+                            @if($selectedTransaction->type === 'pesanan')
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Produksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -126,13 +126,13 @@
                             </td>
                             <td class="px-6 py-4">{{ $detail->quantity }}</td>
                             <td class="px-6 py-4">Rp {{ number_format($detail->price) }}</td>
-                            {{-- @if($selectedTransaction->type === 'pesanan')
-                                        <td class="px-6 py-4">
-                                            @foreach($detail->product->productions as $production)
-                                                {{ $production->status }}
-                            @endforeach
+                            @if($selectedTransaction->type === 'pesanan')
+                            <td class="px-6 py-4">
+                                @foreach($detail->product->productions as $production)
+                                {{ $production->status  }}
+                                @endforeach
                             </td>
-                            @endif --}}
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>

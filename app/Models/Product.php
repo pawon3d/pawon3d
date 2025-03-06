@@ -23,6 +23,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function productions()
+    {
+        return $this->hasMany(Production::class);
+    }
+
     public function product_compositions()
     {
         return $this->hasMany(ProductComposition::class);

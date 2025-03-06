@@ -163,8 +163,12 @@
                             </span>
                         </div>
                         <button wire:click="processPayment" class="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600" wire:loading.attr="disabled">
-                            Proses Pembayaran
+                            Proses Pembayaran 
+                            <span wire:loading>
+                                <flux:icon.loading />
+                            </span>
                         </button>
+
                     </div>
                     @else
                     <p class="text-gray-500 text-center">Keranjang kosong</p>
