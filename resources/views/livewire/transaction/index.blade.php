@@ -54,6 +54,9 @@
                             </flux:button>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
+                            <button wire:click="printReceipt('{{ $transaction->id }}')" class="px-3 py-1 border rounded-md text-green-600 hover:bg-green-50">
+                                Cetak
+                            </button>
                             <a href="{{ route('transaksi.edit', $transaction->id) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">
                                 Edit
                             </a>
@@ -148,5 +151,80 @@
                 Tutup
             </button>
         </x-slot>
+    </flux:modal>
+
+    <!-- Modal Print Struk -->
+    <flux:modal name="print-struk" class="w-full max-w-xs" wire:model="showPrintModal">
+        @if($printTransaction)
+        <style>
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+
+
+                #printArea,
+                #printArea * {
+                    visibility: visible;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                }
+
+                #printArea {
+                    size: 72mm 100vh;
+                    margin: 0;
+                    padding: 0;
+                    font-size: 10px;
+                }
+            }
+
+        </style>
+        <div id="printArea" class="p-4">
+
+            <div class="text-center">
+                <h2 class="text-lg font-bold">Struk Transaksi</h2>
+                <p class="text-xs">Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }}</p>
+            </div>
+
+            <div class="mt-4">
+                <p class="text-xs"><strong>Total:</strong> Rp {{ number_format($printTransaction->total_amount) }}</p>
+                <p class="text-xs"><strong>Status Pembayaran:</strong> {{ $printTransaction->payment_status }}</p>
+                <p class="text-xs"><strong>Tipe:</strong> {{ $printTransaction->type }}</p>
+            </div>
+
+            <div class="mt-4 border-t pt-2">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Produk</th>
+                            <th class="text-right">Jumlah</th>
+                            <th class="text-right">Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($printTransaction->details as $detail)
+                        <tr>
+                            <td>{{ $detail->product->name }}</td>
+                            <td class="text-right">{{ $detail->quantity }}</td>
+                            <td class="text-right">Rp {{ number_format($detail->price) }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 text-center">
+                <p class="text-xs">Terima kasih telah berbelanja</p>
+            </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+            <flux:button type="button" onclick="return cetakStruk('{{ route('transaksi.cetak', $printTransaction->id) }}');" class="px-4 py-2 border rounded-md btn-primary">
+                Cetak
+            </flux:button>
+            <flux:button type="button" wire:click="$set('showPrintModal', false)" class="btn-secondary">
+                Tutup
+            </flux:button>
+        </div>
+        @endif
     </flux:modal>
 </div>

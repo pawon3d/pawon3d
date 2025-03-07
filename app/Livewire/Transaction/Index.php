@@ -3,10 +3,16 @@
 namespace App\Livewire\Transaction;
 
 use Livewire\Component;
-use Livewire\WithPagination;
+use Mike42\Escpos\Printer;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
+use Livewire\WithPagination;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class Index extends Component
 {
@@ -18,6 +24,9 @@ class Index extends Component
     public $showDetailModal = false;
     public $selectedTransaction = null;
     public $delete_id;
+
+    public $printTransaction = null;
+    public $showPrintModal = false;
 
     protected $listeners = [
         'refreshTransactions' => '$refresh',
@@ -87,5 +96,52 @@ class Index extends Component
         $transaction->delete();
         $this->alert('success', 'Transaksi berhasil dihapus!');
         $this->reset('delete_id');
+    }
+
+    public function printReceipt($transactionId)
+    {
+        $this->printTransaction = Transaction::with(['user', 'details.product.productions'])
+            ->find($transactionId);
+        $this->showPrintModal = true;
+    }
+
+    public function print($id)
+    {
+        // Ambil data transaksi lengkap
+
+        $transaction = \App\Models\Transaction::with(['user', 'details.product'])->find($id);
+
+        // $connector = new  WindowsPrintConnector("Microsoft Print to PDF");
+        // $printer = new Printer($connector);
+
+        // // Set header
+        // $printer->setJustification(Printer::JUSTIFY_CENTER);
+        // $printer->text("Struk Transaksi\n");
+        // $printer->text("Tanggal: " . now()->format('d-m-Y H:i') . "\n");
+        // $printer->text("------------------------------\n");
+
+        // // Set detail transaksi
+        // $printer->setJustification(Printer::JUSTIFY_LEFT);
+        // $printer->text("Total: Rp " . number_format($transaction->total_amount) . "\n");
+        // $printer->text("Status Pembayaran: " . $transaction->payment_status . "\n");
+        // $printer->text("Tipe: " . $transaction->type . "\n");
+        // $printer->text("------------------------------\n");
+
+        // // Cetak detail produk
+        // foreach ($transaction->details as $detail) {
+        //     $printer->text($detail->product->name . "\n");
+        //     $printer->text("Qty: " . $detail->quantity . "  Harga: Rp " . number_format($detail->price) . "\n");
+        // }
+        // $printer->text("------------------------------\n");
+        // $printer->text("Terima kasih telah berbelanja\n");
+
+        // // Potong kertas
+        // $printer->cut();
+        // $printer->close();
+
+        $pdf = Pdf::loadView('pdf.pdf', compact('transaction'))->setPaper([0, 0, 227, 400], 'portrait');
+
+
+        return $pdf->stream('struk-transaksi.pdf');
     }
 }
