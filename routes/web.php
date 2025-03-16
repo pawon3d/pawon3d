@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return view('welcome');
+    $categories = \App\Models\Category::with('products')->get();
+    return view('welcome', compact('categories'));
 })->name('home');
 
 Route::get('dashboard', Dashboard::class)
