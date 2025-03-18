@@ -3,17 +3,22 @@
 use App\Http\Controllers\PdfController;
 use App\Livewire\User\Index;
 use App\Livewire\Dashboard;
+use App\Livewire\Review\ReviewForm;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
     $categories = \App\Models\Category::with('products')->get();
-    return view('welcome', compact('categories'));
+    $reviews = \App\Models\Review::with('product')->get();
+    return view('welcome', compact('categories', 'reviews'));
 })->name('home');
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
+
+Route::get('/ulasan/{transaction_id}', ReviewForm::class)
+    ->name('ulasan');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

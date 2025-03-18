@@ -175,6 +175,82 @@
         </div>
     </section>
 
+    <!-- Review Section Carousel -->
+    <section class="container mx-auto px-4 py-16" id="reviews">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-poppins font-bold mb-4">Apa Kata Mereka?</h2>
+        </div>
+        @if ($reviews->isEmpty())
+        <div class="text-center text-gray-500">
+            Belum ada ulasan untuk ditampilkan.
+        </div>
+        @else
+        <div id="review-carousel" class="relative" data-carousel="slide">
+            <!-- Carousel wrapper -->
+            <div class="overflow-hidden relative h-64 rounded-lg">
+                @foreach($reviews as $index => $review)
+                <div class="hidden duration-700 ease-in-out" data-carousel-item {{ $index===0 ? 'data-carousel-active'
+                    : '' }}>
+                    <div class="flex flex-col items-center justify-center h-full bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4">{{ $review->product->name }}</h2>
+                        @if ($review->product->product_image)
+                        <img src="{{ asset('storage/'.$review->product->product_image) }}"
+                            alt="{{ $review->product->name }}" class="w-24 h-24 rounded-md mb-4">
+                        @endif
+                        <h3 class="text-xl font-semibold mb-2">{{ $review->user_name }}</h3>
+                        <div class="flex mb-4">
+                            @for($i = 1; $i <= 5; $i++) <svg
+                                class="w-5 h-5 {{ $review->rating >= $i ? 'text-yellow-500' : 'text-gray-300' }}"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.176 0l-3.39 2.46c-.785.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.045 9.393c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.966z" />
+                                </svg>
+                                @endfor
+                        </div>
+                        <p class="text-gray-600 text-center">{{ $review->comment }}</p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            <!-- Slider indicators -->
+            <div class="flex absolute bottom-5 left-1/2 z-30 space-x-3 -translate-x-1/2">
+                @foreach($reviews as $index => $review)
+                <button type="button" class="w-3 h-3 rounded-full {{ $index === 0 ? 'bg-blue-600' : 'bg-gray-300' }}"
+                    aria-current="{{ $index === 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"
+                    data-carousel-slide-to="{{ $index }}"></button>
+                @endforeach
+            </div>
+            <!-- Slider controls -->
+            <button type="button"
+                class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-prev>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+                    <svg aria-hidden="true" class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button"
+                class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-next>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+                    <svg aria-hidden="true" class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
+        </div>
+        @endif
+    </section>
+
+
 
     <!-- Contact Section -->
     <section class="bg-gray-100 py-20">
@@ -254,12 +330,12 @@
         gsap.utils.toArray(".menu-item").forEach(item => {
             gsap.from(item, {
                 scrollTrigger: {
-                    trigger: item
-                    , start: "top center+=100"
-                }
-                , opacity: 0
-                , y: 50
-                , duration: 0.8
+                    trigger: item, 
+                    start: "top center+=100"
+                }, 
+                opacity: 0, 
+                y: 50, 
+                duration: 0.8
             });
         });
 
@@ -271,8 +347,6 @@
             const tabButtons = document.querySelectorAll('#menu-tabs button[role="tab"]');
             // Mendapatkan semua panel tab
             const tabPanels = document.querySelectorAll('#menu-content div[role="tabpanel"]');
-
-
 
             // Fungsi untuk mengaktifkan tab
             function activateTab(tabId) {
