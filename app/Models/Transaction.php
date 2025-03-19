@@ -30,6 +30,11 @@ class Transaction extends Model
         return $this->hasMany(Production::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     public static function boot()
     {
         parent::boot();

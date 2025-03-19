@@ -9,7 +9,7 @@ use Livewire\Volt\Volt;
 
 Route::get('/', function () {
     $categories = \App\Models\Category::with('products')->get();
-    $reviews = \App\Models\Review::with('product')->get();
+    $reviews = \App\Models\Review::with('product')->where('visible', true)->get();
     return view('welcome', compact('categories', 'reviews'));
 })->name('home');
 
@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
     Route::get('/transaksi/{id}/print', [PdfController::class, 'print'])->name('transaksi.cetak');
+    Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
 });
 
 require __DIR__ . '/auth.php';

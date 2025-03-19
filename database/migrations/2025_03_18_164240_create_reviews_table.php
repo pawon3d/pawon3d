@@ -15,9 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('transaction_id');
             $table->uuid('product_id');
-            $table->string('user_name');
+            $table->string('name');
             $table->integer('rating');
             $table->text('comment');
+            $table->boolean('visible')->default(true);
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');

@@ -77,7 +77,7 @@ class Index extends Component
     public function deleteTransaction($transactionId)
     {
         $this->delete_id = $transactionId;
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus produk ini?', [
+        $this->alert('warning', 'Apakah Anda yakin ingin menghapus transaksi ini?', [
             'showConfirmButton' => true,
             'showCancelButton' => true,
             'confirmButtonText' => 'Ya, hapus',

@@ -184,7 +184,7 @@
         <div class="text-center text-gray-500">
             Belum ada ulasan untuk ditampilkan.
         </div>
-        @else
+        @elseif ($reviews->count() > 1)
         <div id="review-carousel" class="relative" data-carousel="slide">
             <!-- Carousel wrapper -->
             <div class="overflow-hidden relative h-64 rounded-lg">
@@ -246,6 +246,31 @@
                     <span class="sr-only">Next</span>
                 </span>
             </button>
+        </div>
+
+        @else
+        <div class="overflow-hidden relative h-64 rounded-lg">
+            @foreach($reviews as $index => $review)
+            <div class="flex flex-col items-center justify-center h-full bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">{{ $review->product->name }}</h2>
+                @if ($review->product->product_image)
+                <img src="{{ asset('storage/'.$review->product->product_image) }}" alt="{{ $review->product->name }}"
+                    class="w-24 h-24 rounded-md mb-4">
+                @endif
+                <h3 class="text-xl font-semibold mb-2">{{ $review->user_name }}</h3>
+                <div class="flex mb-4">
+                    @for($i = 1; $i <= 5; $i++) <svg
+                        class="w-5 h-5 {{ $review->rating >= $i ? 'text-yellow-500' : 'text-gray-300' }}"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.176 0l-3.39 2.46c-.785.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.045 9.393c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.966z" />
+                        </svg>
+                        @endfor
+                </div>
+                <p class="text-gray-600 text-center">{{ $review->comment }}</p>
+            </div>
+
+            @endforeach
         </div>
         @endif
     </section>

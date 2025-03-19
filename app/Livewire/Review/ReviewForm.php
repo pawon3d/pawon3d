@@ -15,7 +15,7 @@ class ReviewForm extends Component
 
     use LivewireAlert;
 
-    public $nama;
+    public $name;
     public $ratings = [];
     public $comments = [];
     public $transaction;
@@ -24,7 +24,7 @@ class ReviewForm extends Component
     public $errorMessage = '';
 
     protected $rules = [
-        'nama' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
         'ratings.*' => 'required|integer|min:1|max:5',
         'comments.*' => 'required|string|max:500',
     ];
@@ -62,7 +62,7 @@ class ReviewForm extends Component
                 Review::create([
                     'transaction_id' => $this->transaction->id,
                     'product_id' => $detail->product->id,
-                    'user_name' => $this->nama,
+                    'name' => $this->name,
                     'rating' => $this->ratings[$detail->product->id],
                     'comment' => $this->comments[$detail->product->id],
                 ]);

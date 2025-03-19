@@ -26,10 +26,10 @@
                     <label class="block text-sm font-medium text-gray-700">
                         Nama:
                     </label>
-                    <input type="text" wire:model="nama"
+                    <input type="text" wire:model="name"
                         class="block w-full px-3 py-2 border border-gray-300 rounded-md"
                         placeholder="Masukkan nama Anda" required />
-                    @error('nama') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 @foreach($transaction->details as $detail)
