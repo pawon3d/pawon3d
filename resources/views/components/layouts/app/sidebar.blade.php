@@ -55,7 +55,7 @@
 
 
         <!-- Desktop User Menu -->
-        <flux:dropdown position="bottom" align="start">
+        {{-- <flux:dropdown position="bottom" align="start">
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
                 icon-trailing="chevrons-up-down" />
 
@@ -94,15 +94,56 @@
                     </flux:menu.item>
                 </form>
             </flux:menu>
-        </flux:dropdown>
+        </flux:dropdown> --}}
     </flux:sidebar>
 
     <!-- Mobile User Menu -->
-    <flux:header class="lg:hidden">
+    <flux:header class="">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <flux:spacer />
+        <flux:dropdown>
+            <flux:button icon="bell" class="mr-4" variant="ghost" />
 
+            <flux:menu>
+                @php
+                $notifications = App\Models\Notification::where('user_id', auth()->user()->id)->orderBy('created_at',
+                'desc')->take(5)->get();
+                @endphp
+                @forelse ( $notifications as $notification)
+                <flux:menu.radio.group>
+                    <div class="p-0 text-sm font-normal">
+                        <div class="flex justify-between gap-2 items-center">
+                            <div class="gap-2 px-1 py-1.5 text-left text-sm">
+                                <span class="text-sm block">{{ $notification->title }}</span>
+                                <span class="text-sm block">{{ $notification->body }}</span>
+                                <span class="text-xs block">{{ $notification->created_at->diffForHumans() }}</span>
+                            </div>
+                            @if (!$notification->is_read)
+                            <flux:button icon="check" class="mr-4" variant="ghost" iconVariant="micro"
+                                onclick="markAsRead('{{ $notification->id }}');" />
+                            @endif
+                        </div>
+                    </div>
+                </flux:menu.radio.group>
+
+                <flux:menu.separator />
+                @empty
+                <flux:menu.radio.group>
+
+                    <div class=" p-0 text-sm font-normal">
+                        <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                            <span>
+                                Tidak ada notifikasi
+                            </span>
+                        </div>
+                    </div>
+                </flux:menu.radio.group>
+                @endforelse
+
+            </flux:menu>
+
+        </flux:dropdown>
         <flux:dropdown position="top" align="end">
             <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
@@ -119,7 +160,7 @@
 
                             <div class="grid flex-1 text-left text-sm leading-tight">
                                 <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                <span class="truncate text-xs">{{ auth()->user()->role }}</span>
                             </div>
                         </div>
                     </div>
@@ -148,8 +189,25 @@
     @fluxScripts
     <script src="{{ asset('flowbite/flowbite.min.js') }}"></script>
     <script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
-
+    <script src="{{ asset('scripts/chart.js') }}"></script>
+    <script src="{{ asset('scripts/jquery.min.js') }}"></script>
     <x-livewire-alert::scripts />
+    <script>
+        function markAsRead(id) {
+            $.ajax({
+                url: `/read-notification/${id}`,
+                type: "POST",
+                data: {
+                    id: id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    location.reload();
+                }
+            });
+        }
+    </script>
+    @yield('scripts')
 </body>
 
 </html>

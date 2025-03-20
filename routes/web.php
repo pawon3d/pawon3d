@@ -29,6 +29,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/pengguna', Index::class)->name('pengguna');
 
+    Route::post('/read-notification/{id}', function ($id) {
+        $notification = \App\Models\Notification::find($id);
+        $notification->update(['is_read' => true]);
+        return response()->json(['message' => 'Notification has been read']);
+    })->name('read-notification');
+
     Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
     Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
     Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
