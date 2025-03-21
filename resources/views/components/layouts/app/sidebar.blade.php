@@ -189,7 +189,6 @@
     @fluxScripts
     <script src="{{ asset('flowbite/flowbite.min.js') }}"></script>
     <script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
-    <script src="{{ asset('scripts/chart.js') }}"></script>
     <script src="{{ asset('scripts/jquery.min.js') }}"></script>
     <x-livewire-alert::scripts />
     <script>
@@ -207,6 +206,7 @@
             });
         }
     </script>
+    @livewireScripts
     @yield('scripts')
 </body>
 

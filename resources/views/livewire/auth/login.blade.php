@@ -40,7 +40,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: false);
     }
 
     /**
@@ -81,15 +81,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Username -->
-        <flux:input wire:model="username" :label="__('Username')" type="text" name="username" required autofocus autocomplete="username" placeholder="Username" />
+        <flux:input wire:model="username" :label="__('Username')" type="text" name="username" required autofocus
+            autocomplete="username" placeholder="Username" />
 
         <!-- Password -->
         <div class="relative">
-            <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required autocomplete="current-password" placeholder="Password" viewable />
+            <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required
+                autocomplete="current-password" placeholder="Password" viewable />
 
             {{-- @if (Route::has('password.request'))
-                <flux:link class="absolute right-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                    {{ __('Forgot your password?') }}
+            <flux:link class="absolute right-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
+                {{ __('Forgot your password?') }}
             </flux:link>
             @endif --}}
         </div>
@@ -103,9 +105,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     {{-- @if (Route::has('register'))
-      <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-          Don't have an account?
-          <flux:link :href="route('register')" wire:navigate>Sign up</flux:link>
-      </div>
+    <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        Don't have an account?
+        <flux:link :href="route('register')" wire:navigate>Sign up</flux:link>
+    </div>
     @endif --}}
 </div>

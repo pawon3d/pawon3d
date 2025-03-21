@@ -8,5 +8,5 @@
 <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
 <link rel="stylesheet" href="{{ asset('flowbite/flatpickr.min.css') }}">
 <script src="{{ asset('flowbite/flatpickr.js') }}"></script>
-
+@livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
