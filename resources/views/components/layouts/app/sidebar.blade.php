@@ -14,7 +14,7 @@
         </a>
 
         <flux:navlist variant="outline">
-            <flux:navlist.group heading="Platform" class="grid">
+            <flux:navlist.group heading="Menu" class="grid">
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
@@ -47,8 +47,10 @@
                 wire:navigate>{{ __('Point of Sale') }}</flux:navlist.item>
             <flux:navlist.item icon="calculator" :href="route('transaksi')" :current="request()->routeIs('transaksi')"
                 wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
-            <flux:navlist.item icon="newspaper" :href="route('review')" :current="request()->routeIs('review')"
-                wire:navigate>{{ __('Ulasan') }}</flux:navlist.item>
+            <flux:navlist.item icon="gift" :href="route('hadiah')"
+                :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
+                wire:navigate>{{
+                __('Hadiah') }}</flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />
@@ -103,7 +105,9 @@
 
         <flux:spacer />
         <flux:dropdown>
-            <flux:button icon="bell" class="mr-4" variant="ghost" />
+            <flux:button class="mr-4" variant="ghost">
+                <flux:icon.bell variant="outline" class="text-green-500" />
+            </flux:button>
 
             <flux:menu>
                 @php
@@ -120,8 +124,10 @@
                                 <span class="text-xs block">{{ $notification->created_at->diffForHumans() }}</span>
                             </div>
                             @if (!$notification->is_read)
-                            <flux:button icon="check" class="mr-4" variant="ghost" iconVariant="micro"
-                                onclick="markAsRead('{{ $notification->id }}');" />
+                            <flux:button class="mr-4" variant="ghost" tooltip="Tandai Sudah Dibaca" iconVariant="micro"
+                                onclick="markAsRead('{{ $notification->id }}');">
+                                <flux:icon.check variant="micro" class="text-green-500" />
+                            </flux:button>
                             @endif
                         </div>
                     </div>

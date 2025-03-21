@@ -45,6 +45,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
     Route::get('/transaksi/{id}/print', [PdfController::class, 'print'])->name('transaksi.cetak');
     Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
+    Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
+    Route::get('/hadiah/didapat', App\Livewire\Prize\Index::class)->name('hadiah.didapat');
+    Route::get('/hadiah/ditukar', App\Livewire\Prize\Index::class)->name('hadiah.ditukar');
 });
 
 require __DIR__ . '/auth.php';
