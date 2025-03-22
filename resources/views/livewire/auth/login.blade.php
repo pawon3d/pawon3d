@@ -20,6 +20,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public bool $remember = false;
 
+    public function mount()
+    {
+        View::share('title', 'Login');
+    }
+
     /**
      * Handle an incoming authentication request.
      */

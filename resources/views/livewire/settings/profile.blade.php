@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
+use Illuminate\Support\Facades\View;
+
 
 new class extends Component {
     public string $name = '';
@@ -15,6 +17,8 @@ new class extends Component {
      */
     public function mount(): void
     {
+        View::share('title', 'Profil');
+
         $this->name = Auth::user()->name;
         $this->username = Auth::user()->username;
     }
@@ -52,22 +56,24 @@ new class extends Component {
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and username address')">
+    <x-settings.layout :heading="__('Profil')" :subheading="__('Update nama dan username Anda.')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" :label="__('Name')" type="text" name="name" required autofocus autocomplete="name" />
+            <flux:input wire:model="name" :label="__('Nama')" type="text" name="name" required autofocus
+                autocomplete="name" />
 
             <div>
-                <flux:input wire:model="username" :label="__('Username')" type="text" name="username" required autocomplete="username" />
+                <flux:input wire:model="username" :label="__('Usernama')" type="text" name="username" required
+                    autocomplete="username" />
 
             </div>
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
+                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Simpan') }}</flux:button>
                 </div>
 
                 <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
+                    {{ __('Tersimpan.') }}
                 </x-action-message>
             </div>
         </form>

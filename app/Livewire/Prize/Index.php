@@ -3,6 +3,7 @@
 namespace App\Livewire\Prize;
 
 use App\Models\Prize;
+use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -19,6 +20,11 @@ class Index extends Component
         'delete',
         'productSelected' => 'handleProductSelected',
     ];
+
+    public function mount()
+    {
+        View::share('title', 'Kode Hadiah');
+    }
     public function render()
     {
         return view('livewire.prize.index', [

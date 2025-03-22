@@ -46,8 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi/{id}/print', [PdfController::class, 'print'])->name('transaksi.cetak');
     Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
     Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
-    Route::get('/hadiah/didapat', App\Livewire\Prize\Index::class)->name('hadiah.didapat');
-    Route::get('/hadiah/ditukar', App\Livewire\Prize\Index::class)->name('hadiah.ditukar');
+    Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
+    Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
 });
 
 require __DIR__ . '/auth.php';
