@@ -37,7 +37,6 @@ new class extends Component {
                 'required',
                 'string',
                 'lowercase',
-                'username',
                 'max:255',
                 Rule::unique(User::class)->ignore($user->id)
             ],

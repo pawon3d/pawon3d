@@ -76,14 +76,55 @@
                 <button type="submit"
                     class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
                     wire:loading.attr="disabled">
-                    @if($isLoading)
-                    Mengirim...
-                    @else
-                    Kirim
-                    @endif
+                    <span wire:loading.remove wire:target="submit">Kirim</span>
+                    <span wire:loading wire:target="submit">
+                        Mengirim...
+                    </span>
                 </button>
             </form>
         </div>
     </main>
     @endif
+
+    <flux:modal class="w-1/2 relative" name="modal" wire:model="showModal" wire:close="closeModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Terima kasih atas testimoni Anda!</flux:heading>
+            </div>
+            <div class="flex flex-col justify-center items-center space-x-4" id="prize">
+                @if($prizeMessage)
+                <p class="text-gray-700">
+                    {{ $prizeMessage }}
+                    @if($prizeCode)
+                    <br>
+                    Kode: {{ $prizeMessage }}
+                    @endif
+                </p>
+                @if($prizeMessage != 'Maaf, hadiah sudah habis.' && $prizeMessage != 'Maaf, Anda belum beruntung.')
+                <p class="text-gray-700">
+                    Simpan kode ini untuk ditukar hadiah.
+                </p>
+                @endif
+                <button wire:click="closeModal" class="mt-4 px-3 py-1 border rounded-md text-black hover:bg-blue-50">
+                    Tutup
+                </button>
+                @else
+                <p class="text-gray-700">
+                    Mengundi hadiah...
+                </p>
+                <flux:icon.loading />
+                @endif
+            </div>
+        </div>
+    </flux:modal>
+
+    @section('scripts')
+    <script>
+        window.addEventListener('modal-opened', event => {
+        setTimeout(function() {
+            Livewire.dispatch('drawPrize');
+        }, 2000);
+    });
+    </script>
+    @endsection
 </div>

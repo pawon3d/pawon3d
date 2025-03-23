@@ -30,6 +30,8 @@
     <script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
 
     <x-livewire-alert::scripts />
+    @livewireScripts
+    @yield('scripts')
 </body>
 
 </html>

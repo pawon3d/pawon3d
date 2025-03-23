@@ -54,11 +54,11 @@ new class extends Component {
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($prizes as $prize)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $prize->code }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $prize->product->name ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {{ Carbon::parse($prize->redeemed_at)->format('d M Y') ?? '-' }} ({{
-                                $prize->redeemed_at->diffForHumans() }})
+                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ $prize->code }}</td>
+                            <td class="px-6 py-4 text-center whitespace-nowrap">{{ $prize->product->name ?? '-' }}</td>
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                {{ Carbon\Carbon::parse($prize->get_at)->format('d M Y') ?? '-' }} ({{
+                                Carbon\Carbon::parse($prize->get_at)->diffForHumans() }})
                             </td>
 
                         </tr>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Review;
 
+use App\Models\Prize;
 use App\Models\Review;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\View;
@@ -20,8 +21,12 @@ class ReviewForm extends Component
     public $comments = [];
     public $transaction;
     public $showError = false;
+    public $showModal = false;
     public $isLoading = false;
     public $errorMessage = '';
+    public $prizeMessage;
+    public $prizeCode;
+
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -31,6 +36,7 @@ class ReviewForm extends Component
 
     protected $listeners = [
         'redirectToHome',
+        'drawPrize',
     ];
 
     public function mount($transaction_id)
@@ -68,22 +74,43 @@ class ReviewForm extends Component
                 ]);
             }
 
-            $this->alert('success', 'Review berhasil dikirim!', [
-                'position' =>  'center',
-                'timer' =>  3000,
-                'toast' =>  false,
-                'text' =>  '',
-                'showCancelButton' =>  false,
-                'showConfirmButton' =>  true,
-                'confirmButtonText' =>  'OK',
-                'onConfirmed' =>  'redirectToHome',
-                'onDismissed' =>  'redirectToHome',
-            ]);
+            $this->showModal();
         } catch (\Exception $e) {
             $this->alert('error', 'Terjadi kesalahan. Coba lagi nanti.');
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    public function showModal()
+    {
+        $this->reset('prizeMessage', 'prizeCode');
+        $this->showModal = true;
+        $this->dispatch('modal-opened');
+    }
+
+    public function drawPrize()
+    {
+        $undian = rand(1, 100);
+        $prizes = Prize::where('is_get', false)->with('product')->get();
+
+        if ($prizes->isEmpty()) {
+            $this->prizeMessage = 'Maaf, hadiah sudah habis.';
+        } elseif ($undian <= 20 && $prizes->isNotEmpty()) {
+            $selectedPrize = $prizes->random();
+            $selectedPrize->update(['is_get' => true]);
+            $this->prizeMessage = 'Selamat, Anda mendapatkan ' . $selectedPrize->product->name;
+            $this->prizeCode = $selectedPrize->code;
+        } elseif ($undian > 20) {
+            $this->prizeMessage = 'Maaf, Anda belum beruntung.';
+        }
+    }
+
+    public function closeModal()
+    {
+        $this->reset('prizeMessage', 'prizeCode', 'name', 'ratings', 'comments');
+        $this->showModal = false;
+        $this->redirectToHome();
     }
 
     public function redirectToHome()
