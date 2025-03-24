@@ -43,7 +43,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
     Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
-    Route::get('/transaksi/{id}/print', [PdfController::class, 'print'])->name('transaksi.cetak');
+    Route::get('/transaksi/{id}/print', function () {
+        return view('pdf.pdf', [
+            'transaction' => \App\Models\Transaction::find(request()->id)
+        ]);
+    })->name('transaksi.cetak');
     Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
     Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
     Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');

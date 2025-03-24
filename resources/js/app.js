@@ -3,9 +3,14 @@ function cetakStruk(url) {
 
     showprint.addEventListener("load", function () {
         showprint.print();
-        setTimeout(() => {
-            showprint.close();
-        }, 4000);
+        //if mobile device, close window after print
+        if (navigator.userAgent.match(/(iPod|iPhone|iPad|Android)/)) {
+            //
+        } else {
+            setTimeout(() => {
+                showprint.close();
+            }, 4000);
+        }
     });
 
     return false;

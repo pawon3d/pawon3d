@@ -5,7 +5,8 @@
 
     <!-- Filter Section -->
     <div class="flex items-center space-x-4 mb-4">
-        <input type="text" wire:model.live="search" placeholder="Cari nama..." class="px-4 py-2 border rounded-lg w-full max-w-sm">
+        <input type="text" wire:model.live="search" placeholder="Cari nama..."
+            class="px-4 py-2 border rounded-lg w-full max-w-sm">
 
         <flux:select wire:model.live="typeFilter" class="px-4 py-2 border rounded-lg">
             <flux:select.option value="all">Semua Tipe</flux:select.option>
@@ -28,7 +29,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Pembayaran</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Pembayaran
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Detail</th>
@@ -41,26 +43,34 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->user->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_amount) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <flux:select wire:change="updatePaymentStatus('{{ $transaction->id }}', $event.target.value)" class="border rounded px-2 py-1">
-                                <option value="belum lunas" {{ $transaction->payment_status === 'belum lunas' ? 'selected' : '' }}>Belum Lunas</option>
-                                <option value="lunas" {{ $transaction->payment_status === 'lunas' ? 'selected' : '' }}>Lunas</option>
+                            <flux:select
+                                wire:change="updatePaymentStatus('{{ $transaction->id }}', $event.target.value)"
+                                class="border rounded px-2 py-1">
+                                <option value="belum lunas" {{ $transaction->payment_status === 'belum lunas' ?
+                                    'selected' : '' }}>Belum Lunas</option>
+                                <option value="lunas" {{ $transaction->payment_status === 'lunas' ? 'selected' : ''
+                                    }}>Lunas</option>
                             </flux:select>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->status }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->type }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <flux:button wire:click="showDetail('{{ $transaction->id }}')" class="text-blue-500 hover:text-blue-700">
+                            <flux:button wire:click="showDetail('{{ $transaction->id }}')"
+                                class="text-blue-500 hover:text-blue-700">
                                 Lihat Detail
                             </flux:button>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
-                            <button wire:click="printReceipt('{{ $transaction->id }}')" class="px-3 py-1 border rounded-md text-green-600 hover:bg-green-50">
+                            <button wire:click="printReceipt('{{ $transaction->id }}')"
+                                class="px-3 py-1 border rounded-md text-green-600 hover:bg-green-50">
                                 Cetak
                             </button>
-                            <a href="{{ route('transaksi.edit', $transaction->id) }}" class="px-3 py-1 border rounded-md hover:bg-gray-100">
+                            <a href="{{ route('transaksi.edit', $transaction->id) }}"
+                                class="px-3 py-1 border rounded-md hover:bg-gray-100">
                                 Edit
                             </a>
-                            <button wire:click="deleteTransaction('{{ $transaction->id }}')" class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
+                            <button wire:click="deleteTransaction('{{ $transaction->id }}')"
+                                class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
                                 Hapus
                             </button>
                         </td>
@@ -116,7 +126,8 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
                             @if($selectedTransaction->type === 'pesanan')
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Produksi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Produksi
+                            </th>
                             @endif
                         </tr>
                     </thead>
@@ -125,7 +136,8 @@
                         <tr>
                             <td class="px-6 py-4">{{ $detail->product->name }}</td>
                             <td class="px-6 py-4">
-                                <img src="{{ $detail->product->product_image ? asset('storage/'.$detail->product->product_image) : '/no-image.jpg' }}" class="w-10 h-10 object-cover rounded">
+                                <img src="{{ $detail->product->product_image ? asset('storage/'.$detail->product->product_image) : '/no-image.jpg' }}"
+                                    class="w-10 h-10 object-cover rounded">
                             </td>
                             <td class="px-6 py-4">{{ $detail->quantity }}</td>
                             <td class="px-6 py-4">Rp {{ number_format($detail->price) }}</td>
@@ -177,7 +189,6 @@
                     font-size: 10px;
                 }
             }
-
         </style>
         <div id="printArea" class="p-4">
 
@@ -218,7 +229,9 @@
             </div>
         </div>
         <div class="flex justify-end gap-2 mt-6">
-            <flux:button type="button" onclick="return cetakStruk('{{ route('transaksi.cetak', $printTransaction->id) }}');" class="px-4 py-2 border rounded-md btn-primary">
+            <flux:button type="button"
+                onclick="return cetakStruk('{{ route('transaksi.cetak', $printTransaction->id) }}')"
+                class="px-4 py-2 border rounded-md btn-primary">
                 Cetak
             </flux:button>
             <flux:button type="button" wire:click="$set('showPrintModal', false)" class="btn-secondary">
