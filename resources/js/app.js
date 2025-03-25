@@ -7,9 +7,9 @@ function cetakStruk(url) {
         if (navigator.userAgent.match(/(iPod|iPhone|iPad|Android)/)) {
             //
         } else {
-            setTimeout(() => {
+            showprint.addEventListener("afterprint", function () {
                 showprint.close();
-            }, 4000);
+            });
         }
     });
 

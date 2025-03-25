@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk Transaksi</title>
+    <script type="text/javascript" src="{{ asset('scripts/qr-code-styling.js') }}"></script>
     <style>
         body {
             font-family: 'DejaVu Sans', 'Courier New', monospace;
@@ -102,11 +103,40 @@
             </tbody>
         </table>
 
+        <div style="margin-top: 5px; text-align: center;">
+            <p>Scan QR Code untuk ulasan</p>
+            <div id="canvas"></div>
+        </div>
+
         <div style="text-align: center; margin-top: 8px;">
             <p>Terima kasih telah berbelanja</p>
         </div>
     </div>
 
+
+    <script type="text/javascript">
+        const qrCode = new QRCodeStyling({
+            width: 100,
+            height: 100,
+            type: "svg",
+            data: "{{ route('ulasan', $transaction->id) }}",
+            image: "",
+            dotsOptions: {
+                color: "#000",
+                type: "rounded"
+            },
+            backgroundOptions: {
+                color: "#fff",
+            },
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 20
+            }
+        });
+    
+        qrCode.append(document.getElementById("canvas"));
+        // qrCode.download({ name: "qr", extension: "svg" });
+    </script>
 </body>
 
 </html>
