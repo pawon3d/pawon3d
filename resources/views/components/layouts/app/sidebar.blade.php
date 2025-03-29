@@ -51,6 +51,9 @@
                 :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
                 wire:navigate>{{
                 __('Hadiah') }}</flux:navlist.item>
+            <flux:navlist.item icon="building-storefront" :href="route('pengaturan')"
+                :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Toko') }}
+            </flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />

@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
     Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
     Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
+    Route::get('/pengaturan', App\Livewire\StoreSetting\Index::class)->name('pengaturan');
 });
 
 require __DIR__ . '/auth.php';

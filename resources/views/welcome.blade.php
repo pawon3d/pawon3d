@@ -4,12 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pawon3D</title>
+    <title>{{ ($storeSetting->store_name) ?? 'Pawon3D' }}</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|poppins:400,500,600,700"
         rel="stylesheet" />
     <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
+    <!-- favicon -->
+    @if(!empty($storeSetting->logo))
+    <link rel="icon" href="{{ asset('storage/' . $storeSetting->logo) }}" type="image/x-icon" />
+    @endif
+
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet"
@@ -26,7 +32,7 @@
     <header class="sticky top-0 bg-white backdrop-blur-sm z-50 shadow-sm">
         <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="/" class="text-3xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                <span class="text-blue-400">Pawon</span>3D
+                <span class="text-blue-400">{{ ($storeSetting->store_name) ?? 'Pawon3D' }}</span>
             </a>
             <div class="flex items-center gap-4">
                 @auth
@@ -48,14 +54,35 @@
     <section class="container mx-auto px-4 py-20 mt-5">
         <div class="flex flex-col lg:flex-row items-center gap-8">
             <div class="w-3/5 space-y-6">
+                @php
+                // Ambil hero title dari storeSetting, jika tidak ada gunakan default
+                $heroTitle = $storeSetting->hero_title ?? 'Ciptakan Momen Manis dengan Kue Istimewa';
+
+                // Pecah string menjadi array berdasarkan spasi
+                $words = explode(' ', $heroTitle);
+                $wordCount = count($words);
+
+                // Jika jumlah kata lebih dari 2, pisahkan menjadi dua bagian
+                if ($wordCount > 2) {
+                $before = implode(' ', array_slice($words, 0, -2)); // Semua kata kecuali 2 kata terakhir
+                $lastTwo = implode(' ', array_slice($words, -2)); // 2 kata terakhir
+                } else {
+                // Jika hanya ada 2 kata atau kurang, tampilkan seluruhnya di dalam span
+                $before = '';
+                $lastTwo = $heroTitle;
+                }
+                @endphp
+
                 <h1 class="text-5xl lg:text-6xl font-poppins font-bold leading-tight animate-slideInLeft">
-                    Ciptakan Momen Manis dengan
-                    <span class="text-blue-600">Kue Istimewa</span>
+                    {{ $before }}
+                    <span class="text-blue-600">{{ $lastTwo }}</span>
                 </h1>
+
                 <p class="text-lg text-gray-600 leading-relaxed">
-                    Temukan berbagai pilihan kue dan camilan, mulai dari snack untuk tahlilan hingga kue ulang tahun,
+                    {{ $storeSetting->hero_subtitle ?? 'Temukan berbagai pilihan kue dan camilan, mulai dari snack untuk
+                    tahlilan hingga kue ulang tahun,
                     yang dibuat dengan resep rahasia dan bahan berkualitas. Pesan dalam jumlah besar untuk setiap acara
-                    spesial Anda.
+                    spesial Anda.'}}
                 </p>
                 <div class="flex gap-4">
                     <a href="#menu"
@@ -67,8 +94,13 @@
             <div class="w-1/2 mt-12 lg:mt-0">
                 <div
                     class="overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500 rounded-full">
+                    @if (!empty($storeSetting->hero_image))
+                    <img src="{{ asset('storage/' . $storeSetting->hero_image) }}" alt="Hero Image"
+                        class="w-full h-full object-cover rounded-full">
+                    @else
                     <img src="/assets/images/homepage/hero.jpeg" alt="Kue dan camilan Pawon3D"
                         class="w-full h-auto rounded-full object-cover">
+                    @endif
                 </div>
             </div>
         </div>
@@ -290,7 +322,7 @@
                         class="w-full md:w-1/2 h-[350px]" style="border: 0" allowfullscreen="" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"></iframe>
                     <div class="w-full md:w-1/2 flex flex-col items-center justify-center">
-                        <a href="https://wa.me/6281234567890" target="_blank"
+                        <a href="https://wa.me/{{ $storeSetting->contact ?? '628123456789' }}" target="_blank"
                             class="px-8 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all flex items-center gap-2">
                             <i class="bi bi-whatsapp"></i>
                             Hubungi Kami
@@ -309,7 +341,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white">
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 py-4">
-            <p>&copy; {{ date('Y') }} Pawon3D. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $storeSetting->store_name ?? 'Pawon3D' }}. All rights reserved.</p>
         </div>
     </footer>
 
