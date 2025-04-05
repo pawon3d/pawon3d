@@ -24,6 +24,8 @@ class Index extends Component
     public $showDetailModal = false;
     public $selectedTransaction = null;
     public $delete_id;
+    public $startDate = null;
+    public $endDate = null;
 
     public $printTransaction = null;
     public $showPrintModal = false;
@@ -51,6 +53,12 @@ class Index extends Component
             })
             ->when($this->paymentStatusFilter !== 'all', function ($query) {
                 $query->where('payment_status', $this->paymentStatusFilter);
+            })
+            ->when($this->startDate, function ($query) {
+                $query->whereDate('created_at', '>=', $this->startDate);
+            })
+            ->when($this->endDate, function ($query) {
+                $query->whereDate('created_at', '<=', $this->endDate);
             })
             ->latest()
             ->paginate(10);
@@ -104,6 +112,22 @@ class Index extends Component
             ->find($transactionId);
         $this->showPrintModal = true;
     }
+
+    public function printReport()
+    {
+        // Susun URL dengan parameter filter
+        $url = route('transaksi.laporan', [
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+            'search' => $this->search,
+            'typeFilter' => $this->typeFilter,
+            'paymentStatusFilter' => $this->paymentStatusFilter,
+        ]);
+
+        // Dispatch event untuk membuka URL PDF di tab baru
+        $this->dispatch('open-pdf', ['url' => $url]);
+    }
+
 
     public function print($id)
     {
