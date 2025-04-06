@@ -4,6 +4,7 @@ use App\Http\Controllers\PdfController;
 use App\Livewire\User\Index;
 use App\Livewire\Dashboard;
 use App\Livewire\Review\ReviewForm;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -12,6 +13,11 @@ Route::get('/', function () {
     $reviews = \App\Models\Review::with('product')->where('visible', true)->get();
     return view('welcome', compact('categories', 'reviews'));
 })->name('home');
+
+Route::get('/storagelink', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created successfully';
+});
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
