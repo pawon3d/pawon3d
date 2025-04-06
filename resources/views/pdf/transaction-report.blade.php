@@ -44,7 +44,7 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama User</th>
+                <th>Penanggung Jawab</th>
                 <th>Total</th>
                 <th>Status Pembayaran</th>
                 <th>Tipe</th>
