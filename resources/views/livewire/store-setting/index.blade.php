@@ -10,7 +10,8 @@
             <div class="flex flex-col md:flex-row gap-4 justify-between">
                 <flux:input label="Gambar Halaman Depan" type="file" wire:model="heroImage" accept="image/*" />
                 @if ($previewHeroImage)
-                <img src="{{ $previewHeroImage }}" alt="{{ $storeName }}" class="w-32 h-32 object-cover rounded-lg" />
+                <img src="{{ asset('storage/'.$previewHeroImage) }}" alt="{{ $storeName }}"
+                    class="w-32 h-32 object-cover rounded-lg" />
                 @endif
             </div>
             <flux:input label="Judul Besar" placeholder="Judul Besar" type="text" wire:model="heroTitle" />
@@ -20,7 +21,8 @@
             <div class="flex flex-col md:flex-row gap-4 justify-between">
                 <flux:input label="Logo" type="file" wire:model="logo" accept="image/*" />
                 @if ($previewLogo)
-                <img src="{{ $previewLogo }}" alt="{{ $storeName }}" class="w-32 h-32 object-cover rounded-lg" />
+                <img src="{{ asset('storage/'.$previewLogo) }}" alt="{{ $storeName }}"
+                    class="w-32 h-32 object-cover rounded-lg" />
                 @endif
             </div>
 
