@@ -49,47 +49,52 @@ class Index extends Component
     public function save()
     {
         $storeSetting = \App\Models\StoreSetting::first();
+
         if ($storeSetting) {
             $storeSetting->update([
-                'store_name' => $this->storeName,
-                'contact' => $this->contact,
-                'address' => $this->address,
-                'hero_image' => $this->heroImage->temporaryUrl(),
-                'hero_title' => $this->heroTitle,
-                'hero_subtitle' => $this->heroSubtitle,
-                'logo' => $this->logo->temporaryUrl(),
+                'store_name'     => $this->storeName,
+                'contact'        => $this->contact,
+                'address'        => $this->address,
+                'hero_title'     => $this->heroTitle,
+                'hero_subtitle'  => $this->heroSubtitle,
             ]);
         } else {
-            \App\Models\StoreSetting::create([
-                'store_name' => $this->storeName,
-                'contact' => $this->contact,
-                'address' => $this->address,
-                'hero_image' => $this->heroImage->temporaryUrl(),
-                'hero_title' => $this->heroTitle,
-                'hero_subtitle' => $this->heroSubtitle,
-                'logo' => $this->logo->temporaryUrl(),
+            $storeSetting = \App\Models\StoreSetting::create([
+                'store_name'     => $this->storeName,
+                'contact'        => $this->contact,
+                'address'        => $this->address,
+                'hero_title'     => $this->heroTitle,
+                'hero_subtitle'  => $this->heroSubtitle,
+                'hero_image'     => null,
+                'logo'           => null,
             ]);
         }
+
         if ($this->heroImage) {
-            if ($storeSetting && $storeSetting->hero_image) {
+            if ($storeSetting->hero_image) {
                 Storage::disk('public')->delete($storeSetting->hero_image);
             }
             $storeSetting->hero_image = $this->heroImage->store('hero_images', 'public');
             $storeSetting->save();
+            $this->previewHeroImage = Storage::url($storeSetting->hero_image);
+        } else {
+            $this->previewHeroImage = $storeSetting->hero_image;
         }
+
         if ($this->logo) {
-            if ($storeSetting && $storeSetting->logo) {
+            if ($storeSetting->logo) {
                 Storage::disk('public')->delete($storeSetting->logo);
             }
             $storeSetting->logo = $this->logo->store('logos', 'public');
             $storeSetting->save();
+            $this->previewLogo = Storage::url($storeSetting->logo);
+        } else {
+            $this->previewLogo = $storeSetting->logo;
         }
 
         $this->alert('success', 'Pengaturan Toko berhasil disimpan');
-        $this->reset([
-            'heroImage',
-            'logo',
-        ]);
+
+        $this->reset(['heroImage', 'logo']);
     }
 
     public function render()

@@ -8,7 +8,7 @@
             <flux:input label="Nama Toko" placeholder="Nama Toko" type="text" wire:model="storeName" />
 
             <div class="flex flex-col md:flex-row gap-4 justify-between">
-                <flux:input label="Gambar Halaman Depan" type="file" wire:model="heroImage" />
+                <flux:input label="Gambar Halaman Depan" type="file" wire:model="heroImage" accept="image/*" />
                 @if ($previewHeroImage)
                 <img src="{{ $previewHeroImage }}" alt="{{ $storeName }}" class="w-32 h-32 object-cover rounded-lg" />
                 @endif
@@ -18,7 +18,7 @@
             <flux:input label="Kontak" placeholder="Nomor Telepon" type="text" wire:model="contact" />
             <flux:textarea label="Alamat" placeholder="Alamat" wire:model="address" />
             <div class="flex flex-col md:flex-row gap-4 justify-between">
-                <flux:input label="Logo" type="file" wire:model="logo" />
+                <flux:input label="Logo" type="file" wire:model="logo" accept="image/*" />
                 @if ($previewLogo)
                 <img src="{{ $previewLogo }}" alt="{{ $storeName }}" class="w-32 h-32 object-cover rounded-lg" />
                 @endif

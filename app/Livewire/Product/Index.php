@@ -17,7 +17,7 @@ class Index extends Component
 {
     use WithPagination, WithFileUploads, LivewireAlert;
 
-    public $name, $category_id, $price, $stock, $product_image, $is_ready = false, $delete_id;
+    public $name, $category_id, $price, $stock = 0, $product_image, $is_ready = false, $delete_id;
     public $product_compositions = [];
     public $search = '';
     public $showAddModal = false;

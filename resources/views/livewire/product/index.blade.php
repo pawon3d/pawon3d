@@ -99,8 +99,8 @@
                 <!-- Upload Gambar -->
                 <div class="form-group">
                     <flux:input.group>
-                        <flux:input label="Gambar Produk" type="file" wire:model="product_image"
-                            class="input-text mt-1" />
+                        <flux:input label="Gambar Produk" type="file" wire:model="product_image" class="input-text mt-1"
+                            accept="image/*" />
                         <flux:icon.loading wire:loading wire:target="product_image" />
                     </flux:input.group>
                 </div>
@@ -230,8 +230,8 @@
                 <!-- Upload Gambar -->
                 <div class="form-group">
                     <flux:input.group>
-                        <flux:input label="Gambar Produk" type="file" wire:model="product_image"
-                            class="input-text mt-1" />
+                        <flux:input label="Gambar Produk" type="file" wire:model="product_image" class="input-text mt-1"
+                            accept="image/*" />
                         <flux:icon.loading wire:loading wire:target="product_image" />
                     </flux:input.group>
                 </div>
