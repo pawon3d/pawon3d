@@ -27,6 +27,11 @@ class Pos extends Component
     public $dp = 0;
     public $type = 'siap beli';
 
+
+    public $printTransaction = null;
+    public $showPrintModal = false;
+
+
     protected $listeners = ['refreshProducts' => '$refresh'];
 
     public function mount()
@@ -150,6 +155,9 @@ class Pos extends Component
 
         $this->clearCart();
         $this->alert('success', 'Transaksi berhasil disimpan!');
+        $this->printTransaction = Transaction::with(['user', 'details.product.productions'])
+            ->find($transaction->id);
+        $this->showPrintModal = true;
     }
 
     public function switchTab($tab)

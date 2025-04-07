@@ -2,7 +2,8 @@
     <!-- Header dan Tombol Tambah -->
     <div class="flex items-center justify-between mb-7">
         <h1 class="text-3xl font-bold">Produk</h1>
-        <button wire:click="$set('showAddModal', true)" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none transition ease-in-out duration-150">
+        <button wire:click="$set('showAddModal', true)"
+            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none transition ease-in-out duration-150">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -12,7 +13,8 @@
 
     <!-- Pencarian -->
     <div class="mb-4">
-        <input type="text" wire:model.debounce.300ms="search" placeholder="Cari produk..." class="w-full max-w-sm px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+        <input type="text" wire:model.debounce.300ms="search" placeholder="Cari produk..."
+            class="w-full max-w-sm px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
     </div>
 
     <!-- Tabel Produk -->
@@ -32,16 +34,20 @@
                 <tr>
                     <td class="px-6 py-4 text-sm text-gray-900">{{ $product->name }}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">{{ $product->category->name }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">Rp. {{ number_format($product->price, 0, ',', '.') }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">Rp. {{ number_format($product->price, 0, ',', '.') }}
+                    </td>
                     <td class="px-6 py-4 text-sm text-gray-900">{{ $product->stock }}</td>
                     <td class="px-6 py-4 text-right space-x-2">
-                        <button wire:click="showDetail('{{ $product->id }}')" class="px-3 py-1 border rounded-md hover:bg-gray-100">
+                        <button wire:click="showDetail('{{ $product->id }}')"
+                            class="px-3 py-1 border rounded-md hover:bg-gray-100">
                             Detail
                         </button>
-                        <button wire:click="edit('{{ $product->id }}')" class="px-3 py-1 border rounded-md hover:bg-gray-100">
+                        <button wire:click="edit('{{ $product->id }}')"
+                            class="px-3 py-1 border rounded-md hover:bg-gray-100">
                             Edit
                         </button>
-                        <button wire:click="confirmDelete('{{ $product->id }}')" class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
+                        <button wire:click="confirmDelete('{{ $product->id }}')"
+                            class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
                             Hapus
                         </button>
                     </td>
@@ -61,7 +67,8 @@
             <div class="space-y-4 mt-4">
                 <!-- Preview Gambar -->
                 @if($previewImage)
-                <img src="{{ $previewImage }}" alt="Preview Produk" class="w-24 h-24 object-contain mx-auto rounded-md border border-gray-200" />
+                <img src="{{ $previewImage }}" alt="Preview Produk"
+                    class="w-24 h-24 object-cover mx-auto rounded-md border border-gray-200" />
                 @endif
 
                 <!-- Input Form -->
@@ -92,7 +99,8 @@
                 <!-- Upload Gambar -->
                 <div class="form-group">
                     <flux:input.group>
-                        <flux:input label="Gambar Produk" type="file" wire:model="product_image" class="input-text mt-1" />
+                        <flux:input label="Gambar Produk" type="file" wire:model="product_image"
+                            class="input-text mt-1" />
                         <flux:icon.loading wire:loading wire:target="product_image" />
                     </flux:input.group>
                 </div>
@@ -106,10 +114,14 @@
                 <!-- Tabs Komposisi -->
                 <div class="border-t pt-4">
                     <div class="flex justify-center gap-6 mb-4">
-                        <button type="button" class="tab-button mr-4 {{ $activeTab === 'material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}" wire:click="$set('activeTab', 'material')">
+                        <button type="button"
+                            class="tab-button mr-4 {{ $activeTab === 'material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}"
+                            wire:click="$set('activeTab', 'material')">
                             Bahan Baku
                         </button>
-                        <button type="button" class="tab-button {{ $activeTab === 'processed_material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}" wire:click="$set('activeTab', 'processed_material')">
+                        <button type="button"
+                            class="tab-button {{ $activeTab === 'processed_material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}"
+                            wire:click="$set('activeTab', 'processed_material')">
                             Olahan
                         </button>
                     </div>
@@ -119,7 +131,8 @@
                     <div class="flex gap-2 mb-2 items-center">
                         <!-- Pilih Bahan / Olahan -->
                         @if($activeTab === 'material')
-                        <flux:select wire:model="product_compositions.{{ $index }}.material_id" wire:change="setMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
+                        <flux:select wire:model="product_compositions.{{ $index }}.material_id"
+                            wire:change="setMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
                             <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
                             @foreach($materials as $material)
                             <option value="{{ $material->id }}">
@@ -128,7 +141,9 @@
                             @endforeach
                         </flux:select>
                         @else
-                        <flux:select wire:model="product_compositions.{{ $index }}.processed_material_id" wire:change="setProcessedMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
+                        <flux:select wire:model="product_compositions.{{ $index }}.processed_material_id"
+                            wire:change="setProcessedMaterial({{ $index }}, $event.target.value)"
+                            class="input-text flex-1">
                             <flux:select.option value="">Pilih Olahan</flux:select.option>
                             @foreach($processedMaterials as $pm)
                             <option value="{{ $pm->id }}">
@@ -140,7 +155,9 @@
 
                         <!-- Input Jumlah -->
                         <div class="relative flex-1">
-                            <flux:input type="number" wire:model="product_compositions.{{ $index }}.{{ $activeTab === 'material' ? 'material_quantity' : 'processed_material_quantity' }}" class="input-text w-full" />
+                            <flux:input type="number"
+                                wire:model="product_compositions.{{ $index }}.{{ $activeTab === 'material' ? 'material_quantity' : 'processed_material_quantity' }}"
+                                class="input-text w-full" />
                             @if($activeTab === 'material' && isset($composition['material_unit']))
                             <span class="flex items-center absolute top-0 right-0 px-2 py-2 text-gray-500 text-sm">
                                 {{ $composition['material_unit'] }}
@@ -151,7 +168,8 @@
                         <!-- Tombol Hapus -->
                         <button type="button" wire:click="removeComposition({{ $index }})" class="text-red-500">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3" />
                             </svg>
                         </button>
                     </div>
@@ -180,7 +198,8 @@
             <div class="space-y-4 mt-4">
                 <!-- Preview Gambar -->
                 @if($previewImage)
-                <img src="{{ $previewImage }}" alt="Preview Produk" class="w-24 h-24 object-contain mx-auto rounded-md border border-gray-200" />
+                <img src="{{ $previewImage }}" alt="Preview Produk"
+                    class="w-24 h-24 object-cover mx-auto rounded-md border border-gray-200" />
                 @endif
 
                 <!-- Input Form -->
@@ -211,7 +230,8 @@
                 <!-- Upload Gambar -->
                 <div class="form-group">
                     <flux:input.group>
-                        <flux:input label="Gambar Produk" type="file" wire:model="product_image" class="input-text mt-1" />
+                        <flux:input label="Gambar Produk" type="file" wire:model="product_image"
+                            class="input-text mt-1" />
                         <flux:icon.loading wire:loading wire:target="product_image" />
                     </flux:input.group>
                 </div>
@@ -225,10 +245,14 @@
                 <!-- Tabs Komposisi -->
                 <div class="border-t pt-4">
                     <div class="flex justify-center gap-6 mb-4">
-                        <button type="button" class="tab-button mr-4 {{ $activeTab === 'material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}" wire:click="$set('activeTab', 'material')">
+                        <button type="button"
+                            class="tab-button mr-4 {{ $activeTab === 'material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}"
+                            wire:click="$set('activeTab', 'material')">
                             Bahan Baku
                         </button>
-                        <button type="button" class="tab-button {{ $activeTab === 'processed_material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}" wire:click="$set('activeTab', 'processed_material')">
+                        <button type="button"
+                            class="tab-button {{ $activeTab === 'processed_material' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-600' }}"
+                            wire:click="$set('activeTab', 'processed_material')">
                             Olahan
                         </button>
                     </div>
@@ -238,7 +262,8 @@
                     <div class="flex gap-2 mb-2 items-center">
                         <!-- Pilih Bahan / Olahan -->
                         @if($activeTab === 'material')
-                        <flux:select wire:model="product_compositions.{{ $index }}.material_id" wire:change="setMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
+                        <flux:select wire:model="product_compositions.{{ $index }}.material_id"
+                            wire:change="setMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
                             <flux:select.option value="">Pilih Bahan Baku</flux:select.option>
                             @foreach($materials as $material)
                             <option value="{{ $material->id }}">
@@ -247,7 +272,9 @@
                             @endforeach
                         </flux:select>
                         @else
-                        <flux:select wire:model="product_compositions.{{ $index }}.processed_material_id" wire:change="setProcessedMaterial({{ $index }}, $event.target.value)" class="input-text flex-1">
+                        <flux:select wire:model="product_compositions.{{ $index }}.processed_material_id"
+                            wire:change="setProcessedMaterial({{ $index }}, $event.target.value)"
+                            class="input-text flex-1">
                             <flux:select.option value="">Pilih Olahan</flux:select.option>
                             @foreach($processedMaterials as $pm)
                             <option value="{{ $pm->id }}">
@@ -259,7 +286,9 @@
 
                         <!-- Input Jumlah -->
                         <div class="relative flex-1">
-                            <flux:input type="number" wire:model="product_compositions.{{ $index }}.{{ $activeTab === 'material' ? 'material_quantity' : 'processed_material_quantity' }}" class="input-text w-full" />
+                            <flux:input type="number"
+                                wire:model="product_compositions.{{ $index }}.{{ $activeTab === 'material' ? 'material_quantity' : 'processed_material_quantity' }}"
+                                class="input-text w-full" />
                             @if($activeTab === 'material' && isset($composition['material_unit']))
                             <span class="flex items-center absolute top-0 right-0 px-2 py-2 text-gray-500 text-sm">
                                 {{ $composition['material_unit'] }}
@@ -270,7 +299,8 @@
                         <!-- Tombol Hapus -->
                         <button type="button" wire:click="removeComposition({{ $index }})" class="text-red-500">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3" />
                             </svg>
                         </button>
                     </div>
@@ -299,7 +329,8 @@
             <!-- Gambar Produk -->
             @if($detailData->product_image)
             <div class="text-center">
-                <img src="{{ asset('storage/' . $detailData->product_image) }}" alt="Gambar Produk" class="w-24 h-24 object-contain mx-auto rounded-md border border-gray-200" />
+                <img src="{{ asset('storage/' . $detailData->product_image) }}" alt="Gambar Produk"
+                    class="w-24 h-24 object-cover mx-auto rounded-md border border-gray-200" />
             </div>
             @endif
 
@@ -406,7 +437,8 @@
         @endif
 
         <div class="flex justify-end gap-2 mt-6">
-            <flux:button type="button" wire:click="$set('showDetailModal', false)" class="px-4 py-2 border rounded-md hover:bg-gray-100">
+            <flux:button type="button" wire:click="$set('showDetailModal', false)"
+                class="px-4 py-2 border rounded-md hover:bg-gray-100">
                 Tutup
             </flux:button>
         </div>

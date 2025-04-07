@@ -14,11 +14,6 @@ Route::get('/', function () {
     return view('welcome', compact('categories', 'reviews'));
 })->name('home');
 
-Route::get('/storagelink', function () {
-    Artisan::call('storage:link');
-    return 'Storage link created successfully';
-});
-
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
