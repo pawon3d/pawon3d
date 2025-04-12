@@ -30,7 +30,7 @@ class Index extends Component
         return view('livewire.prize.index', [
             'prizes' => \App\Models\Prize::when($this->search_code, function ($query) {
                 return $query->where('code', 'like', '%' . $this->search_code . '%');
-            })->with('product')->paginate(5),
+            })->with('product')->latest()->paginate(5),
         ]);
     }
 

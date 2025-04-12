@@ -57,8 +57,8 @@ new class extends Component {
                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ $prize->code }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">{{ $prize->product->name ?? '-' }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                {{ Carbon\Carbon::parse($prize->get_at)->format('d M Y') ?? '-' }} ({{
-                                Carbon\Carbon::parse($prize->get_at)->diffForHumans() }})
+                                {{ Carbon\Carbon::parse($prize->redeemed_at)->format('d M Y') ?? '-' }} ({{
+                                Carbon\Carbon::parse($prize->redeemed_at)->diffForHumans() }})
                             </td>
 
                         </tr>

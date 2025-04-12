@@ -36,7 +36,17 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($prizes as $prize)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $prize->code }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $prize->code }}
+                                <span class="text-xs text-green-500">
+                                    @if ($prize->is_redeem)
+                                    (ditukar)
+                                    @elseif ($prize->is_get)
+                                    (didapat)
+                                    @endif
+
+                                </span>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $prize->product->name ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
                                 <button wire:click="openEditModal({{ $prize }})"

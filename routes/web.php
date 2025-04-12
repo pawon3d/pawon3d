@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('transaksi.cetak');
     Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
     Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
+    Route::get('/penukaran', App\Livewire\Prize\Exchange::class)->name('penukaran');
     Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
     Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
     Route::get('/pengaturan', App\Livewire\StoreSetting\Index::class)->name('pengaturan');
