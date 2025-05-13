@@ -11,7 +11,21 @@ use Livewire\Volt\Volt;
 Route::get('/', function () {
     $categories = \App\Models\Category::with('products')->get();
     $reviews = \App\Models\Review::with('product')->where('visible', true)->get();
-    return view('welcome', compact('categories', 'reviews'));
+    $products = \App\Models\Product::with('category', 'reviews')
+        ->withCount('reviews')
+        ->where('reviews_count', '>', 0)
+        ->get()
+        ->sortByDesc(function ($product) {
+            return $product->reviews->avg('rating');
+        })
+        ->take(4);
+    $productReviews = \App\Models\Product::with('reviews')
+        ->withCount('reviews')
+        ->where('reviews_count', '>', 0)
+        ->get()
+        ->sortByDesc(fn($p) => $p->reviews->avg('rating'))->take(4);
+
+    return view('landing.index', compact('categories', 'reviews', 'products', 'productReviews'));
 })->name('home');
 
 Route::get('dashboard', Dashboard::class)
