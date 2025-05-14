@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Livewire\Category;
+namespace App\Livewire\IngredientCategory;
 
-use App\Models\Category;
+use App\Models\IngredientCategory;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
@@ -21,20 +21,20 @@ class Tambah extends Component
 
     public function mount()
     {
-        View::share('title', 'Tambah Kategori');
+        View::share('title', 'Tambah Kategori Persediaan');
     }
 
     public function store()
     {
         $this->validate();
 
-        Category::create([
+        IngredientCategory::create([
             'name' => $this->name,
             'is_active' => $this->is_active,
         ]);
 
         $this->resetForm();
-        return redirect()->intended(route('kategori'));
+        return redirect()->intended(route('kategori-persediaan'));
     }
 
     public function resetForm()
@@ -42,9 +42,8 @@ class Tambah extends Component
         $this->name = '';
         $this->is_active = false;
     }
-
     public function render()
     {
-        return view('livewire.category.tambah');
+        return view('livewire.ingredient-category.tambah');
     }
 }

@@ -55,6 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
     Route::get('/kategori/cetak', [PdfController::class, 'generateCategoryPDF'])
         ->name('kategori.pdf');
+    Route::get('/kategori-persediaan', App\Livewire\IngredientCategory\Index::class)->name('kategori-persediaan');
+    Route::get('/kategori-persediaan/tambah', App\Livewire\IngredientCategory\Tambah::class)->name('kategori-persediaan.tambah');
+    Route::get('/kategori-persediaan/{id}/rincian', App\Livewire\IngredientCategory\Rincian::class)->name('kategori-persediaan.edit');
+    Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
+        ->name('kategori-persediaan.pdf');
     Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
     Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');

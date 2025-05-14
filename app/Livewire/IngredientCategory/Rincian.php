@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Livewire\Category;
+namespace App\Livewire\IngredientCategory;
 
-use App\Models\Category;
+use Livewire\Component;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Spatie\Activitylog\Models\Activity;
-use Livewire\Component;
-
 
 class Rincian extends Component
 {
+
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
     public $category_id;
@@ -32,15 +31,15 @@ class Rincian extends Component
     public function mount($id)
     {
         $this->category_id = $id;
-        $this->products = \App\Models\Product::where('category_id', $this->category_id)->count();
-        $this->name = \App\Models\Category::find($this->category_id)->name;
-        $this->is_active = \App\Models\Category::find($this->category_id)->is_active;
-        View::share('title', 'Rincian Kategori');
+        // $this->products = \App\Models\Product::where('category_id', $this->category_id)->count();
+        $this->name = \App\Models\IngredientCategory::find($this->category_id)->name;
+        $this->is_active = \App\Models\IngredientCategory::find($this->category_id)->is_active;
+        View::share('title', 'Rincian Kategori Persediaan');
     }
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('categories')->where('subject_id', $this->category_id)
+        $this->activityLogs = Activity::inLog('ingredient_categories')->where('subject_id', $this->category_id)
             ->latest()
             ->limit(50)
             ->get();
@@ -53,17 +52,17 @@ class Rincian extends Component
             'name' => [
                 'required',
                 'min:3',
-                Rule::unique('categories')->ignore($this->category_id),
+                Rule::unique('ingredient_categories')->ignore($this->category_id),
             ],
         ]);
 
-        $category = \App\Models\Category::find($this->category_id);
+        $category = \App\Models\IngredientCategory::find($this->category_id);
         $category->update([
             'name' => $this->name,
             'is_active' => $this->is_active,
         ]);
 
-        return redirect()->intended(route('kategori'));
+        return redirect()->intended(route('kategori-persediaan'));
     }
     public function confirmDelete()
     {
@@ -84,20 +83,19 @@ class Rincian extends Component
     public function delete()
     {
 
-        $category = Category::find($this->category_id);
+        $category = \App\Models\IngredientCategory::find($this->category_id);
 
         if ($category) {
             $category->delete();
             $this->alert('success', 'Kategori berhasil dihapus!');
             $this->reset('category_id');
-            return redirect()->intended(route('kategori'));
+            return redirect()->intended(route('kategori-persediaan'));
         } else {
             $this->alert('error', 'Kategori tidak ditemukan!');
         }
     }
-
     public function render()
     {
-        return view('livewire.category.rincian');
+        return view('livewire.ingredient-category.rincian');
     }
 }
