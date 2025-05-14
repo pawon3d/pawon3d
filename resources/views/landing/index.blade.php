@@ -172,8 +172,7 @@
                 @php
                 $colCount = $products->count();
                 @endphp
-                <div
-                    class="grid grid-cols-{{ $colCount > 1 ? 2 : 1 }} md:grid-cols-{{ $colCount > 4 ? 4 : $colCount }} gap-4 overflow-x-auto">
+                <div class="grid md:grid-cols-{{ $colCount > 4 ? 4 : $colCount }} gap-4 overflow-x-auto">
                     @forelse ($products as $product)
                     <div class="bg-transparent p-8">
                         <div class="flex justify-center mb-4">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -83,5 +84,18 @@ class PdfController extends Controller
         // Generate PDF dengan Dompdf
         $pdf = Pdf::loadView('pdf.transaction-report', $data);
         return $pdf->stream('laporan-transaksi.pdf');
+    }
+
+    public function generateCategoryPDF(Request $request)
+    {
+        $categories = Category::when($request->search, function ($query) use ($request) {
+            return $query->where('name', 'like', '%' . $request->search . '%');
+        })->with('products')
+            ->withCount('products')
+            ->orderBy('products_count', 'desc')
+            ->get();
+
+        $pdf = PDF::loadView('pdf.category', compact('categories'));
+        return $pdf->download('daftar-kategori.pdf');
     }
 }
