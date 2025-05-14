@@ -39,16 +39,21 @@
         <div class="p-4 flex">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    Semua Kategori ({{ $categories->count() }})
+                    @if($filterStatus)
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @else
+                    Semua Kategori
+                    @endif
+                    {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
+                    --}}
+                    ({{ $categories->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
-
                 <flux:menu>
-                    <flux:menu.radio.group wire:model="sortByCategory">
-                        <flux:menu.radio checked>Semua Kategori</flux:menu.radio>
-                        @foreach ($categories as $category)
-                        <flux:menu.radio value="{{ $category->id }}">{{ $category->name }}</flux:menu.radio>
-                        @endforeach
+                    <flux:menu.radio.group wire:model.live="filterStatus">
+                        <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
+                        <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
+                        <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
                     </flux:menu.radio.group>
                 </flux:menu>
             </flux:dropdown>

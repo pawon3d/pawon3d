@@ -16,6 +16,7 @@ class Index extends Component
     public $search = '';
     public $showHistoryModal = false;
     public $activityLogs = [];
+    public $filterStatus = '';
 
     public function riwayatPembaruan()
     {
@@ -37,7 +38,11 @@ class Index extends Component
     {
         $categories = Category::when($this->search, function ($query) {
             return $query->where('name', 'like', '%' . $this->search . '%');
-        })->with('products')
+        })
+            ->when($this->filterStatus, function ($query) {
+                return $query->where('is_active', $this->filterStatus === 'aktif');
+            })
+            ->with('products')
             ->withCount('products')
             ->orderBy('products_count', 'desc')
             ->paginate(10);
