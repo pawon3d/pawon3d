@@ -12,6 +12,8 @@ use App\Models\ProcessedMaterial;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Spatie\Activitylog\Models\Activity;
+
 
 class Index extends Component
 {
@@ -28,6 +30,12 @@ class Index extends Component
     public $activeTab = 'material';
     public $previewImage = null;
 
+    public $showHistoryModal = false;
+    public $activityLogs = [];
+    public $filterStatus = '';
+    public $viewMode = 'grid';
+
+    protected $queryString = ['viewMode'];
     protected $listeners = [
         'delete'
     ];
@@ -52,6 +60,23 @@ class Index extends Component
         ],
     ];
 
+    public function riwayatPembaruan()
+    {
+        $this->activityLogs = Activity::inLog('products')
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        $this->showHistoryModal = true;
+    }
+
+    public function cetakInformasi()
+    {
+        return redirect()->route('produk.pdf', [
+            'search' => $this->search,
+        ]);
+    }
+
     public function mount()
     {
         View::share('title', 'Produk');
@@ -63,12 +88,19 @@ class Index extends Component
             'processed_material_quantity' => 0,
             'material_unit' => ''
         ]];
+
+        $this->viewMode = session('viewMode', 'grid');
+    }
+
+    public function updatedViewMode($value)
+    {
+        session()->put('viewMode', $value);
     }
 
     public function render()
     {
         return view('livewire.product.index', [
-            'products' => Product::with(['category', 'product_compositions'])
+            'products' => Product::with(['category', 'product_compositions', 'reviews'])
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->paginate(10),
             'categories' => Category::all(),

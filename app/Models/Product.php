@@ -6,9 +6,13 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Models\ProductComposition;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Product extends Model
 {
+    use LogsActivity;
+
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -17,6 +21,27 @@ class Product extends Model
     protected $guarded = [
         'id',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('products')
+            ->logOnly(['name', 'category_id', 'price', 'stock', 'is_ready', 'product_image'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(function (string $eventName) {
+                $namaProduk = $this->name;
+
+                $terjemahan = [
+                    'created' => 'ditambahkan',
+                    'updated' => 'diperbarui',
+                    'deleted' => 'dihapus',
+                    'restored' => 'dipulihkan',
+                ];
+
+                return "Produk {$namaProduk} {$terjemahan[$eventName]}";
+            })
+            ->dontSubmitEmptyLogs();
+    }
 
     public function category()
     {

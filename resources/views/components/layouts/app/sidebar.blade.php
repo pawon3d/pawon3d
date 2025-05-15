@@ -25,6 +25,9 @@
                 <flux:navlist.item icon="archive-box" :href="route('bahan-olahan')"
                     :current="request()->routeIs('bahan-olahan')" wire:navigate>{{ __('Bahan Baku Olahan') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="list-bullet" :href="route('kategori-persediaan')"
+                    :current="request()->routeIs('kategori-persediaan') || request()->routeIs('kategori-persediaan.tambah') || request()->routeIs('kategori-persediaan.edit')"
+                    wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
             </flux:navlist.group>
 
 
@@ -119,7 +122,8 @@
 
                 </flux:dropdown>
                 <flux:dropdown position="top" align="start">
-                    <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+                    <flux:profile :initials="auth()->user()->initials()" name="{{ auth()->user()->name }}"
+                        icon-trailing="chevron-down" />
 
                     <flux:menu>
                         <flux:menu.radio.group>

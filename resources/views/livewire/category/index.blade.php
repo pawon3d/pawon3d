@@ -78,8 +78,6 @@
     </div>
 
     <div class="bg-white rounded-xl border">
-
-
         <!-- Table -->
         <div class="overflow-x-auto">
             <table class="min-w-full">
