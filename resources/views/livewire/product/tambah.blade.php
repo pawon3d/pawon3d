@@ -2,10 +2,10 @@
     <div class="mb-4 flex items-center">
         <a href="{{ route('produk') }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" />
+            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
         </a>
-        <h1 class="text-2xl">Tambah Produk</h1>
+        <h1 class="text-2xl">Tambah Produk {{ $method }}</h1>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="exclamation-triangle" />
@@ -101,7 +101,231 @@
 
     </div>
 
-    <div class="flex justify-end mt-8">
+    <div class="w-full mt-8">
+        <flux:label>Kategori Produk</flux:label>
+        <p class="text-sm text-gray-500 mb-4">Ketik nama kategori yang ingin dikaitkan dan sesuai dengan ciri-ciri
+            produk
+            seperti
+            rasa, bentuk, cara masak, dan lain sebagainya.</p>
+        <select class="js-example-basic-multiple" wire:model.live="category_ids" multiple="multiple">
+            @foreach ($categories as $category)
+            <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="w-full mt-8 flex items-center flex-col gap-4">
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <flux:label>Resep Produk</flux:label>
+            <flux:switch wire:model.live="is_recipe" class="data-checked:bg-green-500" />
+        </div>
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <p class="text-sm text-gray-500">
+                Aktifkan opsi
+                <span class="font-semibold">Resep Produk</span>
+                jika produk diolah menggunakan bahan persediaan. Jika
+                <span class="font-semibold">Tidak Ada Resep</span>
+                maka pilih produk yang akan dijual dari persediaan tanpa perlu diolah atau beli jadi dari orang lain
+                seperti
+                “Air Mineral” dan “Risol”.
+            </p>
+            @if ($is_recipe)
+            <flux:button icon="plus" type="button" variant="primary" wire:click="addComposition">Tambah Bahan
+            </flux:button>
+            @endif
+        </div>
+        @if($is_recipe)
+
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th class="text-left px-6 py-3">Bahan Baku</th>
+                        <th class="text-left px-6 py-3">Jumlah</th>
+                        <th class="text-left px-6 py-3">Satuan</th>
+                        <th class="text-left px-6 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($product_compositions as $index => $composition)
+                    <tr>
+                        <td class="px-6 py-3">
+                            <select
+                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
+                                wire:model="product_compositions.{{ $index }}.material_id"
+                                wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                <option value="" class="text-gray-700">- Pilih Bahan Baku -</option>
+                                @foreach ($materials as $material)
+                                <option value="{{ $material->id }}" class="text-gray-700">{{
+                                    $material->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <input type="number" placeholder="0" min="0"
+                                wire:model.defer="product_compositions.{{ $index }}.material_quantity"
+                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none" />
+                        </td>
+                        <td class="px-6 py-3">
+                            {{-- <flux:select placeholder="- Pilih Satuan -"
+                                wire:model.defer="product_compositions.{{ $index }}.unit">
+                                @foreach ($units as $unit)
+                                <flux:select.option value="{{ $unit->id }}" class="text-gray-700">{{ $unit->name }}
+                                </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            <flux:error name="product_compositions.{{ $index }}.unit" /> --}}
+                            @if (isset($composition['material_unit']))
+                            <span class="flex items-center px-2 py-2 text-gray-500 text-sm">
+                                {{ $composition['material_unit'] }}
+                            </span>
+                            @endif
+                        </td>
+                        <td class="flex items-center justify-start gap-4 px-6 py-3">
+                            <flux:button icon="trash" type="button" variant="danger"
+                                wire:click.prevent="removeComposition({{ $index }})" />
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+
+            </table>
+        </div>
+
+        {{-- Biaya lainnya --}}
+
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <flux:label>Biaya Lainnya</flux:label>
+            <flux:switch wire:model.live="is_other" class="data-checked:bg-green-500" />
+        </div>
+        <div class="w-full flex items-center justify-between gap-4 flex-row">
+            <p class="text-sm text-gray-500">
+                Aktifkan opsi
+                <span class="font-semibold">Biaya Lainnya</span>
+                jika produk diolah menggunakan biaya diluar bahan persediaan seperti biaya tenaga manusia, listrik, gas,
+                dan air.
+            </p>
+            @if ($is_other)
+            <flux:button icon="plus" type="button" variant="primary" wire:click="addOther">Tambah Biaya Lainnya
+            </flux:button>
+            @endif
+        </div>
+
+        @if($is_other)
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th class="text-left px-6 py-3">Biaya Lain</th>
+                        <th class="text-left px-6 py-3">Total Harga</th>
+                        <th class="text-left px-6 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($other_costs as $index => $other)
+                    <tr>
+                        <td class="px-6 py-3">
+                            <input type="text" placeholder="Ketik Biaya Lainnya..."
+                                class="w-full border-0 focus:border-0 focus:outline-none focus:ring-0 rounded-none"
+                                wire:model.defer="other_costs.{{ $index }}.name" />
+                        </td>
+                        <td class="px-6 py-3">
+                            <input type="number" placeholder="0" min="0"
+                                wire:model.number.live="other_costs.{{ $index }}.price"
+                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none" />
+                        </td>
+                        <td class="flex items-center justify-start gap-4 px-6 py-3">
+                            <flux:button icon="trash" type="button" variant="danger"
+                                wire:click.prevent="removeOther({{ $index }})" />
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+
+            </table>
+        </div>
+        @endif
+
+        {{-- Satu Resep untuk Banyak Buah --}}
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <flux:label>Satu Resep untuk Banyak Buah</flux:label>
+            <flux:switch wire:model.live="is_many" class="data-checked:bg-green-500" />
+        </div>
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <p class="text-sm text-gray-500">
+                Aktifkan opsi
+                <span class="font-semibold">Satu Resep untuk Banyak Buah</span>
+                jika sebuah resep dapat menghasilkan banyak buah atau pcs.
+            </p>
+        </div>
+        @if($is_many)
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <flux:input placeholder="0" min="0" wire:model="pcs" type="number" />
+        </div>
+        @endif
+
+        @else
+        @foreach($product_compositions as $index => $composition)
+        <div class="w-full flex items-center justify-start gap-4 flex-row">
+            <flux:select placeholder="- Pilih Produk dari Persediaan -"
+                wire:model="product_compositions.{{ $index }}.material_id"
+                wire:change="setMaterial({{ $index }}, $event.target.value)">
+                @foreach ($materials as $material)
+                <flux:select.option value="{{ $material->id }}" class="text-gray-700">{{ $material->name }}
+                </flux:select.option>
+                @endforeach
+            </flux:select>
+        </div>
+        @endforeach
+        @endif
+    </div>
+
+    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
+        <div class="md:w-1/2 mt-8 flex items-center flex-col gap-4">
+            <div class="w-full flex items-center justify-start gap-4 flex-row">
+                <flux:label>Tampilkan Produk</flux:label>
+                <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
+            </div>
+            <p class="text-sm text-gray-500 w-full">
+                Aktifkan opsi ini jika produk ingin ditampilkan dan dapat beli atau dipesan.
+            </p>
+        </div>
+
+        <div class="md:w-1/2 mt-8 flex items-center flex-col gap-4">
+            <div class="w-full flex items-center justify-start gap-4 flex-row">
+                <flux:label>Rekomendasi Produk</flux:label>
+                <flux:switch wire:model.live="is_recommended" class="data-checked:bg-green-500" />
+            </div>
+            <p class="text-sm text-gray-500 w-full">
+                Aktifkan opsi ini jika produk ingin direkomendasikan untuk dibeli atau dipesan.
+            </p>
+        </div>
+    </div>
+
+    <div class="w-full mt-8">
+        <flux:label>Modal dan Harga Jual Produk</flux:label>
+        <p class="text-sm text-gray-500 mb-4">Modal otomatis akan dihitung berdasarkan total bahan baku dan atau biaya
+            lainnya. Tetapkan harga jual produk dengan pertimbangan modal yang telah dikeluarkan. Harga jual tidak boleh
+            lebih rendah dari modal.</p>
+    </div>
+
+    <div class="w-full flex flex-col gap-8 mt-4">
+        <div class="flex flex-row justify-between items-center gap-4 mt-2">
+            <flux:label class="w-3/4">Modal Produk</flux:label>
+            <p class="w-1/4 text-right text-sm p-2">Rp.{{ $capital }}</p>
+        </div>
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-row justify-between items-center gap-4">
+                <flux:label class="w-3/4">Harga Jual Produk</flux:label>
+                <input placeholder="Rp.0" wire:model.live="price"
+                    class="w-1/4 text-right text-sm bg-gray-50 rounded-lg p-2 border border-gray-500" />
+            </div>
+            <flux:error name="price" class="flex justify-end" />
+        </div>
+    </div>
+
+    <div class="flex justify-end mt-16">
         <a href="{{ route('produk') }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
@@ -110,6 +334,26 @@
         <flux:button icon="bookmark-square" type="button" variant="primary" wire:click.prevent="store">Simpan
         </flux:button>
     </div>
+
+    @script
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
+            function loadJavascript(){
+                $('.js-example-basic-multiple').select2({
+                    placeholder: "Pilih kategori produk",
+                    width: '100%',
+                }).on("change", function() {
+                    $wire.set("category_ids", $(this).val());
+                });
+            }
+            loadJavascript();
+
+            Livewire.hook("morphed", () => {
+                loadJavascript();
+            })
+        });
+    </script>
+    @endscript
 
     <script>
         function handleDrop(event) {
@@ -124,33 +368,33 @@
             previewImage(input);
             input.dispatchEvent(new Event('change'));
         }
-    }
+     }
 
-    function previewImage(input) {
-        const previewContainer = document.getElementById('preview-container');
-        const defaultContent = previewContainer.querySelector('.flex-col');
-        
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
+        function previewImage(input) {
+            const previewContainer = document.getElementById('preview-container');
+            const defaultContent = previewContainer.querySelector('.flex-col');
             
-            reader.onload = function(e) {
-                // Update preview image
-                let previewImg = document.getElementById('image-preview');
-                if (!previewImg) {
-                    previewImg = document.createElement('img');
-                    previewImg.id = 'image-preview';
-                    previewImg.className = 'object-cover w-full h-full';
-                    previewContainer.appendChild(previewImg);
-                }
-                previewImg.src = e.target.result;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
                 
-                // Sembunyikan konten default
-                if (defaultContent) defaultContent.style.display = 'none';
-            };
-            
-            reader.readAsDataURL(input.files[0]);
+                reader.onload = function(e) {
+                    // Update preview image
+                    let previewImg = document.getElementById('image-preview');
+                    if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.id = 'image-preview';
+                        previewImg.className = 'object-cover w-full h-full';
+                        previewContainer.appendChild(previewImg);
+                    }
+                    previewImg.src = e.target.result;
+                    
+                    // Sembunyikan konten default
+                    if (defaultContent) defaultContent.style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
         }
-    }
     </script>
 
 </div>

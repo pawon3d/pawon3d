@@ -48,6 +48,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function product_categories()
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
     public function productions()
     {
         return $this->hasMany(Production::class);
@@ -65,6 +70,11 @@ class Product extends Model
     public function transactions()
     {
         return $this->hasMany(TransactionDetail::class);
+    }
+
+    public function other_costs()
+    {
+        return $this->hasMany(OtherCost::class);
     }
 
     public static function boot()

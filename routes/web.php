@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    $categories = \App\Models\Category::with('products')->get();
+    $categories = \App\Models\Category::all();
     $reviews = \App\Models\Review::with('product')->where('visible', true)->get();
     $products = \App\Models\Product::with('category', 'reviews')
         ->withCount('reviews')
@@ -27,6 +27,10 @@ Route::get('/', function () {
 
     return view('landing.index', compact('categories', 'reviews', 'products', 'productReviews'));
 })->name('home');
+
+Route::get('/tes', function () {
+    return view('tes');
+});
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
@@ -61,7 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
         ->name('kategori-persediaan.pdf');
     Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
-    Route::get('/produk/tambah', App\Livewire\Product\Tambah::class)->name('produk.tambah');
+    Route::get('/produk/tambah/{method}', App\Livewire\Product\Tambah::class)->name('produk.tambah');
     Route::get('/produk/{id}/rincian', App\Livewire\Product\Rincian::class)->name('produk.edit');
     Route::get('/produk/cetak', [PdfController::class, 'generateProductPDF'])
         ->name('produk.pdf');

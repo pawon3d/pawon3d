@@ -10,6 +10,9 @@
 @endif
 <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
 <link rel="stylesheet" href="{{ asset('flowbite/flatpickr.min.css') }}">
+<link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
 <script src="{{ asset('flowbite/flatpickr.js') }}"></script>
+<script src="{{ asset('scripts/jquery.min.js') }}"></script>
+<script src="{{ asset('scripts/select2.min.js') }}"></script>
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])

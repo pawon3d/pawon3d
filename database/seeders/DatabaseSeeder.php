@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Material;
@@ -38,6 +39,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Bahan Baku 3',
             'quantity' => 20,
             'unit' => 'butir',
+        ]);
+
+        Category::create([
+            'name' => 'Makanan',
+            'is_active' => true,
+        ]);
+        Category::create([
+            'name' => 'Minuman',
+            'is_active' => true,
         ]);
     }
 }

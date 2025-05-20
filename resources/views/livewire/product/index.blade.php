@@ -38,6 +38,46 @@
 
         </div>
     </div>
+
+
+    <div class="flex items-center justify-between mt-4 mb-4 flex-row w-full">
+        <div class="relative w-full">
+            <input type="radio" name="method" id="pesanan-reguler" value="pesanan-reguler" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="pesanan-reguler" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'pesanan-reguler' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="cake" class=" size-8" />
+                    <span class="text-center hidden md:block">Pesanan Kue Reguler</span>
+                </div>
+            </label>
+        </div>
+        <div class="relative w-full">
+            <input type="radio" name="method" id="pesanan-kotak" value="pesanan-kotak" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="pesanan-kotak" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'pesanan-kotak' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="cube" class="size-8" />
+                    <span class="text-center hidden md:block">Pesanan Kue Kotak</span>
+                </div>
+            </label>
+        </div>
+
+        <div class="relative w-full">
+            <input type="radio" name="method" id="siap-beli" value="siap-beli" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="siap-beli" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="at-symbol" class="size-8" />
+                    <span class="text-center hidden md:block">Kue Siap Beli</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+
     <div class="flex justify-between items-center mb-4">
         <!-- Search Input -->
         <div class="p-4 flex">
@@ -49,21 +89,13 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            <a href="{{ route('produk.tambah') }}"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                wire:navigate>
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Tambah Produk
-            </a>
-            {{-- <flux:button type="button" wire:click="$set('showAddModal', true)"
+            <a href="{{ route('produk.tambah', ['method' => $method]) }}"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Tambah Produk
-            </flux:button> --}}
+            </a>
         </div>
     </div>
     <div class="flex justify-between items-center mb-4">
@@ -131,7 +163,7 @@
     {{-- grid view --}}
     <div class="bg-white">
         <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
-            @foreach($products as $product)
+            @forelse($products as $product)
             <div class="p-4 text-center">
                 <a href="{{ route('produk.edit', $product->id) }}" class="hover:bg-gray-50 cursor-pointer">
                     <div class="flex justify-center mb-4">
@@ -163,7 +195,12 @@
                     </div>
                 </a>
             </div>
-            @endforeach
+            @empty
+            <div class="col-span-5 text-center">
+                <p class="text-gray-500 font-semibold">Belum ada produk.</p>
+                <p class="text-gray-500">Tekan tombol “Tambah Produk” untuk menambahkan produk.</p>
+            </div>
+            @endforelse
         </div>
         <div class="p-4">
             {{ $products->links() }}
@@ -191,8 +228,15 @@
                                 {{ $product->name }}
                             </a>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">{{
-                            $product->category->name }}
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            @forelse ($product->product_categories as $product_category)
+                            <span
+                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">
+                                {{ $product_category->category->name }}
+                            </span>
+                            @empty
+                            -
+                            @endforelse
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">Rp. {{ number_format($product->price, 0, ',', '.')
                             }}
@@ -201,7 +245,10 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        <td colspan="4" class="px-6 py-4 text-center">Belum ada produk.
+                            <br> Tekan tombol “Tambah Produk” untuk menambahkan
+                            Produk
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>

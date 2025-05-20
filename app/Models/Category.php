@@ -44,6 +44,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function productCategories()
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
     public static function boot()
     {
         parent::boot();

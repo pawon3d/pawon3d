@@ -13,15 +13,21 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('category_id')->nullable();
             $table->string('name', 50);
-            $table->decimal('price', 10, 0);
-            $table->decimal('stock', 10, 0);
+            $table->string('description', 50)->nullable();
+            $table->decimal('price', 10, 0)->default(0);
+            $table->decimal('stock', 10, 0)->default(0);
+            $table->string('method', 50)->nullable();
             $table->string('product_image', 255)->nullable();
-            $table->boolean('is_ready')->default(false);
-            $table->timestamps();
+            $table->boolean('is_recipe')->default(false);
+            $table->boolean('is_active')->default(false);
+            $table->boolean('is_recommended')->default(false);
+            $table->boolean('is_other')->default(false);
+            $table->boolean('is_many')->default(false);
+            $table->decimal('pcs', 10, 0)->default(0);
+            $table->decimal('capital', 10, 0)->default(0);
 
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

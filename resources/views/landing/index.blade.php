@@ -253,7 +253,7 @@
                 <div class="{{ $index === 0 ? 'block' : 'hidden' }}" id="panel-{{ $category->id }}" role="tabpanel"
                     aria-labelledby="tab-{{ $category->id }}">
                     @php
-                    $products = \App\Models\Product::where('category_id', $category->id)->paginate(3);
+                    $products = \App\Models\Product::latest()->paginate(3);
                     @endphp
                     <div id="products-container"
                         class="grid grid-cols-3 gap-6 p-4 rounded-lg bg-white shadow-sm transition-all">

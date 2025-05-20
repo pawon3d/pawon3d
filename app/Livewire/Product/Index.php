@@ -34,8 +34,9 @@ class Index extends Component
     public $activityLogs = [];
     public $filterStatus = '';
     public $viewMode = 'grid';
+    public $method = 'pesanan-reguler';
 
-    protected $queryString = ['viewMode'];
+    protected $queryString = ['viewMode', 'method'];
     protected $listeners = [
         'delete'
     ];
@@ -90,6 +91,7 @@ class Index extends Component
         ]];
 
         $this->viewMode = session('viewMode', 'grid');
+        $this->method = session('method', 'pesanan-reguler');
     }
 
     public function updatedViewMode($value)
@@ -97,90 +99,22 @@ class Index extends Component
         session()->put('viewMode', $value);
     }
 
+    public function updatedMethod($value)
+    {
+        session()->put('method', $value);
+    }
+
     public function render()
     {
         return view('livewire.product.index', [
-            'products' => Product::with(['category', 'product_compositions', 'reviews'])
+            'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
+                ->where('method', $this->method)
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->paginate(10),
             'categories' => Category::all(),
             'materials' => Material::all(),
             'processedMaterials' => ProcessedMaterial::all()
         ]);
-    }
-
-    public function addComposition()
-    {
-        $this->product_compositions[] = [
-            'material_id' => '',
-            'processed_material_id' => '',
-            'material_quantity' => 0,
-            'processed_material_quantity' => 0,
-            'material_unit' => ''
-        ];
-    }
-
-    public function removeComposition($index)
-    {
-        unset($this->product_compositions[$index]);
-        $this->product_compositions = array_values($this->product_compositions);
-    }
-
-    public function setMaterial($index, $materialId)
-    {
-        $this->product_compositions[$index]['material_id'] = $materialId;
-        $this->product_compositions[$index]['processed_material_id'] = null; // Reset yang lain
-
-        if ($materialId) {
-            $material = Material::find($materialId);
-            $this->product_compositions[$index]['material_unit'] = $material->unit;
-        }
-    }
-
-    public function setProcessedMaterial($index, $processedMaterialId)
-    {
-        $this->product_compositions[$index]['processed_material_id'] = $processedMaterialId;
-        $this->product_compositions[$index]['material_id'] = null; // Reset yang lain
-
-        if ($processedMaterialId) {
-            $pm = ProcessedMaterial::find($processedMaterialId);
-            $this->product_compositions[$index]['processed_material_quantity'] = $pm->quantity;
-        }
-    }
-
-    public function store()
-    {
-        $this->validate();
-
-        $product = Product::create([
-            'name' => $this->name,
-            'category_id' => $this->category_id,
-            'price' => $this->price,
-            'stock' => $this->stock,
-            'is_ready' => $this->is_ready,
-        ]);
-
-        if ($this->product_image) {
-            $product->product_image = $this->product_image->store('product_images', 'public');
-            $product->save();
-        }
-
-        foreach ($this->product_compositions as $composition) {
-            // Convert empty string to null
-            $cleanData = [
-                'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
-                'processed_material_id' => !empty($composition['processed_material_id']) ? $composition['processed_material_id'] : null,
-                'material_quantity' => $composition['material_quantity'],
-                'processed_material_quantity' => $composition['processed_material_quantity'],
-                'material_unit' => $composition['material_unit'] ?? null,
-            ];
-
-            $product->product_compositions()->create($cleanData);
-        }
-
-        $this->resetForm();
-        $this->showAddModal = false;
-        $this->alert('success', 'Produk berhasil ditambahkan!');
     }
 
     public function edit($id)
