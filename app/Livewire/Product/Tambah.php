@@ -14,7 +14,7 @@ class Tambah extends Component
 {
     use WithFileUploads;
 
-    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $is_many = false, $pcs = 1, $capital = 0;
+    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $is_many = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
     public $previewImage;
     public $product_compositions = [];
     public $other_costs = [];
@@ -31,6 +31,7 @@ class Tambah extends Component
 
     protected array $rules = [
         'price' => 'nullable|numeric|min:0',
+        'pcs_price' => 'nullable|numeric|min:0',
     ];
 
     protected $messages = [
@@ -87,6 +88,7 @@ class Tambah extends Component
     public function updatedOtherCosts()
     {
         $this->recalculateCapital();
+        $this->recalculatePcsCapital();
     }
 
     public function removeOther($index)
@@ -139,6 +141,8 @@ class Tambah extends Component
             'is_many' => $this->is_many,
             'pcs' => $this->pcs,
             'capital' => $this->capital,
+            'pcs_price' => $this->pcs_price,
+            'pcs_capital' => $this->pcs_capital,
         ]);
 
         if ($this->product_image) {
@@ -179,7 +183,8 @@ class Tambah extends Component
 
 
         $this->resetForm();
-        return redirect()->intended(route('produk'))->with('success', 'Produk berhasil ditambahkan.');
+
+        return redirect()->intended(route('produk'))->with('success', 'Produk berhasil ditambahkan!');
     }
 
     protected function recalculateCapital()
@@ -195,15 +200,45 @@ class Tambah extends Component
 
     public function updatedPrice($value)
     {
-        // reset dulu agar pesan lama hilang
         $this->resetErrorBag('price');
 
-        // validasi dasar numeric dan required
         $this->validateOnly('price');
 
-        // custom: price tidak boleh kurang dari modal
         if ($value < $this->capital) {
             $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
+        }
+    }
+    protected function recalculatePcsCapital()
+    {
+        if ($this->pcs < 1) {
+            $this->pcs = 1;
+        }
+
+        $this->pcs_capital = $this->capital / $this->pcs;
+    }
+
+    public function updatedPcs($value)
+    {
+        $this->resetErrorBag('pcs');
+
+        $this->validateOnly('pcs');
+
+        if ($value < 1) {
+            $this->addError('pcs', "Jumlah pcs tidak boleh kurang dari 1.");
+        }
+
+        $this->recalculateCapital();
+        $this->recalculatePcsCapital();
+    }
+
+    public function updatedPcsPrice($value)
+    {
+        $this->resetErrorBag('pcs_price');
+
+        $this->validateOnly('pcs_price');
+
+        if ($value < $this->pcs_capital) {
+            $this->addError('pcs_price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
         }
     }
 

@@ -26,6 +26,8 @@ return new class extends Migration
             $table->boolean('is_many')->default(false);
             $table->decimal('pcs', 10, 0)->default(0);
             $table->decimal('capital', 10, 0)->default(0);
+            $table->decimal('pcs_price', 10, 0)->default(0);
+            $table->decimal('pcs_capital', 10, 0)->default(0);
 
             $table->timestamps();
         });

@@ -187,6 +187,16 @@
         }
     </script>
     @livewireScripts
+    <script>
+        document.addEventListener('sweet.success', event => {
+            Swal.fire({
+                icon: 'success',
+                text: event.detail.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        });
+    </script>
     @yield('scripts')
 </body>
 

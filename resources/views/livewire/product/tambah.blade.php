@@ -5,7 +5,7 @@
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
         </a>
-        <h1 class="text-2xl">Tambah Produk {{ $method }}</h1>
+        <h1 class="text-2xl">Tambah Produk</h1>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="exclamation-triangle" />
@@ -261,7 +261,7 @@
         </div>
         @if($is_many)
         <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <flux:input placeholder="0" min="0" wire:model="pcs" type="number" />
+            <flux:input placeholder="0" min="0" wire:model.number.live="pcs" type="number" />
         </div>
         @endif
 
@@ -283,46 +283,66 @@
 
     <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
         <div class="md:w-1/2 mt-8 flex items-center flex-col gap-4">
-            <div class="w-full flex items-center justify-start gap-4 flex-row">
-                <flux:label>Tampilkan Produk</flux:label>
-                <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
+            <div class="w-full">
+                <flux:label>Modal dan Harga Jual Produk</flux:label>
+                <p class="text-sm text-gray-500">Modal otomatis akan dihitung berdasarkan total bahan baku dan atau
+                    biaya
+                    lainnya. Tetapkan harga jual produk dengan pertimbangan modal yang telah dikeluarkan. Harga jual
+                    tidak boleh
+                    lebih rendah dari modal.</p>
             </div>
-            <p class="text-sm text-gray-500 w-full">
-                Aktifkan opsi ini jika produk ingin ditampilkan dan dapat beli atau dipesan.
-            </p>
-        </div>
 
+            <div class="w-full flex flex-col gap-8 mt-4">
+                <div class="flex flex-row justify-between items-center gap-4">
+                    <flux:label class="w-3/4">Modal {{ $is_many ? 'Utuh' : '' }}</flux:label>
+                    <p class="w-1/4 text-right text-sm p-2">Rp.{{ $capital }}</p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-row justify-between items-center gap-4">
+                        <flux:label class="w-3/4">Harga Jual {{ $is_many ? 'Utuh' : '' }}</flux:label>
+                        <input placeholder="Rp.0" wire:model.live="price"
+                            class="w-1/4 text-right text-sm bg-gray-50 rounded-lg p-2 border border-gray-500" />
+                    </div>
+                    <flux:error name="price" class="flex justify-end" />
+                </div>
+                @if ($is_many)
+                <div class="flex flex-row justify-between items-center gap-4">
+                    <flux:label class="w-3/4">Modal Per Buah</flux:label>
+                    <p class="w-1/4 text-right text-sm p-2">Rp.{{ $pcs_capital }}</p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-row justify-between items-center gap-4">
+                        <flux:label class="w-3/4">Harga Jual Per Buah</flux:label>
+                        <input placeholder="Rp.0" wire:model.number.live="pcs_price"
+                            class="w-1/4 text-right text-sm bg-gray-50 rounded-lg p-2 border border-gray-500" />
+                    </div>
+                    <flux:error name="pcs_price" class="flex justify-end" />
+                </div>
+                @endif
+            </div>
+        </div>
         <div class="md:w-1/2 mt-8 flex items-center flex-col gap-4">
-            <div class="w-full flex items-center justify-start gap-4 flex-row">
-                <flux:label>Rekomendasi Produk</flux:label>
-                <flux:switch wire:model.live="is_recommended" class="data-checked:bg-green-500" />
+            <div class="w-full">
+                <div class="w-full flex items-center justify-start gap-4 flex-row">
+                    <flux:label>Tampilkan Produk</flux:label>
+                    <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
+                </div>
+                <p class="text-sm text-gray-500 w-full">
+                    Aktifkan opsi ini jika produk ingin ditampilkan dan dapat beli atau dipesan.
+                </p>
             </div>
-            <p class="text-sm text-gray-500 w-full">
-                Aktifkan opsi ini jika produk ingin direkomendasikan untuk dibeli atau dipesan.
-            </p>
-        </div>
-    </div>
-
-    <div class="w-full mt-8">
-        <flux:label>Modal dan Harga Jual Produk</flux:label>
-        <p class="text-sm text-gray-500 mb-4">Modal otomatis akan dihitung berdasarkan total bahan baku dan atau biaya
-            lainnya. Tetapkan harga jual produk dengan pertimbangan modal yang telah dikeluarkan. Harga jual tidak boleh
-            lebih rendah dari modal.</p>
-    </div>
-
-    <div class="w-full flex flex-col gap-8 mt-4">
-        <div class="flex flex-row justify-between items-center gap-4 mt-2">
-            <flux:label class="w-3/4">Modal Produk</flux:label>
-            <p class="w-1/4 text-right text-sm p-2">Rp.{{ $capital }}</p>
-        </div>
-        <div class="flex flex-col gap-4">
-            <div class="flex flex-row justify-between items-center gap-4">
-                <flux:label class="w-3/4">Harga Jual Produk</flux:label>
-                <input placeholder="Rp.0" wire:model.live="price"
-                    class="w-1/4 text-right text-sm bg-gray-50 rounded-lg p-2 border border-gray-500" />
+            <div class="w-full">
+                <div class="w-full flex items-center justify-start gap-4 flex-row">
+                    <flux:label>Rekomendasi Produk</flux:label>
+                    <flux:switch wire:model.live="is_recommended" class="data-checked:bg-green-500" />
+                </div>
+                <p class="text-sm text-gray-500 w-full">
+                    Aktifkan opsi ini jika produk ingin direkomendasikan untuk dibeli atau dipesan.
+                </p>
             </div>
-            <flux:error name="price" class="flex justify-end" />
         </div>
+
+
     </div>
 
     <div class="flex justify-end mt-16">
