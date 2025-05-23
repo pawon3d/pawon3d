@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\IngredientCategory;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -119,5 +120,15 @@ class PdfController extends Controller
 
         $pdf = PDF::loadView('pdf.product', compact('products'));
         return $pdf->download('daftar-produk.pdf');
+    }
+
+    public function generateSupplierPDF(Request $request)
+    {
+        $suppliers = Supplier::when($request->search, function ($query) use ($request) {
+            return $query->where('name', 'like', '%' . $request->search . '%');
+        })->get();
+
+        $pdf = PDF::loadView('pdf.supplier', compact('suppliers'));
+        return $pdf->download('daftar-toko-persediaan.pdf');
     }
 }
