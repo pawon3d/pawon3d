@@ -69,6 +69,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produk/{id}/rincian', App\Livewire\Product\Rincian::class)->name('produk.edit');
     Route::get('/produk/cetak', [PdfController::class, 'generateProductPDF'])
         ->name('produk.pdf');
+    Route::get('/supplier', App\Livewire\Supplier\Index::class)->name('supplier');
+    Route::get('/supplier/tambah', App\Livewire\Supplier\Tambah::class)->name('supplier.tambah');
+    Route::get('/supplier/{id}/rincian', App\Livewire\Supplier\Rincian::class)->name('supplier.edit');
+    Route::get('/supplier/cetak', [PdfController::class, 'generateSupplierPDF'])
+        ->name('supplier.pdf');
     Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');

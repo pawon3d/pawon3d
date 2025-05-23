@@ -41,11 +41,9 @@ class Index extends Component
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
-            })
-            ->with('products')
-            ->withCount('products')
-            ->orderBy('products_count', 'desc')
+            })->with('products', 'productCategories')
             ->paginate(10);
+
 
         return view('livewire.category.index', compact('categories'));
     }

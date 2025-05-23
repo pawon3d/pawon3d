@@ -1,11 +1,16 @@
 <div>
-    <div class="mb-4 flex items-center">
-        <a href="{{ route('produk') }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
-            Kembali
-        </a>
-        <h1 class="text-2xl">Rincian Produk</h1>
+    <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="{{ route('produk') }}"
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                <flux:icon.arrow-left variant="mini" class="mr-2" />
+                Kembali
+            </a>
+            <h1 class="text-2xl hidden md:block">Rincian Produk</h1>
+        </div>
+        <div class="flex gap-2 items-center">
+            <flux:button variant="filled" wire:click="riwayatPembaruan">Riwayat Pembaruan</flux:button>
+        </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="exclamation-triangle" />

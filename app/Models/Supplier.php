@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Category extends Model
+class Supplier extends Model
 {
     use LogsActivity;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'categories';
+    protected $table = 'suppliers';
     protected $guarded = [
         'id',
     ];
@@ -21,11 +21,11 @@ class Category extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('categories')
-            ->logOnly(['name', 'is_active'])
+            ->useLogName('suppliers')
+            ->logOnly(['name', 'description', 'contact_name', 'phone', 'image'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                $namaKategori = $this->name;
+                $namaToko = $this->name;
 
                 $terjemahan = [
                     'created' => 'ditambahkan',
@@ -34,20 +34,11 @@ class Category extends Model
                     'restored' => 'dipulihkan',
                 ];
 
-                return "Kategori {$namaKategori} {$terjemahan[$eventName]}";
+                return "Toko {$namaToko} {$terjemahan[$eventName]}";
             })
             ->dontSubmitEmptyLogs();
     }
 
-    public function productCategories()
-    {
-        return $this->hasMany(ProductCategory::class, 'category_id', 'id');
-    }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'product_categories', 'category_id', 'product_id');
-    }
 
     public static function boot()
     {

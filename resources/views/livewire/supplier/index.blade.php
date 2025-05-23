@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Kategori</h1>
+        <h1 class="text-3xl font-bold">Daftar Toko Persediaan</h1>
         <div class="flex gap-2 items-center">
             <button type="button" wire:click="cetakInformasi"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
@@ -14,6 +14,18 @@
             </button>
         </div>
     </div>
+
+    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+        <flux:icon icon="message-square-warning" class="size-16" />
+        <div class="ml-3">
+            <p class="mt-1 text-sm text-gray-500">
+                Toko Persediaan digunakan untuk menetapkan asal barang yang dibeli beserta harga yang dikeluarkan. Toko
+                persediaan dapat didatangi langsung untuk belanja atau dapat dilakukan lewat telepon atau whatsapp
+                kepada toko.
+            </p>
+        </div>
+    </div>
+
     <div class="flex justify-between items-center mb-7">
         <!-- Search Input -->
         <div class="p-4 flex">
@@ -25,13 +37,13 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            <a href="{{ route('kategori.tambah') }}"
+            <a href="{{ route('supplier.tambah') }}"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
                 wire:navigate>
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Tambah Kategori
+                Tambah Toko
             </a>
         </div>
     </div>
@@ -42,16 +54,14 @@
                     @if($filterStatus)
                     {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Kategori
+                    Semua Toko
                     @endif
-                    {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
-                    --}}
-                    ({{ $categories->total() }})
+                    ({{ $suppliers->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
                 <flux:menu>
                     <flux:menu.radio.group wire:model.live="filterStatus">
-                        <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
+                        <flux:menu.radio value="">Semua Toko</flux:menu.radio>
                         <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
                         <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
                     </flux:menu.radio.group>
@@ -83,27 +93,31 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
-                            Kategori</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status Kategori</th>
+                            Nama Toko Persediaan
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nama Kontak
+                        </th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jenis Produk</th>
+                            Nomor Telepon
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($categories as $category)
+                    @forelse($suppliers as $supplier)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('kategori.edit', $category->id) }}"
+                            <a href="{{ route('supplier.edit', $supplier->id) }}"
                                 class="hover:bg-gray-50 cursor-pointer">
-                                {{ $category->name }}
+                                {{ $supplier->name }}
                             </a>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ $supplier->contact_name }}
                         </td>
                         <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                            {{ $category->products->count() }}
+                            {{ $supplier->phone }}
                         </td>
                     </tr>
                     @empty
@@ -117,7 +131,7 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $categories->links() }}
+            {{ $suppliers->links() }}
         </div>
     </div>
 
@@ -125,7 +139,7 @@
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Riwayat Pembaruan Kategori</flux:heading>
+                <flux:heading size="lg">Riwayat Pembaruan Toko Persediaan</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach($activityLogs as $log)

@@ -310,6 +310,14 @@ class Rincian extends Component
 
         if ($product) {
             $product->delete();
+            // Hapus gambar produk jika ada
+            if ($product->product_image) {
+                $oldImagePath = public_path('storage/' . $product->product_image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
             return redirect()->intended(route('produk'))->with('success', 'Produk berhasil dihapus.');
         }
     }
