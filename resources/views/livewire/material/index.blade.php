@@ -1,53 +1,218 @@
 <div>
-    <div class="flex items-end justify-between mb-7">
-        <h1 class="text-3xl font-bold">Bahan Baku</h1>
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-bold">Daftar Barang Persediaan</h1>
         <div class="flex gap-2 items-center">
-            <button wire:click="openAddModal" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Tambah Bahan Baku
+            <button type="button" wire:click="cetakInformasi"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                Cetak Informasi
+            </button>
+
+            <!-- Tombol Riwayat Pembaruan -->
+            <button type="button" wire:click="riwayatPembaruan"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                Riwayat Pembaruan
             </button>
         </div>
     </div>
+    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+        <flux:icon icon="exclamation-triangle" />
+        <div class="ml-3">
+            <p class="mt-1 text-sm text-gray-500">
+                Lorem ipsum dolor sit amet consectetur. Augue lectus risus sed ultricies quis. Facilisi id tempus tortor
+                aliquet tempus. Sagittis nec odio sed nisl arcu sed. Vulputate aliquam nibh adipiscing lacinia nisi
+                vestibulum vitae. Auctor sagittis porttitor dolor hendrerit. Mi sollicitudin scelerisque purus
+                ullamcorper. Gravida nunc facilisis et consectetur tortor purus eget consectetur nulla.
+            </p>
 
-    <div class="bg-white rounded-xl border">
-        <!-- Search Input -->
-        <div class="p-4">
-            <input wire:model.live="search" placeholder="Cari..." class="w-full max-w-sm px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
+    </div>
 
+
+    <div class="flex justify-between items-center mb-4">
+        <!-- Search Input -->
+        <div class="p-4 flex">
+            <input wire:model.live="search" placeholder="Cari..."
+                class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <flux:button :loading="false" class="ml-2" variant="ghost">
+                <flux:icon.funnel variant="mini" />
+                <span>Filter</span>
+            </flux:button>
+        </div>
+        <div class="flex gap-2 items-center">
+            <a href="{{ route('bahan-baku.tambah') }}"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Persediaan
+            </a>
+        </div>
+    </div>
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex gap-2 items-center">
+            <flux:dropdown>
+                <flux:button variant="ghost">
+                    @if($filterStatus)
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @else
+                    Semua Kategori
+                    @endif
+                    ({{ $materials->total() }})
+                    <flux:icon.chevron-down variant="mini" />
+                </flux:button>
+                <flux:menu>
+                    <flux:menu.radio.group wire:model.live="filterStatus">
+                        <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
+                        <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
+                        <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
+                    </flux:menu.radio.group>
+                </flux:menu>
+            </flux:dropdown>
+            <flux:dropdown>
+                <flux:button variant="ghost">
+                    Urutkan Barang
+                    <flux:icon.chevron-down variant="mini" />
+
+                </flux:button>
+
+                <flux:menu>
+                    <flux:menu.radio.group wire:model="sortByCategory">
+                        <flux:menu.radio value="name">Nama</flux:menu.radio>
+                        <flux:menu.radio value="status">Status</flux:menu.radio>
+                        <flux:menu.radio value="material" checked>Jenis Produk</flux:menu.radio>
+                    </flux:menu.radio.group>
+                </flux:menu>
+            </flux:dropdown>
+        </div>
+        <div class="flex gap-2 mr-4 items-center">
+            <span class="text-sm mr-2">Tampilan Produk:</span>
+
+            <!-- Grid View -->
+            <div class="relative">
+                <input type="radio" name="viewMode" id="grid-view" value="grid" wire:model.live="viewMode"
+                    class="absolute opacity-0 w-0 h-0">
+                <label for="grid-view" class="cursor-pointer">
+                    <flux:icon icon="squares-2x2"
+                        class="{{ $viewMode === 'grid' ? 'text-gray-100 bg-gray-600' : 'text-gray-800 bg-white' }} rounded-xl border border-gray-600 hover:text-gray-100 hover:bg-gray-600 transition-colors size-8" />
+                </label>
+            </div>
+
+            <!-- List View -->
+            <div class="relative">
+                <input type="radio" name="viewMode" id="list-view" value="list" wire:model.live="viewMode"
+                    class="absolute opacity-0 w-0 h-0">
+                <label for="list-view" class="cursor-pointer">
+                    <flux:icon icon="list-bullet"
+                        class="{{ $viewMode === 'list' ? 'text-gray-100 bg-gray-600' : 'text-gray-800 bg-white' }} rounded-xl border border-gray-600 hover:text-gray-100 hover:bg-gray-600 transition-colors size-8" />
+                </label>
+            </div>
+        </div>
+    </div>
+
+    @if ($viewMode === 'grid')
+    {{-- grid view --}}
+    <div class="bg-white">
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+            @forelse($materials as $material)
+            <div class="p-4 text-center">
+                {{-- <a href="{{ route('bahan-baku.edit', $material->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                    --}}
+                    <div class="flex justify-center mb-4">
+                        @if($material->image)
+                        <img src="{{ asset('storage/' . $material->image) }}" alt="{{ $material->name }}"
+                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                        @else
+                        <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
+                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                        @endif
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $material->name }}</h3>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                            @php
+                            $persediaan = App\Models\MaterialDetail::where('material_id',
+                            $material->id)->where('is_main', 1)->first();
+                            @endphp
+                            {{ $persediaan ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias : 'Tidak
+                            Tersedia' }}
+                        </p>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                            {{ $material->status ?? 'Kosong' }}
+                        </p>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                            {{ $material->expiry_date ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y') :
+                            'Belum Ada Tanggal' }}
+                        </p>
+                    </div>
+                    <flux:button class="w-full" variant="primary" type="button"
+                        href="{{ route('bahan-baku.edit', $material->id) }}">
+                        Lihat
+                    </flux:button>
+                    {{--
+                </a> --}}
+            </div>
+            @empty
+            <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+                <p class="text-gray-700 font-semibold">Belum ada persediaan.</p>
+                <p class="text-gray-700">Tekan tombol “Tambah Persediaan” untuk menambahkan persediaan.</p>
+            </div>
+            @endforelse
+        </div>
+        <div class="p-4">
+            {{ $materials->links() }}
+        </div>
+    </div>
+    @elseif ($viewMode === 'list')
+    {{-- list view --}}
+    @if ($materials->isEmpty())
+    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+        <p class="text-gray-700 font-semibold">Belum ada barang persediaan.</p>
+        <p class="text-gray-700">Tekan tombol “Tambah Persediaan” untuk menambahkan persediaan.</p>
+    </div>
+    @else
+    <div class="bg-white rounded-xl border">
         <!-- Table -->
         <div class="overflow-x-auto">
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Bahan Baku</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Barang Persediaan</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Tampil</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jumlah Persediaan</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Tanggal Expired</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Persediaan</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($materials as $material)
+                    @foreach($materials as $material)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $material->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $material->quantity }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $material->unit }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
-                            <button wire:click="openEditModal({{ $material }})" class="px-3 py-1 border rounded-md hover:bg-gray-100">
-                                Edit
-                            </button>
-                            <button wire:click="confirmDelete({{ $material }})" class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
-                                Hapus
-                            </button>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ route('bahan-baku.edit', $material->id) }}"
+                                class="hover:bg-gray-50 cursor-pointer">
+                                {{ $material->name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            {{ $material->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @php
+                            $persediaan = App\Models\MaterialDetail::where('material_id',
+                            $material->id)->where('is_main', 1)->first();
+                            @endphp
+                            {{ $persediaan ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias : 'Tidak
+                            Tersedia' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ $material->expiry_date ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y') :
+                            'Belum Ada Tanggal' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ $material->status ?? 'Kosong' }}
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
-                    @endforelse
+
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -57,46 +222,29 @@
             {{ $materials->links() }}
         </div>
     </div>
+    @endif
+    @endif
 
-    <!-- Add Modal -->
-    <flux:modal name="tambah-bahan-baku" class="w-full max-w-lg" wire:model="showModal">
+
+    <!-- Modal Riwayat Pembaruan -->
+    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Tambah Bahan Baku</flux:heading>
+                <flux:heading size="lg">Riwayat Pembaruan Barang Persediaan</flux:heading>
             </div>
-            <form wire:submit.prevent='store' class="space-y-4">
-
-                <flux:input label="Nama Bahan Baku" placeholder="Nama Bahan Baku" type="text" wire:model="name" />
-                <flux:input label="Jumlah Bahan Baku" placeholder="Jumlah Bahan Baku" type="number" wire:model="quantity" />
-                <flux:input label="Satuan" placeholder="contoh: kg" type="text" wire:model="unit" />
-
-                <div class="flex">
-                    <flux:spacer />
-
-                    <flux:button type="submit" variant="primary">Simpan</flux:button>
+            <div class="max-h-96 overflow-y-auto">
+                @foreach($activityLogs as $log)
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
+                    </div>
                 </div>
-            </form>
+                @endforeach
+            </div>
         </div>
     </flux:modal>
 
-    <!-- Edit Modal -->
-    <flux:modal name="edit-bahan-baku" class="w-full max-w-lg" wire:model="showEditModal">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Edit Bahan Baku</flux:heading>
-            </div>
-            <form wire:submit.prevent='update' class="space-y-4">
 
-                <flux:input label="Nama Bahan Baku" placeholder="Nama Bahan Baku" type="text" wire:model="name" />
-                <flux:input label="Jumlah Bahan Baku" placeholder="Jumlah Bahan Baku" type="number" wire:model="quantity" />
-                <flux:input label="Satuan" placeholder="contoh: kg" type="text" wire:model="unit" />
-
-                <div class="flex">
-                    <flux:spacer />
-
-                    <flux:button type="submit" variant="primary">Simpan</flux:button>
-                </div>
-            </form>
-        </div>
-    </flux:modal>
 </div>

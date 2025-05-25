@@ -7,34 +7,49 @@ use Livewire\WithPagination;
 use App\Models\Material;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\WithFileUploads;
+use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use WithPagination, WithFileUploads, LivewireAlert;
 
-    public $name, $quantity, $unit, $material_id;
-    public $editId = null;
+    public $activityLogs = [];
+    public $filterStatus = '';
     public $search = '';
-    public $showModal = false;
-    public $showEditModal = false;
-    protected $listeners = [
-        'delete'
-    ];
+    public $showHistoryModal = false;
+    public $viewMode = 'grid';
 
-    protected $rules = [
-        'name' => 'required|min:3',
-        'quantity' => 'required|numeric',
-        'unit' => 'required',
-    ];
+    protected $queryString = ['viewMode', 'filterStatus', 'search'];
 
-    public function updated($propertyName)
+    public function riwayatPembaruan()
     {
-        $this->validateOnly($propertyName);
+        $this->activityLogs = Activity::inLog('materials')
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        $this->showHistoryModal = true;
     }
 
+    public function cetakInformasi()
+    {
+        return redirect()->route('produk.pdf', [
+            'search' => $this->search,
+        ]);
+    }
+
+    public function updatedViewMode($value)
+    {
+        session()->put('viewMode', $value);
+    }
     public function mount()
     {
+        View::share('mainTitle', 'Inventori');
         View::share('title', 'Bahan Baku');
+        if (session()->has('success')) {
+            $this->alert('success', session('success'));
+        }
     }
 
 
@@ -42,105 +57,12 @@ class Index extends Component
     {
         $materials = Material::when($this->search, function ($query) {
             return $query->where('name', 'like', '%' . $this->search . '%');
-        })
+        })->when($this->filterStatus, function ($query) {
+            return $query->where('is_active', $this->filterStatus === 'aktif');
+        })->with('material_details')
             ->orderBy('name')
             ->paginate(10);
 
         return view('livewire.material.index', compact('materials'));
-    }
-
-    public function openAddModal()
-    {
-        $this->resetForm();
-        $this->showModal = true;
-    }
-
-    public function openEditModal(Material $material)
-    {
-        $this->editId = $material->id;
-        $this->name = $material->name;
-        $this->quantity = $material->quantity;
-        $this->unit = $material->unit;
-        $this->showEditModal = true;
-    }
-
-    public function store()
-    {
-        $this->validate();
-
-        Material::create([
-            'name' => $this->name,
-            'quantity' => $this->quantity,
-            'unit' => $this->unit,
-        ]);
-
-        $this->showModal = false;
-        $this->alert('success', 'Bahan Baku berhasil ditambahkan!');
-        $this->resetForm();
-    }
-
-    public function update()
-    {
-        $this->validate([
-            'name' => 'required|min:3',
-            'quantity' => 'required|numeric',
-            'unit' => 'required',
-        ]);
-
-        $material = Material::find($this->editId);
-        $data = [
-            'name' => $this->name,
-            'quantity' => $this->quantity,
-            'unit' => $this->unit,
-        ];
-
-        $material->update($data);
-
-        $this->showEditModal = false;
-        $this->alert('success', 'Bahan Baku berhasil diupdate!');
-        $this->resetForm();
-    }
-
-    public function confirmDelete(Material $material)
-    {
-
-        // Simpan ID material ke dalam properti
-        $this->material_id = $material->id;
-
-        // Konfirmasi menggunakan Livewire Alert
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus bahan baku ini?', [
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'confirmButtonText' => 'Ya, hapus',
-            'cancelButtonText' => 'Batal',
-            'onConfirmed' => 'delete',
-            'onCancelled' => 'cancelled',
-            'toast' => false,
-            'position' => 'center',
-            'timer' => null,
-        ]);
-    }
-
-    // Method delete yang benar
-    public function delete()
-    {
-
-        $material = Material::find($this->material_id);
-
-        if ($material) {
-            $material->delete();
-            $this->alert('success', 'Bahan Baku berhasil dihapus!');
-        } else {
-            $this->alert('error', 'Bahan Baku tidak ditemukan!');
-        }
-
-        // Reset setelah dihapus
-        $this->reset('material_id');
-    }
-
-    private function resetForm()
-    {
-        $this->reset(['name', 'quantity', 'unit', 'editId']);
-        $this->resetErrorBag();
     }
 }

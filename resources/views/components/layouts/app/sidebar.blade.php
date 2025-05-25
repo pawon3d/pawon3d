@@ -5,6 +5,11 @@
     @include('partials.head')
 </head>
 
+@php
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
+@endphp
+
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
@@ -18,20 +23,21 @@
             <flux:navlist.item icon="user" :href="route('pengguna')" :current="request()->routeIs('pengguna')"
                 wire:navigate>{{ __('Pengguna') }}</flux:navlist.item>
 
-            <flux:navlist.group heading="Inventori" expandable
-                :expanded="request()->routeIs('bahan-baku') || request()->routeIs('bahan-olahan')">
-                <flux:navlist.item icon="inbox" :href="route('bahan-baku')" :current="request()->routeIs('bahan-baku')"
-                    wire:navigate>{{ __('Bahan Baku') }}</flux:navlist.item>
+            <flux:navlist.group heading="Inventori" expandable icon="archive-box"
+                :expanded="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan') || Str::startsWith(Route::currentRouteName(), 'bahan-')">
+                <flux:navlist.item icon="inbox" :href="route('bahan-baku')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>{{ __('Bahan
+                    Baku') }}</flux:navlist.item>
                 <flux:navlist.item icon="archive-box" :href="route('bahan-olahan')"
                     :current="request()->routeIs('bahan-olahan')" wire:navigate>{{ __('Bahan Baku Olahan') }}
                 </flux:navlist.item>
                 <flux:navlist.item icon="list-bullet" :href="route('kategori-persediaan')"
-                    :current="request()->routeIs('kategori-persediaan') || request()->routeIs('kategori-persediaan.tambah') || request()->routeIs('kategori-persediaan.edit')"
-                    wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
+                    :current="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan')" wire:navigate>{{
+                    __('Kategori') }}</flux:navlist.item>
             </flux:navlist.group>
 
 
-            <flux:navlist.group heading="Produk" expandable
+            <flux:navlist.group heading="Produk" expandable icon="cube"
                 :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
                 <flux:navlist.item icon="list-bullet" :href="route('kategori')"
                     :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
@@ -66,9 +72,17 @@
 
         <div class="flex items-center justify-between w-full">
             <flux:navbar class="hidden lg:flex w-full">
+                @if (!empty($mainTitle))
+                <div class="flex flex-row flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
+                    <div class="ml-1 grid flex-1 text-left text-lg">
+                        <span class="mb-0.5 truncate leading-none">{{ $mainTitle }}</span>
+                    </div>
+                </div>
+                @else
                 <flux:navbar.item href="{{ route('dashboard') }}">
                     <x-app-logo />
                 </flux:navbar.item>
+                @endif
             </flux:navbar>
             <flux:navbar class="w-full">
                 <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />

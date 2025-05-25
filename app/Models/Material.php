@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Models\ProcessedMaterialDetail;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Material extends Model
 {
+    use LogsActivity;
+
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -15,11 +19,36 @@ class Material extends Model
     protected $guarded = [
         'id',
     ];
-    protected $fillable = ['name', 'quantity', 'unit'];
 
-    public function processed_material_details()
+    public function getActivitylogOptions(): LogOptions
     {
-        return $this->hasMany(ProcessedMaterialDetail::class);
+        return LogOptions::defaults()
+            ->useLogName('materials')
+            ->logOnly(['name', 'is_active', 'status', 'minimum', 'description'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(function (string $eventName) {
+                $namaKategori = $this->name;
+
+                $terjemahan = [
+                    'created' => 'ditambahkan',
+                    'updated' => 'diperbarui',
+                    'deleted' => 'dihapus',
+                    'restored' => 'dipulihkan',
+                ];
+
+                return "{$namaKategori} {$terjemahan[$eventName]}";
+            })
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function material_details()
+    {
+        return $this->hasMany(MaterialDetail::class);
+    }
+
+    public function ingredientCategoryDetails()
+    {
+        return $this->hasMany(IngredientCategoryDetail::class);
     }
 
     public static function boot()

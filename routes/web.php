@@ -75,6 +75,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/supplier/cetak', [PdfController::class, 'generateSupplierPDF'])
         ->name('supplier.pdf');
     Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
+    Route::get('/bahan-baku/tambah', App\Livewire\Material\Tambah::class)->name('bahan-baku.tambah');
+    Route::get('/bahan-baku/{id}/rincian', App\Livewire\Material\Rincian::class)->name('bahan-baku.edit');
+    Route::get('/bahan-baku/cetak', [PdfController::class, 'generateMaterialPDF'])
+        ->name('bahan-baku.pdf');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');

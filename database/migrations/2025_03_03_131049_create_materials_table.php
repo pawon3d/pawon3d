@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('materials', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name', 50);
-            $table->decimal('quantity', 10, 0);
-            $table->string('unit', 50);
+            $table->string('description', 255)->nullable();
+            $table->string('image')->nullable();
+            $table->date('expiry_date')->nullable();
+            $table->string('status', 20)->default('kosong');
+            $table->boolean('is_active')->default(false);
+            $table->decimal('minimum', 15, 5)->default(0);
             $table->timestamps();
         });
     }
