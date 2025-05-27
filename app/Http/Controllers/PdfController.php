@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\IngredientCategory;
+use App\Models\Material;
+use App\Models\MaterialDetail;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Transaction;
@@ -130,5 +132,27 @@ class PdfController extends Controller
 
         $pdf = PDF::loadView('pdf.supplier', compact('suppliers'));
         return $pdf->download('daftar-toko-persediaan.pdf');
+    }
+
+    public function generateMaterialPDF(Request $request)
+    {
+        $materials = Material::when($request->search, function ($query) use ($request) {
+            return $query->where('name', 'like', '%' . $request->search . '%');
+        })->with('material_details')->get();
+
+        foreach ($materials as $material) {
+            $material->supply_quantity = MaterialDetail::where('material_id', $material->id)
+                ->where('is_main', true)->with('unit')
+                ->first()
+                ?->supply_quantity ?? "Tidak Tersedia";
+            $material->unit_alias = MaterialDetail::where('material_id', $material->id)
+                ->where('is_main', true)
+                ->with('unit')
+                ->first()
+                ?->unit?->alias ?? '';
+        }
+
+        $pdf = PDF::loadView('pdf.material', compact('materials'));
+        return $pdf->download('daftar-bahan-persediaan.pdf');
     }
 }

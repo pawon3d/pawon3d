@@ -34,7 +34,7 @@ class Index extends Component
 
     public function cetakInformasi()
     {
-        return redirect()->route('produk.pdf', [
+        return redirect()->route('bahan-baku.pdf', [
             'search' => $this->search,
         ]);
     }

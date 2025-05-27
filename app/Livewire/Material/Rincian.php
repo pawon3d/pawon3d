@@ -45,7 +45,7 @@ class Rincian extends Component
         $this->main_unit_name = $material->material_details->first()->unit->name ?? '';
         $this->name = $material->name;
         $this->description = $material->description;
-        $this->expiry_date = $material->expiry_date ? $material->expiry_date->format('d-m-Y') : '00-00-0000';
+        $this->expiry_date = $material->expiry_date ? $material->expiry_date->format('d/m/Y') : '00/00/0000';
         $this->status = $material->status;
         $this->minimum = $material->minimum;
         $this->is_active = $material->is_active;

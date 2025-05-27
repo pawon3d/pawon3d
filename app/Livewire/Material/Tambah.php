@@ -10,7 +10,7 @@ class Tambah extends Component
 {
     use \Livewire\WithFileUploads;
 
-    public $name, $description, $expiry_date = '00-00-0000', $status = 'kosong', $category_ids, $minimum = 0, $is_active = false;
+    public $name, $description, $expiry_date = '00/00/0000', $status = 'kosong', $category_ids, $minimum = 0, $is_active = false;
     public $main_unit_id, $main_unit_alias, $main_unit_name;
     public $previewImage;
     public $image;

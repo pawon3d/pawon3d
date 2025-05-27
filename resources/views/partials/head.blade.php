@@ -8,6 +8,7 @@
 @if(!empty($storeSetting->logo))
 <link rel="icon" href="{{ asset('storage/' . $storeSetting->logo) }}" type="image/x-icon" />
 @endif
+<link rel="stylesheet" type="text/css" href="{{ asset('css/pikaday.css') }}" />
 <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
 <link rel="stylesheet" href="{{ asset('flowbite/flatpickr.min.css') }}">
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
