@@ -16,14 +16,14 @@ use Illuminate\Support\Facades\Route;
 
         <flux:navlist variant="outline">
             <flux:navlist.group heading="Menu" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                <flux:navlist.item icon="align-end-horizontal" :href="route('dashboard')"
+                    :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.item icon="user" :href="route('pengguna')" :current="request()->routeIs('pengguna')"
+            <flux:navlist.item icon="users" :href="route('pengguna')" :current="request()->routeIs('pengguna')"
                 wire:navigate>{{ __('Pengguna') }}</flux:navlist.item>
 
-            <flux:navlist.group heading="Inventori" expandable icon="archive-box"
+            <flux:navlist.group heading="Inventori" expandable icon="warehouse"
                 :expanded="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan') || Str::startsWith(Route::currentRouteName(), 'bahan-')">
                 <flux:navlist.item icon="inbox" :href="route('bahan-baku')"
                     :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>{{ __('Bahan
@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
             </flux:navlist.group>
 
 
-            <flux:navlist.group heading="Produk" expandable icon="cube"
+            <flux:navlist.group heading="Produk" expandable icon="align-end-horizontal"
                 :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
                 <flux:navlist.item icon="list-bullet" :href="route('kategori')"
                     :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
@@ -45,21 +45,21 @@ use Illuminate\Support\Facades\Route;
                     wire:navigate>{{ __('Daftar Produk') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.item icon="cube" :href="route('produksi')" :current="request()->routeIs('produksi')"
+            <flux:navlist.item icon="chef-hat" :href="route('produksi')" :current="request()->routeIs('produksi')"
                 wire:navigate>{{ __('Produksi') }}</flux:navlist.item>
 
-            <flux:navlist.item icon="building-storefront" :href="route('pos')" :current="request()->routeIs('pos')"
-                wire:navigate>{{ __('Point of Sale') }}</flux:navlist.item>
+            <flux:navlist.item icon="cashier" :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>{{
+                __('Point of Sale') }}</flux:navlist.item>
             <flux:navlist.item icon="calculator" :href="route('transaksi')" :current="request()->routeIs('transaksi')"
                 wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
             <flux:navlist.item icon="gift" :href="route('hadiah')"
                 :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
                 wire:navigate>{{
                 __('Hadiah') }}</flux:navlist.item>
-            <flux:navlist.item icon="gift-top" :href="route('penukaran')" :current="request()->routeIs('penukaran')"
-                wire:navigate>{{
-                __('Penukaran Hadiah') }}</flux:navlist.item>
-            <flux:navlist.item icon="building-storefront" :href="route('pengaturan')"
+            <flux:navlist.item icon="star" iconVariant="solid" :href="route('penukaran')"
+                :current="request()->routeIs('penukaran')" wire:navigate>{{
+                __('Penilaian') }}</flux:navlist.item>
+            <flux:navlist.item icon="cog-6-tooth" :href="route('pengaturan')"
                 :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Toko') }}
             </flux:navlist.item>
         </flux:navlist>

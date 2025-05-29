@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('other_costs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->decimal('price', 10, 2);
+            $table->uuid('product_id')->nullable();
+            $table->string('name')->nullable();
+            $table->decimal('price', 10, 2)->default(0);
             $table->timestamps();
+
+            $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
         });
     }
 

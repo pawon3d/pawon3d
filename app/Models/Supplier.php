@@ -39,6 +39,11 @@ class Supplier extends Model
             ->dontSubmitEmptyLogs();
     }
 
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class, 'supplier_id', 'id');
+    }
+
 
     public static function boot()
     {

@@ -38,7 +38,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => __('auth.failed'),
+                'username' => __('Salah username atau password'),
             ]);
         }
 
@@ -93,12 +93,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <div class="relative">
             <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required
                 autocomplete="current-password" placeholder="Password" viewable />
-
-            {{-- @if (Route::has('password.request'))
-            <flux:link class="absolute right-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                {{ __('Forgot your password?') }}
-            </flux:link>
-            @endif --}}
         </div>
 
         <!-- Remember Me -->

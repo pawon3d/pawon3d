@@ -3,19 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Support\Str;
-use App\Models\ProcessedMaterialDetail;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Material extends Model
+class Expense extends Model
 {
     use LogsActivity;
-
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'materials';
+    protected $table = 'expenses';
     protected $guarded = [
         'id',
     ];
@@ -23,11 +21,11 @@ class Material extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('materials')
-            ->logOnly(['name', 'is_active', 'status', 'minimum', 'description'])
+            ->useLogName('expenses')
+            ->logAll()
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                $namaKategori = $this->name;
+                $nomorBelanja = $this->expense_number;
 
                 $terjemahan = [
                     'created' => 'ditambahkan',
@@ -36,25 +34,20 @@ class Material extends Model
                     'restored' => 'dipulihkan',
                 ];
 
-                return "{$namaKategori} {$terjemahan[$eventName]}";
+                return "Belanja nomor {$nomorBelanja} {$terjemahan[$eventName]}";
             })
             ->dontSubmitEmptyLogs();
     }
 
-    public function material_details()
-    {
-        return $this->hasMany(MaterialDetail::class);
-    }
-
-    public function ingredientCategoryDetails()
-    {
-        return $this->hasMany(IngredientCategoryDetail::class);
-    }
-
     public function expenseDetails()
     {
-        return $this->hasMany(ExpenseDetail::class, 'material_id', 'id');
+        return $this->hasMany(ExpenseDetail::class, 'expense_id', 'id');
     }
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
+
 
     public static function boot()
     {
@@ -62,6 +55,12 @@ class Material extends Model
 
         static::creating(function ($model) {
             $model->id = Str::uuid();
+            // Generate expense number with prefix 'BB' and 4 digit incrementing number
+            $lastExpense = self::latest('created_at')->first();
+            $lastNumber = $lastExpense ? (int) substr($lastExpense->expense_number, 2) : 0;
+            $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+            $model->expense_number = 'BB' . $nextNumber;
         });
     }
 }

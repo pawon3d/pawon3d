@@ -1,6 +1,6 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('belanja') }}"
+        <a href="{{ route('belanja.rincian', $expense_id) }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
@@ -171,15 +171,13 @@
 
 
     <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('belanja') }}"
+        <a href="{{ route('belanja.rincian', $expense_id) }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal
         </a>
-        <flux:button icon="pencil-square" type="button" variant="primary" wire:click.prevent="store">Simpan Sebagai
-            Draft
-        </flux:button>
-        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click.prevent="start">Mulai Belanja
+        <flux:button icon="archive-box" type="button" variant="primary" wire:click.prevent="update">
+            Simpan
         </flux:button>
     </div>
 

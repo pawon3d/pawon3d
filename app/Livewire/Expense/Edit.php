@@ -4,25 +4,44 @@ namespace App\Livewire\Expense;
 
 use Livewire\Component;
 
-class Tambah extends Component
+class Edit extends Component
 {
     public $supplier_id = '';
-
+    public $expense_id;
     public $expense_date = 'dd/mm/yyyy', $note, $grand_total_expect;
     public $expense_details = [];
 
-    public function mount()
+    public function mount($id)
     {
-        \Illuminate\Support\Facades\View::share('title', 'Tambah Daftar Belanja');
-
-        $this->expense_details = [[
-            'material_id' => '',
-            'material_quantity' => '0 (satuan)',
-            'quantity_expect' => 0,
-            'unit_id' => '',
-            'price_expect' => 0,
-            'detail_total_expect' => 0,
-        ]];
+        \Illuminate\Support\Facades\View::share('title', 'Ubah Daftar Belanja');
+        $this->expense_id = $id;
+        $expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])->findOrFail($this->expense_id);
+        $this->supplier_id = $expense->supplier_id;
+        $this->expense_date = \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y');
+        $this->note = $expense->note;
+        $this->grand_total_expect = $expense->grand_total_expect;
+        $this->expense_details = $expense->expenseDetails->map(function ($detail) {
+            return [
+                'material_id' => $detail->material_id,
+                'material_quantity' => ($detail->material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($detail->material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')',
+                'quantity_expect' => $detail->quantity_expect,
+                'unit_id' => $detail->unit_id,
+                'price_expect' => $detail->price_expect,
+                'detail_total_expect' => $detail->total_expect,
+            ];
+        })->toArray();
+        if (empty($this->expense_details)) {
+            $this->expense_details = [[
+                'material_id' => '',
+                'material_quantity' => '0 (satuan)',
+                'quantity_expect' => 0,
+                'unit_id' => '',
+                'price_expect' => 0,
+                'detail_total_expect' => 0,
+            ]];
+        } else {
+            $this->expense_details = array_values($this->expense_details);
+        }
     }
 
     public function addDetail()
@@ -95,7 +114,7 @@ class Tambah extends Component
     {
         $this->supplier_id = $value;
     }
-    public function store()
+    public function update()
     {
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
@@ -108,13 +127,17 @@ class Tambah extends Component
             'expense_details.*.price_expect' => 'required|numeric|min:0',
         ]);
 
-        $expense = \App\Models\Expense::create([
+        $expense = \App\Models\Expense::findOrFail($this->expense_id);
+        $expense->update([
             'supplier_id' => $this->supplier_id,
             'expense_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d'),
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
         ]);
 
+        // Hapus semua detail yang ada sebelum menambahkan yang baru
+        $expense->expenseDetails()->delete();
+        // Tambahkan detail baru
         foreach ($this->expense_details as $detail) {
             $expense->expenseDetails()->create([
                 'material_id' => $detail['material_id'],
@@ -125,11 +148,11 @@ class Tambah extends Component
             ]);
         }
 
-        return redirect()->route('belanja')->with('success', 'Daftar belanja berhasil ditambahkan.');
+        return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Daftar belanja berhasil diperbarui.');
     }
     public function render()
     {
-        return view('livewire.expense.tambah', [
+        return view('livewire.expense.edit', [
             'suppliers' => \App\Models\Supplier::lazy(),
             'materials' => \App\Models\Material::with('material_details')->get(),
         ]);
