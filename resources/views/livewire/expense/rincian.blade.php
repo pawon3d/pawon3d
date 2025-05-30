@@ -33,7 +33,7 @@
 
     <div class="w-full flex flex-col gap-4 mt-4">
         <h1 class="text-3xl font-bold">{{ $expense->expense_number }}</h1>
-        <p class="text-lg text-gray-500">{{ $expense->status }}</p>
+        <p class="text-lg text-gray-500">{{ $status }}</p>
         <div class="flex items-center justify-between gap-4 flex-row">
             <div class="flex items-start gap-4 flex-col">
                 <flux:heading class="text-lg font-semibold">Toko Persediaan</flux:heading>
@@ -166,9 +166,17 @@
         <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
             Selesaikan Belanja
         </flux:button>
-        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click="belanja">
+        @if ($total_quantity_get == 0)
+        <flux:button icon="pencil" type="button" variant="primary" href="{{ route('belanja.edit', $expense->id) }}">
+            Ubah Daftar Belanja
+        </flux:button>
+        @endif
+        @if($status != 'Lengkap')
+        <flux:button icon="shopping-cart" type="button" variant="primary"
+            href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">
             Dapatkan Belanja
         </flux:button>
+        @endif
     </div>
     @elseif (!$is_start && !$is_finish)
     <div class="flex justify-end mt-16 gap-4">
@@ -176,7 +184,8 @@
         <flux:button icon="pencil" type="button" variant="primary" href="{{ route('belanja.edit', $expense->id) }}">
             Ubah Daftar Belanja
         </flux:button>
-        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click="start">Mulai Belanja
+        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click="start">
+            Mulai Belanja
         </flux:button>
     </div>
     @endif

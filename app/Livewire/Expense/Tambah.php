@@ -127,6 +127,40 @@ class Tambah extends Component
 
         return redirect()->route('belanja')->with('success', 'Daftar belanja berhasil ditambahkan.');
     }
+
+    public function start()
+    {
+        $this->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+            'expense_date' => 'nullable|date_format:d/m/Y',
+            'note' => 'nullable|string|max:255',
+            'grand_total_expect' => 'required|numeric|min:0',
+            'expense_details.*.material_id' => 'required|exists:materials,id',
+            'expense_details.*.quantity_expect' => 'required|numeric|min:0',
+            'expense_details.*.unit_id' => 'required|exists:units,id',
+            'expense_details.*.price_expect' => 'required|numeric|min:0',
+        ]);
+
+        $expense = \App\Models\Expense::create([
+            'supplier_id' => $this->supplier_id,
+            'expense_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d'),
+            'note' => $this->note,
+            'grand_total_expect' => $this->grand_total_expect,
+            'status' => 'Dimulai',
+            'is_start' => true,
+        ]);
+
+        foreach ($this->expense_details as $detail) {
+            $expense->expenseDetails()->create([
+                'material_id' => $detail['material_id'],
+                'unit_id' => $detail['unit_id'],
+                'quantity_expect' => $detail['quantity_expect'],
+                'price_expect' => $detail['price_expect'],
+                'total_expect' => $detail['detail_total_expect'],
+            ]);
+        }
+        return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Belanja berhasil Dimulai');
+    }
     public function render()
     {
         return view('livewire.expense.tambah', [

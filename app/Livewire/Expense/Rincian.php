@@ -15,7 +15,7 @@ class Rincian extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $total_quantity_expect, $total_quantity_get, $percentage;
-    public $is_start = false, $is_finish = false;
+    public $is_start = false, $is_finish = false, $status;
 
     protected $listeners = [
         'delete'
@@ -28,6 +28,7 @@ class Rincian extends Component
             ->findOrFail($this->expense_id);
         $this->is_start = $this->expense->is_start;
         $this->is_finish = $this->expense->is_finish;
+        $this->status = $this->expense->status;
         $this->total_quantity_expect = $this->expense->expenseDetails->sum('quantity_expect');
         $this->total_quantity_get = $this->expense->expenseDetails->sum('quantity_get');
         $this->percentage = $this->total_quantity_expect > 0 ? ($this->total_quantity_get / $this->total_quantity_expect) * 100 : 0;
@@ -88,13 +89,14 @@ class Rincian extends Component
     public function start()
     {
         $this->is_start = true;
+        $this->status = 'Dimulai';
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
-        $expense->update(['is_start' => $this->is_start]);
+        $expense->update(['is_start' => $this->is_start, 'status' => $this->status]);
         $this->alert('success', 'Belanja berhasil dimulai.');
     }
     public function finish()
     {
-        $this->is_finish = false;
+        $this->is_finish = true;
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         $expense->update(['is_finish' => $this->is_finish]);
         $this->alert('success', 'Belanja berhasil diselesaikan.');

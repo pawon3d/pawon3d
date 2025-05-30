@@ -83,11 +83,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/belanja/tambah', App\Livewire\Expense\Tambah::class)->name('belanja.tambah');
     Route::get('/belanja/{id}/edit', App\Livewire\Expense\Edit::class)->name('belanja.edit');
     Route::get('/belanja/{id}/rincian', App\Livewire\Expense\Rincian::class)->name('belanja.rincian');
+    Route::get('/belanja/{id}/dapatkan-belanja', App\Livewire\Expense\Mulai::class)->name('belanja.dapatkan-belanja');
     Route::get('/belanja/riwayat', App\Livewire\Expense\Riwayat::class)->name('belanja.riwayat');
-    Route::get('/belanja/cetak', [PdfController::class, 'generateExpensePDF'])
+    Route::get('/belanja/{status}/cetak', [PdfController::class, 'generateExpensePDF'])
         ->name('belanja.pdf');
-    Route::get('/belanja/cetak-riwayat', [PdfController::class, 'generateExpenseHistoryPDF'])
-        ->name('riwayat-belanja.pdf');
+    Route::get('/belanja/{id}/cetak', [PdfController::class, 'generateExpenseDetailPDF'])
+        ->name('rincian-belanja.pdf');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
