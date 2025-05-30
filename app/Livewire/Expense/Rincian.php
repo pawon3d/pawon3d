@@ -52,8 +52,7 @@ class Rincian extends Component
 
     public function cetakInformasi()
     {
-        return redirect()->route('belanja.pdf', [
-            'search' => $this->search,
+        return redirect()->route('rincian-belanja.pdf', [
             'id' => $this->expense_id,
         ]);
     }

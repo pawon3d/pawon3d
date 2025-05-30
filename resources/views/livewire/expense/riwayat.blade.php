@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center">
+        <div class="flex items-center gap-4">
             <a href="{{ route('belanja') }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
                 wire:navigate>
@@ -137,28 +137,39 @@
                             {{ $expense->status ?? '-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            <div class="flex items-center space-x-2 flex-col">
+                            {{-- <div class="flex items-center space-x-2 flex-col">
                                 <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
-                                    {{-- styling persentase barang didapatkan secara dinamis, hitung persen dari
-                                    expenseDetails yang is_quantity_get true dibandingkan dengan total expenseDetails
-                                    untuk expense_id ini --}}
                                     <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
                                         style="width: {{ number_format($expense->expenseDetails->where('is_quantity_get', true)->count() / $expense->expenseDetails->count() * 100, 0) }}%">
                                     </div>
                                 </div>
                                 <span class="text-xs text-gray-500">
-                                    {{-- hitung berapa banyak detail yang is_quantity_get nya sudah true lalu
-                                    dibandingkan dengan total detail untuk expense_id ini. contoh 2 dari 20 --}}
                                     {{ $expense->expenseDetails->where('is_quantity_get', true)->count() ?? '0' }} dari
                                     {{ $expense->expenseDetails->count() ?? '0' }} barang
+                                </span>
+                            </div> --}}
+                            @php
+                            $total_expect = $expense->expenseDetails->sum('quantity_expect');
+                            $total_get = $expense->expenseDetails->sum('quantity_get');
+                            $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
+                            @endphp
+
+                            <div class="flex items-center space-x-2 flex-col">
+                                <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
+                                    <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
+                                        style="width: {{ number_format($percentage, 0) }}%">
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">
+                                    {{ number_format($total_get, 0) }} dari {{ number_format($total_expect, 0) }}
                                 </span>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            Rp{{ number_format($expense->total_expect, 0, ',', '.') }}
+                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
                         </td>
                         <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            Rp{{ number_format($expense->total_actual, 0, ',', '.') }}
+                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
                         </td>
                     </tr>
                     @endforeach

@@ -40,6 +40,7 @@ class Index extends Component
     {
         return redirect()->route('belanja.pdf', [
             'search' => $this->search,
+            'status' => 'all',
         ]);
     }
     public function render()

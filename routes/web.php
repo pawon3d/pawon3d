@@ -87,7 +87,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/belanja/riwayat', App\Livewire\Expense\Riwayat::class)->name('belanja.riwayat');
     Route::get('/belanja/{status}/cetak', [PdfController::class, 'generateExpensePDF'])
         ->name('belanja.pdf');
-    Route::get('/belanja/{id}/cetak', [PdfController::class, 'generateExpenseDetailPDF'])
+    Route::get('/belanja/cetak/{id}', [PdfController::class, 'generateExpenseDetailPDF'])
         ->name('rincian-belanja.pdf');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');

@@ -16,8 +16,9 @@ class Riwayat extends Component
 
     public function cetakInformasi()
     {
-        return redirect()->route('riwayat-belanja.pdf', [
+        return redirect()->route('belanja.pdf', [
             'search' => $this->search,
+            'status' => 'history',
         ]);
     }
     public function render()
@@ -26,7 +27,7 @@ class Riwayat extends Component
             'expenses' => \App\Models\Expense::with(['expenseDetails', 'supplier'])
                 ->when($this->search, function ($query) {
                     $query->where('expense_number', 'like', '%' . $this->search . '%');
-                })->where('is_finished', true)
+                })->where('is_finish', true)
                 ->latest()
                 ->paginate(10)
         ]);

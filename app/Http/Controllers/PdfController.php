@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class PdfController extends Controller
 {
@@ -154,5 +155,49 @@ class PdfController extends Controller
 
         $pdf = PDF::loadView('pdf.material', compact('materials'));
         return $pdf->download('daftar-bahan-persediaan.pdf');
+    }
+
+    public function generateExpensePDF(Request $request)
+    {
+        $status = $request->status ?? 'all';
+        if ($request->status === 'history') {
+            $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
+                ->where('is_finish', true)
+                ->when($request->search, function ($query) use ($request) {
+                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                })
+                ->latest()
+                ->get();
+            $pdf = PDF::loadView('pdf.expense', compact('expenses', 'status'));
+            return $pdf->download('riwayat-belanja-persediaan.pdf');
+        } elseif ($request->status === 'all') {
+            $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
+                ->when($request->search, function ($query) use ($request) {
+                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                })
+                ->latest()
+                ->get();
+            $pdf = PDF::loadView('pdf.expense', compact('expenses', 'status'));
+            return $pdf->download('daftar-belanja-persediaan.pdf');
+        } else {
+            return redirect()->route('belanja')->with('error', 'Status tidak valid.');
+        }
+    }
+    public function generateExpenseDetailPDF($id)
+    {
+        $expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])
+            ->findOrFail($id);
+        $logName = Activity::inLog('expenses')->where('subject_id', $expense->id)->latest()->first()?->causer->name ?? '-';
+        $status = $expense->status;
+        $total_quantity_expect = $expense->expenseDetails->sum('quantity_expect');
+        $total_quantity_get = $expense->expenseDetails->sum('quantity_get');
+        $percentage = $total_quantity_expect > 0 ? ($total_quantity_get / $total_quantity_expect) * 100 : 0;
+        $expenseDetails = \App\Models\ExpenseDetail::where('expense_id', $expense->id)
+            ->with(['material', 'unit'])
+            ->get();
+
+        $pdf = PDF::loadView('pdf.expense-detail', compact('expense', 'logName', 'status', 'total_quantity_expect', 'total_quantity_get', 'percentage', 'expenseDetails'));
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->download('rincian-belanja-persediaan-' . $expense->expense_number . '.pdf');
     }
 }

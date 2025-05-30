@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Daftar Belanja Persediaan</title>
+    <title>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Belanja Persediaan</title>
     <style>
         table {
             width: 100%;
@@ -22,21 +22,25 @@
 </head>
 
 <body>
-    <h1>Daftar Belanja Persediaan</h1>
+    <h1>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Belanja Persediaan</h1>
     <table>
         <thead>
             <tr>
                 <th>Nama</th>
                 <th>Status</th>
-                <th>Jumlah Produk</th>
+                <th>Barang Diharapkan</th>
+                <th>Barang Didapatkan</th>
+                <th>Total Pengeluaran</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($categories as $category)
+            @foreach($expenses as $expense)
             <tr>
-                <td>{{ $category->name }}</td>
-                <td>{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}</td>
-                <td>{{ $category->products_count }}</td>
+                <td>{{ $expense->expense_number }}</td>
+                <td>{{ $expense->status }}</td>
+                <td>{{ $expense->expenseDetails->sum('quantity_expect') }}</td>
+                <td>{{ $expense->expenseDetails->sum('quantity_get') }}</td>
+                <td>{{ $expense->grand_total_actual }}</td>
             </tr>
             @endforeach
         </tbody>
