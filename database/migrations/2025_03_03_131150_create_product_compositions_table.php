@@ -15,11 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('product_id')->nullable();
             $table->uuid('material_id')->nullable();
-            $table->uuid('processed_material_id')->nullable();
-            $table->string('processed_material_name')->nullable();
+            $table->string('unit_id')->nullable();
             $table->decimal('material_quantity', 8, 2)->nullable();
-            $table->decimal('processed_material_quantity', 8, 2)->nullable();
-            $table->string('material_unit', 50)->nullable();
             $table->timestamps();
 
             $table->foreign('product_id')
@@ -32,9 +29,9 @@ return new class extends Migration
                 ->on('materials')
                 ->onDelete('cascade');
 
-            $table->foreign('processed_material_id')
+            $table->foreign('unit_id')
                 ->references('id')
-                ->on('processed_materials')
+                ->on('units')
                 ->onDelete('cascade');
         });
     }

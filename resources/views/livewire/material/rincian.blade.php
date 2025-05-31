@@ -194,10 +194,10 @@
                             <span class="text-gray-700">1 {{ $main_unit_alias ?? '' }}</span>
                         </td>
                         <td class="px-6 py-3">
-                            <span class="text-gray-700">0 {{ $main_unit_alias ?? '' }}</span>
+                            <span class="text-gray-700">{{ $main_supply_quantity }} {{ $main_unit_alias ?? '' }}</span>
                         </td>
                         <td class="px-6 py-3">
-                            <span class="text-gray-700">0 {{ $main_unit_alias ?? '' }}</span>
+                            <span class="text-gray-700">{{ $main_supply_quantity }} {{ $main_unit_alias ?? '' }}</span>
                         </td>
                         <td></td>
                     </tr>

@@ -154,6 +154,7 @@
                         <th class="text-left px-6 py-3">Bahan Baku</th>
                         <th class="text-left px-6 py-3">Jumlah</th>
                         <th class="text-left px-6 py-3">Satuan</th>
+                        <th class="text-left px-6 py-3">Jumlah Harga</th>
                         <th class="text-left px-6 py-3"></th>
                     </tr>
                 </thead>
@@ -175,23 +176,34 @@
                         </td>
                         <td class="px-6 py-3">
                             <input type="number" placeholder="0" min="0"
-                                wire:model.defer="product_compositions.{{ $index }}.material_quantity"
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none" />
+                                wire:model.live="product_compositions.{{ $index }}.material_quantity"
+                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none text-right" />
                         </td>
                         <td class="px-6 py-3">
-                            {{-- <flux:select placeholder="- Pilih Satuan -"
-                                wire:model.defer="product_compositions.{{ $index }}.unit">
-                                @foreach ($units as $unit)
-                                <flux:select.option value="{{ $unit->id }}" class="text-gray-700">{{ $unit->name }}
-                                </flux:select.option>
+                            <select
+                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
+                                wire:model="product_compositions.{{ $index }}.unit_id"
+                                wire:change="setUnit({{ $index }}, $event.target.value)">
+                                @php
+                                $material = $materials->firstWhere('id', $composition['material_id']);
+                                $units = $material?->material_details->map(function ($detail) {
+                                return $detail->unit;
+                                })->filter();
+                                @endphp
+                                <option value="" class="text-gray-700">- Pilih Satuan Ukur -</option>
+                                @foreach ($units ?? [] as $unit)
+                                <option value="{{ $unit->id }}" class="text-gray-700">
+                                    {{ $unit->name }} ({{ $unit->alias }})
+                                </option>
                                 @endforeach
-                            </flux:select>
-                            <flux:error name="product_compositions.{{ $index }}.unit" /> --}}
-                            @if (isset($composition['material_unit']))
-                            <span class="flex items-center px-2 py-2 text-gray-500 text-sm">
-                                {{ $composition['material_unit'] }}
+
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-gray-700">
+                                Rp.{{ number_format($composition['material_price'] * $composition['material_quantity'],
+                                0, ',', '.') }}
                             </span>
-                            @endif
                         </td>
                         <td class="flex items-center justify-start gap-4 px-6 py-3">
                             <flux:button icon="trash" type="button" variant="danger"
@@ -200,6 +212,22 @@
                     </tr>
                     @endforeach
                 </tbody>
+                <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <td class="px-6 py-3" colspan="4">
+                            <span class="text-gray-700">Total Harga</span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-gray-700">
+                                {{-- jumlahkan total harga dari $composition['material_price'] *
+                                $composition['material_quantity'] --}}
+                                Rp.{{ number_format(array_sum(array_map(function ($composition) {
+                                return $composition['material_price'] * $composition['material_quantity'];
+                                }, $product_compositions)), 0, ',', '.') }}
+                            </span>
+                        </td>
+                    </tr>
+                </tfoot>
 
             </table>
         </div>
@@ -254,7 +282,20 @@
                     </tr>
                     @endforeach
                 </tbody>
-
+                <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <td class="px-6 py-3" colspan="2">
+                            <span class="text-gray-700">Total Harga</span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-gray-700">
+                                Rp.{{ number_format(array_sum(array_map(function ($other) {
+                                return $other['price'];
+                                }, $other_costs)), 0, ',', '.') }}
+                            </span>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
         @endif

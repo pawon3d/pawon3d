@@ -62,7 +62,7 @@
                 </div>
             </div>
             <span class="text-xs text-gray-500">
-                {{ number_format($total_quantity_get, 0) }} dari {{ number_format($total_quantity_expect, 0) }}
+                {{ number_format($percentage, 0) }}%
             </span>
         </div>
 

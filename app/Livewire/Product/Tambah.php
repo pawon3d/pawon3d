@@ -5,6 +5,7 @@ namespace App\Livewire\Product;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Material;
+use App\Models\MaterialDetail;
 use Livewire\Attributes\Rule;
 use Livewire\WithFileUploads;
 use App\Models\ProductCategory;
@@ -19,7 +20,7 @@ class Tambah extends Component
     public $product_compositions = [];
     public $other_costs = [];
 
-    public $price = 0;
+    public $price = 0, $total = 0;
     public $stock = 0;
     public $method;
 
@@ -50,7 +51,8 @@ class Tambah extends Component
         $this->product_compositions = [[
             'material_id' => '',
             'material_quantity' => 0,
-            'material_unit' => ''
+            'unit_id' => '',
+            'material_price' => 0,
         ]];
         $this->other_costs = [[
             'name' => '',
@@ -64,10 +66,9 @@ class Tambah extends Component
     {
         $this->product_compositions[] = [
             'material_id' => '',
-            'processed_material_name' => '',
             'material_quantity' => 0,
-            'processed_material_quantity' => 0,
-            'material_unit' => ''
+            'unit_id' => '',
+            'material_price' => 0,
         ];
     }
 
@@ -100,13 +101,23 @@ class Tambah extends Component
     public function setMaterial($index, $materialId)
     {
         $this->product_compositions[$index]['material_id'] = $materialId;
-
-        if ($materialId) {
-            $material = Material::find($materialId);
-            $this->product_compositions[$index]['material_unit'] = $material->unit;
+    }
+    public function setUnit($index, $unitId)
+    {
+        if ($unitId) {
+            $this->product_compositions[$index]['unit_id'] = $unitId;
+            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'])
+                ->where('unit_id', $unitId)
+                ->first();
+            if ($materialDetail) {
+                $this->product_compositions[$index]['material_price'] = $materialDetail->supply_price;
+            } else {
+                $this->product_compositions[$index]['material_price'] = 0;
+            }
+        } else {
+            $this->product_compositions[$index]['unit_id'] = '';
         }
     }
-
     public function updatedProductImage()
     {
         $this->validate([
@@ -149,7 +160,6 @@ class Tambah extends Component
             $product->product_image = $this->product_image->store('product_images', 'public');
             $product->save();
         }
-
         if ($this->category_ids) {
             foreach ($this->category_ids as $category_id) {
                 ProductCategory::create([
@@ -164,7 +174,7 @@ class Tambah extends Component
                 $cleanData = [
                     'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
                     'material_quantity' => $composition['material_quantity'],
-                    'material_unit' => $composition['material_unit'] ?? null,
+                    'unit_id' => $composition['unit_id'] ?? null,
                 ];
 
                 $product->product_compositions()->create($cleanData);
@@ -189,13 +199,13 @@ class Tambah extends Component
 
     protected function recalculateCapital()
     {
-        // $compositionTotal = collect($this->product_compositions)
-        //     ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+        $compositionTotal = collect($this->product_compositions)
+            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
 
-        $this->capital = $otherTotal;
+        $this->capital = $otherTotal + $compositionTotal;
     }
 
     public function updatedPrice($value)
@@ -207,6 +217,27 @@ class Tambah extends Component
         if ($value < $this->capital) {
             $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
         }
+    }
+
+    public function updatedProductCompositions()
+    {
+        $this->product_compositions = array_map(function ($composition) {
+            return [
+                'material_id' => $composition['material_id'] ?? '',
+                'material_quantity' => $composition['material_quantity'] ?? 0,
+                'unit_id' => $composition['unit_id'] ?? '',
+                'material_price' => $composition['material_price'] ?? 0,
+            ];
+            $this->total = $composition['material_quantity'] * $composition['material_price'];
+        }, $this->product_compositions);
+        $this->recalculateCapital();
+        $this->recalculatePcsCapital();
+    }
+
+    protected function updateTotal()
+    {
+        $this->total = collect($this->product_compositions)
+            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
     }
     protected function recalculatePcsCapital()
     {

@@ -14,7 +14,7 @@ class Rincian extends Component
 
     public $material_id;
     public $name, $description, $expiry_date = '00-00-0000', $status = 'kosong', $category_ids, $minimum = 0, $is_active = false;
-    public $main_unit_id, $main_unit_alias, $main_unit_name;
+    public $main_unit_id, $main_unit_alias, $main_unit_name, $main_supply_quantity = 0;
     public $previewImage;
     public $image;
     public $material_details = [];
@@ -26,6 +26,7 @@ class Rincian extends Component
 
     protected $listeners = [
         'delete',
+        'recalculateSupplies',
     ];
 
     protected $messages = [
@@ -43,6 +44,7 @@ class Rincian extends Component
         $this->main_unit_id = $material->material_details->first()->unit_id ?? null;
         $this->main_unit_alias = $material->material_details->first()->unit->alias ?? '';
         $this->main_unit_name = $material->material_details->first()->unit->name ?? '';
+        $this->main_supply_quantity = $material->material_details->first()->supply_quantity ?? 0;
         $this->name = $material->name;
         $this->description = $material->description;
         $this->expiry_date = $material->expiry_date ? $material->expiry_date->format('d/m/Y') : '00/00/0000';
@@ -168,6 +170,7 @@ class Rincian extends Component
             });
     }
 
+
     public function confirmDelete()
     {
         $this->alert('warning', 'Apakah Anda yakin ingin menghapus bahan ini?', [
@@ -256,6 +259,8 @@ class Rincian extends Component
                     'unit_id' => $detail['unit_id'] ?? null,
                     'quantity' => $detail['quantity'] ?? 0,
                     'is_main' => $detail['is_main'] ?? false,
+                    'supply_quantity' => $detail['supply_quantity'] ?? 0,
+                    'supply_price' => $detail['supply_price'] ?? 0,
                 ];
 
                 $material->material_details()->create($cleanData);

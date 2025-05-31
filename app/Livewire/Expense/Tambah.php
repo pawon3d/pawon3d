@@ -123,6 +123,15 @@ class Tambah extends Component
                 'price_expect' => $detail['price_expect'],
                 'total_expect' => $detail['detail_total_expect'],
             ]);
+            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail['material_id'])
+                ->where('unit_id', $detail['unit_id'])
+                ->first();
+
+            if ($materialDetail) {
+                $materialDetail->update([
+                    'supply_price' => $detail['price_expect'],
+                ]);
+            }
         }
 
         return redirect()->route('belanja')->with('success', 'Daftar belanja berhasil ditambahkan.');
@@ -158,6 +167,15 @@ class Tambah extends Component
                 'price_expect' => $detail['price_expect'],
                 'total_expect' => $detail['detail_total_expect'],
             ]);
+            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail['material_id'])
+                ->where('unit_id', $detail['unit_id'])
+                ->first();
+
+            if ($materialDetail) {
+                $materialDetail->update([
+                    'supply_price' => $detail['price_expect'],
+                ]);
+            }
         }
         return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Belanja berhasil Dimulai');
     }

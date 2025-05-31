@@ -5,6 +5,7 @@ namespace App\Livewire\Product;
 use App\Models\Material;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\MaterialDetail;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\View;
@@ -19,7 +20,7 @@ class Rincian extends Component
     public $other_costs = [];
     public $category_ids = [];
 
-    public $price = 0;
+    public $price = 0, $total = 0;
     public $stock = 0;
     public $method;
     public $product_id;
@@ -62,10 +63,20 @@ class Rincian extends Component
         $this->pcs_price = $product->pcs_price;
         $this->pcs_capital = $product->pcs_capital;
         $this->product_compositions = $product->product_compositions->map(function ($composition) {
+            $materialDetail = MaterialDetail::where('material_id', $composition->material_id)
+                ->where('unit_id', $composition->unit_id)
+                ->first();
+            if ($materialDetail) {
+                $composition->material_price = $materialDetail->supply_price;
+            } else {
+                $composition->material_price = 0;
+            }
+            // Mengembalikan data komposisi dengan harga material
             return [
                 'material_id' => $composition->material_id,
                 'material_quantity' => $composition->material_quantity,
-                'material_unit' => $composition->material_unit,
+                'unit_id' => $composition->unit_id,
+                'material_price' => $composition->material_price,
             ];
         })->toArray();
         $this->other_costs = $product->other_costs->map(function ($cost) {
@@ -96,13 +107,12 @@ class Rincian extends Component
 
     public function addComposition()
     {
-        $this->product_compositions[] = [
+        $this->product_compositions = [[
             'material_id' => '',
-            'processed_material_name' => '',
             'material_quantity' => 0,
-            'processed_material_quantity' => 0,
-            'material_unit' => ''
-        ];
+            'unit_id' => '',
+            'material_price' => 0,
+        ]];
     }
 
     public function removeComposition($index)
@@ -138,6 +148,23 @@ class Rincian extends Component
         if ($materialId) {
             $material = Material::find($materialId);
             $this->product_compositions[$index]['material_unit'] = $material->unit;
+        }
+    }
+
+    public function setUnit($index, $unitId)
+    {
+        if ($unitId) {
+            $this->product_compositions[$index]['unit_id'] = $unitId;
+            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'])
+                ->where('unit_id', $unitId)
+                ->first();
+            if ($materialDetail) {
+                $this->product_compositions[$index]['material_price'] = $materialDetail->supply_price;
+            } else {
+                $this->product_compositions[$index]['material_price'] = 0;
+            }
+        } else {
+            $this->product_compositions[$index]['unit_id'] = '';
         }
     }
 
@@ -213,7 +240,7 @@ class Rincian extends Component
                 $cleanData = [
                     'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
                     'material_quantity' => $composition['material_quantity'],
-                    'material_unit' => $composition['material_unit'] ?? null,
+                    'unit_id' => $composition['unit_id'] ?? null,
                 ];
 
                 $product->product_compositions()->create($cleanData);
@@ -238,13 +265,13 @@ class Rincian extends Component
 
     protected function recalculateCapital()
     {
-        // $compositionTotal = collect($this->product_compositions)
-        //     ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+        $compositionTotal = collect($this->product_compositions)
+            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
 
-        $this->capital = $otherTotal;
+        $this->capital = $otherTotal + $compositionTotal;
     }
 
     public function updatedPrice($value)
@@ -290,6 +317,22 @@ class Rincian extends Component
             $this->addError('pcs_price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
         }
     }
+
+    public function updatedProductCompositions()
+    {
+        $this->product_compositions = array_map(function ($composition) {
+            return [
+                'material_id' => $composition['material_id'] ?? '',
+                'material_quantity' => $composition['material_quantity'] ?? 0,
+                'unit_id' => $composition['unit_id'] ?? '',
+                'material_price' => $composition['material_price'] ?? 0,
+            ];
+            $this->total = $composition['material_quantity'] * $composition['material_price'];
+        }, $this->product_compositions);
+        $this->recalculateCapital();
+        $this->recalculatePcsCapital();
+    }
+
     public function confirmDelete()
     {
         $this->alert('warning', 'Apakah Anda yakin ingin menghapus produk ini?', [
