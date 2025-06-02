@@ -3,18 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Expense extends Model
+class Padan extends Model
 {
     use LogsActivity;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'expenses';
+    protected $table = 'padans';
     protected $guarded = [
         'id',
     ];
@@ -22,11 +22,11 @@ class Expense extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('expenses')
+            ->useLogName('padans')
             ->logAll()
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                $nomorBelanja = $this->expense_number;
+                $nomorPadan = $this->padan_number;
 
                 $terjemahan = [
                     'created' => 'ditambahkan',
@@ -35,20 +35,15 @@ class Expense extends Model
                     'restored' => 'dipulihkan',
                 ];
 
-                return "Belanja nomor {$nomorBelanja} {$terjemahan[$eventName]}";
+                return "HP nomor {$nomorPadan} {$terjemahan[$eventName]}";
             })
             ->dontSubmitEmptyLogs();
     }
 
-    public function expenseDetails()
+    public function details()
     {
-        return $this->hasMany(ExpenseDetail::class, 'expense_id', 'id');
+        return $this->hasMany(PadanDetail::class, 'padan_id', 'id');
     }
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
-    }
-
 
     public static function boot()
     {
@@ -57,14 +52,14 @@ class Expense extends Model
         static::creating(function ($model) {
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
-                $lastExpense = DB::table('expenses')
+                $lastPadan = DB::table('padans')
                     ->lockForUpdate()
-                    ->orderByDesc('expense_number')
+                    ->orderByDesc('padan_number')
                     ->first();
-                    $lastNumber = $lastExpense ? (int) substr($lastExpense->expense_number, 2) : 0;
-                    $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        
-                    $model->expense_number = 'BB' . $nextNumber;
+                $lastNumber = $lastPadan ? (int) substr($lastPadan->padan_number, 2) : 0;
+                $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+                $model->padan_number = 'HP' . $nextNumber;
             });
         });
     }

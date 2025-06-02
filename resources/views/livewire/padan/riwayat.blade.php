@@ -1,13 +1,13 @@
 <div>
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-4">
-            <a href="{{ route('belanja') }}"
+            <a href="{{ route('padan') }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
-            <h1 class="text-2xl hidden md:block">Riwayat Belanja Persediaan</h1>
+            <h1 class="text-2xl hidden md:block">Riwayat Hitung dan Padan Persediaan</h1>
         </div>
         <div class="flex gap-2 items-center justify-end-safe">
             <button type="button" wire:click="cetakInformasi"
@@ -38,7 +38,7 @@
                     @else
                     Semua Toko
                     @endif
-                    ({{ $expenses->total() }})
+                    ({{ $padans->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
                 <flux:menu>
@@ -69,10 +69,10 @@
         </div>
     </div>
 
-    @if ($expenses->isEmpty())
+    @if ($padans->isEmpty())
     <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum Ada Riwayat Belanja.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah belanja” di halaman utama untuk menambahkan belanja.</p>
+        <p class="text-gray-700 font-semibold">Belum Ada Riwayat Aksi.</p>
+        <p class="text-gray-700">Tekan tombol “Tambah aksi” di halaman utama untuk menambahkan aksi.</p>
     </div>
     @else
     <div class="bg-white rounded-xl border">
@@ -82,82 +82,46 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Nomor Belanja
+                            ID Hitung
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Tanggal Belanja
+                            Tanggal Dibuat
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Toko Persediaan
+                            Tanggal Selesai
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Aksi
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Status
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Barang Didapatkan
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total Harga (Perkiraan)
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total Harga (Sebenarnya)
-                        </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($expenses as $expense)
+                    @foreach($padans as $padan)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('belanja.rincian', $expense->id) }}"
-                                class="hover:bg-gray-50 cursor-pointer">
-                                {{ $expense->expense_number }}
+                            <a href="{{ route('padan.rincian', $padan->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                                {{ $padan->padan_number }}
                             </a>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y')
+                            {{ $padan->padan_date ? \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y')
+                            :
+                            '-' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ $padan->padan_date_finish ?
+                            \Carbon\Carbon::parse($padan->padan_date_finish)->format('d-m-Y')
                             :
                             '-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $expense->supplier->name ?? '-' }}
+                            {{ $padan->action ??'-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $expense->status ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{-- <div class="flex items-center space-x-2 flex-col">
-                                <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
-                                    <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
-                                        style="width: {{ number_format($expense->expenseDetails->where('is_quantity_get', true)->count() / $expense->expenseDetails->count() * 100, 0) }}%">
-                                    </div>
-                                </div>
-                                <span class="text-xs text-gray-500">
-                                    {{ $expense->expenseDetails->where('is_quantity_get', true)->count() ?? '0' }} dari
-                                    {{ $expense->expenseDetails->count() ?? '0' }} barang
-                                </span>
-                            </div> --}}
-                            @php
-                            $total_expect = $expense->expenseDetails->sum('quantity_expect');
-                            $total_get = $expense->expenseDetails->sum('quantity_get');
-                            $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
-                            @endphp
-
-                            <div class="flex items-center space-x-2 flex-col">
-                                <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
-                                    <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
-                                        style="width: {{ number_format($percentage, 0) }}%">
-                                    </div>
-                                </div>
-                                <span class="text-xs text-gray-500">
-                                    {{ number_format($percentage, 0) }}%
-                                </span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
-                        </td>
-                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
+                            {{ $padan->status ?? '-' }}
                         </td>
                     </tr>
                     @endforeach
@@ -167,7 +131,7 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $expenses->links() }}
+            {{ $padans->links() }}
         </div>
     </div>
     @endif

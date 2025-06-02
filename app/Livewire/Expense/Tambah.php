@@ -183,7 +183,7 @@ class Tambah extends Component
     {
         return view('livewire.expense.tambah', [
             'suppliers' => \App\Models\Supplier::lazy(),
-            'materials' => \App\Models\Material::with('material_details')->get(),
+            'materials' => \App\Models\Material::with('material_details')->lazy(),
         ]);
     }
 }

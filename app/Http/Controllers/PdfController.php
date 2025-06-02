@@ -200,4 +200,45 @@ class PdfController extends Controller
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download('rincian-belanja-persediaan-' . $expense->expense_number . '.pdf');
     }
+
+    public function generatePadanPDF(Request $request)
+    {
+        $status = $request->status ?? 'all';
+        if ($request->status === 'history') {
+            $padans = \App\Models\Padan::with(['details'])
+                ->where('is_finish', true)
+                ->when($request->search, function ($query) use ($request) {
+                    return $query->where('padan_number', 'like', '%' . $request->search . '%');
+                })
+                ->latest()
+                ->get();
+            $pdf = PDF::loadView('pdf.padan', compact('padans', 'status'));
+            return $pdf->download('riwayat-padan-persediaan.pdf');
+        } elseif ($request->status === 'all') {
+            $padans = \App\Models\Padan::with(['details'])
+                ->when($request->search, function ($query) use ($request) {
+                    return $query->where('padan_number', 'like', '%' . $request->search . '%');
+                })
+                ->latest()
+                ->get();
+            $pdf = PDF::loadView('pdf.padan', compact('padans', 'status'));
+            return $pdf->download('daftar-padan-persediaan.pdf');
+        } else {
+            return redirect()->route('padan')->with('error', 'Status tidak valid.');
+        }
+    }
+    public function generatePadanDetailPDF($id)
+    {
+        $padan = \App\Models\Padan::with(['details.material', 'details.unit'])
+            ->findOrFail($id);
+        $logName = Activity::inLog('padans')->where('subject_id', $padan->id)->latest()->first()?->causer->name ?? '-';
+        $status = $padan->status;
+        $padanDetails = \App\Models\PadanDetail::where('padan_id', $padan->id)
+            ->with(['material', 'unit'])
+            ->get();
+
+        $pdf = PDF::loadView('pdf.padan-detail', compact('padan', 'logName', 'status', 'padanDetails'));
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->download('rincian-padan-persediaan-' . $padan->padan_number . '.pdf');
+    }
 }
