@@ -4,7 +4,6 @@ use App\Http\Controllers\PdfController;
 use App\Livewire\User\Index;
 use App\Livewire\Dashboard;
 use App\Livewire\Review\ReviewForm;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -89,6 +88,16 @@ Route::middleware(['auth'])->group(function () {
         ->name('belanja.pdf');
     Route::get('/belanja/cetak/{id}', [PdfController::class, 'generateExpenseDetailPDF'])
         ->name('rincian-belanja.pdf');
+    Route::get('/padan', App\Livewire\Padan\Index::class)->name('padan');
+    Route::get('/padan/tambah', App\Livewire\Padan\Tambah::class)->name('padan.tambah');
+    Route::get('/padan/{id}/edit', App\Livewire\Padan\Edit::class)->name('padan.edit');
+    Route::get('/padan/{id}/rincian', App\Livewire\Padan\Rincian::class)->name('padan.rincian');
+    Route::get('/padan/{id}/mulai-aksi', App\Livewire\Padan\Mulai::class)->name('padan.mulai');
+    Route::get('/padan/riwayat', App\Livewire\Padan\Riwayat::class)->name('padan.riwayat');
+    Route::get('/padan/{status}/cetak', [PdfController::class, 'generatePadanPDF'])
+        ->name('padan.pdf');
+    Route::get('/padan/cetak/{id}', [PdfController::class, 'generatePadanDetailPDF'])
+        ->name('rincian-padan.pdf');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');

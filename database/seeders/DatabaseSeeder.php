@@ -66,6 +66,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Bahan Baku 1',
         ])->material_details()->create([
             'supply_quantity' => 100,
+            'supply_price' => 10000,
             'quantity' => 1,
             'unit_id' => Unit::where('alias', 'kg')->first()->id,
             'is_main' => true,
@@ -75,6 +76,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Bahan Baku 2',
         ])->material_details()->create([
             'supply_quantity' => 50,
+            'supply_price' => 20000,
             'quantity' => 1,
             'unit_id' => Unit::where('alias', 'l')->first()->id,
             'is_main' => true,
@@ -133,5 +135,9 @@ class DatabaseSeeder extends Seeder
                 }),
             ]);
         });
+
+        $this->call([
+            PadanSeeder::class,
+        ]);
     }
 }
