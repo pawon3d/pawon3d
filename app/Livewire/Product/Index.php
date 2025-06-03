@@ -75,9 +75,6 @@ class Index extends Component
                 ->where('method', $this->method)
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->paginate(10),
-            'categories' => Category::all(),
-            'materials' => Material::all(),
-            'processedMaterials' => ProcessedMaterial::all()
         ]);
     }
 }
