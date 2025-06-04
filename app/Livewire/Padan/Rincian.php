@@ -96,7 +96,25 @@ class Rincian extends Component
         $this->status = 'Selesai';
         $this->finish_date = now()->format('Y-m-d');
         $padan = \App\Models\Padan::findOrFail($this->padan_id);
-        $padan->update(['is_finish' => $this->is_finish, 'status' => 'Selesai', 'padan_finish_date' => $this->finish_date]);
+        $padan->update([
+            'is_finish' => $this->is_finish,
+            'status' => 'Selesai',
+            'padan_finish_date' => $this->finish_date
+        ]);
+        $padan->details->each(function ($detail) {
+            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
+                ->where('unit_id', $detail->unit_id)
+                ->first();
+            if ($this->padan->action == 'Hitung Persediaan') {
+                $materialDetail->update([
+                    'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_expect - $detail->quantity_actual),
+                ]);
+            } else {
+                $materialDetail->update([
+                    'supply_quantity' => $materialDetail->supply_quantity - $detail->quantity_actual,
+                ]);
+            }
+        });
         $this->alert('success', $padan->action . ' berhasil diselesaikan.');
     }
 

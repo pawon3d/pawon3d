@@ -97,7 +97,19 @@ class Rincian extends Component
     {
         $this->is_finish = true;
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
-        $expense->update(['is_finish' => $this->is_finish]);
+        $expense->update([
+            'is_finish' => $this->is_finish,
+        ]);
+        $expense->expenseDetails->each(function ($detail) {
+            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
+                ->where('unit_id', $detail->unit_id)
+                ->first();
+            if ($materialDetail) {
+                $materialDetail->update([
+                    'supply_quantity' => $materialDetail->supply_quantity + $detail->quantity_get,
+                ]);
+            }
+        });
         $this->alert('success', 'Belanja berhasil diselesaikan.');
     }
 

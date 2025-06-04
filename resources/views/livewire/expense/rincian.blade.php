@@ -166,7 +166,6 @@
         <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
             Selesaikan Belanja
         </flux:button>
-        @endif
         @if($status != 'Lengkap')
         <flux:button icon="shopping-cart" type="button" variant="primary"
             href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">

@@ -102,6 +102,7 @@ class Mulai extends Component
                         : $padanDetail->total / $padanDetail->quantity_expect * $padanDetail->quantity_actual,
                 ]);
 
+
                 $padanDetail->padan->update([
                     'loss_grand_total' => $padanDetail->padan->details->sum('loss_total'),
                 ]);

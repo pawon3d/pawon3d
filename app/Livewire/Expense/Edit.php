@@ -9,7 +9,7 @@ class Edit extends Component
     public $supplier_id = '';
     public $expense_id;
     public $expense_date = 'dd/mm/yyyy', $note, $grand_total_expect;
-    public $expense_details = [];
+    public $expense_details = [], $prevInputs = [], $prevPrice = [];
 
     public function mount($id)
     {
@@ -23,7 +23,7 @@ class Edit extends Component
         $this->expense_details = $expense->expenseDetails->map(function ($detail) {
             return [
                 'material_id' => $detail->material_id,
-                'material_quantity' => ($detail->material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($detail->material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')',
+                'material_quantity' => ($detail->material->material_details->where('unit_id', $detail->unit_id)->first()->supply_quantity ?? 0) . ' (' . ($detail->material->material_details->where('unit_id', $detail->unit_id)->first()->unit->alias ?? '-') . ')',
                 'quantity_expect' => $detail->quantity_expect,
                 'unit_id' => $detail->unit_id,
                 'price_expect' => $detail->price_expect,
@@ -67,8 +67,18 @@ class Edit extends Component
         if ($materialId) {
             $material = \App\Models\Material::find($materialId);
             $this->expense_details[$index]['material_id'] = $materialId;
-            $this->expense_details[$index]['unit_id'] = '';
-            $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+            if ($this->expense_details[$index]['unit_id'] != '') {
+                $unit = \App\Models\Unit::find($this->expense_details[$index]['unit_id']);
+                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
+                if ($price > 0) {
+                    $this->prevInputs[$index] = true;
+                    $this->prevPrice[$index] = $price;
+                }
+            } else {
+                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+                $this->expense_details[$index]['unit_id'] = '';
+            }
             $this->expense_details[$index]['quantity_expect'] = 0; // Reset quantity when changing material
             $this->expense_details[$index]['price_expect'] = 0; // Reset price when changing material
             $this->expense_details[$index]['detail_total_expect'] = 0; // Reset total when changing material
@@ -87,6 +97,18 @@ class Edit extends Component
     {
         if ($unitId) {
             $this->expense_details[$index]['unit_id'] = $unitId;
+            if ($this->expense_details[$index]['material_id'] != '') {
+                $material = \App\Models\Material::find($this->expense_details[$index]['material_id']);
+                $unit = \App\Models\Unit::find($unitId);
+                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
+                if ($price > 0) {
+                    $this->prevInputs[$index] = true;
+                    $this->prevPrice[$index] = $price;
+                }
+            } else {
+                $this->expense_details[$index]['material_quantity'] = '0 (satuan)';
+            }
         } else {
             $this->expense_details[$index]['unit_id'] = '';
         }
@@ -95,21 +117,14 @@ class Edit extends Component
     public function updatedExpenseDetails()
     {
         $this->expense_details = array_map(function ($detail) {
-            if (isset($detail['material_id']) && $detail['material_id']) {
-                $material = \App\Models\Material::find($detail['material_id']);
-                $detail['material_quantity'] = ($material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+            if (isset($detail['material_id']) && isset($detail['unit_id']) && $detail['material_id'] && $detail['unit_id']) {
                 $detail['detail_total_expect'] = $detail['quantity_expect'] * $detail['price_expect'];
-            } else {
-                $detail['material_quantity'] = '0 (satuan)';
             }
             return $detail;
         }, $this->expense_details);
         $this->grand_total_expect = array_sum(array_column($this->expense_details, 'detail_total_expect'));
     }
-    // public function updatedExpenseDate($value)
-    // {
-    //     $this->expense_date = \Carbon\Carbon::createFromFormat('d/m/Y', $value)->format('d/m/Y');
-    // }
+
     public function updatedSupplierId($value)
     {
         $this->supplier_id = $value;

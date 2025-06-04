@@ -34,6 +34,12 @@ use Illuminate\Support\Facades\Route;
                 <flux:navlist.item icon="list-bullet" :href="route('kategori-persediaan')"
                     :current="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan')" wire:navigate>{{
                     __('Kategori') }}</flux:navlist.item>
+                <flux:navlist.item icon="home-modern" :href="route('belanja')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{
+                    __('Belanja') }}</flux:navlist.item>
+                <flux:navlist.item icon="clipboard-document-check" :href="route('padan')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'padan')" wire:navigate>{{
+                    __('Hitung dan Padan') }}</flux:navlist.item>
             </flux:navlist.group>
 
 

@@ -140,6 +140,10 @@
                             <input type="number" placeholder="0" min="0"
                                 wire:model.number.live="expense_details.{{ $index }}.price_expect"
                                 class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none text-right" />
+                            @if (isset($prevInputs[$index]))
+                            <span class="text-xs text-blue-500">Harga Sebelumnya: Rp{{ number_format($prevPrice[$index],
+                                0, ',', '.') }}</span>
+                            @endif
                         </td>
                         <td class="px-6 py-3">
                             Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}

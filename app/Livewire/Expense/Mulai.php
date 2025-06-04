@@ -106,17 +106,6 @@ class Mulai extends Component
                     'total_actual' => $updatedQuantityGet * $expenseDetail->price_expect,
                 ]);
 
-                // Update stok material detail
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $expenseDetail->material_id)
-                    ->where('unit_id', $expenseDetail->unit_id)
-                    ->first();
-
-                if ($materialDetail) {
-                    $materialDetail->update([
-                        'supply_quantity' => $materialDetail->supply_quantity + $quantityToAdd,
-                    ]);
-                }
-
                 // Update total keseluruhan belanja
                 $expenseDetail->expense->update([
                     'grand_total_actual' => $expenseDetail->expense->expenseDetails->sum('total_actual'),
