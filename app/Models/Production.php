@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Production extends Model
 {
+    use LogsActivity;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -15,19 +19,34 @@ class Production extends Model
         'id',
     ];
 
-    public function product()
+    public function getActivitylogOptions(): LogOptions
     {
-        return $this->belongsTo(Product::class);
+        return LogOptions::defaults()
+            ->useLogName('productions')
+            ->logAll()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(function (string $eventName) {
+                $nomorProduksi = $this->production_number;
+
+                $terjemahan = [
+                    'created' => 'ditambahkan',
+                    'updated' => 'diperbarui',
+                    'deleted' => 'dihapus',
+                    'restored' => 'dipulihkan',
+                ];
+
+                return "Produksi {$nomorProduksi} {$terjemahan[$eventName]}";
+            })
+            ->dontSubmitEmptyLogs();
     }
 
-    public function transaction_detail()
+    public function details()
     {
-        return $this->belongsTo(TransactionDetail::class);
+        return $this->hasMany(ProductionDetail::class);
     }
-
-    public function transaction()
+    public function workers()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->hasMany(ProductionWorker::class);
     }
 
     public static function boot()
@@ -36,6 +55,16 @@ class Production extends Model
 
         static::creating(function ($model) {
             $model->id = Str::uuid();
+            DB::transaction(function () use ($model) {
+                $lastProduction = DB::table('productions')
+                    ->lockForUpdate()
+                    ->orderByDesc('production_number')
+                    ->first();
+                $lastNumber = $lastProduction ? (int) substr($lastProduction->production_number, 2) : 0;
+                $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+                $model->production_number = 'PS' . $nextNumber;
+            });
         });
     }
 }

@@ -39,7 +39,7 @@
             <label for="siap-beli" class="cursor-pointer">
                 <div
                     class="{{ $fromMethod === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
-                    <flux:icon icon="at-symbol" class="size-8" />
+                    <flux:icon icon="dessert" class="size-8" />
                     <span class="text-center hidden md:block">Kue Siap Beli</span>
                 </div>
             </label>
@@ -63,7 +63,7 @@
             <label for="siap-beli" class="cursor-pointer">
                 <div
                     class="{{ $fromMethod === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
-                    <flux:icon icon="at-symbol" class="size-8" />
+                    <flux:icon icon="dessert" class="size-8" />
                     <span class="text-center hidden md:block">Kue Siap Beli</span>
                 </div>
             </label>

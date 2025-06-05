@@ -1,79 +1,19 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Daftar Produksi</h1>
-        <div class="flex gap-2 items-center">
+        <div class="flex items-center gap-4">
+            <a href="{{ route('produksi') }}"
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                wire:navigate>
+                <flux:icon.arrow-left variant="mini" class="mr-2" />
+                Kembali
+            </a>
+            <h1 class="text-2xl hidden md:block">Riwayat Produksi {{ $methodName }}</h1>
+        </div>
+        <div class="flex gap-2 items-center justify-end-safe">
             <button type="button" wire:click="cetakInformasi"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
                 Cetak Informasi
             </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
-        </div>
-    </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="exclamation-triangle" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">Pilih salah satu metode penjualan terlebih dahulu (Siap Beli, Pesanan
-                Reguler, atau Pesanan Kotak), lalu tekan tombol "Tambah Produk" untuk menambahkan produk ke metode yang
-                diinginkan.
-            </p>
-            <ul class="mt-2 list-disc pl-5">
-                <li class="text-sm text-gray-500">
-                    <strong>Siap Beli</strong>
-                    untuk produk yang ada di rak penjualan yang bentuknya per potong atau per buah.
-                </li>
-                <li class="text-sm text-gray-500">
-                    <strong>Pesanan Reguler</strong>
-                    untuk produk pesanan yang bentuknya loyangan atau paketan.
-                </li>
-                <li class="text-sm text-gray-500">
-                    <strong>Pesanan Kotak</strong>
-                    untuk paket khusus atau snack box dengan banyak produk dalam satu kotak.
-                </li>
-            </ul>
-
-        </div>
-    </div>
-
-
-    <div class="flex items-center justify-between mt-4 mb-4 flex-row w-full">
-        <div class="relative w-full">
-            <input type="radio" name="method" id="pesanan-reguler" value="pesanan-reguler" wire:model.live="method"
-                class="absolute opacity-0 w-0 h-0">
-            <label for="pesanan-reguler" class="cursor-pointer">
-                <div
-                    class="{{ $method === 'pesanan-reguler' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
-                    <flux:icon icon="cake" class=" size-8" />
-                    <span class="text-center hidden md:block">Pesanan Kue Reguler</span>
-                </div>
-            </label>
-        </div>
-        <div class="relative w-full">
-            <input type="radio" name="method" id="pesanan-kotak" value="pesanan-kotak" wire:model.live="method"
-                class="absolute opacity-0 w-0 h-0">
-            <label for="pesanan-kotak" class="cursor-pointer">
-                <div
-                    class="{{ $method === 'pesanan-kotak' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
-                    <flux:icon icon="cube" class="size-8" />
-                    <span class="text-center hidden md:block">Pesanan Kue Kotak</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="relative w-full">
-            <input type="radio" name="method" id="siap-beli" value="siap-beli" wire:model.live="method"
-                class="absolute opacity-0 w-0 h-0">
-            <label for="siap-beli" class="cursor-pointer">
-                <div
-                    class="{{ $method === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
-                    <flux:icon icon="dessert" class="size-8" />
-                    <span class="text-center hidden md:block">Kue Siap Beli</span>
-                </div>
-            </label>
         </div>
     </div>
 
@@ -87,17 +27,6 @@
                 <flux:icon.funnel variant="mini" />
                 <span>Filter</span>
             </flux:button>
-        </div>
-        <div class="flex gap-2 items-center">
-            <div class="flex gap-2 items-center">
-                <flux:button icon="history" type="button" variant="primary"
-                    href="{{ route('produksi.riwayat', ['method' => $method]) }}">
-                    Riwayat Produksi
-                </flux:button>
-                <flux:button variant="primary" icon="plus" href="{{ route('produksi.tambah', ['method' => $method]) }}">
-                    Tambah Produksi
-                </flux:button>
-            </div>
         </div>
     </div>
     <div class="flex justify-between items-center mb-4">
@@ -149,9 +78,9 @@
             <table class="min-w-full text-sm text-left">
                 <thead class="bg-gray-100 text-gray-700">
                     <tr>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('production_number')">
+                        <th class="px-6 py-3 font-semibold">
                             ID Produk
-                            <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="cursor-pointer">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         </th>
                         <th class="px-6 py-3 font-semibold">Jadwal Produksi</th>
                         <th class="px-6 py-3 font-semibold">Daftar Produk</th>
@@ -165,7 +94,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <!-- ID Produk -->
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('produksi.rincian', $production->id) }}">
+                            <a href="{{ route('produksi.edit', $production->id) }}">
                                 {{ $production->production_number }}
                             </a>
                         </td>
@@ -209,9 +138,6 @@
                             $total_plan = $production->details->sum('quantity_plan');
                             $total_done = $production->details->sum('quantity_get');
                             $progress = $total_plan > 0 ? ($total_done / $total_plan) * 100 : 0;
-                            if ($progress > 100) {
-                            $progress = 100;
-                            }
                             @endphp
 
                             <div class="flex flex-col gap-1">
@@ -235,27 +161,6 @@
             {{ $productions->links() }}
         </div>
     </div>
-
     @endif
 
-
-    <!-- Modal Riwayat Pembaruan -->
-    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Riwayat Pembaruan Produksi</flux:heading>
-            </div>
-            <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </flux:modal>
 </div>

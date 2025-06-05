@@ -56,6 +56,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function workers()
+    {
+        return $this->hasMany(ProductionWorker::class);
+    }
+
     public static function boot()
     {
         parent::boot();

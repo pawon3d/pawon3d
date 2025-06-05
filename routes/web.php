@@ -104,6 +104,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
     Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
+    Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
+    Route::get('/produksi/{id}/edit', App\Livewire\Production\Edit::class)->name('produksi.edit');
+    Route::get('/produksi/{id}/rincian', App\Livewire\Production\Rincian::class)->name('produksi.rincian');
+    Route::get('/produksi/{id}/mulai-produksi', App\Livewire\Production\Mulai::class)->name('produksi.mulai');
+    Route::get('/produksi/riwayat/{method}', App\Livewire\Production\Riwayat::class)->name('produksi.riwayat');
+    Route::get('/produksi/{status}/cetak', [PdfController::class, 'generateProductionPDF'])
+        ->name('produksi.pdf');
+    Route::get('/produksi/cetak/{id}', [PdfController::class, 'generateProductionDetailPDF'])
+        ->name('rincian-produksi.pdf');
     Route::get('/transaksi/{id}/print', function () {
         return view('pdf.pdf', [
             'transaction' => \App\Models\Transaction::find(request()->id)

@@ -13,19 +13,15 @@ return new class extends Migration
     {
         Schema::create('productions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('product_id')->nullable();
-            $table->uuid('transaction_id')->nullable();
-            $table->uuid('transaction_detail_id')->nullable();
-            $table->enum('type', ['siap beli', 'pesanan'])->nullable();
-            $table->decimal('count', 3, 0)->nullable();
-            $table->string('status', 20)->nullable();
-            $table->decimal('time', 10, 0)->nullable();
-            $table->decimal('quantity', 10, 0)->nullable();
+            $table->string('production_number')->nullable();
+            $table->string('method')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->date('note')->nullable();
+            $table->string('status', 20)->default('Draft');
+            $table->boolean('is_start')->default(false);
+            $table->boolean('is_finish')->default(false);
             $table->timestamps();
-
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
-            $table->foreign('transaction_detail_id')->references('id')->on('transaction_details')->onDelete('cascade');
         });
     }
 

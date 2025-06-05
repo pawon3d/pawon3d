@@ -43,7 +43,7 @@ class Pos extends Component
     public function render()
     {
         return view('livewire.transaction.pos', [
-            'products' => $this->filteredProducts,
+            'products' => Product::lazy(),
             'categories' => Category::all(),
             'totalAmount' => $this->totalAmount,
         ]);
