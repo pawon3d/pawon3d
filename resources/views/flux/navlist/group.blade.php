@@ -16,7 +16,7 @@
         @if ($icon)
         <div class="pl-3 pr-4">
             <x-dynamic-component :component="'flux::icon.' . $icon"
-                class="size-4! text-zinc-500 group-data-open/disclosure-button:text-zinc-800 dark:text-white/80 dark:group-data-open/disclosure-button:text-white" />
+                class="size-6! text-zinc-500 group-data-open/disclosure-button:text-zinc-800 dark:text-white/80 dark:group-data-open/disclosure-button:text-white" />
         </div>
         @else
         <div class="pl-3 pr-4">

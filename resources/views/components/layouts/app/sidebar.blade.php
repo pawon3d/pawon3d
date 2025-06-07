@@ -11,23 +11,32 @@ use Illuminate\Support\Facades\Route;
 @endphp
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-        <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+    <div id="sidebar"
+        class="fixed inset-y-0 left-0 z-40 w-12 mt-16 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
-        <flux:navlist variant="outline">
-            <flux:navlist.group heading="Menu" class="grid">
-                <flux:navlist.item icon="align-end-horizontal" :href="route('dashboard')"
+        <flux:navlist variant="outline" class="mt-4 flex-1 flex gap-4 flex-col">
+            <flux:navlist.group expandable :expanded="request()->routeIs('dashboard')" heading="Dashboard"
+                icon="align-end-horizontal">
+                <flux:navlist.item icon="align-end-horizontal" iconVariant="outline" :href="route('dashboard')"
                     :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
-            <flux:navlist.group heading="Karyawan" expandable icon="users"
-                :expanded="Str::startsWith(Route::currentRouteName(), 'user') || Str::startsWith(Route::currentRouteName(), 'role')">
-                <flux:navlist.item icon="user" :href="route('user')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
+
+            <flux:navlist.group heading="Kasir" expandable
+                :expanded="request()->routeIs('pos') || request()->routeIs('transaksi')" icon="cashier">
+                <flux:navlist.item icon="cashier" :href="route('pos')" :current="request()->routeIs('pos')"
+                    wire:navigate>
+                    {{ __('Point of Sale') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="shield-check" :href="route('role')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
-                </flux:navlist.item>
+                <flux:navlist.item icon="calculator" :href="route('transaksi')"
+                    :current="request()->routeIs('transaksi')" wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
             </flux:navlist.group>
+
+            <flux:navlist.group expandable :expanded="request()->routeIs('produksi')" heading="Produksi"
+                icon="chef-hat">
+                <flux:navlist.item icon="chef-hat" :href="route('produksi')" :current="request()->routeIs('produksi')"
+                    wire:navigate>{{ __('Produksi') }}</flux:navlist.item>
+            </flux:navlist.group>
+
 
             <flux:navlist.group heading="Inventori" expandable icon="warehouse"
                 :expanded="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan') || Str::startsWith(Route::currentRouteName(), 'bahan-')">
@@ -46,41 +55,53 @@ use Illuminate\Support\Facades\Route;
                 <flux:navlist.item icon="clipboard-document-check" :href="route('padan')"
                     :current="Str::startsWith(Route::currentRouteName(), 'padan')" wire:navigate>{{
                     __('Hitung dan Padan') }}</flux:navlist.item>
+                <flux:navlist.group heading="Produk" expandable icon="align-end-horizontal"
+                    :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
+                    <flux:navlist.item icon="list-bullet" :href="route('kategori')"
+                        :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
+                    <flux:navlist.item icon="inbox-stack" :href="route('produk')"
+                        :current="request()->routeIs('produk')" wire:navigate>{{ __('Daftar Produk') }}
+                    </flux:navlist.item>
+                </flux:navlist.group>
+            </flux:navlist.group>
+
+            <flux:navlist.group heading="Penilaian" expandable
+                :expanded="request()->routeIs('hadiah') || request()->routeIs('penukaran')" icon="star"
+                iconVariant="solid">
+                <flux:navlist.item icon="gift" :href="route('hadiah')"
+                    :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
+                    wire:navigate>
+                    {{ __('Hadiah') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="star" iconVariant="solid" :href="route('penukaran')"
+                    :current="request()->routeIs('penukaran')" wire:navigate>{{
+                    __('Penilaian') }}</flux:navlist.item>
+            </flux:navlist.group>
+
+            <flux:navlist.group heading="Karyawan" expandable icon="users" :expanded="false">
+                <flux:navlist.item icon="user" :href="route('user')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="shield-check" :href="route('role')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
 
-            <flux:navlist.group heading="Produk" expandable icon="align-end-horizontal"
-                :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
-                <flux:navlist.item icon="list-bullet" :href="route('kategori')"
-                    :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
-                <flux:navlist.item icon="inbox-stack" :href="route('produk')" :current="request()->routeIs('produk')"
-                    wire:navigate>{{ __('Daftar Produk') }}</flux:navlist.item>
+            <flux:navlist.group expandable :expanded="request()->routeIs('pengaturan')" heading="Pengaturan"
+                icon="cog-6-tooth">
+                <flux:navlist.item icon="cog-6-tooth" :href="route('pengaturan')"
+                    :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Toko') }}
+                </flux:navlist.item>
             </flux:navlist.group>
-
-            <flux:navlist.item icon="chef-hat" :href="route('produksi')" :current="request()->routeIs('produksi')"
-                wire:navigate>{{ __('Produksi') }}</flux:navlist.item>
-
-            <flux:navlist.item icon="cashier" :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>{{
-                __('Point of Sale') }}</flux:navlist.item>
-            <flux:navlist.item icon="calculator" :href="route('transaksi')" :current="request()->routeIs('transaksi')"
-                wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
-            <flux:navlist.item icon="gift" :href="route('hadiah')"
-                :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
-                wire:navigate>{{
-                __('Hadiah') }}</flux:navlist.item>
-            <flux:navlist.item icon="star" iconVariant="solid" :href="route('penukaran')"
-                :current="request()->routeIs('penukaran')" wire:navigate>{{
-                __('Penilaian') }}</flux:navlist.item>
-            <flux:navlist.item icon="cog-6-tooth" :href="route('pengaturan')"
-                :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Toko') }}
-            </flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />
-    </flux:sidebar>
+    </div>
 
     <!-- Mobile User Menu -->
-    <flux:header class="block! bg-white lg:bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+    {{-- <flux:header
+        class="block! bg-white lg:bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
 
         <div class="flex items-center justify-between w-full">
             <flux:navbar class="hidden lg:flex w-full">
@@ -189,9 +210,80 @@ use Illuminate\Support\Facades\Route;
                 </flux:dropdown>
             </flux:navbar>
         </div>
-    </flux:header>
+    </flux:header> --}}
 
-    {{ $slot }}
+    <div class="fixed inset-x-0 top-0 z-50 bg-[#333333] border-b border-zinc-200 shadow-sm">
+        <div class="flex items-center justify-between h-16 pr-4">
+            <!-- Tombol toggle -->
+            <div class="flex flex-row items-center gap-4 ">
+                <flux:button type="button" variant="ghost" onclick="toggleSidebar()">
+                    <flux:icon.bars-3 variant="outline" class="text-gray-100" />
+                </flux:button>
+                @if (!empty($mainTitle))
+                <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
+                    <div class="ml-1 grid flex-1 text-left text-lg">
+                        <span class="mb-0.5 truncate leading-none">{{ $mainTitle }}</span>
+                    </div>
+                </div>
+                @else
+                <flux:navbar.item href="{{ route('dashboard') }}" class="md:flex hidden">
+                    <x-app-logo />
+                </flux:navbar.item>
+                @endif
+            </div>
+            <flux:dropdown position="top" align="start">
+                <flux:button variant="ghost">
+                    <div class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                        <span
+                            class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                            {{ auth()->user()->initials() }}
+                        </span>
+                    </div>
+                    <span class="font-semibold text-gray-100">{{ auth()->user()->name }}</span>
+                    <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
+                </flux:button>
+
+                <flux:menu>
+                    <flux:menu.radio.group>
+                        <div class="p-0 text-sm font-normal">
+                            <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                    <span
+                                        class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                        {{ auth()->user()->initials() }}
+                                    </span>
+                                </span>
+
+                                <div class="grid flex-1 text-left text-sm leading-tight">
+                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                                    <span class="truncate text-xs">{{ auth()->user()->role }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <flux:menu.radio.group>
+                        <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
+                    </flux:menu.radio.group>
+
+                    <flux:menu.separator />
+
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                            {{ __('Log Out') }}
+                        </flux:menu.item>
+                    </form>
+                </flux:menu>
+            </flux:dropdown>
+        </div>
+    </div>
+
+    <div id="main-content" class="lg:ml-12 ml-12 mt-16 transition-all duration-300">
+        {{ $slot }}
+    </div>
 
     @fluxScripts
     <script src="{{ asset('flowbite/flowbite.min.js') }}"></script>
@@ -222,6 +314,26 @@ use Illuminate\Support\Facades\Route;
                 timer: 1500
             });
         });
+    </script>
+    <script>
+        function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const labels = document.querySelectorAll('.menu-label');
+      const content = document.getElementById('main-content');
+
+      // Toggle lebar sidebar
+      sidebar.classList.toggle('w-56');
+      sidebar.classList.toggle('w-12');
+
+      // Toggle label teks
+      labels.forEach(label => {
+        label.classList.toggle('hidden');
+      });
+
+      // Geser konten utama
+      content.classList.toggle('lg:ml-56');
+      content.classList.toggle('lg:ml-12');
+    }
     </script>
     @yield('scripts')
 </body>
