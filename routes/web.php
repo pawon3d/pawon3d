@@ -45,7 +45,17 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
-    Route::get('/pengguna', Index::class)->name('pengguna');
+    Route::get('/pekerja', Index::class)->name('user');
+    Route::get('/pekerja/tambah', App\Livewire\User\Tambah::class)->name('user.tambah');
+    Route::get('/pekerja/{id}/rincian', App\Livewire\User\Rincian::class)->name('user.edit');
+    Route::get('/pekerja/cetak', [PdfController::class, 'generateUserPDF'])
+        ->name('user.pdf');
+
+    Route::get('/peran', App\Livewire\Peran\Index::class)->name('role');
+    Route::get('/peran/tambah', App\Livewire\Peran\Tambah::class)->name('role.tambah');
+    Route::get('/peran/{id}/rincian', App\Livewire\Peran\Rincian::class)->name('role.edit');
+    Route::get('/peran/cetak', [PdfController::class, 'generateRolePDF'])
+        ->name('role.pdf');
 
     Route::post('/read-notification/{id}', function ($id) {
         $notification = \App\Models\Notification::find($id);

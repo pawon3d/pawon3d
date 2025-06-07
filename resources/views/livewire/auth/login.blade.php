@@ -13,7 +13,7 @@ use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Validate('required|string')]
-    public string $username = '';
+    public string $email = '';
 
     #[Validate('required|string')]
     public string $password = '';
@@ -34,11 +34,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['username' => $this->username, 'password' => $this->password], $this->remember)) {
+        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => __('Salah username atau password'),
+                'email' => __('Salah email atau pin'),
             ]);
         }
 
@@ -62,7 +62,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'username' => __('auth.throttle', [
+            'email' => __('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -74,7 +74,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->username).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
     }
 }; ?>
 
@@ -85,14 +85,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form wire:submit="login" class="flex flex-col gap-6">
-        <!-- Username -->
-        <flux:input wire:model="username" :label="__('Username')" type="text" name="username" required autofocus
-            autocomplete="username" placeholder="Username" />
+        <!-- email -->
+        <flux:input wire:model="email" :label="__('Email')" type="email" name="email" required autofocus
+            autocomplete="email" placeholder="Email" />
 
-        <!-- Password -->
+        <!-- password -->
         <div class="relative">
-            <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required
-                autocomplete="current-password" placeholder="Password" viewable />
+            <flux:input wire:model="password" :label="__('Pin')" type="password" name="password" required
+                autocomplete="current-password" placeholder="Pin" viewable />
         </div>
 
         <!-- Remember Me -->

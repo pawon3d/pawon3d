@@ -11,6 +11,8 @@ use App\Models\Material;
 use App\Models\Supplier;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,11 +23,27 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Pemilik',
-            'username' => 'pemilik',
-            'role' => 'pemilik',
+        // Buat role jika belum ada
+        Permission::create(['name' => 'Inventori']);
+        Permission::create(['name' => 'Produksi']);
+        Permission::create(['name' => 'Kasir']);
+        Permission::create(['name' => 'Manajemen Sistem']);
+
+        $role = Role::firstOrCreate(['name' => 'Manajemen Sistem'])->givePermissionTo([
+            'Manajemen Sistem',
         ]);
+
+        // Buat user default
+        $user = User::create([
+            'name' => 'Pemilik',
+            'email' => 'pemilik@pawon3d.local',
+            'phone' => '08123456789',
+            'password' => bcrypt('1234'),
+            'image' => null,
+        ]);
+
+        // Assign role
+        $user->assignRole($role);
 
         Category::create([
             'name' => 'Makanan',

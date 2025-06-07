@@ -1,0 +1,3 @@
+Ubah logika matematika di bagian produksi
+rincian produk tambahkan review
+is_many dan pcs di produk diubah

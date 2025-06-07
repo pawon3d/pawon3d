@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -25,13 +28,6 @@ class User extends Authenticatable
     protected $table = 'users';
     protected $guarded = [
         'id',
-    ];
-
-    protected $fillable = [
-        'name',
-        'username',
-        'role',
-        'password',
     ];
 
     /**
@@ -54,6 +50,27 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('users')
+            ->logAll()
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(function (string $eventName) {
+                $nama = $this->name;
+
+                $terjemahan = [
+                    'created' => 'ditambahkan',
+                    'updated' => 'diperbarui',
+                    'deleted' => 'dihapus',
+                    'restored' => 'dipulihkan',
+                ];
+
+                return "{$nama} {$terjemahan[$eventName]}";
+            })
+            ->dontSubmitEmptyLogs();
     }
 
     public function workers()

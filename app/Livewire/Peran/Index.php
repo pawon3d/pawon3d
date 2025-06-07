@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Livewire\User;
+namespace App\Livewire\Peran;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\SpatieRole as Role;
 
 class Index extends Component
 {
-    use LivewireAlert;
+    use \Livewire\WithPagination,
+        \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $search = '';
     public $showHistoryModal = false;
     public $activityLogs = [];
@@ -20,7 +19,7 @@ class Index extends Component
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('users')
+        $this->activityLogs = Activity::inLog('roles')
             ->latest()
             ->limit(50)
             ->get();
@@ -30,28 +29,24 @@ class Index extends Component
 
     public function cetakInformasi()
     {
-        return redirect()->route('user.pdf', [
+        return redirect()->route('role.pdf', [
             'search' => $this->search,
         ]);
     }
 
     public function mount()
     {
-        View::share('title', 'Pekerja');
+        View::share('title', 'Peran');
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
     }
-
-
     public function render()
     {
-        $users = User::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
-        })
-            ->orderBy('name')
-            ->paginate(10);
-
-        return view('livewire.user.index', compact('users'));
+        return view('livewire.peran.index', [
+            'roles' => Role::when($this->search, function ($query) {
+                return $query->where('name', 'like', '%' . $this->search . '%');
+            })->with('permissions', 'users')->orderBy('name')->paginate(10)
+        ]);
     }
 }

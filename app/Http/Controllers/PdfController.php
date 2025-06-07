@@ -241,4 +241,25 @@ class PdfController extends Controller
         $pdf->setPaper('A4', 'landscape');
         return $pdf->download('rincian-padan-persediaan-' . $padan->padan_number . '.pdf');
     }
+
+
+    public function generateUserPDF(Request $request)
+    {
+        $users = \App\Models\User::when($request->search, function ($query) use ($request) {
+            return $query->where('name', 'like', '%' . $request->search . '%');
+        })->with('roles')->get();
+
+        $pdf = PDF::loadView('pdf.user', compact('users'));
+        return $pdf->download('daftar-pekerja.pdf');
+    }
+
+    public function generateRolePDF(Request $request)
+    {
+        $roles = \App\Models\SpatieRole::when($request->search, function ($query) use ($request) {
+            return $query->where('name', 'like', '%' . $request->search . '%');
+        })->get();
+
+        $pdf = PDF::loadView('pdf.role', compact('roles'));
+        return $pdf->download('daftar-peran.pdf');
+    }
 }

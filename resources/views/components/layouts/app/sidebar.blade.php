@@ -19,9 +19,15 @@ use Illuminate\Support\Facades\Route;
                 <flux:navlist.item icon="align-end-horizontal" :href="route('dashboard')"
                     :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
-
-            <flux:navlist.item icon="users" :href="route('pengguna')" :current="request()->routeIs('pengguna')"
-                wire:navigate>{{ __('Pengguna') }}</flux:navlist.item>
+            <flux:navlist.group heading="Karyawan" expandable icon="users"
+                :expanded="Str::startsWith(Route::currentRouteName(), 'user') || Str::startsWith(Route::currentRouteName(), 'role')">
+                <flux:navlist.item icon="user" :href="route('user')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="shield-check" :href="route('role')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
 
             <flux:navlist.group heading="Inventori" expandable icon="warehouse"
                 :expanded="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan') || Str::startsWith(Route::currentRouteName(), 'bahan-')">
