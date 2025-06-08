@@ -58,19 +58,29 @@ class Production extends Model
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
                 $today = Carbon::now()->format('ymd'); // YYMMDD
-                $prefix = 'PS-' . $today;
 
-                // Ambil produksi terakhir untuk hari ini
+                // Tentukan prefix berdasarkan metode
+                $prefixMap = [
+                    'pesanan-kotak' => 'PK',
+                    'pesanan-reguler' => 'PR',
+                    'siap-beli' => 'PS',
+                ];
+
+                // Ambil metode dari model, pastikan lowercase kalau perlu
+                $method = $model->method ?? 'default';
+                $basePrefix = $prefixMap[$method] ?? 'PS'; // fallback ke 'PS' kalau tidak cocok
+
+                $prefix = $basePrefix . '-' . $today;
+
+                // Cari nomor terakhir untuk kombinasi metode + tanggal
                 $lastProduction = DB::table('productions')
                     ->lockForUpdate()
                     ->where('production_number', 'like', $prefix . '-%')
                     ->orderByDesc('production_number')
                     ->first();
 
-                // Ambil nomor urutan terakhir di hari ini
                 $lastNumber = 0;
                 if ($lastProduction) {
-                    // Contoh hasil: PS-250522-0010 → ambil "0010"
                     $lastNumber = (int) substr($lastProduction->production_number, -4);
                 }
 

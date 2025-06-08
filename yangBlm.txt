@@ -1,8 +1,9 @@
 Ubah logika matematika di bagian produksi
 rincian produk tambahkan review
 is_many dan pcs di produk diubah
-padan diubah jadi catat
+refactor padan v
 unique number diubah v
+kode produksi berdasarkan metode v
 status di riwayat belanja
 
 
