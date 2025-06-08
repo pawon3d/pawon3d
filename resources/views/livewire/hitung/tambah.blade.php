@@ -1,11 +1,11 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('padan') }}"
+        <a href="{{ route('hitung') }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
         </a>
-        <h1 class="text-2xl">Ubah Aksi</h1>
+        <h1 class="text-2xl">Tambah Aksi</h1>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="exclamation-triangle" />
@@ -27,7 +27,7 @@
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
             <flux:label>Pilih Aksi</flux:label>
             <p class="text-sm text-gray-500">
-                Pilih aksi hitung atau padan (catat rusak atau hilang) persediaan sesuai dengan kebutuhan.
+                Pilih aksi hitung atau hitung (catat rusak atau hilang) persediaan sesuai dengan kebutuhan.
             </p>
             <flux:select placeholder="- Pilih Aksi Persediaan -" wire:model="action">
 
@@ -59,11 +59,11 @@
                             return `${day}/${month}/${year}`;
                         },
                         onSelect: function() {
-                            @this.set('padan_date', moment(this.getDate()).format('DD/MM/YYYY'));
+                            @this.set('hitung_date', moment(this.getDate()).format('DD/MM/YYYY'));
                             }
                         });
-                        " wire:model.defer="padan_date" id="datepicker" readonly />
-            <flux:error name="padan_date" />
+                        " wire:model.defer="hitung_date" id="datepicker" readonly />
+            <flux:error name="hitung_date" />
         </div>
 
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
@@ -82,7 +82,7 @@
         </div>
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <p class="text-sm text-gray-500">
-                Tambah barang yang akan dilakukan hitung atau padan, barang dihitung atau dipadan agar jumlah dan
+                Tambah barang yang akan dilakukan hitung atau hitung, barang dihitung atau dihitung agar jumlah dan
                 kondisi yang dimiliki secara fisik dan sistem sama.
             </p>
             <flux:button icon="plus" type="button" variant="primary" wire:click="addDetail">
@@ -90,7 +90,7 @@
             </flux:button>
         </div>
 
-        <flux:error name="padan_details.*" />
+        <flux:error name="hitung_details.*" />
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
@@ -103,12 +103,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($padan_details as $index => $detail)
+                    @foreach($hitung_details as $index => $detail)
                     <tr>
                         <td class="px-6 py-3">
                             <select
                                 class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="padan_details.{{ $index }}.material_id"
+                                wire:model="hitung_details.{{ $index }}.material_id"
                                 wire:change="setMaterial({{ $index }}, $event.target.value)">
                                 <option value="" class="text-gray-700">- Pilih Barang -</option>
                                 @foreach ($materials as $material)
@@ -121,7 +121,7 @@
                         <td class="px-6 py-3">
                             <select
                                 class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="padan_details.{{ $index }}.unit_id"
+                                wire:model="hitung_details.{{ $index }}.unit_id"
                                 wire:change="setUnit({{ $index }}, $event.target.value)">
                                 @php
                                 $material = $materials->firstWhere('id', $detail['material_id']);
@@ -173,13 +173,15 @@
 
 
     <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('padan.rincian', $padan_id) }}"
+        <a href="{{ route('hitung') }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal
         </a>
-        <flux:button icon="archive-box" type="button" variant="primary" wire:click.prevent="update">
-            Simpan
+        <flux:button icon="pencil-square" type="button" variant="primary" wire:click.prevent="store">Simpan Sebagai
+            Draft
+        </flux:button>
+        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click.prevent="start">Mulai Aksi
         </flux:button>
     </div>
 

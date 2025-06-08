@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Expense;
+use App\Models\Hitung;
 use App\Models\IngredientCategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -155,7 +156,7 @@ class DatabaseSeeder extends Seeder
         });
 
         $this->call([
-            PadanSeeder::class,
+            HitungSeeder::class,
         ]);
     }
 }

@@ -1,12 +1,12 @@
 <div>
     <div class="mb-4 flex justify-between items-center">
         <div class="flex gap-2 items-center">
-            <a href="{{ route('padan') }}"
+            <a href="{{ route('hitung') }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
                 <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
                 Kembali
             </a>
-            <h1 class="text-2xl">Rincian {{ $padan->action }}</h1>
+            <h1 class="text-2xl">Rincian {{ $hitung->action }}</h1>
         </div>
         <div class="flex gap-2 items-center">
             <button type="button" wire:click="cetakInformasi"
@@ -32,14 +32,14 @@
     </div>
 
     <div class="w-full flex flex-col gap-4 mt-4">
-        <h1 class="text-3xl font-bold">{{ $padan->padan_number }}</h1>
+        <h1 class="text-3xl font-bold">{{ $hitung->hitung_number }}</h1>
         <p class="text-lg text-gray-500">{{ $status }}</p>
         <div class="flex items-center justify-between gap-4 flex-row">
             <div class="flex items-center gap-16 flex-row">
                 <div class="flex items-start gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Tanggal Aksi</flux:heading>
-                    <p class="text-sm text-start">{{ $padan->padan_date ?
-                        \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y') : '-'
+                    <p class="text-sm text-start">{{ $hitung->hitung_date ?
+                        \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y') : '-'
                         }}</p>
                 </div>
                 <div class="flex items-start gap-4 flex-col">
@@ -55,7 +55,7 @@
                 <div class="flex items-end gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Jenis Aksi</flux:heading>
                     <p class="text-sm">
-                        {{ $padan->action }}
+                        {{ $hitung->action }}
                     </p>
                 </div>
                 <div class="flex items-end gap-4 flex-col">
@@ -67,7 +67,7 @@
 
         <div class="flex items-start text-start space-x-2 gap-3 flex-col mt-4">
             <flux:heading class="text-lg font-semibold">Catatan Aksi</flux:heading>
-            <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $padan->note }}</flux:textarea>
+            <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $hitung->note }}</flux:textarea>
         </div>
     </div>
 
@@ -84,16 +84,16 @@
                         <th class="text-left px-6 py-3">Jumlah Diharapkan</th>
                         <th class="text-left px-6 py-3">
                             Jumlah
-                            @if ($padan->action == 'Hitung Persediaan')
+                            @if ($hitung->action == 'Hitung Persediaan')
                             Terhitung
-                            @elseif ($padan->action == 'Catat Persediaan Rusak')
+                            @elseif ($hitung->action == 'Catat Persediaan Rusak')
                             Rusak
-                            @elseif ($padan->action == 'Catat Persediaan Hilang')
+                            @elseif ($hitung->action == 'Catat Persediaan Hilang')
                             Hilang
                             @endif
                         </th>
                         <th class="text-left px-6 py-3">
-                            @if ($padan->action == 'Hitung Persediaan')
+                            @if ($hitung->action == 'Hitung Persediaan')
                             Selisih Jumlah
                             @else
                             Jumlah Sebenarnya
@@ -102,7 +102,7 @@
                         <th class="text-left px-6 py-3">Satuan Ukur</th>
                         <th class="text-left px-6 py-3">Modal</th>
                         <th class="text-left px-6 py-3">
-                            @if($padan->action == 'Hitung Persediaan')
+                            @if($hitung->action == 'Hitung Persediaan')
                             Selisih Modal
                             @else
                             Kerugian
@@ -111,7 +111,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($padanDetails as $detail)
+                    @foreach($hitungDetails as $detail)
                     <tr>
                         <td class="px-6 py-3">
                             <span class="text-sm">
@@ -130,7 +130,7 @@
                         </td>
                         <td class="px-6 py-3">
                             <span class="text-sm">
-                                @if ($padan->action == 'Hitung Persediaan')
+                                @if ($hitung->action == 'Hitung Persediaan')
                                 {{ $detail->quantity_actual - $detail->quantity_expect }}
                                 @else
                                 {{ $detail->quantity_expect - $detail->quantity_actual }}
@@ -163,12 +163,12 @@
                         </td>
                         <td class="px-6 py-3">
                             <span class="text-gray-700">
-                                Rp{{ number_format($padan->grand_total, 0, ',', '.') }}
+                                Rp{{ number_format($hitung->grand_total, 0, ',', '.') }}
                             </span>
                         </td>
                         <td class="px-6 py-3">
                             <span class="text-gray-700">
-                                Rp{{ number_format($padan->loss_grand_total, 0, ',', '.') }}
+                                Rp{{ number_format($hitung->loss_grand_total, 0, ',', '.') }}
                             </span>
                         </td>
                     </tr>
@@ -181,26 +181,27 @@
     <div class="flex justify-end mt-16 gap-4">
         <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
             Selesaikan
-            @if ($padan->action == 'Hitung Persediaan')
+            @if ($hitung->action == 'Hitung Persediaan')
             Hitung
             @else
             Catat
             @endif
         </flux:button>
         @if($status != 'Selesai')
-        <flux:button icon="pencil-square" type="button" variant="primary" href="{{ route('padan.mulai', $padan->id) }}">
-            {{ $padan->action }}
+        <flux:button icon="pencil-square" type="button" variant="primary"
+            href="{{ route('hitung.mulai', $hitung->id) }}">
+            {{ $hitung->action }}
         </flux:button>
         @endif
     </div>
     @elseif (!$is_start && !$is_finish)
     <div class="flex justify-end mt-16 gap-4">
         <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
-        <flux:button icon="pencil" type="button" href="{{ route('padan.edit', $padan_id) }}">
+        <flux:button icon="pencil" type="button" href="{{ route('hitung.edit', $hitung_id) }}">
             Ubah Daftar Persediaan
         </flux:button>
         <flux:button icon="play" variant="solid" type="button" variant="primary" wire:click="start">
-            Mulai {{ $padan->action }}
+            Mulai {{ $hitung->action }}
         </flux:button>
     </div>
     @endif
@@ -211,7 +212,7 @@
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <h1 size="lg">Riwayat Pembaruan {{ $padan->padan_number }}</h1>
+                <h1 size="lg">Riwayat Pembaruan {{ $hitung->hitung_number }}</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach($activityLogs as $log)

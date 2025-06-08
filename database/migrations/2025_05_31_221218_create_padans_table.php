@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('padans', function (Blueprint $table) {
+        Schema::create('hitungs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('padan_number')->unique();
+            $table->string('hitung_number')->unique();
             $table->enum('action', ['Hitung Persediaan', 'Catat Persediaan Rusak', 'Catat Persediaan Hilang'])->nullable();
             $table->string('note')->nullable();
             $table->string('status')->default('Draft');
-            $table->date('padan_date')->nullable();
-            $table->date('padan_date_finish')->nullable();
+            $table->date('hitung_date')->nullable();
+            $table->date('hitung_date_finish')->nullable();
             $table->boolean('is_start')->default(false);
             $table->boolean('is_finish')->default(false);
             $table->decimal('grand_total', 15, 2)->default(0);
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('padans');
+        Schema::dropIfExists('hitungs');
     }
 };

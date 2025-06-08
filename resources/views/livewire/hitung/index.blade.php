@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Hitung dan Padan Persediaan</h1>
+        <h1 class="text-3xl font-bold">Hitung dan Catat Persediaan</h1>
         <div class="flex gap-2 items-center">
             <button type="button" wire:click="cetakInformasi"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
@@ -21,7 +21,7 @@
             <p class="mt-1 text-sm text-gray-500">
                 Demi menjaga akurasi data persediaan dan mencegah terjadinya selisih jumlah, penting untuk melakukan
                 pengecekan secara berkala terhadap jumlah dan kondisi barang, sehingga catatan fisik dan sistem selalu
-                terkini, akurat, dan dapat dipertanggungjawabkan. Hitung untuk menghitung jumlah persediaan dan padan
+                terkini, akurat, dan dapat dipertanggungjawabkan. Hitung untuk menghitung jumlah persediaan dan hitung
                 untuk mencatat persediaan yang rusak atau hilang.
             </p>
         </div>
@@ -39,7 +39,7 @@
         </div>
         <div class="p-4 flex gap-4">
             <div class="flex gap-2 items-center">
-                <a href="{{ route('padan.riwayat') }}"
+                <a href="{{ route('hitung.riwayat') }}"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
                     wire:navigate>
                     <flux:icon.history class="mr-2" />
@@ -47,7 +47,7 @@
                 </a>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('padan.tambah') }}"
+                <a href="{{ route('hitung.tambah') }}"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
                     wire:navigate>
                     <flux:icon.plus class="mr-2" />
@@ -65,7 +65,7 @@
                     @else
                     Semua Aksi
                     @endif
-                    ({{ $padans->total() }})
+                    ({{ $hitungs->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
                 <flux:menu>
@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    @if ($padans->isEmpty())
+    @if ($hitungs->isEmpty())
     <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
         <p class="text-gray-700 font-semibold">Belum Ada Aksi.</p>
         <p class="text-gray-700">Tekan tombol “Tambah Aksi” untuk menambahkan aksi.</p>
@@ -123,23 +123,24 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($padans as $padan)
+                    @foreach($hitungs as $hitung)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('padan.rincian', $padan->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                {{ $padan->padan_number }}
+                            <a href="{{ route('hitung.rincian', $hitung->id) }}"
+                                class="hover:bg-gray-50 cursor-pointer">
+                                {{ $hitung->hitung_number }}
                             </a>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $padan->padan_date ? \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y')
+                            {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y')
                             :
                             '-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $padan->action ??'-' }}
+                            {{ $hitung->action ??'-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $padan->status ?? '-' }}
+                            {{ $hitung->status ?? '-' }}
                         </td>
                     </tr>
                     @endforeach
@@ -149,7 +150,7 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $padans->links() }}
+            {{ $hitungs->links() }}
         </div>
     </div>
     @endif
@@ -158,7 +159,7 @@
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Riwayat Pembaruan Hitung dan Padan Persediaan</flux:heading>
+                <flux:heading size="lg">Riwayat Pembaruan Hitung dan Catat Persediaan</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach($activityLogs as $log)

@@ -201,45 +201,45 @@ class PdfController extends Controller
         return $pdf->download('rincian-belanja-persediaan-' . $expense->expense_number . '.pdf');
     }
 
-    public function generatePadanPDF(Request $request)
+    public function generateHitungPDF(Request $request)
     {
         $status = $request->status ?? 'all';
         if ($request->status === 'history') {
-            $padans = \App\Models\Padan::with(['details'])
+            $hitungs = \App\Models\Hitung::with(['details'])
                 ->where('is_finish', true)
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('padan_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
                 })
                 ->latest()
                 ->get();
-            $pdf = PDF::loadView('pdf.padan', compact('padans', 'status'));
-            return $pdf->download('riwayat-padan-persediaan.pdf');
+            $pdf = PDF::loadView('pdf.hitung', compact('hitungs', 'status'));
+            return $pdf->download('riwayat-hitung-persediaan.pdf');
         } elseif ($request->status === 'all') {
-            $padans = \App\Models\Padan::with(['details'])
+            $hitungs = \App\Models\Hitung::with(['details'])
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('padan_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
                 })
                 ->latest()
                 ->get();
-            $pdf = PDF::loadView('pdf.padan', compact('padans', 'status'));
-            return $pdf->download('daftar-padan-persediaan.pdf');
+            $pdf = PDF::loadView('pdf.hitung', compact('hitungs', 'status'));
+            return $pdf->download('daftar-hitung-persediaan.pdf');
         } else {
-            return redirect()->route('padan')->with('error', 'Status tidak valid.');
+            return redirect()->route('hitung')->with('error', 'Status tidak valid.');
         }
     }
-    public function generatePadanDetailPDF($id)
+    public function generateHitungDetailPDF($id)
     {
-        $padan = \App\Models\Padan::with(['details.material', 'details.unit'])
+        $hitung = \App\Models\Hitung::with(['details.material', 'details.unit'])
             ->findOrFail($id);
-        $logName = Activity::inLog('padans')->where('subject_id', $padan->id)->latest()->first()?->causer->name ?? '-';
-        $status = $padan->status;
-        $padanDetails = \App\Models\PadanDetail::where('padan_id', $padan->id)
+        $logName = Activity::inLog('hitungs')->where('subject_id', $hitung->id)->latest()->first()?->causer->name ?? '-';
+        $status = $hitung->status;
+        $hitungDetails = \App\Models\HitungDetail::where('hitung_id', $hitung->id)
             ->with(['material', 'unit'])
             ->get();
 
-        $pdf = PDF::loadView('pdf.padan-detail', compact('padan', 'logName', 'status', 'padanDetails'));
+        $pdf = PDF::loadView('pdf.hitung-detail', compact('hitung', 'logName', 'status', 'hitungDetails'));
         $pdf->setPaper('A4', 'landscape');
-        return $pdf->download('rincian-padan-persediaan-' . $padan->padan_number . '.pdf');
+        return $pdf->download('rincian-hitung-persediaan-' . $hitung->hitung_number . '.pdf');
     }
 
 

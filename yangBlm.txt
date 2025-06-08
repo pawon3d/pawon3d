@@ -2,7 +2,7 @@ Ubah logika matematika di bagian produksi
 rincian produk tambahkan review
 is_many dan pcs di produk diubah
 padan diubah jadi catat
-unique number diubah
+unique number diubah v
 status di riwayat belanja
 
 

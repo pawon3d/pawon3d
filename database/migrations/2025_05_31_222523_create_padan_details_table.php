@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('padan_details', function (Blueprint $table) {
+        Schema::create('hitung_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('padan_id')->nullable();
+            $table->uuid('hitung_id')->nullable();
             $table->uuid('material_id')->nullable();
             $table->uuid('unit_id')->nullable();
             $table->decimal('quantity_expect', 15, 2)->default(0);
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('loss_total', 15, 2)->default(0);
             $table->timestamps();
 
-            $table->foreign('padan_id')->references('id')->on('padans')->onDelete('cascade');
+            $table->foreign('hitung_id')->references('id')->on('hitungs')->onDelete('cascade');
             $table->foreign('material_id')->references('id')->on('materials')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
         });
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('padan_details');
+        Schema::dropIfExists('hitung_details');
     }
 };

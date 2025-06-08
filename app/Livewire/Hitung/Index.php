@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Padan;
+namespace App\Livewire\Hitung;
 
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -19,7 +19,7 @@ class Index extends Component
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('padans')
+        $this->activityLogs = Activity::inLog('hitungs')
             ->latest()
             ->limit(50)
             ->get();
@@ -29,7 +29,7 @@ class Index extends Component
 
     public function mount()
     {
-        View::share('title', 'Hitung dan Padan Persediaan');
+        View::share('title', 'Hitung dan Catat Persediaan');
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
@@ -37,19 +37,19 @@ class Index extends Component
 
     public function cetakInformasi()
     {
-        return redirect()->route('padan.pdf', [
+        return redirect()->route('hitung.pdf', [
             'search' => $this->search,
             'status' => 'all',
         ]);
     }
     public function render()
     {
-        return view('livewire.padan.index', [
-            'padans' => \App\Models\Padan::with(['details'])
+        return view('livewire.hitung.index', [
+            'hitungs' => \App\Models\Hitung::with(['details'])
                 ->when($this->search, function ($query) {
-                    $query->where('padan_number', 'like', '%' . $this->search . '%');
+                    $query->where('hitung_number', 'like', '%' . $this->search . '%');
                 })
-                ->orderBy('padan_number', 'desc')
+                ->orderBy('hitung_number', 'desc')
                 ->paginate(10)
         ]);
     }

@@ -1,12 +1,12 @@
 <div>
     <div class="mb-4 flex justify-between items-center">
         <div class="flex gap-2 items-center">
-            <a href="{{ route('padan.rincian', $padan_id) }}"
+            <a href="{{ route('hitung.rincian', $hitung_id) }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
                 <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
                 Kembali
             </a>
-            <h1 class="text-2xl">{{ $padan->action }}</h1>
+            <h1 class="text-2xl">{{ $hitung->action }}</h1>
         </div>
         <div class="flex gap-2 items-center">
             <!-- Tombol Riwayat Pembaruan -->
@@ -32,11 +32,11 @@
             <h2 class="text-lg font-semibold">Daftar Persediaan</h2>
             <flux:button type="button" variant="primary" wire:click="markAllReceived">
                 Tandai
-                @if ($padan->action === 'Hitung Persediaan')
+                @if ($hitung->action === 'Hitung Persediaan')
                 Hitung
-                @elseif ($padan->action === 'Catat Persediaan Rusak')
+                @elseif ($hitung->action === 'Catat Persediaan Rusak')
                 Rusak
-                @elseif ($padan->action === 'Catat Persediaan Hilang')
+                @elseif ($hitung->action === 'Catat Persediaan Hilang')
                 Hilang
                 @endif
                 Semua
@@ -50,16 +50,16 @@
                         <th class="text-left px-6 py-3">Jumlah Diharapkan</th>
                         <th class="text-left px-6 py-3">
                             Jumlah
-                            @if ($padan->action === 'Hitung Persediaan')
+                            @if ($hitung->action === 'Hitung Persediaan')
                             Terhitung
-                            @elseif ($padan->action === 'Catat Persediaan Rusak')
+                            @elseif ($hitung->action === 'Catat Persediaan Rusak')
                             Rusak
-                            @elseif ($padan->action === 'Catat Persediaan Hilang')
+                            @elseif ($hitung->action === 'Catat Persediaan Hilang')
                             Hilang
                             @endif
                         </th>
                         <th class="text-left px-6 py-3">
-                            @if ($padan->action === 'Hitung Persediaan')
+                            @if ($hitung->action === 'Hitung Persediaan')
                             Selisih Jumlah
                             @else
                             Jumlah Sebenarnya
@@ -68,18 +68,18 @@
                         <th class="text-left px-6 py-3">Satuan Ukur</th>
                         <th class="text-left px-6 py-3">
                             Barang
-                            @if ($padan->action === 'Hitung Persediaan')
+                            @if ($hitung->action === 'Hitung Persediaan')
                             Terhitung
-                            @elseif ($padan->action === 'Catat Persediaan Rusak')
+                            @elseif ($hitung->action === 'Catat Persediaan Rusak')
                             Rusak
-                            @elseif ($padan->action === 'Catat Persediaan Hilang')
+                            @elseif ($hitung->action === 'Catat Persediaan Hilang')
                             Hilang
                             @endif
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($padanDetails as $index => $detail)
+                    @foreach($hitungDetails as $index => $detail)
                     <tr>
                         <td class="px-6 py-3 text-nowrap">
                             <span class="text-sm">
@@ -98,7 +98,7 @@
                         </td>
                         <td class="px-6 py-3">
                             <span class="text-sm">
-                                @if ($padan->action === 'Hitung Persediaan')
+                                @if ($hitung->action === 'Hitung Persediaan')
                                 {{ $detail['quantity_actual'] - $detail['quantity_expect'] }}
                                 @else
                                 {{ $detail['quantity_expect'] - $detail['quantity_actual'] }}
@@ -112,7 +112,7 @@
                         </td>
                         <td class="px-6 py-3">
                             <input type="number" placeholder="0"
-                                wire:model.number.live="padanDetails.{{ $index }}.quantity" class="w-full border-0 border-b 
+                                wire:model.number.live="hitungDetails.{{ $index }}.quantity" class="w-full border-0 border-b 
                                 {{ isset($errorInputs[$index]) ? 'border-b-red-500' : 'border-b-gray-300' }}
                                 focus:outline-none focus:ring-0 rounded-none text-right" />
                             @if (isset($errorInputs[$index]))
@@ -133,7 +133,7 @@
 
 
     <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('padan.rincian', $padan_id) }}"
+        <a href="{{ route('hitung.rincian', $hitung_id) }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal
@@ -150,7 +150,7 @@
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <h1 size="lg">Riwayat Pembaruan {{ $padan->padan_number }}</h1>
+                <h1 size="lg">Riwayat Pembaruan {{ $hitung->hitung_number }}</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach($activityLogs as $log)

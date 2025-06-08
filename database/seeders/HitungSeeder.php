@@ -2,45 +2,45 @@
 
 namespace Database\Seeders;
 
-use App\Models\Padan;
+use App\Models\Hitung;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class PadanSeeder extends Seeder
+class HitungSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Padan::create([
+        Hitung::create([
             'action' => 'Hitung Persediaan',
-            'note' => 'Initial padan for testing',
+            'note' => 'Initial hitung for testing',
             'status' => 'Draft',
-            'padan_date' => now(),
-            'padan_date_finish' => now()->addDays(7),
+            'hitung_date' => now(),
+            'hitung_date_finish' => now()->addDays(7),
             'is_start' => false,
             'is_finish' => false,
 
             'created_at' => now(),
         ]);
-        Padan::create([
+        Hitung::create([
             'action' => 'Catat Persediaan Rusak',
-            'note' => 'Padan for damaged inventory',
+            'note' => 'Hitung for damaged inventory',
             'status' => 'Sedang Diproses',
-            'padan_date' => now(),
-            'padan_date_finish' => now()->addDays(7),
+            'hitung_date' => now(),
+            'hitung_date_finish' => now()->addDays(7),
             'is_start' => true,
             'is_finish' => false,
 
             'created_at' => now()->addDays(1),
         ]);
-        Padan::create([
+        Hitung::create([
             'action' => 'Catat Persediaan Hilang',
-            'note' => 'Padan for lost inventory',
+            'note' => 'Hitung for lost inventory',
             'status' => 'Selesai',
-            'padan_date' => now(),
-            'padan_date_finish' => now()->addDays(7),
+            'hitung_date' => now(),
+            'hitung_date_finish' => now()->addDays(7),
             'is_start' => true,
             'is_finish' => true,
 

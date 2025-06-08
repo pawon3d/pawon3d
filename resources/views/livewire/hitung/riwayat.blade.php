@@ -1,13 +1,13 @@
 <div>
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-4">
-            <a href="{{ route('padan') }}"
+            <a href="{{ route('hitung') }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
-            <h1 class="text-2xl hidden md:block">Riwayat Hitung dan Padan Persediaan</h1>
+            <h1 class="text-2xl hidden md:block">Riwayat Hitung dan Catat Persediaan</h1>
         </div>
         <div class="flex gap-2 items-center justify-end-safe">
             <button type="button" wire:click="cetakInformasi"
@@ -38,7 +38,7 @@
                     @else
                     Semua Toko
                     @endif
-                    ({{ $padans->total() }})
+                    ({{ $hitungs->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
                 <flux:menu>
@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    @if ($padans->isEmpty())
+    @if ($hitungs->isEmpty())
     <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
         <p class="text-gray-700 font-semibold">Belum Ada Riwayat Aksi.</p>
         <p class="text-gray-700">Tekan tombol “Tambah aksi” di halaman utama untuk menambahkan aksi.</p>
@@ -99,29 +99,30 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($padans as $padan)
+                    @foreach($hitungs as $hitung)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('padan.rincian', $padan->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                {{ $padan->padan_number }}
+                            <a href="{{ route('hitung.rincian', $hitung->id) }}"
+                                class="hover:bg-gray-50 cursor-pointer">
+                                {{ $hitung->hitung_number }}
                             </a>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $padan->padan_date ? \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y')
+                            {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y')
                             :
                             '-' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $padan->padan_date_finish ?
-                            \Carbon\Carbon::parse($padan->padan_date_finish)->format('d-m-Y')
+                            {{ $hitung->hitung_date_finish ?
+                            \Carbon\Carbon::parse($hitung->hitung_date_finish)->format('d-m-Y')
                             :
                             '-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $padan->action ??'-' }}
+                            {{ $hitung->action ??'-' }}
                         </td>
                         <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $padan->status ?? '-' }}
+                            {{ $hitung->status ?? '-' }}
                         </td>
                     </tr>
                     @endforeach
@@ -131,7 +132,7 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $padans->links() }}
+            {{ $hitungs->links() }}
         </div>
     </div>
     @endif

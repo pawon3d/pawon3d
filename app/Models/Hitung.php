@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Padan extends Model
+class Hitung extends Model
 {
     use LogsActivity;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'padans';
+    protected $table = 'hitungs';
     protected $guarded = [
         'id',
     ];
@@ -23,11 +23,11 @@ class Padan extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('padans')
+            ->useLogName('hitungs')
             ->logAll()
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                $nomorPadan = $this->padan_number;
+                $nomorhitung = $this->hitung_number;
 
                 $terjemahan = [
                     'created' => 'ditambahkan',
@@ -36,14 +36,14 @@ class Padan extends Model
                     'restored' => 'dipulihkan',
                 ];
 
-                return "HP nomor {$nomorPadan} {$terjemahan[$eventName]}";
+                return "HC nomor {$nomorhitung} {$terjemahan[$eventName]}";
             })
             ->dontSubmitEmptyLogs();
     }
 
     public function details()
     {
-        return $this->hasMany(PadanDetail::class, 'padan_id', 'id');
+        return $this->hasMany(HitungDetail::class, 'hitung_id', 'id');
     }
 
     public static function boot()
@@ -57,21 +57,21 @@ class Padan extends Model
                 $prefix = 'HC-' . $today;
 
                 // Ambil produksi terakhir untuk hari ini
-                $lastPadan = DB::table('padans')
+                $lastHitung = DB::table('hitungs')
                     ->lockForUpdate()
-                    ->where('padan_number', 'like', $prefix . '-%')
-                    ->orderByDesc('padan_number')
+                    ->where('hitung_number', 'like', $prefix . '-%')
+                    ->orderByDesc('hitung_number')
                     ->first();
 
                 // Ambil nomor urutan terakhir di hari ini
                 $lastNumber = 0;
-                if ($lastPadan) {
+                if ($lastHitung) {
                     // Contoh hasil: PS-250522-0010 → ambil "0010"
-                    $lastNumber = (int) substr($lastPadan->padan_number, -4);
+                    $lastNumber = (int) substr($lastHitung->hitung_number, -4);
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->padan_number = $prefix . '-' . $nextNumber;
+                $model->hitung_number = $prefix . '-' . $nextNumber;
             });
         });
     }

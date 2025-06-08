@@ -2,10 +2,10 @@
 <html>
 
 <head>
-    <title>{{ $padan->action }} {{ $padan->padan_number }}</title>
+    <title>{{ $hitung->action }} {{ $hitung->hitung_number }}</title>
     <style>
         /* Container Utama */
-        .padan-container {
+        .hitung-container {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -13,12 +13,12 @@
             margin-top: 1rem;
         }
 
-        .padan-header {
+        .hitung-header {
             font-size: 1.875rem;
             font-weight: 700;
         }
 
-        .padan-status {
+        .hitung-status {
             font-size: 1.125rem;
             color: #6b7280;
         }
@@ -219,22 +219,23 @@
 <body>
 
 
-    <div class="padan-container">
-        <h1 class="padan-header">{{ $padan->padan_number }}</h1>
-        <p class="padan-status">{{ $status }}</p>
+    <div class="hitung-container">
+        <h1 class="hitung-header">{{ $hitung->hitung_number }}</h1>
+        <p class="hitung-status">{{ $status }}</p>
 
         <div class="header-container">
             <div class="date-section">
                 <div class="date-group">
                     <div class="section-heading">Tanggal Aksi</div>
                     <p class="info-text">
-                        {{ $padan->padan_date ? \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y') : '-' }}
+                        {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y') : '-' }}
                     </p>
                 </div>
                 <div class="date-group">
                     <div class="section-heading">Tanggal Selesai</div>
                     <p class="info-text">
-                        {{ $padan->padan_date_finish ? \Carbon\Carbon::parse($padan->padan_date_finish)->format('d-m-Y')
+                        {{ $hitung->hitung_date_finish ?
+                        \Carbon\Carbon::parse($hitung->hitung_date_finish)->format('d-m-Y')
                         : '-' }}
                     </p>
                 </div>
@@ -244,7 +245,7 @@
                 <div class="info-group">
                     <div class="section-heading">Jenis Aksi</div>
                     <p class="info-text">
-                        {{ $padan->action ?? '-' }}
+                        {{ $hitung->action ?? '-' }}
                     </p>
                 </div>
 
@@ -258,7 +259,7 @@
 
         <div class="notes-section">
             <div class="section-heading">Catatan Belanja</div>
-            <textarea class="notes-textarea" rows="4" disabled>{{ $padan->note }}</textarea>
+            <textarea class="notes-textarea" rows="4" disabled>{{ $hitung->note }}</textarea>
         </div>
     </div>
 
@@ -275,16 +276,16 @@
                         <th>Jumlah Diharapkan</th>
                         <th>
                             Jumlah
-                            @if ($padan->action == 'Hitung Persediaan')
+                            @if ($hitung->action == 'Hitung Persediaan')
                             Terhitung
-                            @elseif ($padan->action == 'Catat Persediaan Rusak')
+                            @elseif ($hitung->action == 'Catat Persediaan Rusak')
                             Rusak
-                            @elseif ($padan->action == 'Catat Persediaan Hilang')
+                            @elseif ($hitung->action == 'Catat Persediaan Hilang')
                             Hilang
                             @endif
                         </th>
                         <th>
-                            @if ($padan->action == 'Hitung Persediaan')
+                            @if ($hitung->action == 'Hitung Persediaan')
                             Selisih Jumlah
                             @else
                             Jumlah Sebenarnya
@@ -293,7 +294,7 @@
                         <th>Satuan Ukur</th>
                         <th>Modal</th>
                         <th>
-                            @if($padan->action == 'Hitung Persediaan')
+                            @if($hitung->action == 'Hitung Persediaan')
                             Selisih Modal
                             @else
                             Kerugian
@@ -302,7 +303,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($padanDetails as $detail)
+                    @foreach($hitungDetails as $detail)
                     <tr>
                         <td>
                             <span class="text-sm">
@@ -321,7 +322,7 @@
                         </td>
                         <td>
                             <span class="text-sm">
-                                @if ($padan->action == 'Hitung Persediaan')
+                                @if ($hitung->action == 'Hitung Persediaan')
                                 {{ $detail->quantity_actual - $detail->quantity_expect }}
                                 @else
                                 {{ $detail->quantity_expect }}
@@ -353,12 +354,12 @@
                         </td>
                         <td>
                             <span>
-                                Rp{{ number_format($padan->grand_total, 0, ',', '.') }}
+                                Rp{{ number_format($hitung->grand_total, 0, ',', '.') }}
                             </span>
                         </td>
                         <td>
                             <span>
-                                Rp{{ number_format($padan->loss_grand_total, 0, ',', '.') }}
+                                Rp{{ number_format($hitung->loss_grand_total, 0, ',', '.') }}
                             </span>
                         </td>
                     </tr>

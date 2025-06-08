@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Hitung dan Padan Persediaan</title>
+    <title>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Hitung dan Catat Persediaan</title>
     <style>
         table {
             width: 100%;
@@ -22,7 +22,7 @@
 </head>
 
 <body>
-    <h1>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Hitung dan Padan Persediaan</h1>
+    <h1>{{ $status == 'history' ? 'Riwayat' : 'Daftar' }} Hitung dan Catat Persediaan</h1>
     <table>
         <thead>
             <tr>
@@ -34,13 +34,13 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($padans as $padan)
+            @foreach($hitungs as $hitung)
             <tr>
-                <td>{{ $padan->padan_number }}</td>
-                <td>{{ \Carbon\Carbon::parse($padan->padan_date)->format('d-m-Y') }}</td>
-                <td>{{ \Carbon\Carbon::parse($padan->padan_finish_date)->format('d-m-Y') }}</td>
-                <td>{{ $padan->action }}</td>
-                <td>{{ $padan->status }}</td>
+                <td>{{ $hitung->hitung_number }}</td>
+                <td>{{ \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($hitung->hitung_finish_date)->format('d-m-Y') }}</td>
+                <td>{{ $hitung->action }}</td>
+                <td>{{ $hitung->status }}</td>
             </tr>
             @endforeach
         </tbody>

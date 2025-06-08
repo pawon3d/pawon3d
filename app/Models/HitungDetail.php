@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
-class PadanDetail extends Model
+class HitungDetail extends Model
 {
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'padan_details';
+    protected $table = 'hitung_details';
     protected $guarded = [
         'id',
     ];
 
-    public function padan()
+    public function hitung()
     {
-        return $this->belongsTo(Padan::class, 'padan_id', 'id');
+        return $this->belongsTo(Hitung::class, 'hitung_id', 'id');
     }
     public function material()
     {
