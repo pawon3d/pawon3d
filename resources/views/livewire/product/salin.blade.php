@@ -218,8 +218,10 @@
                             ({{ $product->reviews->count() }} Penilai)
                             @endif
                         </p>
-                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp {{
-                            number_format($product->price, 0, ',', '.') }}</p>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                            Rp {{
+                            number_format($product->pcs > 1 ? $product->pcs_price : $product->price, 0, ',', '.') }}
+                        </p>
                     </div>
                     <flux:button class="w-full" variant="primary" type="button"
                         href="{{ route('produk.edit', $product->id) }}">
@@ -313,7 +315,8 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
-                            Rp. {{ number_format($product->price, 0, ',', '.') }}
+                            Rp {{
+                            number_format($product->pcs > 1 ? $product->pcs_price : $product->price, 0, ',', '.') }}
                         </td>
                     </tr>
 

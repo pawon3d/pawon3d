@@ -15,7 +15,7 @@ class Tambah extends Component
 {
     use WithFileUploads;
 
-    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $is_many = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
+    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
     public $previewImage;
     public $product_compositions = [];
     public $other_costs = [];
@@ -62,6 +62,23 @@ class Tambah extends Component
         $this->recalculateCapital();
     }
 
+    public function updatedIsRecipe()
+    {
+        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_price', 'pcs_capital', 'price');
+        $this->product_compositions = [[
+            'material_id' => '',
+            'material_quantity' => 0,
+            'unit_id' => '',
+            'material_price' => 0,
+        ]];
+        $this->other_costs = [[
+            'name' => '',
+            'price' => 0,
+        ]];
+        $this->pcs = 1;
+        $this->recalculateCapital();
+    }
+
     public function addComposition()
     {
         $this->product_compositions[] = [
@@ -101,6 +118,19 @@ class Tambah extends Component
     public function setMaterial($index, $materialId)
     {
         $this->product_compositions[$index]['material_id'] = $materialId;
+    }
+
+    public function setSoloMaterial($index, $materialId)
+    {
+        if ($materialId) {
+            $this->product_compositions[$index]['material_id'] = $materialId;
+            $materialDetail = MaterialDetail::where('material_id', $materialId)
+                ->where('is_main', true)
+                ->first();
+            $this->setUnit($index, $materialDetail ? $materialDetail->unit_id : null);
+            $this->product_compositions[$index]['material_quantity'] = 1;
+            $this->recalculateCapital();
+        }
     }
     public function setUnit($index, $unitId)
     {
@@ -149,7 +179,6 @@ class Tambah extends Component
             'is_active' => $this->is_active,
             'is_recommended' => $this->is_recommended,
             'is_other' => $this->is_other,
-            'is_many' => $this->is_many,
             'pcs' => $this->pcs,
             'capital' => $this->capital,
             'pcs_price' => $this->pcs_price,

@@ -1,10 +1,11 @@
 Ubah logika matematika di bagian produksi v
-rincian produk tambahkan review -
-is_many dan pcs di produk diubah
+rincian produk tambahkan review --
+is_many dan pcs di produk diubah v
 refactor padan v
 unique number diubah v
 kode produksi berdasarkan metode v
 status di riwayat belanja
-
+status di produksi
+fitur tambah otomatis
 
 sidebar done

@@ -15,7 +15,7 @@ class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
-    public $product_image, $name, $description, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $is_many = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
+    public $product_image, $name, $description, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
     public $product_compositions = [];
     public $other_costs = [];
     public $category_ids = [];
@@ -57,7 +57,6 @@ class Rincian extends Component
         $this->is_active = $product->is_active;
         $this->is_recommended = $product->is_recommended;
         $this->is_other = $product->is_other;
-        $this->is_many = $product->is_many;
         $this->pcs = $product->pcs;
         $this->capital = $product->capital;
         $this->pcs_price = $product->pcs_price;
@@ -105,6 +104,23 @@ class Rincian extends Component
         $this->showHistoryModal = true;
     }
 
+    public function updatedIsRecipe()
+    {
+        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_price', 'pcs_capital', 'price');
+        $this->product_compositions = [[
+            'material_id' => '',
+            'material_quantity' => 0,
+            'unit_id' => '',
+            'material_price' => 0,
+        ]];
+        $this->other_costs = [[
+            'name' => '',
+            'price' => 0,
+        ]];
+        $this->pcs = 1;
+        $this->recalculateCapital();
+    }
+
     public function addComposition()
     {
         $this->product_compositions = [[
@@ -144,10 +160,18 @@ class Rincian extends Component
     public function setMaterial($index, $materialId)
     {
         $this->product_compositions[$index]['material_id'] = $materialId;
+    }
 
+    public function setSoloMaterial($index, $materialId)
+    {
         if ($materialId) {
-            $material = Material::find($materialId);
-            $this->product_compositions[$index]['material_unit'] = $material->unit;
+            $this->product_compositions[$index]['material_id'] = $materialId;
+            $materialDetail = MaterialDetail::where('material_id', $materialId)
+                ->where('is_main', true)
+                ->first();
+            $this->setUnit($index, $materialDetail ? $materialDetail->unit_id : null);
+            $this->product_compositions[$index]['material_quantity'] = 1;
+            $this->recalculateCapital();
         }
     }
 
@@ -201,7 +225,6 @@ class Rincian extends Component
             'is_active' => $this->is_active,
             'is_recommended' => $this->is_recommended,
             'is_other' => $this->is_other,
-            'is_many' => $this->is_many,
             'pcs' => $this->pcs,
             'capital' => $this->capital,
             'pcs_price' => $this->pcs_price,

@@ -289,28 +289,25 @@
 
         {{-- Satu Resep untuk Banyak Buah --}}
         <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <flux:label>Satu Resep untuk Banyak Buah</flux:label>
-            <flux:switch wire:model.live="is_many" class="data-checked:bg-green-500" />
+            <flux:label>Jumlah Produk yang dihasilkan dari Satu Resep</flux:label>
         </div>
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <p class="text-sm text-gray-500">
-                Aktifkan opsi
-                <span class="font-semibold">Satu Resep untuk Banyak Buah</span>
-                jika sebuah resep dapat menghasilkan banyak buah atau pcs.
+                Masukkan jumlah produk dari satu resep. Masukkan jumlah “1” apabila produk dijual dalam bentuk loyang
+                atau unit besar (Bolu Pandan atau Brownies Kukus) sedangkan masukkan jumlah lebih dari satu apabila
+                hasil dari satu resep dijual dalam bentuk unit kecil atau perpotong (Kue Apem atau Kue Pedamaran).
             </p>
         </div>
-        @if($is_many)
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <flux:input placeholder="0" min="0" wire:model.number.live="pcs" type="number" />
         </div>
-        @endif
 
         @else
         @foreach($product_compositions as $index => $composition)
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <flux:select placeholder="- Pilih Produk dari Persediaan -"
                 wire:model="product_compositions.{{ $index }}.material_id"
-                wire:change="setMaterial({{ $index }}, $event.target.value)">
+                wire:change="setSoloMaterial({{ $index }}, $event.target.value)">
                 @foreach ($materials as $material)
                 <flux:select.option value="{{ $material->id }}" class="text-gray-700">{{ $material->name }}
                 </flux:select.option>
@@ -334,21 +331,21 @@
 
             <div class="w-full flex flex-col gap-8 mt-4">
                 <div class="flex flex-row justify-between items-center gap-4">
-                    <flux:label class="w-3/4">Modal {{ $is_many ? 'Utuh' : '' }}</flux:label>
+                    <flux:label class="w-3/4">Modal {{ $pcs > 1 ? 'Utuh' : '' }}</flux:label>
                     <p class="w-1/4 text-right text-sm p-2">Rp.{{ $capital }}</p>
                 </div>
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-row justify-between items-center gap-4">
-                        <flux:label class="w-3/4">Harga Jual {{ $is_many ? 'Utuh' : '' }}</flux:label>
+                        <flux:label class="w-3/4">Harga Jual {{ $pcs > 1 ? 'Utuh' : '' }}</flux:label>
                         <input placeholder="Rp.0" wire:model.live="price"
                             class="w-1/4 text-right text-sm bg-gray-50 rounded-lg p-2 border border-gray-500" />
                     </div>
                     <flux:error name="price" class="flex justify-end" />
                 </div>
-                @if ($is_many)
+                @if ($pcs > 1)
                 <div class="flex flex-row justify-between items-center gap-4">
                     <flux:label class="w-3/4">Modal Per Buah</flux:label>
-                    <p class="w-1/4 text-right text-sm p-2">Rp.{{ $pcs_capital }}</p>
+                    <p class="w-1/4 text-right text-sm p-2">Rp.{{ number_format($pcs_capital, 2, ',', '.') }}</p>
                 </div>
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-row justify-between items-center gap-4">
