@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -57,14 +58,25 @@ class Expense extends Model
         static::creating(function ($model) {
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
+                $today = Carbon::now()->format('ymd'); // YYMMDD
+                $prefix = 'BB-' . $today;
+
+                // Ambil produksi terakhir untuk hari ini
                 $lastExpense = DB::table('expenses')
                     ->lockForUpdate()
+                    ->where('expense_number', 'like', $prefix . '-%')
                     ->orderByDesc('expense_number')
                     ->first();
-                    $lastNumber = $lastExpense ? (int) substr($lastExpense->expense_number, 2) : 0;
-                    $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        
-                    $model->expense_number = 'BB' . $nextNumber;
+
+                // Ambil nomor urutan terakhir di hari ini
+                $lastNumber = 0;
+                if ($lastExpense) {
+                    // Contoh hasil: PS-250522-0010 → ambil "0010"
+                    $lastNumber = (int) substr($lastExpense->expense_number, -4);
+                }
+
+                $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+                $model->expense_number = $prefix . '-' . $nextNumber;
             });
         });
     }

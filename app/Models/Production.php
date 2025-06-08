@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -56,14 +57,25 @@ class Production extends Model
         static::creating(function ($model) {
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
+                $today = Carbon::now()->format('ymd'); // YYMMDD
+                $prefix = 'PS-' . $today;
+
+                // Ambil produksi terakhir untuk hari ini
                 $lastProduction = DB::table('productions')
                     ->lockForUpdate()
+                    ->where('production_number', 'like', $prefix . '-%')
                     ->orderByDesc('production_number')
                     ->first();
-                $lastNumber = $lastProduction ? (int) substr($lastProduction->production_number, 2) : 0;
-                $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
-                $model->production_number = 'PS' . $nextNumber;
+                // Ambil nomor urutan terakhir di hari ini
+                $lastNumber = 0;
+                if ($lastProduction) {
+                    // Contoh hasil: PS-250522-0010 → ambil "0010"
+                    $lastNumber = (int) substr($lastProduction->production_number, -4);
+                }
+
+                $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+                $model->production_number = $prefix . '-' . $nextNumber;
             });
         });
     }
