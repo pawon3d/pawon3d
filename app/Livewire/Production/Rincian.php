@@ -105,7 +105,7 @@ class Rincian extends Component
                 ->where('unit_id', $productComposition->unit_id)
                 ->first();
             $materialDetail->update([
-                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan * $productComposition->material_quantity),
+                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
             ]);
         });
         $this->alert('success', 'Produksi berhasil dimulai.');

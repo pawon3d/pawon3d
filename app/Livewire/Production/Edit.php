@@ -51,7 +51,7 @@ class Edit extends Component
 
             foreach ($product->product_compositions as $composition) {
                 $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
-                $requiredQuantity = $quantityPlan * $composition->material_quantity;
+                $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
 
                 if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
                     $kurang = true;

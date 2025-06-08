@@ -132,7 +132,7 @@ class Mulai extends Component
         $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
             ->where('unit_id', $productComposition->unit_id)
             ->first();
-        $requiredQuantity = $productionDetail->quantity_plan * $productComposition->material_quantity;
+        $requiredQuantity = $productionDetail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity;
         if ($materialDetail->supply_quantity < $requiredQuantity) {
             $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk mengulang produksi.');
             return;

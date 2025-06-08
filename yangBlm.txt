@@ -1,5 +1,5 @@
-Ubah logika matematika di bagian produksi
-rincian produk tambahkan review
+Ubah logika matematika di bagian produksi v
+rincian produk tambahkan review -
 is_many dan pcs di produk diubah
 refactor padan v
 unique number diubah v

@@ -95,7 +95,7 @@ class Tambah extends Component
 
             foreach ($product->product_compositions as $composition) {
                 $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
-                $requiredQuantity = $quantityPlan * $composition->material_quantity;
+                $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
 
                 if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
                     $kurang = true;
@@ -155,8 +155,7 @@ class Tambah extends Component
 
             foreach ($product->product_compositions as $composition) {
                 $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
-                $requiredQuantity = $quantityPlan * $composition->material_quantity;
-
+                $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
                 if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
                     $kurang = true;
                     break;
@@ -201,7 +200,7 @@ class Tambah extends Component
                 ->where('unit_id', $productComposition->unit_id)
                 ->first();
             $materialDetail->update([
-                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan * $productComposition->material_quantity),
+                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
             ]);
         });
 

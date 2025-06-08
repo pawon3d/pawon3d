@@ -100,8 +100,11 @@
                                 wire:model="production_details.{{ $index }}.product_id">
                                 <option value="" class="text-gray-700">- Pilih Barang -</option>
                                 @foreach ($products as $product)
+                                @php
+                                $pcs = $product->pcs > 1 ? ' (' . $product->pcs . ' pcs)' : '';
+                                @endphp
                                 <option value="{{ $product->id }}" class="text-gray-700">{{
-                                    $product->name }}
+                                    $product->name }} {{ $pcs }}
                                 </option>
                                 @endforeach
                             </select>
