@@ -4,8 +4,8 @@ is_many dan pcs di produk diubah v
 refactor padan v
 unique number diubah v
 kode produksi berdasarkan metode v
-status di riwayat belanja
-status di produksi
+status di riwayat belanja v
+status di produksi -
 fitur tambah otomatis
 
 sidebar done

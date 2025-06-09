@@ -110,6 +110,13 @@ class Rincian extends Component
                 ]);
             }
         });
+        if ($this->expense->expenseDetails->sum('quantity_get') > 0) {
+            $this->expense->update(['status' => 'Selesai']);
+            $this->status = 'Selesai';
+        } else {
+            $this->expense->update(['status' => 'Gagal']);
+            $this->status = 'Gagal';
+        }
         $this->alert('success', 'Belanja berhasil diselesaikan.');
     }
 
