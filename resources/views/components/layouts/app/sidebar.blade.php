@@ -14,84 +14,75 @@ use Illuminate\Support\Facades\Route;
     <div id="sidebar"
         class="fixed inset-y-0 left-0 z-40 w-12 mt-16 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
-        <flux:navlist variant="outline" class="mt-4 flex-1 flex gap-4 flex-col">
-            <flux:navlist.group expandable :expanded="request()->routeIs('dashboard')" heading="Dashboard"
-                icon="align-end-horizontal">
-                <flux:navlist.item icon="align-end-horizontal" iconVariant="outline" :href="route('dashboard')"
-                    :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+        <flux:navlist variant="outline" class="my-4 gap-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
+            <flux:navlist.group expandable :expanded="false" heading="Dashboard" icon="align-end-horizontal">
+                <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    {{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group heading="Kasir" expandable
-                :expanded="request()->routeIs('pos') || request()->routeIs('transaksi')" icon="cashier">
-                <flux:navlist.item icon="cashier" :href="route('pos')" :current="request()->routeIs('pos')"
-                    wire:navigate>
+            <flux:navlist.group heading="Kasir" expandable :expanded="false" icon="cashier">
+                <flux:navlist.item :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>
                     {{ __('Point of Sale') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="calculator" :href="route('transaksi')"
-                    :current="request()->routeIs('transaksi')" wire:navigate>{{ __('Transaksi') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('transaksi')" :current="request()->routeIs('transaksi')" wire:navigate>
+                    {{ __('Transaksi') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group expandable :expanded="request()->routeIs('produksi')" heading="Produksi"
-                icon="chef-hat">
-                <flux:navlist.item icon="chef-hat" :href="route('produksi')" :current="request()->routeIs('produksi')"
-                    wire:navigate>{{ __('Produksi') }}</flux:navlist.item>
+            <flux:navlist.group expandable :expanded="false" heading="Produksi" icon="chef-hat">
+                <flux:navlist.item :href="route('produksi')" :current="request()->routeIs('produksi')" wire:navigate>{{
+                    __('Produksi') }}</flux:navlist.item>
             </flux:navlist.group>
 
 
-            <flux:navlist.group heading="Inventori" expandable icon="warehouse"
-                :expanded="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan') || Str::startsWith(Route::currentRouteName(), 'bahan-')">
-                <flux:navlist.item icon="inbox" :href="route('bahan-baku')"
+            <flux:navlist.group heading="Inventori" expandable icon="warehouse" :expanded="false">
+                <flux:navlist.item :href="route('bahan-baku')"
                     :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>{{ __('Bahan
                     Baku') }}</flux:navlist.item>
-                <flux:navlist.item icon="archive-box" :href="route('bahan-olahan')"
-                    :current="request()->routeIs('bahan-olahan')" wire:navigate>{{ __('Bahan Baku Olahan') }}
+                <flux:navlist.item :href="route('bahan-olahan')" :current="request()->routeIs('bahan-olahan')"
+                    wire:navigate>{{ __('Bahan Baku Olahan') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="list-bullet" :href="route('kategori-persediaan')"
+                <flux:navlist.item :href="route('kategori-persediaan')"
                     :current="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan')" wire:navigate>{{
                     __('Kategori') }}</flux:navlist.item>
-                <flux:navlist.item icon="home-modern" :href="route('belanja')"
+                <flux:navlist.item :href="route('belanja')"
                     :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{
                     __('Belanja') }}</flux:navlist.item>
-                <flux:navlist.item icon="clipboard-document-check" :href="route('hitung')"
+                <flux:navlist.item :href="route('hitung')"
                     :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>{{
                     __('Hitung dan Catat') }}</flux:navlist.item>
-                <flux:navlist.group heading="Produk" expandable icon="align-end-horizontal"
-                    :expanded="request()->routeIs('produk') || request()->routeIs('kategori')">
-                    <flux:navlist.item icon="list-bullet" :href="route('kategori')"
-                        :current="request()->routeIs('kategori')" wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
-                    <flux:navlist.item icon="inbox-stack" :href="route('produk')"
-                        :current="request()->routeIs('produk')" wire:navigate>{{ __('Daftar Produk') }}
+                <flux:navlist.group heading="Produk" expandable sub :expanded="false">
+                    <flux:navlist.item :href="route('kategori')" :current="request()->routeIs('kategori')"
+                        wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>{{
+                        __('Daftar Produk') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
 
-            <flux:navlist.group heading="Penilaian" expandable
-                :expanded="request()->routeIs('hadiah') || request()->routeIs('penukaran')" icon="star"
-                iconVariant="solid">
-                <flux:navlist.item icon="gift" :href="route('hadiah')"
+            <flux:navlist.group heading="Penilaian" expandable :expanded="false" icon="star" iconVariant="solid">
+                <flux:navlist.item :href="route('hadiah')"
                     :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
                     wire:navigate>
                     {{ __('Hadiah') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="star" iconVariant="solid" :href="route('penukaran')"
-                    :current="request()->routeIs('penukaran')" wire:navigate>{{
+                <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
+                    {{
                     __('Penilaian') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group heading="Karyawan" expandable icon="users" :expanded="false">
-                <flux:navlist.item icon="user" :href="route('user')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
+                <flux:navlist.item :href="route('user')" :current="Str::startsWith(Route::currentRouteName(), 'user')"
+                    wire:navigate>{{ __('Pekerja') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="shield-check" :href="route('role')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
+                <flux:navlist.item :href="route('role')" :current="Str::startsWith(Route::currentRouteName(), 'role')"
+                    wire:navigate>{{ __('Peran') }}
                 </flux:navlist.item>
             </flux:navlist.group>
 
 
-            <flux:navlist.group expandable :expanded="request()->routeIs('pengaturan')" heading="Pengaturan"
-                icon="cog-6-tooth">
-                <flux:navlist.item icon="cog-6-tooth" :href="route('pengaturan')"
-                    :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan Toko') }}
+            <flux:navlist.group expandable :expanded="false" heading="Pengaturan" icon="cog-6-tooth">
+                <flux:navlist.item :href="route('pengaturan')" :current="request()->routeIs('pengaturan')"
+                    wire:navigate>{{ __('Pengaturan Toko') }}
                 </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>

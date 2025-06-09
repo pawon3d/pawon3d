@@ -3,6 +3,7 @@
 'expanded' => true,
 'heading' => null,
 'icon' => null,
+'sub' => null,
 ])
 
 <?php if ($expandable && $heading): ?>
@@ -15,8 +16,12 @@
         class="group/disclosure-button mb-[2px] flex h-10 w-full items-center rounded-lg text-zinc-500 hover:bg-zinc-800/5 hover:text-zinc-800 lg:h-8 dark:text-white/80 dark:hover:bg-white/[7%] dark:hover:text-white">
         @if ($icon)
         <div class="pl-3 pr-4">
-            <x-dynamic-component :component="'flux::icon.' . $icon"
-                class="size-6! text-zinc-500 group-data-open/disclosure-button:text-zinc-800 dark:text-white/80 dark:group-data-open/disclosure-button:text-white" />
+            <x-dynamic-component :component="'flux::icon.' . $icon" @class([ 'text-zinc-500'
+                , 'group-data-open/disclosure-button:text-zinc-800' , 'dark:text-white/80'
+                , 'dark:group-data-open/disclosure-button:text-white' , 'size-4!'=> $sub === true,
+                'size-6!' => $sub !== true,
+                ])
+                />
         </div>
         @else
         <div class="pl-3 pr-4">
