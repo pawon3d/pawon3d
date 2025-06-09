@@ -95,7 +95,7 @@ class Rincian extends Component
     public function start()
     {
         $this->is_start = true;
-        $this->status = 'Dimulai';
+        $this->status = 'Sedang Diproses';
         $production = \App\Models\Production::findOrFail($this->production_id);
         $production->update(['is_start' => $this->is_start, 'status' => $this->status]);
         $production->details->each(function ($detail) {

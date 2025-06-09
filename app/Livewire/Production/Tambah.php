@@ -176,7 +176,7 @@ class Tambah extends Component
             'start_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->start_date)->format('Y-m-d'),
             'note' => $this->note,
             'method' => $this->method,
-            'status' => 'Dimulai',
+            'status' => 'Sedang Diproses',
             'is_start' => true,
         ]);
 
