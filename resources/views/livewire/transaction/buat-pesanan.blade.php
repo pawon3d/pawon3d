@@ -1,11 +1,11 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}"
+        <a href="{{ route('transaksi') }}"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
         </a>
-        <h1 class="text-2xl">Ubah Pesanan</h1>
+        <h1 class="text-2xl">Buat Pesanan</h1>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="exclamation-triangle" />
@@ -85,7 +85,7 @@
                         </svg>
                     </div>
 
-                    <input x-ref="input" wire:model="time" type="text"
+                    <input x-ref="input" x-model="time" type="text"
                         class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
                         placeholder="00:00" />
                 </div>
@@ -186,14 +186,96 @@
             </div>
         </div>
     </div>
+    <div class="w-full flex flex-col gap-4">
+
+        <flux:label>Metode Pembayaran</flux:label>
+        <p class="text-sm text-gray-500">
+            Pilih Metode Pembayaran (Tunai, Transfer, atau QRIS). Jika Bukan Tunai maka akan diminta bukti pembayaran
+            berupa
+            gambar (.jpg dan .png)
+        </p>
+        <flux:select wire:model.live="paymentMethod" class="mt-2" placeholder="Pilih Metode Pembayaran">
+            <flux:select.option value="tunai" class="text-gray-700">Tunai</flux:select.option>
+            <flux:select.option value="transfer" class="text-gray-700">Transfer</flux:select.option>
+            <flux:select.option value="qris" class="text-gray-700">QRIS</flux:select.option>
+        </flux:select>
+        <flux:error name="paymentMethod" />
+
+        @if ($paymentMethod == 'transfer')
+        <div class="mt-2 flex flex-row gap-2 w-full">
+            <div class="w-1/4">
+                <flux:select wire:model.live="paymentTarget" placeholder="Pilih Bank Tujuan">
+                    <flux:select.option value="BRI" class="text-gray-700">
+                        BRI
+                    </flux:select.option>
+                    <flux:select.option value="BCA" class="text-gray-700">
+                        BCA
+                    </flux:select.option>
+                    <flux:select.option value="Mandiri" class="text-gray-700">
+                        Mandiri
+                    </flux:select.option>
+                </flux:select>
+                <flux:error name="paymentTarget" />
+            </div>
+            <div class="w-3/4">
+                <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
+                <flux:error name="paymentAccount" />
+            </div>
+        </div>
+        @endif
+
+        <flux:label>Nomimal Pembayaran</flux:label>
+        <p class="text-sm text-gray-500">
+            Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau setengah
+            dari
+            Total Tagihan.
+        </p>
+        <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
+        <flux:error name="paidAmount" />
+
+        @if ($paymentMethod == 'transfer')
+        <div class="mb-5 w-full">
+            <div class="flex flex-row items-center gap-4">
+                <label
+                    class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
+                    Pilih Bukti Pembayaran
+                    <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
+                        class="hidden" />
+                </label>
+
+                @if ($image)
+                <input type="text"
+                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                    value="{{ $image->getClientOriginalName() }}" readonly wire:loading.remove wire:target="image">
+                <input type="text"
+                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                    value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                @else
+                <input type="text"
+                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                    value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove wire:target="image">
+                <input type="text"
+                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                    value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                @endif
+
+            </div>
+        </div>
+        <flux:error name="image" />
+        @endif
+    </div>
+
+
 
     <div class="flex justify-end mt-16 gap-4">
-        <flux:button icon="x-mark" type="button" :loading="false"
-            href="{{ route('transaksi.rincian-pesanan', $transactionId) }}">
-            Batal
+        <flux:button icon="x-mark" type="button" loading="false" wire:click.prevent="delete">
+            Batalkan
         </flux:button>
-        <flux:button icon="archive-box" :loading="false" type="button" variant="primary" wire:click.prevent="save">
-            Simpan Perubahan
+        <flux:button icon="pencil-square" type="button" variant="primary" wire:click.prevent="save">
+            Simpan Sebagai Draft
+        </flux:button>
+        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click.prevent="pay">
+            Bayar dan Buat Pesanan
         </flux:button>
     </div>
 
@@ -253,7 +335,5 @@
             </div>
         </div>
     </flux:modal>
-
-
 
 </div>

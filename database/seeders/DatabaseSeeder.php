@@ -9,6 +9,7 @@ use App\Models\IngredientCategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Material;
+use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
@@ -157,6 +158,55 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             HitungSeeder::class,
+        ]);
+
+        Product::create([
+            'name' => 'Product 1',
+            'pcs' => 1,
+            'pcs_price' => 10000,
+            'price' => 10000,
+            'stock' => 15,
+            'method' => 'pesanan-reguler',
+        ]);
+        Product::create([
+            'name' => 'Product 2',
+            'pcs' => 1,
+            'pcs_price' => 20000,
+            'price' => 20000,
+            'stock' => 10,
+            'method' => 'pesanan-reguler',
+        ])->product_compositions()->create([
+            'material_id' => Material::first()->id,
+        ]);
+        Product::create([
+            'name' => 'Product 3',
+            'pcs' => 1,
+            'pcs_price' => 30000,
+            'price' => 30000,
+            'stock' => 5,
+            'method' => 'pesanan-reguler',
+        ])->product_compositions()->create([
+            'material_id' => Material::skip(1)->first()->id,
+        ]);
+        Product::create([
+            'name' => 'Product 4',
+            'pcs' => 1,
+            'pcs_price' => 40000,
+            'price' => 40000,
+            'stock' => 20,
+            'method' => 'pesanan-reguler',
+        ])->product_compositions()->create([
+            'material_id' => Material::skip(2)->first()->id,
+        ]);
+        Product::create([
+            'name' => 'Product 5',
+            'pcs' => 1,
+            'pcs_price' => 50000,
+            'price' => 50000,
+            'stock' => 8,
+            'method' => 'pesanan-reguler',
+        ])->product_compositions()->create([
+            'material_id' => Material::first()->id,
         ]);
     }
 }

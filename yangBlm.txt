@@ -8,5 +8,7 @@ status di riwayat belanja v
 status di produksi v
 pergantian harga bahan di belanja ?
 fitur tambah otomatis
+kasir - 
+rincian pesanan -produksi
 
-sidebar
+sidebar v

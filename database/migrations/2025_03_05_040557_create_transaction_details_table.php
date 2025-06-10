@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('transaction_id');
-            $table->uuid('product_id');
-            $table->decimal('quantity', 3, 0);
-            $table->decimal('price', 10, 0);
+            $table->uuid('transaction_id')->nullable();
+            $table->uuid('product_id')->nullable();
+            $table->decimal('quantity', 3, 0)->nullable();
+            $table->decimal('price', 10, 0)->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');

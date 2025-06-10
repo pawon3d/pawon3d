@@ -2,15 +2,18 @@
 
 namespace App\Livewire\Transaction;
 
-use Livewire\Component;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
-class Edit extends Component
+class BuatPesanan extends Component
 {
-    use \Jantinnerezo\LivewireAlert\LivewireAlert;
+    use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
     public $transactionId;
     public $details = [];
+    public $paymentMethod = '', $paymentTarget = '', $paymentAccount, $image;
     public $totalAmount = 0;
     public $paidAmount = 0;
     public $showItemModal = false;
@@ -34,11 +37,6 @@ class Edit extends Component
                     ],
                 ];
             })->toArray();
-            $this->name = $transaction->name;
-            $this->phone = $transaction->phone;
-            $this->date = $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '';
-            $this->time = $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '';
-            $this->note = $transaction->note;
             $this->totalAmount = $transaction->total_amount;
             $this->paidAmount = $transaction->paid_amount;
             $this->method = $transaction->method;
@@ -108,6 +106,17 @@ class Edit extends Component
         $this->paidAmount = $value;
     }
 
+    public function updatedPaymentTarget($value)
+    {
+        if ($value === 'BRI') {
+            $this->paymentAccount = 'BRI - 0912389103';
+        } elseif ($value === 'BCA') {
+            $this->paymentAccount = 'BCA - 0912389103';
+        } else {
+            $this->paymentAccount = 'Mandiri - 0912389103';
+        }
+    }
+
     public function save()
     {
         $this->validate([
@@ -117,6 +126,9 @@ class Edit extends Component
             'time' => 'nullable|date_format:H:i',
             'note' => 'nullable|string|max:500',
             'method' => 'nullable|string',
+            'paymentMethod' => 'nullable|string',
+            'paymentTarget' => 'nullable|string',
+            'paymentAccount' => 'nullable|string',
         ]);
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
@@ -126,10 +138,15 @@ class Edit extends Component
                 'phone' => $this->phone,
                 'date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d'),
                 'time' => $this->time,
+                'start_date' => now(),
                 'note' => $this->note,
                 'method' => $this->method,
                 'status' => 'Draft',
                 'total_amount' => $this->getTotalProperty(),
+                'paid_amount' => $this->paidAmount,
+                'payment_method' => $this->paymentMethod,
+                'payment_target' => $this->paymentTarget,
+                'payment_account' => $this->paymentAccount,
             ]);
 
             foreach ($this->details as $detail) {
@@ -142,6 +159,74 @@ class Edit extends Component
                 );
             }
 
+            if ($this->image) {
+                // hapuskan gambar lama jika ada
+                if ($transaction->image) {
+                    Storage::disk('public')->delete($transaction->image);
+                }
+                $path = $this->image->store('payments', 'public');
+                $transaction->update(['image' => $path]);
+            }
+
+            session()->flash('success', 'Pesanan berhasil dibuat.');
+        } else {
+            session()->flash('error', 'Transaksi tidak ditemukan.');
+        }
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
+    public function pay()
+    {
+        $this->validate([
+            'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:15',
+            'date' => 'nullable|date',
+            'time' => 'nullable|date_format:H:i',
+            'note' => 'nullable|string|max:500',
+            'method' => 'nullable|string',
+            'paymentMethod' => 'nullable|string',
+            'paymentTarget' => 'nullable|string',
+            'paymentAccount' => 'nullable|string',
+        ]);
+
+        $transaction = \App\Models\Transaction::find($this->transactionId);
+        if ($transaction) {
+            $transaction->update([
+                'name' => $this->name,
+                'phone' => $this->phone,
+                'date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d'),
+                'time' => $this->time,
+                'start_date' => now(),
+                'note' => $this->note,
+                'method' => $this->method,
+                'status' => 'Belum Diproses',
+                'total_amount' => $this->getTotalProperty(),
+                'paid_amount' => $this->paidAmount,
+                'payment_method' => $this->paymentMethod,
+                'payment_target' => $this->paymentTarget,
+                'payment_account' => $this->paymentAccount,
+                'payment_status' => $this->paidAmount >= $this->getTotalProperty() ? 'Lunas' : 'Belum Lunas',
+            ]);
+
+            foreach ($this->details as $detail) {
+                $transaction->details()->updateOrCreate(
+                    ['product_id' => $detail['product_id']],
+                    [
+                        'quantity' => $detail['quantity'],
+                        'price' => $detail['price'],
+                    ]
+                );
+            }
+
+            if ($this->image) {
+                // hapuskan gambar lama jika ada
+                if ($transaction->image) {
+                    Storage::disk('public')->delete($transaction->image);
+                }
+                $path = $this->image->store('payments', 'public');
+                $transaction->update(['image' => $path]);
+            }
+
             session()->flash('success', 'Pesanan berhasil dibuat.');
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
@@ -150,7 +235,7 @@ class Edit extends Component
     }
     public function render()
     {
-        return view('livewire.transaction.edit', [
+        return view('livewire.transaction.buat-pesanan', [
             'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
                 ->where('method', $this->method)->get(),
             'total' => $this->getTotalProperty(),

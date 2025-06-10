@@ -1,128 +1,419 @@
 <div>
-    <div class="flex items-end justify-between mb-7">
-        <h1 class="text-3xl font-bold">Transaksi</h1>
-        <flux:button wire:click="printReport" variant="danger" icon="document-arrow-down"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Cetak Laporan
-        </flux:button>
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-bold">Daftar Produk</h1>
+        <div class="flex gap-2 items-center">
+            <button type="button" wire:click="cetakInformasi"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                Cetak Informasi
+            </button>
+
+            <!-- Tombol Riwayat Pembaruan -->
+            <button type="button" wire:click="riwayatPembaruan"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                Riwayat Pembaruan
+            </button>
+        </div>
+    </div>
+    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+        <flux:icon icon="exclamation-triangle" />
+        <div class="ml-3">
+            <p class="mt-1 text-sm text-gray-500">Pilih salah satu metode penjualan terlebih dahulu (Siap Beli, Pesanan
+                Reguler, atau Pesanan Box), lalu tekan tombol "Tambah Produk" untuk menambahkan produk ke metode yang
+                diinginkan.
+            </p>
+            <ul class="mt-2 list-disc pl-5">
+                <li class="text-sm text-gray-500">
+                    <strong>Siap Beli</strong>
+                    untuk produk yang ada di rak penjualan yang bentuknya per potong atau per buah.
+                </li>
+                <li class="text-sm text-gray-500">
+                    <strong>Pesanan Reguler</strong>
+                    untuk produk pesanan yang bentuknya loyangan atau paketan.
+                </li>
+                <li class="text-sm text-gray-500">
+                    <strong>Pesanan Kotak</strong>
+                    untuk paket khusus atau snack box dengan banyak produk dalam satu kotak.
+                </li>
+            </ul>
+
+        </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class="flex items-center space-x-4 mb-4">
-        <div class="flex flex-col space-y-2 w-full">
-            <div class="w-full flex space-x-2">
-                <input type="text" wire:model.live="search" placeholder="Cari nama..."
-                    class="px-4 py-2 border rounded-lg w-full max-w-sm">
 
-                <flux:select wire:model.live="typeFilter" class="px-4 py-2 border rounded-lg">
-                    <flux:select.option value="all">Semua Tipe</flux:select.option>
-                    <flux:select.option value="siap beli">Siap Beli</flux:select.option>
-                    <flux:select.option value="pesanan">Pesanan</flux:select.option>
-                </flux:select>
-
-                <flux:select wire:model.live="paymentStatusFilter" class="px-4 py-2 border rounded-lg">
-                    <flux:select.option value="all">Semua Status</flux:select.option>
-                    <flux:select.option value="belum lunas">Belum Lunas</flux:select.option>
-                    <flux:select.option value="lunas">Lunas</flux:select.option>
-                </flux:select>
-            </div>
-            <div class="w-full flex justify-between space-x-2">
-                <div class="w-full flex justify-between space-x-2">
-                    <!-- Start Date -->
-                    <div class="relative w-full" x-data>
-                        <input x-ref="start" x-init="flatpickr($refs.start, { 
-                                dateFormat: 'Y-m-d',
-                                onChange: function(selectedDates, dateStr) {
-                                    $wire.set('startDate', dateStr)
-                                }
-                            })" type="text" wire:model.live="startDate" placeholder="Mulai Tanggal"
-                            class="px-4 py-2 border rounded-lg w-full" readonly />
-                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                            @click="$refs.start._flatpickr.clear(); $wire.set('startDate', '')">
-                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- End Date -->
-                    <div class="relative w-full" x-data>
-                        <input x-ref="end" x-init="flatpickr($refs.end, { 
-                                dateFormat: 'Y-m-d',
-                                onChange: function(selectedDates, dateStr) {
-                                    $wire.set('endDate', dateStr)
-                                }
-                            })" type="text" wire:model.live="endDate" placeholder="Sampai Tanggal"
-                            class="px-4 py-2 border rounded-lg w-full" readonly />
-                        <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                            @click="$refs.end._flatpickr.clear(); $wire.set('endDate', '')">
-                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+    <div class="flex items-center justify-between mt-4 mb-4 flex-row w-full">
+        <div class="relative w-full">
+            <input type="radio" name="method" id="pesanan-reguler" value="pesanan-reguler" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="pesanan-reguler" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'pesanan-reguler' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="cake" class=" size-8" />
+                    <span class="text-center hidden md:block">Pesanan Kue Reguler</span>
                 </div>
+            </label>
+        </div>
+        <div class="relative w-full">
+            <input type="radio" name="method" id="pesanan-kotak" value="pesanan-kotak" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="pesanan-kotak" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'pesanan-kotak' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="cube" class="size-8" />
+                    <span class="text-center hidden md:block">Pesanan Kue Kotak</span>
+                </div>
+            </label>
+        </div>
 
+        <div class="relative w-full">
+            <input type="radio" name="method" id="siap-beli" value="siap-beli" wire:model.live="method"
+                class="absolute opacity-0 w-0 h-0">
+            <label for="siap-beli" class="cursor-pointer">
+                <div
+                    class="{{ $method === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    <flux:icon icon="dessert" class="size-8" />
+                    <span class="text-center hidden md:block">Kue Siap Beli</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+
+    <div class="flex justify-between items-center mb-4">
+        <!-- Search Input -->
+        <div class="p-4 flex">
+            <input wire:model.live="search" placeholder="Cari..."
+                class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <flux:button :loading="false" class="ml-2" variant="ghost">
+                <flux:icon.funnel variant="mini" />
+                <span>Filter</span>
+            </flux:button>
+        </div>
+        <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center">
+                <flux:button variant="primary" icon="history"
+                    href="{{ route('transaksi.riwayat', ['method' => $method]) }}">
+                    Riwayat Pesanan
+                </flux:button>
+                <flux:button icon="clipboard" type="button" variant="primary"
+                    href="{{ route('transaksi.pesanan', ['method' => $method]) }}">
+                    Lihat Daftar Pesanan
+                </flux:button>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex gap-2 items-center">
+            <flux:dropdown>
+                <flux:button variant="ghost">
+                    @if($filterStatus)
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @else
+                    Semua Kategori
+                    @endif
+                    ({{ $products->total() }})
+                    <flux:icon.chevron-down variant="mini" />
+                </flux:button>
+                <flux:menu>
+                    <flux:menu.radio.group wire:model.live="filterStatus">
+                        <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
+                        <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
+                        <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
+                    </flux:menu.radio.group>
+                </flux:menu>
+            </flux:dropdown>
+            <flux:dropdown>
+                <flux:button variant="ghost">
+                    Urutkan Produk
+                    <flux:icon.chevron-down variant="mini" />
+
+                </flux:button>
+
+                <flux:menu>
+                    <flux:menu.radio.group wire:model="sortByCategory">
+                        <flux:menu.radio value="name">Nama</flux:menu.radio>
+                        <flux:menu.radio value="status">Status</flux:menu.radio>
+                        <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
+                    </flux:menu.radio.group>
+                </flux:menu>
+            </flux:dropdown>
+        </div>
+        <div class="flex gap-2 mr-4 items-center">
+            <span class="text-sm mr-2">Tampilan Produk:</span>
+
+            <!-- Grid View -->
+            <div class="relative">
+                <input type="radio" name="viewMode" id="grid-view" value="grid" wire:model.live="viewMode"
+                    class="absolute opacity-0 w-0 h-0">
+                <label for="grid-view" class="cursor-pointer">
+                    <flux:icon icon="squares-2x2"
+                        class="{{ $viewMode === 'grid' ? 'text-gray-100 bg-gray-600' : 'text-gray-800 bg-white' }} rounded-xl border border-gray-600 hover:text-gray-100 hover:bg-gray-600 transition-colors size-8" />
+                </label>
+            </div>
+
+            <!-- List View -->
+            <div class="relative">
+                <input type="radio" name="viewMode" id="list-view" value="list" wire:model.live="viewMode"
+                    class="absolute opacity-0 w-0 h-0">
+                <label for="list-view" class="cursor-pointer">
+                    <flux:icon icon="list-bullet"
+                        class="{{ $viewMode === 'list' ? 'text-gray-100 bg-gray-600' : 'text-gray-800 bg-white' }} rounded-xl border border-gray-600 hover:text-gray-100 hover:bg-gray-600 transition-colors size-8" />
+                </label>
             </div>
         </div>
     </div>
 
-    <!-- Table -->
-    <div class="rounded-xl border bg-white">
+    @if ($viewMode === 'grid')
+    {{-- grid view --}}
+    <div class="bg-white">
+
+        <div class="flex flex-col lg:flex-row gap-4">
+            <!-- Kolom Produk (kiri) -->
+            <div @class([ 'w-full ' , 'lg:w-3/4'=> count($cart) > 0, 'lg:w-full'=> count($cart) === 0,
+                ])>
+                <div @class([ 'grid grid-cols-2 gap-4 p-4 max-h-[400px] overflow-y-auto'
+                    , 'sm:grid-cols-2 lg:grid-cols-3'=> count($cart) > 0,
+                    'sm:grid-cols-3 lg:grid-cols-5'=> count($cart) === 0,
+                    ])>
+                    @foreach($products as $product)
+                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="p-3">
+                            <div class="relative mb-3">
+                                @if($product->product_image)
+                                <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
+                                    class="w-full h-32 object-cover rounded-md">
+                                @else
+                                <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
+                                    class="w-full h-32 object-cover rounded-md bg-gray-100">
+                                @endif
+
+                                <div class="absolute top-2 left-2 flex gap-1">
+                                    <span
+                                        class="bg-gray-600 text-white text-xs px-1.5 py-1 rounded-full flex items-center">
+                                        {{ $product->stock }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <h3 class="text-sm font-semibold mb-1 truncate">{{ $product->name }}</h3>
+
+                                <div class="flex items-center justify-center gap-1 text-xs mb-1">
+                                    @if ($product->reviews->count() > 0)
+                                    <span class="text-yellow-500 flex items-center">
+                                        {{ number_format($product->reviews->avg('rating'), 1) }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-0.5"
+                                            viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                    </span>
+                                    <span class="text-gray-500">
+                                        @if ($product->reviews->count() > 10)
+                                        (10+)
+                                        @else
+                                        ({{ $product->reviews->count() }})
+                                        @endif
+                                    </span>
+                                    @else
+                                    <span class="text-gray-500 text-xs">Belum ada penilaian</span>
+                                    @endif
+                                </div>
+
+                                <p class="text-gray-800 font-bold mb-3">
+                                    Rp {{ number_format($product->pcs > 1 ? $product->pcs_price : $product->price, 0,
+                                    ',', '.') }}
+                                </p>
+
+                                @if (count($cart) > 0 && isset($cart[$product->id]))
+                                @php
+                                $id = $product->id;
+                                $item = $cart[$id];
+                                @endphp
+                                <div class="w-full flex items-center mt-2 justify-between gap-2 bg-gray-100 rounded-xl">
+                                    <flux:button variant="ghost" icon="minus" type="button"
+                                        wire:click="decrementItem('{{ $id }}')" />
+                                    <span class="mx-2 text-sm bg-white px-3 py-1 my-1 rounded border">{{
+                                        $item['quantity']
+                                        }}</span>
+                                    <flux:button variant="ghost" icon="plus" type="button"
+                                        wire:click="incrementItem('{{ $id }}')" />
+                                </div>
+                                @else
+                                <flux:button class="w-full" variant="primary"
+                                    wire:click="addToCart('{{ $product->id }}')">
+                                    Tambah
+                                </flux:button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Kolom Ringkasan Pesanan (kanan) -->
+            <div @class([ 'w-full lg:w-1/4' , 'hidden'=> count($cart) === 0 ])>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden sticky top-4">
+                    <div class="p-4 border-b">
+                        <h2 class="text-lg font-bold">Ringkasan Pesanan</h2>
+                    </div>
+
+                    @if(count($cart) > 0)
+                    <div class="p-4 max-h-[250px] overflow-y-auto">
+                        <ul class="space-y-3">
+                            @foreach($cart as $id => $item)
+                            <li class="flex justify-between items-start border-b pb-2">
+                                <div class="text-left">
+                                    <div class="flex items-center justify-start mt-1">
+                                        <p class="text-sm font-semibold">{{ $item['name'] }}</p>
+                                    </div>
+                                    <div class="flex items-center justify-start mt-2">
+                                        <p class="text-sm text-gray-500 py-1">{{ $item['quantity'] }} x Rp{{
+                                            number_format($item['price'], 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="flex items-center justify-end mt-1">
+                                        <p class="text-sm text-right text-gray-500">
+                                            Rp{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center mt-2 justify-end gap-1">
+                                        <div class="flex items-center gap-2">
+                                            <flux:button icon="trash" variant="ghost"
+                                                wire:click="removeItem('{{ $id }}')" />
+                                        </div>
+                                        <div class="bg-gray-100 rounded-xl px-4 flex items-center gap-2">
+                                            <button
+                                                class="text-gray-500 hover:text-red-500 w-5 h-5 flex items-center justify-center rounded-full"
+                                                wire:click="decrementItem('{{ $id }}')">
+                                                -
+                                            </button>
+                                            <span class="mx-2 text-sm bg-white px-3 py-1 my-1 rounded border">{{
+                                                $item['quantity']
+                                                }}</span>
+                                            <button
+                                                class="text-gray-500 hover:text-green-500 w-5 h-5 flex items-center justify-center rounded-full"
+                                                wire:click="incrementItem('{{ $id }}')">
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div class="p-4 border-t">
+                        <div class="flex justify-between font-bold text-lg mb-2">
+                            <span>Total:</span>
+                            <span>Rp {{ number_format(array_sum(array_map(fn($item) => $item['price'] *
+                                $item['quantity'], $cart)), 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between gap-2">
+                            <flux:button class="w-full" icon="x-mark" wire:click="clearCart">
+                                Batal
+                            </flux:button>
+                            <flux:button class="w-full" variant="primary" icon="shopping-cart" wire:click="checkout">
+                                Checkout
+                            </flux:button>
+                        </div>
+                    </div>
+                    @else
+                    <div class="p-8 text-center">
+                        <div class="flex justify-center mb-4 text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 mb-1">Keranjang kosong</p>
+                        <p class="text-sm text-gray-400">Tambahkan produk terlebih dahulu</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4">
+            {{ $products->links() }}
+        </div>
+    </div>
+    @elseif ($viewMode === 'list')
+    {{-- list view --}}
+    @if ($products->isEmpty())
+    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+        <p class="text-gray-700 font-semibold">Belum ada produk.</p>
+        <p class="text-gray-700">Tekan tombol “Tambah Produk” untuk menambahkan produk.</p>
+    </div>
+    @else
+    <div class="bg-white rounded-xl border">
+        <!-- Table -->
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Pembayaran
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Detail</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Produk</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Tampil</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Rekomendasi</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Nilai</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Penilai</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Harga Jual</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($transactions as $transaction)
+                    @foreach($products as $product)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->user->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($transaction->total_amount) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <flux:select
-                                wire:change="updatePaymentStatus('{{ $transaction->id }}', $event.target.value)"
-                                class="border rounded px-2 py-1">
-                                <option value="belum lunas" {{ $transaction->payment_status === 'belum lunas' ?
-                                    'selected' : '' }}>Belum Lunas</option>
-                                <option value="lunas" {{ $transaction->payment_status === 'lunas' ? 'selected' : ''
-                                    }}>Lunas</option>
-                            </flux:select>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->status }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->type }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <flux:button wire:click="showDetail('{{ $transaction->id }}')"
-                                class="text-blue-500 hover:text-blue-700">
-                                Lihat Detail
-                            </flux:button>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
-                            <button wire:click="printReceipt('{{ $transaction->id }}')"
-                                class="px-3 py-1 border rounded-md text-green-600 hover:bg-green-50">
-                                Cetak
-                            </button>
-                            <a href="{{ route('transaksi.edit', $transaction->id) }}"
-                                class="px-3 py-1 border rounded-md hover:bg-gray-100">
-                                Edit
+                            <a href="{{ route('produk.edit', $product->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                                {{ $product->name }}
                             </a>
-                            <button wire:click="deleteTransaction('{{ $transaction->id }}')"
-                                class="px-3 py-1 border rounded-md text-red-600 hover:bg-red-50">
-                                Hapus
-                            </button>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            @if ($product->is_active)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Aktif
+                            </span>
+                            @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Tidak Aktif
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            @if ($product->is_recommended)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Aktif
+                            </span>
+                            @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Tidak Aktif
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @if ($product->reviews->count() > 0)
+                            {{ number_format($product->reviews->avg('rating'), 1) }}
+                            <i class="bi bi-star-fill text-yellow-500"></i>
+                            @else
+                            Belum ada penilaian
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @if ($product->reviews->count() > 0)
+                            ({{ $product->reviews->count() }} Penilai)
+                            @else
+                            Belum ada penilaian
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            Rp {{
+                            number_format($product->pcs > 1 ? $product->pcs_price : $product->price, 0, ',', '.') }}
                         </td>
                     </tr>
+
                     @endforeach
                 </tbody>
             </table>
@@ -130,170 +421,32 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $transactions->links() }}
+            {{ $products->links() }}
         </div>
     </div>
+    @endif
+    @endif
 
-    <!-- Detail Modal -->
-    <flux:modal wire:model="showDetailModal" max-width="4xl">
-        <flux:heading name="title">
-            Detail Transaksi - {{ $selectedTransaction->type ?? '' }}
-        </flux:heading>
 
-        @if($selectedTransaction)
-        <div class="space-y-4">
-            <!-- Informasi Utama -->
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium">Penanggung Jawab</label>
-                    <p class="text-sm">{{ $selectedTransaction->user->name }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Total</label>
-                    <p class="text-sm">Rp {{ number_format($selectedTransaction->total_amount) }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">DP</label>
-                    <p class="text-sm">Rp {{ number_format($selectedTransaction->dp) }}</p>
-                </div>
-                @if($selectedTransaction->type === 'pesanan')
-                <div>
-                    <label class="block text-sm font-medium">Jadwal</label>
-                    <p class="text-sm">{{ $selectedTransaction->schedule }}</p>
-                </div>
-                @endif
+    <!-- Modal Riwayat Pembaruan -->
+    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Riwayat Pembaruan Transaksi</flux:heading>
             </div>
-
-            <!-- Tabel Detail -->
-            <div class="border-t pt-4">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gambar</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                            @if($selectedTransaction->type === 'pesanan')
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Produksi
-                            </th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($selectedTransaction->details as $detail)
-                        <tr>
-                            <td class="px-6 py-4">{{ $detail->product->name }}</td>
-                            <td class="px-6 py-4">
-                                <img src="{{ $detail->product->product_image ? asset('storage/'.$detail->product->product_image) : '/no-image.jpg' }}"
-                                    class="w-10 h-10 object-cover rounded">
-                            </td>
-                            <td class="px-6 py-4">{{ $detail->quantity }}</td>
-                            <td class="px-6 py-4">Rp {{ number_format($detail->price) }}</td>
-                            @if($selectedTransaction->type === 'pesanan')
-                            <td class="px-6 py-4">
-                                @forelse($detail->productions as $production)
-                                <span class="text-xs capitalize">{{ $production->status }}</span>
-                                @empty
-                                <span class="text-xs">Belum Diproduksi</span>
-                                @endforelse
-                            </td>
-                            @endif
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="max-h-96 overflow-y-auto">
+                @foreach($activityLogs as $log)
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
-        @endif
-
-        <x-slot name="footer">
-            <button wire:click="$set('showDetailModal', false)" class="px-4 py-2 border rounded-md">
-                Tutup
-            </button>
-        </x-slot>
     </flux:modal>
 
-    <!-- Modal Print Struk -->
-    <flux:modal name="print-struk" class="w-full max-w-xs" wire:model="showPrintModal">
-        @if($printTransaction)
-        <style>
-            @media print {
-                body * {
-                    visibility: hidden;
-                }
 
-
-                #printArea,
-                #printArea * {
-                    visibility: visible;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                }
-
-                #printArea {
-                    size: 72mm 100vh;
-                    margin: 0;
-                    padding: 0;
-                    font-size: 10px;
-                }
-            }
-        </style>
-        <div id="printArea" class="p-4">
-
-            <div class="text-center">
-                <h2 class="text-lg font-bold">Struk Transaksi</h2>
-                <p class="text-xs">Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }}</p>
-            </div>
-
-            <div class="mt-4">
-                <p class="text-xs"><strong>Total:</strong> Rp {{ number_format($printTransaction->total_amount) }}</p>
-                <p class="text-xs"><strong>Status Pembayaran:</strong> {{ $printTransaction->payment_status }}</p>
-                <p class="text-xs"><strong>Tipe:</strong> {{ $printTransaction->type }}</p>
-            </div>
-
-            <div class="mt-4 border-t pt-2">
-                <table class="w-full text-xs">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Produk</th>
-                            <th class="text-right">Jumlah</th>
-                            <th class="text-right">Harga</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($printTransaction->details as $detail)
-                        <tr>
-                            <td>{{ $detail->product->name }}</td>
-                            <td class="text-right">{{ $detail->quantity }}</td>
-                            <td class="text-right">Rp {{ number_format($detail->price) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-4 text-center">
-                <p class="text-xs">Terima kasih telah berbelanja</p>
-            </div>
-        </div>
-        <div class="flex justify-end gap-2 mt-6">
-            <flux:button type="button"
-                onclick="return cetakStruk('{{ route('transaksi.cetak', $printTransaction->id) }}')"
-                class="px-4 py-2 border rounded-md btn-primary">
-                Cetak
-            </flux:button>
-            <flux:button type="button" wire:click="$set('showPrintModal', false)" class="btn-secondary">
-                Tutup
-            </flux:button>
-        </div>
-        @endif
-    </flux:modal>
-
-    @section('scripts')
-    <script>
-        window.addEventListener('open-pdf', event => {
-            window.open(event.detail[0].url, '_blank');
-        });
-    </script>
-    @endsection
 </div>

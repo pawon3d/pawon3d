@@ -2,33 +2,31 @@
 
 namespace App\Livewire\Transaction;
 
+use App\Models\Product;
 use Livewire\Component;
 use Mike42\Escpos\Printer;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
     use WithPagination, LivewireAlert;
 
+    public $activityLogs = [];
+    public $filterStatus = '';
     public $search = '';
-    public $typeFilter = 'all';
-    public $paymentStatusFilter = 'all';
-    public $showDetailModal = false;
-    public $selectedTransaction = null;
-    public $delete_id;
-    public $startDate = null;
-    public $endDate = null;
+    public $showHistoryModal = false;
+    public $viewMode = 'grid';
+    public $method = 'pesanan-reguler';
+    public array $cart = [];
 
-    public $printTransaction = null;
-    public $showPrintModal = false;
+    protected $queryString = ['viewMode', 'method'];
 
     protected $listeners = [
         'refreshTransactions' => '$refresh',
@@ -38,95 +36,154 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Transaksi');
+        $this->viewMode = session('viewMode', 'grid');
+        $this->method = session('method', 'pesanan-reguler');
+    }
+
+    public function riwayatPembaruan()
+    {
+        $this->activityLogs = Activity::inLog('transactions')
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        $this->showHistoryModal = true;
+    }
+
+    public function cetakInformasi()
+    {
+        return redirect()->route('produk.pdf', [
+            'search' => $this->search,
+        ]);
+    }
+
+    public function updatedViewMode($value)
+    {
+        session()->put('viewMode', $value);
+    }
+
+    public function updatedMethod($value)
+    {
+        session()->put('method', $value);
+    }
+
+    // Untuk handle increment/decrement
+    public function incrementItem($itemId)
+    {
+        if (isset($this->cart[$itemId])) {
+            $this->cart[$itemId]['quantity']++;
+            // Jika quantity nya sudah sama dengan stock, tidak akan menambah quantity lagi
+            if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
+                $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
+            }
+        }
+    }
+
+    public function decrementItem($itemId)
+    {
+        if (isset($this->cart[$itemId]) && $this->cart[$itemId]['quantity'] > 1) {
+            $this->cart[$itemId]['quantity']--;
+        } else {
+            unset($this->cart[$itemId]);
+        }
+    }
+
+    // Update fungsi addToCart
+    public function addToCart($productId)
+    {
+        $product = Product::find($productId);
+
+        if (isset($this->cart[$productId])) {
+            // Jika produk sudah ada di keranjang, tingkatkan kuantitasnya
+            $this->cart[$productId]['quantity']++;
+        } else {
+            $this->cart[$productId] = [
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->pcs > 1 ? $product->pcs_price : $product->price,
+                'quantity' => 1,
+                'stock' => $product->stock,
+            ];
+        }
+    }
+
+    public function removeItem($productId)
+    {
+        if (isset($this->cart[$productId])) {
+            unset($this->cart[$productId]);
+        }
+    }
+
+    public function clearCart()
+    {
+        $this->cart = [];
+    }
+
+    // Perhitungan total
+    protected function getTotalProperty()
+    {
+        return collect($this->cart)->reduce(fn($carry, $item) =>
+        $carry + ($item['price'] * $item['quantity']), 0);
+    }
+
+    public function checkout()
+    {
+        if (empty($this->cart)) {
+            $this->alert('warning', 'Keranjang belanja masih kosong!');
+            return;
+        }
+
+        $transaction = Transaction::create([
+            'user_id' => Auth::id(),
+            'total_amount' => $this->getTotalProperty(),
+            'method' => $this->method,
+            'status' => 'temp',
+        ]);
+
+        foreach ($this->cart as $item) {
+            $transaction->details()->create([
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
+            ]);
+        }
+
+        $this->cart = [];
+
+        return redirect()->route('transaksi.buat-pesanan', ['id' => $transaction->id]);
     }
 
     public function render()
     {
-        $transactions = Transaction::with(['user', 'details.product.productions'])
-            ->when($this->search, function ($query) {
-                $query->whereHas('user', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
-                });
-            })
-            ->when($this->typeFilter !== 'all', function ($query) {
-                $query->where('type', $this->typeFilter);
-            })
-            ->when($this->paymentStatusFilter !== 'all', function ($query) {
-                $query->where('payment_status', $this->paymentStatusFilter);
-            })
-            ->when($this->startDate, function ($query) {
-                $query->whereDate('created_at', '>=', $this->startDate);
-            })
-            ->when($this->endDate, function ($query) {
-                $query->whereDate('created_at', '<=', $this->endDate);
-            })
-            ->latest()
-            ->paginate(10);
-
         return view('livewire.transaction.index', [
-            'transactions' => $transactions
+            "products" => Product::with(['product_categories', 'product_compositions', 'reviews'])
+                ->where('method', $this->method)
+                ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
+                ->paginate(10),
         ]);
     }
 
-    public function updatePaymentStatus($transactionId, $status)
-    {
-        $transaction = Transaction::find($transactionId);
-        $transaction->update(['payment_status' => $status]);
-        $this->alert('success', 'Status pembayaran berhasil diperbarui!');
-    }
+    // public function printReceipt($transactionId)
+    // {
+    //     $this->printTransaction = Transaction::with(['user', 'details.product.productions'])
+    //         ->find($transactionId);
+    //     $this->showPrintModal = true;
+    // }
 
-    public function showDetail($transactionId)
-    {
-        $this->selectedTransaction = Transaction::with(['user', 'details.product.productions'])
-            ->find($transactionId);
-        $this->showDetailModal = true;
-    }
+    // public function printReport()
+    // {
+    //     // Susun URL dengan parameter filter
+    //     $url = route('transaksi.laporan', [
+    //         'startDate' => $this->startDate,
+    //         'endDate' => $this->endDate,
+    //         'search' => $this->search,
+    //         'typeFilter' => $this->typeFilter,
+    //         'paymentStatusFilter' => $this->paymentStatusFilter,
+    //     ]);
 
-    public function deleteTransaction($transactionId)
-    {
-        $this->delete_id = $transactionId;
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus transaksi ini?', [
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'confirmButtonText' => 'Ya, hapus',
-            'cancelButtonText' => 'Batal',
-            'onConfirmed' => 'delete',
-            'onCancelled' => 'cancelled',
-            'toast' => false,
-            'position' => 'center',
-            'timer' => null,
-        ]);
-    }
-
-    public function delete()
-    {
-        $transaction = Transaction::find($this->delete_id);
-        $transaction->delete();
-        $this->alert('success', 'Transaksi berhasil dihapus!');
-        $this->reset('delete_id');
-    }
-
-    public function printReceipt($transactionId)
-    {
-        $this->printTransaction = Transaction::with(['user', 'details.product.productions'])
-            ->find($transactionId);
-        $this->showPrintModal = true;
-    }
-
-    public function printReport()
-    {
-        // Susun URL dengan parameter filter
-        $url = route('transaksi.laporan', [
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-            'search' => $this->search,
-            'typeFilter' => $this->typeFilter,
-            'paymentStatusFilter' => $this->paymentStatusFilter,
-        ]);
-
-        // Dispatch event untuk membuka URL PDF di tab baru
-        $this->dispatch('open-pdf', ['url' => $url]);
-    }
+    //     // Dispatch event untuk membuka URL PDF di tab baru
+    //     $this->dispatch('open-pdf', ['url' => $url]);
+    // }
 
 
     public function print($id)
