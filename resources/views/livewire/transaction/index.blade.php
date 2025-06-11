@@ -195,7 +195,8 @@
                             </div>
 
                             <div class="text-center">
-                                <h3 class="text-sm font-semibold mb-1 truncate">{{ $product->name }}</h3>
+                                <a href="{{ route('transaksi.rincian-produk', $product->id) }}"
+                                    class="text-sm font-semibold mb-1 truncate">{{ $product->name }}</a>
 
                                 <div class="flex items-center justify-center gap-1 text-xs mb-1">
                                     @if ($product->reviews->count() > 0)

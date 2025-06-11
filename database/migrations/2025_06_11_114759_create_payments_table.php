@@ -11,20 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('productions', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('production_number')->nullable();
             $table->uuid('transaction_id')->nullable();
-            $table->string('method')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->string('note')->nullable();
-            $table->string('status', 20)->default('Draft');
-            $table->boolean('is_start')->default(false);
-            $table->boolean('is_finish')->default(false);
+            $table->uuid('payment_channel_id')->nullable();
+            $table->string('payment_method')->nullable(); // tunai, transfer, qris
+            $table->decimal('paid_amount', 10, 0)->default(0);
+            $table->string('image')->nullable();
+            $table->timestamp('paid_at')->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
+            $table->foreign('payment_channel_id')->references('id')->on('payment_channels')->onDelete('cascade');
         });
     }
 
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('productions');
+        Schema::dropIfExists('payments');
     }
 };

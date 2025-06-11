@@ -34,7 +34,7 @@ class Pesanan extends Component
             'transactions' => \App\Models\Transaction::with(['details.product', 'user'])
                 ->where('invoice_number', 'like', '%' . $this->search . '%')
                 ->where('method', $this->method)
-                ->whereNotIn('status', ['Gagal', 'Selesai'])
+                ->whereNotIn('status', ['Gagal', 'Selesai', 'temp'])
                 ->orderBy($this->sortField, $this->sortDirection)
                 ->paginate(10),
         ]);

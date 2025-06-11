@@ -49,6 +49,10 @@ class Production extends Model
     {
         return $this->hasMany(ProductionWorker::class);
     }
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
 
     public static function boot()
     {

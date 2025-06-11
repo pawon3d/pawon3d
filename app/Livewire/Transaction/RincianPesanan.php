@@ -2,8 +2,12 @@
 
 namespace App\Livewire\Transaction;
 
+use App\Models\Payment;
+use App\Models\PaymentChannel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class RincianPesanan extends Component
@@ -12,22 +16,34 @@ class RincianPesanan extends Component
 
     public $transactionId;
     public $details = [];
-    public $paymentMethod = '', $paymentTarget = '', $paymentAccount, $image;
+    public $paymentChannels = [];
+    public $production;
+    public $payments, $totalPayment = 0;
+    public $paymentChannelId = '';
+    public $paymentMethod = '', $paymentBank = '', $paymentAccount = '', $paymentAccountNumber, $paymentAccountName, $image;
     public $totalAmount = 0;
     public $paidAmount = 0;
     public $transaction;
     public $total_quantity_plan, $total_quantity_get, $percentage;
     public $showPrintModal = false;
+    public $showImage = false;
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
 
         if (session()->has('success')) {
             $this->alert('success', session('success'));
+            if (session()->has('print')) {
+                $this->showPrintModal = true;
+                session()->forget('print');
+            }
         }
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::with(['details', 'user'])->find($id);
+        $this->totalPayment = $transaction->payments->sum('paid_amount');
+        $this->payments = \App\Models\Payment::where('transaction_id', $id)->latest()->get();
         $this->transaction = $transaction;
+        $this->production = !empty($transaction->production) ? $transaction->production : null;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
                 return [
@@ -41,11 +57,6 @@ class RincianPesanan extends Component
                 ];
             })->toArray();
             $this->totalAmount = $transaction->total_amount;
-            $this->paidAmount = $transaction->paid_amount;
-            $this->paymentMethod = $transaction->payment_method;
-            $this->paymentTarget = $transaction->payment_target;
-            $this->paymentAccount = $transaction->payment_account;
-            $this->image = $transaction->image;
             $this->total_quantity_plan = $this->transaction->details->sum('quantity');
             $this->total_quantity_get = 0;
             $this->percentage = $this->total_quantity_plan > 0 ? ($this->total_quantity_get / $this->total_quantity_plan) * 100 : 0;
@@ -58,61 +69,198 @@ class RincianPesanan extends Component
         }
     }
 
+    public function getRemainingAmountProperty()
+    {
+        if ($this->totalAmount <= 0) return 0;
+        return max(0, $this->totalAmount - ($this->totalPayment ?? 0));
+    }
+    public function getChangeAmountProperty()
+    {
+        if ($this->paymentMethod !== 'tunai') return 0;
+
+        $sisaTagihan = $this->remainingAmount;
+        return max(0, $this->paidAmount - $sisaTagihan);
+    }
+
     public function updatedPaidAmount($value)
     {
         $this->paidAmount = $value;
     }
 
-    public function updatedPaymentTarget($value)
+    public function updatedPaymentMethod($value)
     {
-        if ($value === 'BRI') {
-            $this->paymentAccount = 'BRI - 0912389103';
-        } elseif ($value === 'BCA') {
-            $this->paymentAccount = 'BCA - 0912389103';
+        if ($value == 'transfer') {
+            $this->paymentChannels = PaymentChannel::where('type', $value)->where('is_active', true)->get();
+        }
+    }
+
+    public function updatedPaymentChannelId($value)
+    {
+        $channel = PaymentChannel::find($value);
+        if ($channel) {
+            $this->paymentBank = $channel->bank_name;
+            $this->paymentAccountNumber = $channel->account_number;
+            $this->paymentAccountName = $channel->account_name;
+            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
         } else {
-            $this->paymentAccount = 'Mandiri - 0912389103';
+            $this->paymentBank = '';
+            $this->paymentAccountNumber = '';
+            $this->paymentAccountName = '';
         }
     }
 
     public function pay()
     {
+        if ($this->paymentMethod == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
+            $this->alert('warning', 'Metode pembayaran harus diisi.');
+            return;
+        } elseif ($this->paymentChannelId == '' && $this->paymentMethod == 'transfer') {
+            $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
+            return;
+            // } elseif ($this->image == null && $this->paymentMethod != 'tunai') {
+            //     $this->alert('warning', 'Silakan unggah bukti pembayaran.');
+            //     return;
+            // }
+
+            // sementara
+        } elseif ($this->paymentMethod != '') {
+            if ($this->image == null && $this->paymentMethod != 'tunai') {
+                $this->alert('warning', 'Silakan unggah bukti pembayaran.');
+                return;
+            }
+        }
+        if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
+            if ($this->paidAmount < 0.5 * $this->transaction->total_amount) {
+                $this->alert('warning', 'Jumlah pembayaran minimal 50% dari sisa.');
+                return;
+            } else {
+                if ($this->paidAmount >= $this->totalAmount) {
+                    $status = 'Lunas';
+                } else {
+                    $status = 'Belum Lunas';
+                }
+            }
+        } else {
+            if (!empty($this->payment) && $this->paidAmount < ($this->totalAmount - $this->totalPayment)) {
+                $this->alert('warning', 'Jumlah pembayaran harus lunas.');
+                return;
+            } else {
+                $status = 'Lunas';
+            }
+        }
         $this->validate([
             'paymentMethod' => 'nullable|string',
-            'paymentTarget' => 'nullable|string',
+            'paymentBank' => 'nullable|string',
             'paymentAccount' => 'nullable|string',
         ]);
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
             $transaction->update([
-                'status' => 'Belum Diproses',
-                'paid_amount' => $this->paidAmount,
-                'payment_method' => $this->paymentMethod,
-                'payment_target' => $this->paymentTarget,
-                'payment_account' => $this->paymentAccount,
-                'payment_status' => $this->paidAmount >= $this->totalAmount ? 'Lunas' : 'Belum Lunas',
+                'status' => 'Sedang Diproses',
+                'payment_status' => $status,
             ]);
 
-            if ($this->image instanceof \Illuminate\Http\UploadedFile) {
-                // hapuskan gambar lama jika ada
-                if ($transaction->image) {
-                    Storage::disk('public')->delete($transaction->image);
+            if ($this->paidAmount > 0 && $this->paymentMethod != '') {
+                $payment = Payment::create([
+                    'transaction_id' => $transaction->id,
+                    'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
+                    'payment_method' => $this->paymentMethod,
+                    'paid_amount' => $this->paidAmount,
+                    'paid_at' => now(),
+                ]);
+
+                if ($this->image instanceof \Illuminate\Http\UploadedFile) {
+                    // if ($payment->image) {
+                    //     Storage::disk('public')->delete($payment->image);
+                    // }
+                    $path = $this->image->store('payments', 'public');
+                    $payment->update(['image' => $path]);
                 }
-                $path = $this->image->store('payments', 'public');
-                $transaction->update(['image' => $path]);
             }
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
+            session()->flash('print', true);
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }
 
-        $this->showPrintModal = true;
-        $this->alert('success', 'Pembayaran berhasil diproses!');
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
+    public function send()
+    {
+        // 1. Generate PDF dan simpan ke public storage
+        $pdf = Pdf::loadView('pdf.struk', [
+            'transaction' => $this->transaction,
+        ])->setPaper([0, 0, 227, 400], 'portrait');
+
+        // 2. Simpan PDF ke storage
+        $fileName = 'struk-' . $this->transaction->id . '.pdf';
+        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/' . $fileName);
+
+
+        // 3. Format pesan WhatsApp
+        $message = "🧾 *Struk Transaksi*\n"; // 🧾
+        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
+        $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
+
+
+        foreach ($this->transaction->details as $detail) {
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
+        }
+
+        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
+        $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
+
+        $tipe = match ($this->transaction->method) {
+            'pesanan-reguler' => 'Pesanan Reguler',
+            'pesanan-kotak' => 'Pesanan Kotak',
+            default => 'Siap Saji',
+        };
+
+        $message .= "\u{1F4E6} *Tipe:* {$tipe}\n\n"; // 📦
+        $message .= "\u{1F64F} Terima kasih telah berbelanja!\n\n"; // 🙏
+        $message .= "\u{1F4C4} *Download Struk (PDF):*\n{$pdfUrl}"; // 📄
+
+
+        // 4. Kirim ke WhatsApp
+        $phone = $this->transaction->phone;
+        if (str_starts_with($phone, '08')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
+        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
+
+        $this->dispatch('open-wa', ['url' => $waUrl]);
+    }
+
+    public function finish()
+    {
+        $transaction = \App\Models\Transaction::find($this->transactionId);
+        if ($transaction->payment_status == 'Lunas') {
+            $transaction->update([
+                'status' => 'Selesai',
+                'end_date' => now(),
+            ]);
+            session()->flash('success', 'Pesanan telah selesai.');
+        } elseif ($transaction->payment_status == 'Belum Lunas') {
+            $transaction->update([
+                'status' => 'Gagal',
+                'end_date' => now(),
+            ]);
+            session()->flash('error', 'Pesanan gagal.');
+        }
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
     public function render()
     {
-        return view('livewire.transaction.rincian-pesanan');
+        return view('livewire.transaction.rincian-pesanan', [
+            'remainingAmount' => $this->getRemainingAmountProperty(),
+            'changeAmount' => $this->getChangeAmountProperty(),
+        ]);
     }
 }

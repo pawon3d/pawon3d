@@ -29,14 +29,19 @@ class Transaction extends Model
         return $this->hasMany(TransactionDetail::class);
     }
 
-    public function productions()
+    public function production()
     {
-        return $this->hasMany(Production::class);
+        return $this->hasOne(Production::class);
     }
 
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function getActivitylogOptions(): LogOptions

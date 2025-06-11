@@ -181,7 +181,11 @@
             <div class="flex flex-row justify-between w-full">
                 <p class="p-4 text-sm text-red-500 font-bold">Sisa Tagihan</p>
                 <p class="p-4 text-sm text-red-500 font-bold">
+                    @if ($paidAmount >= $total)
+                    Rp0
+                    @else
                     Rp{{ number_format($total - $paidAmount, 0, ',', '.') }}
+                    @endif
                 </p>
             </div>
         </div>
@@ -204,18 +208,14 @@
         @if ($paymentMethod == 'transfer')
         <div class="mt-2 flex flex-row gap-2 w-full">
             <div class="w-1/4">
-                <flux:select wire:model.live="paymentTarget" placeholder="Pilih Bank Tujuan">
-                    <flux:select.option value="BRI" class="text-gray-700">
-                        BRI
+                <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
+                    @foreach ($paymentChannels as $channel)
+                    <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
+                        {{ $channel->bank_name }}
                     </flux:select.option>
-                    <flux:select.option value="BCA" class="text-gray-700">
-                        BCA
-                    </flux:select.option>
-                    <flux:select.option value="Mandiri" class="text-gray-700">
-                        Mandiri
-                    </flux:select.option>
+                    @endforeach
                 </flux:select>
-                <flux:error name="paymentTarget" />
+                <flux:error name="paymentChannelId" />
             </div>
             <div class="w-3/4">
                 <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
@@ -224,14 +224,34 @@
         </div>
         @endif
 
-        <flux:label>Nomimal Pembayaran</flux:label>
+
+        <flux:label>Nominal Pembayaran</flux:label>
         <p class="text-sm text-gray-500">
-            Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau setengah
+            Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
+            setengah
             dari
             Total Tagihan.
         </p>
-        <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
-        <flux:error name="paidAmount" />
+        <div class="flex flex-row gap-2 w-full">
+            <div class="flex flex-col gap-2 w-full">
+                @if($paymentMethod == 'tunai')
+                <span class="text-xs text-gray-500">
+                    Nominal Uang Yang Diterima
+                </span>
+                @endif
+                <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
+                <flux:error name="paidAmount" />
+            </div>
+            @if($paymentMethod == 'tunai')
+            <div class="flex flex-col gap-2 w-full">
+                <span class="text-xs text-gray-500">
+                    Nominal Uang Kembalian
+                </span>
+                <flux:input placeholder="Kembalian" value="{{ number_format($paidAmount - $total, 0, ',', '.') }}"
+                    readonly />
+            </div>
+            @endif
+        </div>
 
         @if ($paymentMethod == 'transfer')
         <div class="mb-5 w-full">

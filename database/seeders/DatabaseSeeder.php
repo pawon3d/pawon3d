@@ -9,6 +9,7 @@ use App\Models\IngredientCategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Material;
+use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Unit;
@@ -207,6 +208,34 @@ class DatabaseSeeder extends Seeder
             'method' => 'pesanan-reguler',
         ])->product_compositions()->create([
             'material_id' => Material::first()->id,
+        ]);
+
+        PaymentChannel::create([
+            'bank_name' => 'BRI',
+            'type' => 'transfer',
+            'account_number' => '0912389103',
+            'account_name' => 'Pawon 3D BRI',
+            'is_active' => true,
+        ]);
+        PaymentChannel::create([
+            'bank_name' => 'BCA',
+            'type' => 'transfer',
+            'account_number' => '0912389103',
+            'account_name' => 'Pawon 3D BCA',
+            'is_active' => true,
+        ]);
+        PaymentChannel::create([
+            'bank_name' => 'Mandiri',
+            'type' => 'transfer',
+            'account_number' => '0912389103',
+            'account_name' => 'Pawon 3D Mandiri',
+            'is_active' => true,
+        ]);
+        PaymentChannel::create([
+            'bank_name' => 'QRIS',
+            'type' => 'qris',
+            'qris_image' => 'https://example.com/qris-image.png',
+            'is_active' => false,
         ]);
     }
 }

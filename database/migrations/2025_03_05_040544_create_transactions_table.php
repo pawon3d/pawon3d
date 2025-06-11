@@ -22,15 +22,10 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->text('note')->nullable();
-            $table->string('payment_method')->nullable();
-            $table->string('payment_target')->nullable();
-            $table->string('payment_account')->nullable();
             $table->string('payment_status', 20)->nullable();
             $table->string('status', 20)->nullable();
             $table->string('method', 20)->default('pesanan-reguler');
             $table->decimal('total_amount', 10, 0)->nullable();
-            $table->decimal('paid_amount', 10, 0)->nullable();
-            $table->string('image')->nullable();
             $table->timestamps();
 
 
