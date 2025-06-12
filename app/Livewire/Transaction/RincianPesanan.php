@@ -4,6 +4,7 @@ namespace App\Livewire\Transaction;
 
 use App\Models\Payment;
 use App\Models\PaymentChannel;
+use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -15,6 +16,7 @@ class RincianPesanan extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
     public $transactionId;
+    public $paymentImage;
     public $details = [];
     public $paymentChannels = [];
     public $production;
@@ -27,6 +29,8 @@ class RincianPesanan extends Component
     public $total_quantity_plan, $total_quantity_get, $percentage;
     public $showPrintModal = false;
     public $showImage = false;
+
+    public $pembayaranPertama, $pembayaranKedua, $sisaPembayaranPertama, $kembalian;
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
@@ -40,8 +44,23 @@ class RincianPesanan extends Component
         }
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::with(['details', 'user'])->find($id);
+        $this->totalAmount = $transaction->total_amount;
         $this->totalPayment = $transaction->payments->sum('paid_amount');
         $this->payments = \App\Models\Payment::where('transaction_id', $id)->latest()->get();
+        if ($this->payments->count() > 1) {
+            $this->pembayaranKedua = $this->payments->first();
+            $this->pembayaranPertama = $this->payments->last();
+            $this->sisaPembayaranPertama = $this->totalAmount - $this->pembayaranPertama->paid_amount;
+            if ($this->pembayaranKedua->paid_amount > $this->sisaPembayaranPertama) {
+                $this->kembalian = $this->pembayaranKedua->paid_amount - $this->sisaPembayaranPertama;
+            } else {
+                $this->kembalian = 0;
+            }
+        } elseif ($this->payments->count() == 1) {
+            $this->pembayaranPertama = $this->payments->first();
+            $this->kembalian = $this->pembayaranPertama->paid_amount - $this->totalAmount;
+        }
+
         $this->transaction = $transaction;
         $this->production = !empty($transaction->production) ? $transaction->production : null;
         if ($transaction) {
@@ -56,7 +75,6 @@ class RincianPesanan extends Component
                     ],
                 ];
             })->toArray();
-            $this->totalAmount = $transaction->total_amount;
             $this->total_quantity_plan = $this->transaction->details->sum('quantity');
             $this->total_quantity_get = 0;
             $this->percentage = $this->total_quantity_plan > 0 ? ($this->total_quantity_get / $this->total_quantity_plan) * 100 : 0;
@@ -106,6 +124,17 @@ class RincianPesanan extends Component
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
             $this->paymentAccountName = '';
+        }
+    }
+
+    public function showImageModal($id)
+    {
+        $payment = Payment::find($id);
+        if ($payment) {
+            $this->paymentImage = $payment->image;
+            $this->showImage = true;
+        } else {
+            $this->alert('warning', 'Bukti pembayaran tidak ditemukan.');
         }
     }
 
@@ -261,6 +290,7 @@ class RincianPesanan extends Component
         return view('livewire.transaction.rincian-pesanan', [
             'remainingAmount' => $this->getRemainingAmountProperty(),
             'changeAmount' => $this->getChangeAmountProperty(),
+            'transactionStatus' => Transaction::where('id', $this->transactionId)->whereNotIn('status', ['Gagal', 'Selesai'])->first(),
         ]);
     }
 }

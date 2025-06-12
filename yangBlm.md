@@ -21,6 +21,7 @@
 -   [ ] Fitur tambah otomatis
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
+-   [ ] kasir bagian siap saji
 
 ### Medium Priority
 

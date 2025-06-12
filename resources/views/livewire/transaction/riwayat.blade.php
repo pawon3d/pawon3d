@@ -32,10 +32,10 @@
     <div class="flex justify-between items-center mb-4">
         <flux:dropdown>
             <flux:button variant="ghost">
-                @if($filterStatus)
-                {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                @if ($filterStatus)
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                 @else
-                Semua Produksi
+                    Semua Produksi
                 @endif
                 ({{ $transactions->total() }})
                 <flux:icon.chevron-down variant="mini" />
@@ -67,91 +67,105 @@
     </div>
 
     @if ($transactions->isEmpty())
-    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum ada transaksi.</p>
-        <p class="text-gray-700">Tambah transaksi di menu utama.</p>
-    </div>
+        <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+            <p class="text-gray-700 font-semibold">Belum ada transaksi.</p>
+            <p class="text-gray-700">Tambah transaksi di menu utama.</p>
+        </div>
     @else
-    <div class="bg-white rounded-xl border shadow-sm">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 font-semibold">
-                            ID Pesanan
-                            <span class="cursor-pointer">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">Tanggal Pesanan</th>
-                        <th class="px-6 py-3 font-semibold">Daftar Produk</th>
-                        <th class="px-6 py-3 font-semibold">Pemesan</th>
-                        <th class="px-6 py-3 font-semibold">Kasir</th>
-                        <th class="px-6 py-3 font-semibold">Status Pembayaran</th>
-                        <th class="px-6 py-3 font-semibold">Status Pesanan</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-900">
-                    @foreach($transactions as $transaction)
-                    <tr class="hover:bg-gray-50 transition">
-                        <!-- ID Produk -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}">
-                                {{ $transaction->invoice_number }}
-                            </a>
-                        </td>
+        <div class="bg-white rounded-xl border shadow-sm">
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">
+                                ID Pesanan
+                                <span class="cursor-pointer">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            </th>
+                            <th class="px-6 py-3 font-semibold">
+                                Tanggal
+                                @if ($method == 'siap-beli')
+                                    Pembelian
+                                @else
+                                    Pengambilan
+                                @endif
+                            </th>
+                            <th class="px-6 py-3 font-semibold">Daftar Produk</th>
+                            @if ($method != 'siap-beli')
+                                <th class="px-6 py-3 font-semibold">Pemesan</th>
+                            @endif
+                            <th class="px-6 py-3 font-semibold">Kasir</th>
+                            @if ($method != 'siap-beli')
+                                <th class="px-6 py-3 font-semibold">Status Pembayaran</th>
+                                <th class="px-6 py-3 font-semibold">Status Pesanan</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-900">
+                        @foreach ($transactions as $transaction)
+                            <tr class="hover:bg-gray-50 transition">
+                                <!-- ID Produk -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}">
+                                        {{ $transaction->invoice_number }}
+                                    </a>
+                                </td>
 
-                        <!-- Jadwal Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $transaction->start_date
-                            ? \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y')
-                            : '-' }}
-                        </td>
+                                <!-- Jadwal Produksi -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if ($method == 'siap-beli')
+                                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y') : '-' }}
+                                    @else
+                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '-' }}
+                                    @endif
+                                </td>
 
-                        <!-- Daftar Produk -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $transaction->details->count() > 0
-                            ? $transaction->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
-                            : 'Tidak ada produk' }}
-                        </td>
+                                <!-- Daftar Produk -->
+                                <td class="px-6 py-4 max-w-xs truncate">
+                                    {{ $transaction->details->count() > 0
+                                        ? $transaction->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
+                                        : 'Tidak ada produk' }}
+                                </td>
+                                @if ($method != 'siap-beli')
+                                    <!-- Pemesan -->
+                                    <td class="px-6 py-4 max-w-xs truncate">
+                                        {{ $transaction->name ? $transaction->name : '-' }}
+                                    </td>
+                                @endif
+                                <!-- Kasir -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
+                                        {{ ucfirst($transaction->user->name) }}
+                                    </span>
+                                </td>
+                                @if ($method != 'siap-beli')
+                                    <!-- Status Pembayaran -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
+                                            {{ $transaction->payment_status }}
+                                        </span>
+                                    </td>
 
-                        <!-- Pemesan -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $transaction->name
-                            ? $transaction->name
-                            : '-' }}
-                        </td>
+                                    <!-- Status Pesanan -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
+                                            {{ $transaction->status }}
+                                        </span>
+                                    </td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                        <!-- Kasir -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ ucfirst($transaction->user->name) }}
-                            </span>
-                        </td>
-
-                        <!-- Status Pembayaran -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ $transaction->payment_status }}
-                            </span>
-                        </td>
-
-                        <!-- Status Pesanan -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ $transaction->status }}
-                            </span>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <!-- Pagination -->
+            <div class="p-4">
+                {{ $transactions->links() }}
+            </div>
         </div>
-
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $transactions->links() }}
-        </div>
-    </div>
     @endif
 
 </div>

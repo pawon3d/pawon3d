@@ -219,7 +219,6 @@ class Rincian extends Component
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'stock' => 0,
             'method' => $this->method,
             'is_recipe' => $this->is_recipe,
             'is_active' => $this->is_active,

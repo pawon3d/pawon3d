@@ -153,7 +153,7 @@ class BuatPesanan extends Component
             $transaction->update([
                 'name' => $this->name,
                 'phone' => $this->phone,
-                'date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d'),
+                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
                 'time' => $this->time,
                 'start_date' => now(),
                 'note' => $this->note,
@@ -250,6 +250,12 @@ class BuatPesanan extends Component
                 'total_amount' => $this->getTotalProperty(),
                 'payment_status' => $this->paidAmount >= $this->getTotalProperty() ? 'Lunas' : 'Belum Lunas',
             ]);
+
+            if ($transaction->payment_status == 'Lunas' && $transaction->method == 'siap-beli') {
+                $transaction->update([
+                    'status' => 'Selesai',
+                ]);
+            }
 
             foreach ($this->details as $detail) {
                 $transaction->details()->updateOrCreate(

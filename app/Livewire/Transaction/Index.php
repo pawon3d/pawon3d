@@ -97,6 +97,10 @@ class Index extends Component
             // Jika produk sudah ada di keranjang, tingkatkan kuantitasnya
             $this->cart[$productId]['quantity']++;
         } else {
+            if ($product->stock <= 0) {
+                $this->alert('warning', 'Stok produk ini sudah habis!');
+                return;
+            }
             $this->cart[$productId] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
