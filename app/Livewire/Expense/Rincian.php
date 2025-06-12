@@ -111,8 +111,19 @@ class Rincian extends Component
             }
         });
         if ($this->expense->expenseDetails->sum('quantity_get') > 0) {
-            $this->expense->update(['status' => 'Selesai']);
-            $this->status = 'Selesai';
+            if ($this->expense->expenseDetails->sum('quantity_get') >= $this->expense->expenseDetails->sum('quantity_expect')) {
+                $this->expense->update(['status' => 'Lengkap']);
+                $this->status = 'Lengkap';
+            } elseif ($this->expense->expenseDetails->sum('quantity_get') >= 0.8 * $this->expense->expenseDetails->sum('quantity_expect')) {
+                $this->expense->update(['status' => 'Hampir Lengkap']);
+                $this->status = 'Hampir Lengkap';
+            } elseif ($this->expense->expenseDetails->sum('quantity_get') >= 0.5 * $this->expense->expenseDetails->sum('quantity_expect')) {
+                $this->expense->update(['status' => 'Separuh']);
+                $this->status = 'Separuh';
+            } else {
+                $this->expense->update(['status' => 'Sedikit']);
+                $this->status = 'Sedikit';
+            }
         } else {
             $this->expense->update(['status' => 'Gagal']);
             $this->status = 'Gagal';

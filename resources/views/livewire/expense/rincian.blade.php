@@ -43,10 +43,7 @@
                 <div class="flex items-end gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Tanggal</flux:heading>
                     <p class="text-sm">
-                        {{ $expense->expense_date ?
-                        \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y')
-                        :
-                        '-' }}
+                        {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') : '-' }}
                     </p>
                 </div>
                 <div class="flex items-end gap-4 flex-col">
@@ -91,44 +88,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($expenseDetails as $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->quantity_expect }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->quantity_get }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->unit->name ?? '' }} ({{ $detail->unit->alias ?? '' }})
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                Rp{{ number_format($detail->price_expect, 0, ',', '.') }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                Rp{{ number_format($detail->total_expect, 0, ',', '.') }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                Rp{{ number_format($detail->total_actual, 0, ',', '.') }}
-                            </span>
-                        </td>
-                    </tr>
+                    @foreach ($expenseDetails as $detail)
+                        <tr>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->quantity_expect }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->quantity_get }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->unit->name ?? '' }} ({{ $detail->unit->alias ?? '' }})
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    Rp{{ number_format($detail->price_expect, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    Rp{{ number_format($detail->total_expect, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    Rp{{ number_format($detail->total_actual, 0, ',', '.') }}
+                                </span>
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -162,27 +159,28 @@
     </div>
 
     @if ($is_start && !$is_finish)
-    <div class="flex justify-end mt-16 gap-4">
-        <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
-            Selesaikan Belanja
-        </flux:button>
-        @if($status != 'Lengkap')
-        <flux:button icon="shopping-cart" type="button" variant="primary"
-            href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">
-            Dapatkan Belanja
-        </flux:button>
-        @endif
-    </div>
+        <div class="flex justify-end mt-16 gap-4">
+            <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
+                Selesaikan Belanja
+            </flux:button>
+            @if ($status != 'Lengkap')
+                <flux:button icon="shopping-cart" type="button" variant="primary"
+                    href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">
+                    Dapatkan Belanja
+                </flux:button>
+            @endif
+        </div>
     @elseif (!$is_start && !$is_finish)
-    <div class="flex justify-end mt-16 gap-4">
-        <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
-        <flux:button icon="pencil" type="button" variant="primary" href="{{ route('belanja.edit', $expense->id) }}">
-            Ubah Daftar Belanja
-        </flux:button>
-        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click="start">
-            Mulai Belanja
-        </flux:button>
-    </div>
+        <div class="flex justify-end mt-16 gap-4">
+            <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
+            <flux:button icon="pencil" type="button" variant="primary"
+                href="{{ route('belanja.edit', $expense->id) }}">
+                Ubah Daftar Belanja
+            </flux:button>
+            <flux:button icon="shopping-cart" type="button" variant="primary" wire:click="start">
+                Mulai Belanja
+            </flux:button>
+        </div>
     @endif
 
 
@@ -194,14 +192,14 @@
                 <h1 size="lg">Riwayat Pembaruan Daftar Belanja</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

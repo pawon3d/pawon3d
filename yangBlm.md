@@ -11,6 +11,9 @@
 -   [x] Sidebar
 -   [x] Payment di buat-pesanan, dll.
 -   [x] Payment dibuat tabel tersendiri.
+-   [x] Print struk via WA
+-   [x] Kasir system
+-   [x] kasir bagian siap saji
 
 ## BELUM SELESAI
 
@@ -21,13 +24,10 @@
 -   [ ] Fitur tambah otomatis
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
--   [ ] kasir bagian siap saji
 
 ### Medium Priority
 
 -   [ ] Status di riwayat belanja (konsistensi)
--   [ ] Kasir system
+-   [ ] Detail produk di bagian pesanan (layout untuk review)
 
 ### Low Priority
-
--   [ ] Print struk via WA
