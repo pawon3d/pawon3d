@@ -23,8 +23,10 @@
 -   [ ] Pergantian harga bahan di belanja?
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Fitur tambah otomatis
+-   [ ] Tanggal kadaluarsa bahan
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
+-   [ ] produksi berubah total
 
 ### Medium Priority
 

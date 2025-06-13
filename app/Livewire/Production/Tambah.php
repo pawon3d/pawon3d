@@ -211,7 +211,8 @@ class Tambah extends Component
     {
         return view('livewire.production.tambah', [
             'users' => \App\Models\User::lazy(),
-            'products' => \App\Models\Product::lazy(),
+            'products' => \App\Models\Product::where('method', $this->method)
+                ->get(),
         ]);
     }
 }

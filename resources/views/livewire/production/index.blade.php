@@ -46,7 +46,7 @@
                 class="absolute opacity-0 w-0 h-0">
             <label for="pesanan-reguler" class="cursor-pointer">
                 <div
-                    class="{{ $method === 'pesanan-reguler' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    class="{{ $method === 'pesanan-reguler' ? 'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
                     <flux:icon icon="cake" class=" size-8" />
                     <span class="text-center hidden md:block">Pesanan Kue Reguler</span>
                 </div>
@@ -57,7 +57,7 @@
                 class="absolute opacity-0 w-0 h-0">
             <label for="pesanan-kotak" class="cursor-pointer">
                 <div
-                    class="{{ $method === 'pesanan-kotak' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    class="{{ $method === 'pesanan-kotak' ? 'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
                     <flux:icon icon="cube" class="size-8" />
                     <span class="text-center hidden md:block">Pesanan Kue Kotak</span>
                 </div>
@@ -69,7 +69,7 @@
                 class="absolute opacity-0 w-0 h-0">
             <label for="siap-beli" class="cursor-pointer">
                 <div
-                    class="{{ $method === 'siap-beli' ?  'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
+                    class="{{ $method === 'siap-beli' ? 'border-b-2 border-b-gray-600' : 'text-gray-800' }}  hover:border-b-2 hover:border-b-gray-600 w-full transition-colors flex flex-col items-center">
                     <flux:icon icon="dessert" class="size-8" />
                     <span class="text-center hidden md:block">Kue Siap Beli</span>
                 </div>
@@ -94,19 +94,27 @@
                     href="{{ route('produksi.riwayat', ['method' => $method]) }}">
                     Riwayat Produksi
                 </flux:button>
-                <flux:button variant="primary" icon="plus" href="{{ route('produksi.tambah', ['method' => $method]) }}">
-                    Tambah Produksi
-                </flux:button>
+                @if ($method == 'siap-beli')
+                    <flux:button variant="primary" icon="plus"
+                        href="{{ route('produksi.tambah', ['method' => $method]) }}">
+                        Tambah Produksi
+                    </flux:button>
+                @else
+                    <flux:button variant="primary" icon="clipboard"
+                        href="{{ route('produksi.pesanan', ['method' => $method]) }}">
+                        Lihat Daftar Pesanan
+                    </flux:button>
+                @endif
             </div>
         </div>
     </div>
     <div class="flex justify-between items-center mb-4">
         <flux:dropdown>
             <flux:button variant="ghost">
-                @if($filterStatus)
-                {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                @if ($filterStatus)
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                 @else
-                Semua Produksi
+                    Semua Produksi
                 @endif
                 ({{ $productions->total() }})
                 <flux:icon.chevron-down variant="mini" />
@@ -138,103 +146,103 @@
     </div>
 
     @if ($productions->isEmpty())
-    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum ada produksi.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah Produksi” untuk menambahkan produksi.</p>
-    </div>
+        <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+            <p class="text-gray-700 font-semibold">Belum ada produksi.</p>
+            <p class="text-gray-700">Tekan tombol “Tambah Produksi” untuk menambahkan produksi.</p>
+        </div>
     @else
-    <div class="bg-white rounded-xl border shadow-sm">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('production_number')">
-                            ID Produk
-                            <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">Jadwal Produksi</th>
-                        <th class="px-6 py-3 font-semibold">Daftar Produk</th>
-                        <th class="px-6 py-3 font-semibold">Pekerja</th>
-                        <th class="px-6 py-3 font-semibold">Status</th>
-                        <th class="px-6 py-3 font-semibold">Kemajuan</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-900">
-                    @foreach($productions as $production)
-                    <tr class="hover:bg-gray-50 transition">
-                        <!-- ID Produk -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('produksi.rincian', $production->id) }}">
-                                {{ $production->production_number }}
-                            </a>
-                        </td>
+        <div class="bg-white rounded-xl border shadow-sm">
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('production_number')">
+                                ID Produk
+                                <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            </th>
+                            <th class="px-6 py-3 font-semibold">Jadwal Produksi</th>
+                            <th class="px-6 py-3 font-semibold">Daftar Produk</th>
+                            <th class="px-6 py-3 font-semibold">Pekerja</th>
+                            <th class="px-6 py-3 font-semibold">Status</th>
+                            <th class="px-6 py-3 font-semibold">Kemajuan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-gray-900">
+                        @foreach ($productions as $production)
+                            <tr class="hover:bg-gray-50 transition">
+                                <!-- ID Produk -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="{{ route('produksi.rincian', $production->id) }}">
+                                        {{ $production->production_number }}
+                                    </a>
+                                </td>
 
-                        <!-- Jadwal Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $production->start_date
-                            ? \Carbon\Carbon::parse($production->start_date)->format('d-M-Y')
-                            : '-' }}
-                        </td>
+                                <!-- Jadwal Produksi -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $production->start_date ? \Carbon\Carbon::parse($production->start_date)->format('d-M-Y') : '-' }}
+                                </td>
 
-                        <!-- Daftar Produk -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $production->details->count() > 0
-                            ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
-                            : 'Tidak ada produk' }}
-                        </td>
+                                <!-- Daftar Produk -->
+                                <td class="px-6 py-4 max-w-xs truncate">
+                                    {{ $production->details->count() > 0
+                                        ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
+                                        : 'Tidak ada produk' }}
+                                </td>
 
-                        <!-- Pekerja -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $production->workers->count() > 0
-                            ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
-                            : 'Tidak ada pekerja' }}
-                        </td>
+                                <!-- Pekerja -->
+                                <td class="px-6 py-4 max-w-xs truncate">
+                                    {{ $production->workers->count() > 0
+                                        ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
+                                        : 'Tidak ada pekerja' }}
+                                </td>
 
-                        <!-- Status -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                            {{ 
-                                $production->status === 'selesai' ? 'bg-green-100 text-green-800' :
-                                ($production->status === 'berjalan' ? 'bg-blue-100 text-blue-800' :
-                                'bg-gray-100 text-gray-700') 
-                            }}">
-                                {{ ucfirst($production->status) }}
-                            </span>
-                        </td>
+                                <!-- Status -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {{ $production->status === 'selesai'
+                                ? 'bg-green-100 text-green-800'
+                                : ($production->status === 'berjalan'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-700') }}">
+                                        {{ ucfirst($production->status) }}
+                                    </span>
+                                </td>
 
-                        <!-- Kemajuan Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @php
-                            $total_plan = $production->details->sum('quantity_plan');
-                            $total_done = $production->details->sum('quantity_get');
-                            $progress = $total_plan > 0 ? ($total_done / $total_plan) * 100 : 0;
-                            if ($progress > 100) {
-                            $progress = 100;
-                            }
-                            @endphp
+                                <!-- Kemajuan Produksi -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @php
+                                        $total_plan = $production->details->sum('quantity_plan');
+                                        $total_done = $production->details->sum('quantity_get');
+                                        $progress = $total_plan > 0 ? ($total_done / $total_plan) * 100 : 0;
+                                        if ($progress > 100) {
+                                            $progress = 100;
+                                        }
+                                    @endphp
 
-                            <div class="flex flex-col gap-1">
-                                <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden">
-                                    <div class="h-4 bg-blue-600 rounded-full transition-all"
-                                        style="width: {{ number_format($progress, 0) }}%"></div>
-                                </div>
-                                <span class="text-xs text-gray-500">
-                                    {{ number_format($progress, 0) }}% ({{ $total_done }} dari {{ $total_plan }})
-                                </span>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                    <div class="flex flex-col gap-1">
+                                        <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden">
+                                            <div class="h-4 bg-blue-600 rounded-full transition-all"
+                                                style="width: {{ number_format($progress, 0) }}%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            {{ number_format($progress, 0) }}% ({{ $total_done }} dari
+                                            {{ $total_plan }})
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="p-4">
+                {{ $productions->links() }}
+            </div>
         </div>
-
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $productions->links() }}
-        </div>
-    </div>
 
     @endif
 
@@ -246,14 +254,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Produksi</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

@@ -496,9 +496,15 @@
             <flux:button icon="trash" type="button" variant="ghost" loading="false"
                 wire:click.prevent="delete" />
         @endif
-        @if ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft')
+        @if (
+            ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft') &&
+                $transaction->payment_status != 'Lunas')
             <flux:button icon="pencil-square" type="button" href="{{ route('transaksi.edit', $transaction->id) }}">
                 Ubah Daftar Pesanan
+            </flux:button>
+        @elseif ($transaction->status == 'Belum Diproses' && $transaction->payment_status == 'Lunas')
+            <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
+                Selesaikan Pesanan
             </flux:button>
         @elseif ($transaction->status == 'Sedang Diproses' || $transaction->status == 'Dapat Diambil')
             <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
