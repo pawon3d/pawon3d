@@ -108,26 +108,38 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('expense_number')">
                             Nomor Belanja
+                            {{ $sortDirection === 'asc' && $sortField === 'expense_number' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('expense_date')">
                             Tanggal Belanja
+                            {{ $sortDirection === 'asc' && $sortField === 'expense_date' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('supplier_name')">
                             Toko Persediaan
+                            {{ $sortDirection === 'asc' && $sortField === 'supplier_name' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('status')">
                             Status
+                            {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Barang Didapatkan
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('grand_total_expect')">
                             Total Harga (Perkiraan)
+                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_expect' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('grand_total_actual')">
                             Total Harga (Sebenarnya)
+                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_actual' ? '↑' : '↓' }}
                         </th>
                     </tr>
                 </thead>

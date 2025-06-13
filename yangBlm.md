@@ -27,6 +27,7 @@
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] produksi berubah total
+-   [ ] sorting tabel
 
 ### Medium Priority
 

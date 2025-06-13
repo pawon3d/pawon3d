@@ -15,6 +15,26 @@ class Index extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $filterStatus = '';
+    public $sortField = 'name';
+    public $sortDirection = 'desc';
+
+    protected $queryString = ['search', 'filterStatus',  'sortField', 'sortDirection'];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+        $this->resetPage();
+    }
 
     public function riwayatPembaruan()
     {
@@ -37,7 +57,8 @@ class Index extends Component
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
-            })
+            })->with('details')->withCount('details')
+            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
         return view('livewire.ingredient-category.index', compact('categories'));
     }

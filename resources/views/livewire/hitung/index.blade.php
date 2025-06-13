@@ -108,17 +108,25 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('hitung_number')">
                             ID Aksi
+                            {{ $sortDirection === 'asc' && $sortField === 'hitung_number' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('hitung_date')">
                             Tanggal Dibuat
+                            {{ $sortDirection === 'asc' && $sortField === 'hitung_date' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('action')">
                             Aksi
+                            {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('status')">
                             Status
+                            {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
                         </th>
                     </tr>
                 </thead>

@@ -39,9 +39,9 @@ class IngredientCategory extends Model
             ->dontSubmitEmptyLogs();
     }
 
-    public function materials()
+    public function details()
     {
-        return $this->hasMany(Material::class);
+        return $this->hasMany(IngredientCategoryDetail::class);
     }
 
     public static function boot()

@@ -17,6 +17,20 @@ class Index extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $filterStatus = '';
+    public $sortField = 'name';
+    public $sortDirection = 'desc';
+
+    protected $queryString = ['search', 'sortField', 'sortDirection'];
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+    }
 
     public function riwayatPembaruan()
     {
@@ -46,10 +60,17 @@ class Index extends Component
 
     public function render()
     {
-        $users = User::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
-        })
-            ->orderBy('name')
+        $users = User::query()
+            ->leftJoin('model_has_roles', function ($join) {
+                $join->on('users.id', '=', 'model_has_roles.model_id')
+                    ->where('model_has_roles.model_type', '=', \App\Models\User::class);
+            })
+            ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->select('users.*', 'roles.name as role_name') // penting!
+            ->orderBy(
+                $this->sortField === 'role_name' ? 'roles.name' : 'users.' . $this->sortField,
+                $this->sortDirection
+            )->distinct()
             ->paginate(10);
 
         return view('livewire.user.index', compact('users'));

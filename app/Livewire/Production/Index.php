@@ -53,8 +53,8 @@ class Index extends Component
         } else {
             $this->sortDirection = 'asc';
         }
-
         $this->sortField = $field;
+        $this->resetPage();
     }
 
     public function mount()
@@ -75,11 +75,24 @@ class Index extends Component
 
     public function render()
     {
-        $productions = Production::with(['details', 'workers'])
-            ->where('production_number', 'like', '%' . $this->search . '%')
-            ->where('method', $this->method)
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+        $query = Production::with(['details.product', 'workers'])
+            ->where('productions.production_number', 'like', '%' . $this->search . '%')
+            ->where('productions.method', $this->method);
+
+        if ($this->sortField === 'product_name') {
+            $query->join('production_details', 'productions.id', '=', 'production_details.production_id')
+                ->join('products', 'production_details.product_id', '=', 'products.id')
+                ->orderBy('products.name', $this->sortDirection);
+        } elseif ($this->sortField === 'worker_name') {
+            $query->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
+                ->join('users', 'production_workers.user_id', '=', 'users.id')
+                ->orderBy('users.name', $this->sortDirection);
+        } else {
+            $query->orderBy("productions.{$this->sortField}", $this->sortDirection);
+        }
+
+        $productions = $query->select('productions.*')->distinct()->paginate(10);
+
 
         return view('livewire.production.index', [
             'productions' => $productions,

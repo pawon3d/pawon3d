@@ -83,12 +83,22 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama
-                            Kategori</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status Kategori</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jenis Produk</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("name")'>
+                            Nama
+                            Kategori
+                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("is_active")'>
+                            Status Kategori
+                            {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("products_count")'>
+                            Jenis Produk
+                            {{ $sortDirection === 'asc' && $sortField === 'products_count' ? '↑' : '↓' }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -103,7 +113,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
                         </td>
                         <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                            {{ $category->products->count() }}
+                            {{ $category->products_count }}
                         </td>
                     </tr>
                     @empty

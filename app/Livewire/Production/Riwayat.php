@@ -3,6 +3,7 @@
 namespace App\Livewire\Production;
 
 use App\Models\Production;
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Riwayat extends Component
@@ -15,6 +16,19 @@ class Riwayat extends Component
     public $sortDirection = 'desc';
     public $method = 'pesanan-reguler';
 
+    protected $queryString = ['search', 'sortField', 'sortDirection'];
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+    }
+
+
     public function mount($method)
     {
         if ($method == 'pesanan-reguler') {
@@ -24,14 +38,28 @@ class Riwayat extends Component
         } elseif ($method == 'siap-beli') {
             $this->methodName = 'Siap Beli';
         }
+        View::share('title', 'Riwayat Produksi ' . $this->methodName);
     }
     public function render()
     {
-        $productions = Production::with(['details.product', 'workers.worker'])
-            ->where('production_number', 'like', '%' . $this->search . '%')
-            ->where('method', $this->method)
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+        $query = Production::with(['details.product', 'workers'])
+            ->where('productions.production_number', 'like', '%' . $this->search . '%')
+            ->where('productions.is_finish', true)
+            ->where('productions.method', $this->method);
+
+        if ($this->sortField === 'product_name') {
+            $query->join('production_details', 'productions.id', '=', 'production_details.production_id')
+                ->join('products', 'production_details.product_id', '=', 'products.id')
+                ->orderBy('products.name', $this->sortDirection);
+        } elseif ($this->sortField === 'worker_name') {
+            $query->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
+                ->join('users', 'production_workers.user_id', '=', 'users.id')
+                ->orderBy('users.name', $this->sortDirection);
+        } else {
+            $query->orderBy("productions.{$this->sortField}", $this->sortDirection);
+        }
+
+        $productions = $query->select('productions.*')->distinct()->paginate(10);
         return view('livewire.production.riwayat', [
             'productions' => $productions,
         ]);

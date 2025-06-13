@@ -92,14 +92,17 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Peran
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("name")'>
+                            Peran 
+                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Akses
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("permissions_count")'>
+                            Akses 
+                            {{ $sortDirection === 'asc' && $sortField === 'permissions_count' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jumlah Pekerja
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("users_count")'>
+                            Jumlah Pekerja 
+                            {{ $sortDirection === 'asc' && $sortField === 'users_count' ? '↑' : '↓' }}
                         </th>
                     </tr>
                 </thead>
@@ -111,12 +114,12 @@
                                 {{ $role->name }}
                             </a>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $role->permissions->count() > 0 ?
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $role->permissions_count > 0 ?
                             $role->permissions->pluck('name')->implode(', ') : 'Tidak ada akses' }}
                         </td>
 
                         <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            {{ $role->users->count() }}
+                            {{ $role->users_count }}
                         </td>
                     </tr>
                     @empty

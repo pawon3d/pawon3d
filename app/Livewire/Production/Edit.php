@@ -10,6 +10,7 @@ class Edit extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
     public $production_id;
     public $production_details = [];
+    public $production;
     public $user_ids;
     public $start_date = 'dd-mm-yyyy', $note;
     public $method = 'pesanan-reguler';
@@ -19,6 +20,7 @@ class Edit extends Component
     {
         $this->production_id = $id;
         $production = \App\Models\Production::findOrFail($this->production_id);
+        $this->production = $production;
         $this->start_date = \Carbon\Carbon::parse($production->start_date)->format('d-m-Y');
         $this->note = $production->note;
 
@@ -102,7 +104,8 @@ class Edit extends Component
     {
         return view('livewire.production.edit', [
             'users' => \App\Models\User::lazy(),
-            'products' => \App\Models\Product::lazy(),
+            'products' => \App\Models\Product::where('method', $this->production->method)
+                ->get(),
         ]);
     }
 }

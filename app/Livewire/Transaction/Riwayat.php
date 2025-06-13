@@ -10,9 +10,26 @@ class Riwayat extends Component
     public $search = '';
     public $filterStatus = '';
     public $methodName = '';
-    public $sortField = 'transaction_number';
+    public $sortField = 'invoice_number';
     public $sortDirection = 'desc';
     public $method = 'pesanan-reguler';
+
+    protected $queryString = ['search', 'sortField', 'sortDirection'];
+
+    public function sortBy($field)
+    {
+        if ($this->method == 'siap-beli' && $field == 'date') {
+            $field = 'start_date';
+        } elseif ($this->method != 'siap-beli' && $field == 'date') {
+            $field = 'date';
+        }
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+    }
 
     public function mount($method)
     {
@@ -30,13 +47,25 @@ class Riwayat extends Component
     }
     public function render()
     {
+        $query = \App\Models\Transaction::with(['details.product', 'user'])
+            ->where('transactions.invoice_number', 'like', '%' . $this->search . '%')
+            ->where('transactions.method', $this->method)
+            ->whereIn('transactions.status', ['Gagal', 'Selesai']);
+
+        if ($this->sortField === 'product_name') {
+            $query->join('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')
+                ->join('products', 'transaction_details.product_id', '=', 'products.id')
+                ->orderBy('products.name', $this->sortDirection);
+        } elseif ($this->sortField === 'user_name') {
+            $query->join('users', 'transactions.user_id', '=', 'users.id')
+                ->orderBy('users.name', $this->sortDirection);
+        } else {
+            $query->orderBy("transactions.{$this->sortField}", $this->sortDirection);
+        }
+
+        $transactions = $query->select('transactions.*')->distinct()->paginate(10);
         return view('livewire.transaction.riwayat', [
-            'transactions' => \App\Models\Transaction::with(['details.product', 'user'])
-                ->where('invoice_number', 'like', '%' . $this->search . '%')
-                ->where('method', $this->method)
-                ->whereIn('status', ['Gagal', 'Selesai'])
-                ->orderBy($this->sortField, $this->sortDirection)
-                ->paginate(10),
+            'transactions' => $transactions,
         ]);
     }
 }

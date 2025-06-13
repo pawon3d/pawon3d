@@ -213,7 +213,7 @@ use Illuminate\Support\Facades\Route;
                 @if (!empty($mainTitle))
                 <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
                     <div class="ml-1 grid flex-1 text-left text-lg">
-                        <span class="mb-0.5 truncate leading-none">{{ $mainTitle }}</span>
+                        <span class="mb-0.5 truncate leading-none text-white">{{ $mainTitle }}</span>
                     </div>
                 </div>
                 @else

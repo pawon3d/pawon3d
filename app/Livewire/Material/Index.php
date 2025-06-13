@@ -19,8 +19,27 @@ class Index extends Component
     public $search = '';
     public $showHistoryModal = false;
     public $viewMode = 'grid';
+    public $sortField = 'name';
+    public $sortDirection = 'desc';
 
-    protected $queryString = ['viewMode', 'filterStatus', 'search'];
+    protected $queryString = ['viewMode', 'filterStatus', 'search', 'sortField', 'sortDirection'];
+
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+        $this->resetPage();
+    }
 
     public function riwayatPembaruan()
     {
@@ -59,7 +78,7 @@ class Index extends Component
             return $query->where('name', 'like', '%' . $this->search . '%');
         })->when($this->filterStatus, function ($query) {
             return $query->where('is_active', $this->filterStatus === 'aktif');
-        })->with('material_details')
+        })->orderBy($this->sortField, $this->sortDirection)->with('material_details')
             ->orderBy('name')
             ->paginate(10);
 

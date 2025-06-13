@@ -52,7 +52,7 @@
         <div class="flex gap-2 items-center">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    @if($filterStatus)
+                    @if ($filterStatus)
                     {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
                     Semua Kategori
@@ -118,7 +118,7 @@
                 {{-- <a href="{{ route('bahan-baku.edit', $material->id) }}" class="hover:bg-gray-50 cursor-pointer">
                     --}}
                     <div class="flex justify-center mb-4">
-                        @if($material->image)
+                        @if ($material->image)
                         <img src="{{ asset('storage/' . $material->image) }}" alt="{{ $material->name }}"
                             class="w-full h-36 object-fill rounded-lg border border-gray-200" />
                         @else
@@ -130,18 +130,22 @@
                         <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $material->name }}</h3>
                         <p class="text-gray-600 mb-4 text-sm montserrat-regular">
                             @php
-                            $persediaan = App\Models\MaterialDetail::where('material_id',
-                            $material->id)->where('is_main', 1)->first();
+                            $persediaan = App\Models\MaterialDetail::where('material_id', $material->id)
+                            ->where('is_main', 1)
+                            ->first();
                             @endphp
-                            {{ $persediaan ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias : 'Tidak
+                            {{ $persediaan
+                            ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias
+                            : 'Tidak
                             Tersedia' }}
                         </p>
                         <p class="text-gray-600 mb-4 text-sm montserrat-regular">
                             {{ $material->status ?? 'Kosong' }}
                         </p>
                         <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                            {{ $material->expiry_date ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y') :
-                            'Belum Ada Tanggal' }}
+                            {{ $material->expiry_date
+                            ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y')
+                            : 'Belum Ada Tanggal' }}
                         </p>
                     </div>
                     <flux:button class="w-full" variant="primary" type="button"
@@ -176,15 +180,26 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Barang Persediaan</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Tampil</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jumlah Persediaan</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Tanggal Expired</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Status Persediaan</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click="sortBy('name')">Barang Persediaan
+                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("is_active")'>Status Tampil
+                            {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jumlah Persediaan
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("expiry_date")'>Tanggal Expired
+                            {{ $sortDirection === 'asc' && $sortField === 'expiry_date' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("status")'>Status Persediaan</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($materials as $material)
+                    @foreach ($materials as $material)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('bahan-baku.edit', $material->id) }}"
@@ -197,21 +212,24 @@
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
                             @php
-                            $persediaan = App\Models\MaterialDetail::where('material_id',
-                            $material->id)->where('is_main', 1)->first();
+                            $persediaan = App\Models\MaterialDetail::where('material_id', $material->id)
+                            ->where('is_main', 1)
+                            ->first();
                             @endphp
-                            {{ $persediaan ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias : 'Tidak
+                            {{ $persediaan
+                            ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias
+                            : 'Tidak
                             Tersedia' }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
-                            {{ $material->expiry_date ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y') :
-                            'Belum Ada Tanggal' }}
+                            {{ $material->expiry_date
+                            ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y')
+                            : 'Belum Ada Tanggal' }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
                             {{ $material->status ?? 'Kosong' }}
                         </td>
                     </tr>
-
                     @endforeach
                 </tbody>
             </table>
@@ -233,7 +251,7 @@
                 <flux:heading size="lg">Riwayat Pembaruan Barang Persediaan</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
+                @foreach ($activityLogs as $log)
                 <div class="border-b py-2">
                     <div class="text-sm font-medium">{{ $log->description }}</div>
                     <div class="text-xs text-gray-500">

@@ -9,6 +9,20 @@ class Riwayat extends Component
 {
     public $search = '';
     public $filterStatus = '';
+    public $sortField = 'hitung_number';
+    public $sortDirection = 'desc';
+
+    protected $queryString = ['search', 'sortField', 'sortDirection'];
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+        $this->sortField = $field;
+    }
     public function mount()
     {
         View::share('title', 'Riwayat Hitung dan Catat Persediaan');
@@ -28,7 +42,7 @@ class Riwayat extends Component
                 ->when($this->search, function ($query) {
                     $query->where('hitung_number', 'like', '%' . $this->search . '%');
                 })->where('is_finish', true)
-                ->latest()
+                ->orderBy("hitungs.{$this->sortField}", $this->sortDirection)
                 ->paginate(10)
         ]);
     }

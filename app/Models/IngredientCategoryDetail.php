@@ -15,6 +15,19 @@ class IngredientCategoryDetail extends Model
         'id',
     ];
 
+    public function ingredientCategory()
+    {
+        return $this->belongsTo(IngredientCategory::class, 'ingredient_category_id', 'id');
+    }
+    public function material()
+    {
+        return $this->belongsTo(Material::class, 'material_id', 'id');
+    }
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id', 'id');
+    }
+
     public static function boot()
     {
         parent::boot();

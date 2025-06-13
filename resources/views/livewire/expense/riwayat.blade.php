@@ -34,9 +34,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                        Semua Toko
+                    Semua Toko
                     @endif
                     ({{ $expenses->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -70,92 +70,105 @@
     </div>
 
     @if ($expenses->isEmpty())
-        <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-            <p class="text-gray-700 font-semibold">Belum Ada Riwayat Belanja.</p>
-            <p class="text-gray-700">Tekan tombol “Tambah belanja” di halaman utama untuk menambahkan belanja.</p>
-        </div>
+    <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+        <p class="text-gray-700 font-semibold">Belum Ada Riwayat Belanja.</p>
+        <p class="text-gray-700">Tekan tombol “Tambah belanja” di halaman utama untuk menambahkan belanja.</p>
+    </div>
     @else
-        <div class="bg-white rounded-xl border">
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Nomor Belanja
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tanggal Belanja
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Toko Persediaan
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Barang Didapatkan
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Total Harga (Perkiraan)
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Total Harga (Sebenarnya)
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($expenses as $expense)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('belanja.rincian', $expense->id) }}"
-                                        class="hover:bg-gray-50 cursor-pointer">
-                                        {{ $expense->expense_number }}
-                                    </a>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') : '-' }}
-                                </td>
-                                <td class="px-6 py-4 text-left whitespace-nowrap">
-                                    {{ $expense->supplier->name ?? '-' }}
-                                </td>
-                                @php
-                                    $total_expect = $expense->expenseDetails->sum('quantity_expect');
-                                    $total_get = $expense->expenseDetails->sum('quantity_get');
-                                    $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
-                                @endphp
-                                <td class="px-6 py-4 text-left whitespace-nowrap">
-                                    {{ $total_get > 0 ? 'Selesai' : 'Gagal' }}
-                                </td>
-                                <td class="px-6 py-4 text-left whitespace-nowrap">
-                                    <div class="flex items-center space-x-2 flex-col">
-                                        <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
-                                            <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
-                                                style="width: {{ number_format($percentage, 0) }}%">
-                                            </div>
-                                        </div>
-                                        <span class="text-xs text-gray-500">
-                                            {{ number_format($percentage, 0) }}%
-                                        </span>
+    <div class="bg-white rounded-xl border">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('expense_number')">
+                            Nomor Belanja
+                            {{ $sortDirection === 'asc' && $sortField === 'expense_number' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('expense_date')">
+                            Tanggal Belanja
+                            {{ $sortDirection === 'asc' && $sortField === 'expense_date' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('supplier_name')">
+                            Toko Persediaan
+                            {{ $sortDirection === 'asc' && $sortField === 'supplier_name' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('status')">
+                            Status
+                            {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Barang Didapatkan
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('grand_total_expect')">
+                            Total Harga (Perkiraan)
+                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_expect' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('grand_total_actual')">
+                            Total Harga (Sebenarnya)
+                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_actual' ? '↑' : '↓' }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($expenses as $expense)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ route('belanja.rincian', $expense->id) }}"
+                                class="hover:bg-gray-50 cursor-pointer">
+                                {{ $expense->expense_number }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') :
+                            '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-left whitespace-nowrap">
+                            {{ $expense->supplier->name ?? '-' }}
+                        </td>
+                        @php
+                        $total_expect = $expense->expenseDetails->sum('quantity_expect');
+                        $total_get = $expense->expenseDetails->sum('quantity_get');
+                        $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
+                        @endphp
+                        <td class="px-6 py-4 text-left whitespace-nowrap">
+                            {{ $total_get > 0 ? 'Selesai' : 'Gagal' }}
+                        </td>
+                        <td class="px-6 py-4 text-left whitespace-nowrap">
+                            <div class="flex items-center space-x-2 flex-col">
+                                <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
+                                    <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
+                                        style="width: {{ number_format($percentage, 0) }}%">
                                     </div>
-                                </td>
-                                <td class="px-6 py-4 text-left whitespace-nowrap">
-                                    Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                    Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $expenses->links() }}
-            </div>
+                                </div>
+                                <span class="text-xs text-gray-500">
+                                    {{ number_format($percentage, 0) }}%
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-left whitespace-nowrap">
+                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
+                        </td>
+                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="p-4">
+            {{ $expenses->links() }}
+        </div>
+    </div>
     @endif
 
 </div>

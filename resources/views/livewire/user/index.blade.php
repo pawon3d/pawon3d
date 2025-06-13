@@ -92,17 +92,25 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('name')">
                             Pekerja
+                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('email')">
                             Email
+                            {{ $sortDirection === 'asc' && $sortField === 'email' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('phone')">
                             Nomor Telepon
+                            {{ $sortDirection === 'asc' && $sortField === 'phone' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Peran
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('role_name')">
+                            Role
+                            <span>{{ $sortField === 'role_name' && $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                         </th>
                     </tr>
                 </thead>
@@ -120,7 +128,7 @@
                             {{ $user->phone ?? '-' }}
                         </td>
                         <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            {{ $user->getRoleNames()->first() ?? 'Tidak ada peran' }}
+                            {{ $user->role_name ?? 'Tidak ada peran' }}
                         </td>
                     </tr>
                     @empty

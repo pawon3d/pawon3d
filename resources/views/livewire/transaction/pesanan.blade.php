@@ -84,14 +84,43 @@
                     <tr>
                         <th class="px-6 py-3 font-semibold">
                             ID Pesanan
-                            <span class="cursor-pointer">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="cursor-pointer" wire:click="sortBy('invoice_number')">{{ $sortDirection ===
+                                'asc' && $sortField === 'invoice_number' ? '↑' : '↓' }}</span>
                         </th>
-                        <th class="px-6 py-3 font-semibold">Tanggal Pesanan</th>
-                        <th class="px-6 py-3 font-semibold">Daftar Produk</th>
-                        <th class="px-6 py-3 font-semibold">Pemesan</th>
-                        <th class="px-6 py-3 font-semibold">Kasir</th>
-                        <th class="px-6 py-3 font-semibold">Status Pembayaran</th>
-                        <th class="px-6 py-3 font-semibold">Status Pesanan</th>
+                        <th class="px-6 py-3 font-semibold">
+                            Tanggal
+                            @if ($method == 'siap-beli')
+                            Pembelian
+                            @else
+                            Pengambilan
+                            @endif
+                            <span class="cursor-pointer" wire:click="sortBy('date')">{{ $sortDirection ===
+                                'asc' && $sortField === 'date' ? '↑' : '↓' }}</span>
+                        </th>
+                        <th class="px-6 py-3 font-semibold">Daftar Produk
+                            <span class="cursor-pointer" wire:click="sortBy('product_name')">{{ $sortDirection ===
+                                'asc' && $sortField === 'product_name' ? '↑' : '↓' }}</span>
+                        </th>
+                        @if ($method != 'siap-beli')
+                        <th class="px-6 py-3 font-semibold">Pemesan
+                            <span class="cursor-pointer" wire:click="sortBy('name')">{{ $sortDirection ===
+                                'asc' && $sortField === 'name' ? '↑' : '↓' }}</span>
+                        </th>
+                        @endif
+                        <th class="px-6 py-3 font-semibold">Kasir
+                            <span class="cursor-pointer" wire:click="sortBy('user_name')">{{ $sortDirection ===
+                                'asc' && $sortField === 'user_name' ? '↑' : '↓' }}</span>
+                        </th>
+                        @if ($method != 'siap-beli')
+                        <th class="px-6 py-3 font-semibold">Status Pembayaran
+                            <span class="cursor-pointer" wire:click="sortBy('payment_status')">{{ $sortDirection ===
+                                'asc' && $sortField === 'payment_status' ? '↑' : '↓' }}</span>
+                        </th>
+                        <th class="px-6 py-3 font-semibold">Status Pesanan
+                            <span class="cursor-pointer" wire:click="sortBy('status')">{{ $sortDirection ===
+                                'asc' && $sortField === 'status' ? '↑' : '↓' }}</span>
+                        </th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-900">
@@ -106,9 +135,12 @@
 
                         <!-- Jadwal Produksi -->
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $transaction->start_date
-                            ? \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y')
-                            : '-' }}
+                            @if ($method == 'siap-beli')
+                            {{ $transaction->start_date ?
+                            \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y') : '-' }}
+                            @else
+                            {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '-' }}
+                            @endif
                         </td>
 
                         <!-- Daftar Produk -->

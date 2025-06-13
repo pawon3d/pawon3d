@@ -78,14 +78,26 @@
             <table class="min-w-full text-sm text-left">
                 <thead class="bg-gray-100 text-gray-700">
                     <tr>
-                        <th class="px-6 py-3 font-semibold">
+                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('production_number')">
                             ID Produk
-                            <span class="cursor-pointer">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span>{{ $sortDirection === 'asc' && $sortField === 'production_number' ? '↑' : '↓'
+                                }}</span>
                         </th>
-                        <th class="px-6 py-3 font-semibold">Jadwal Produksi</th>
-                        <th class="px-6 py-3 font-semibold">Daftar Produk</th>
-                        <th class="px-6 py-3 font-semibold">Pekerja</th>
-                        <th class="px-6 py-3 font-semibold">Status</th>
+                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('start_date')">Jadwal
+                            Produksi
+                            <span>{{ $sortDirection === 'asc' && $sortField === 'start_date' ? '↑' : '↓' }}</span>
+                        </th>
+                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("product_name")'>
+                            Daftar Produk
+                            <span>{{ $sortDirection === 'asc' && $sortField === 'product_name' ? '↑' : '↓' }}</span>
+                        </th>
+                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("worker_name")'>
+                            Pekerja
+                            <span>{{ $sortDirection === 'asc' && $sortField === 'worker_name' ? '↑' : '↓' }}</span>
+                        </th>
+                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('status')">Status
+                            <span>{{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}</span>
+                        </th>
                         <th class="px-6 py-3 font-semibold">Kemajuan</th>
                     </tr>
                 </thead>
@@ -102,7 +114,7 @@
                         <!-- Jadwal Produksi -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             {{ $production->start_date
-                            ? \Carbon\Carbon::parse($production->start_date)->format('d-M-Y')
+                            ? \Carbon\Carbon::parse($production->start_date)->format('d-m-Y')
                             : '-' }}
                         </td>
 
