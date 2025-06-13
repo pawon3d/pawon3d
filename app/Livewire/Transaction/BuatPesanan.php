@@ -5,6 +5,7 @@ namespace App\Livewire\Transaction;
 use App\Models\Payment;
 use App\Models\PaymentChannel;
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -291,6 +292,18 @@ class BuatPesanan extends Component
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
+    public function delete()
+    {
+        $transaction = Transaction::find($this->transactionId);
+        if ($transaction) {
+            $transaction->delete();
+            session()->flash('success', 'Transaksi berhasil dibatalkan.');
+            return redirect()->route('transaksi');
+        } else {
+            $this->alert('error', 'Transaksi tidak ditemukan.');
+        }
     }
     public function render()
     {

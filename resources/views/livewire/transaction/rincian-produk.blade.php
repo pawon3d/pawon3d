@@ -31,16 +31,16 @@
                 </h3>
                 <div class="flex items-center gap-2">
                     @foreach ($product->product_categories as $pc)
-                    <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
-                        {{ $pc->category->name }}
-                    </span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">
+                            {{ $pc->category->name }}
+                        </span>
                     @endforeach
                 </div>
             </div>
         </div>
         <div class="flex items-center">
-            <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('img/no-img.jpg') }}"
-                alt="{{ $product->name }}" class="w-full h-32">
+            <img src="{{ $product->product_image ? asset('storage/' . $product->product_image) : asset('img/no-img.jpg') }}"
+                alt="{{ $product->name }}" class="w-60 h-32 object-fill rounded">
         </div>
     </div>
     <div class="w-full mt-4">
@@ -55,8 +55,8 @@
         <div class="flex flex-row justify-between p-4 items-center gap-2 rounded border border-gray-200">
             <div class="flex items-center gap-2">
                 <flux:icon.star variant="mini" class="text-yellow-500" />
-                <span class="text-gray-800 font-semibold">{{ $product->reviews->avg('rating') ?? 'Belum ada penilaian'
-                    }}/5.0</span>
+                <span
+                    class="text-gray-800 font-semibold">{{ $product->reviews->avg('rating') ?? 'Belum ada penilaian' }}/5.0</span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-gray-500">Dari {{ $product->reviews->count() ?? 0 }} penilaian</span>
@@ -86,28 +86,28 @@
 
 
     <div class="mt-4">
-        @if($product->reviews->isEmpty())
-        <p class="text-gray-500">Belum ada penilaian untuk produk ini.</p>
+        @if ($product->reviews->isEmpty())
+            <p class="text-gray-500">Belum ada penilaian untuk produk ini.</p>
         @else
-        <div class="space-y-4">
-            @foreach($product->reviews as $review)
-            <div class="p-4 border-b rounded-lg bg-white shadow-sm">
-                <div class="flex items-center gap-2 mb-2">
-                    <flux:icon.user variant="mini" class="text-gray-500" />
-                    <span class="font-semibold">{{ \Illuminate\Support\Str::uuid() }}</span>
-                    <span class="text-gray-500 text-xs">({{ \Carbon\Carbon::parse($review->created_at)->format('d-m-Y')
-                        }})</span>
-                </div>
-                <div class="flex items-center gap-2 mb-2">
-                    <flux:icon.star variant="mini" class="text-yellow-500" />
-                    <span class="text-gray-800 font-semibold">{{ $review->rating }}/5.0</span>
-                </div>
-                <p class="text-gray-500">
-                    {{ $review->comment ?? 'Tidak ada komentar' }}
-                </p>
+            <div class="space-y-4">
+                @foreach ($product->reviews as $review)
+                    <div class="p-4 border-b rounded-lg bg-white shadow-sm">
+                        <div class="flex items-center gap-2 mb-2">
+                            <flux:icon.user variant="mini" class="text-gray-500" />
+                            <span class="font-semibold">{{ \Illuminate\Support\Str::uuid() }}</span>
+                            <span
+                                class="text-gray-500 text-xs">({{ \Carbon\Carbon::parse($review->created_at)->format('d-m-Y') }})</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <flux:icon.star variant="mini" class="text-yellow-500" />
+                            <span class="text-gray-800 font-semibold">{{ $review->rating }}/5.0</span>
+                        </div>
+                        <p class="text-gray-500">
+                            {{ $review->comment ?? 'Tidak ada komentar' }}
+                        </p>
+                    </div>
+                @endforeach
             </div>
-            @endforeach
-        </div>
         @endif
     </div>
 

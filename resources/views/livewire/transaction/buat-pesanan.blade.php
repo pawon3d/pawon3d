@@ -266,8 +266,8 @@
                     @if ($image)
                         <input type="text"
                             class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="{{ $image->getClientOriginalName() }}" readonly wire:loading.remove
-                            wire:target="image">
+                            value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}"
+                            readonly wire:loading.remove wire:target="image">
                         <input type="text"
                             class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
                             value="Mengupload gambar..." readonly wire:loading wire:target="image">

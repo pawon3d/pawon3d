@@ -31,6 +31,10 @@ class RincianPesanan extends Component
     public $showImage = false;
 
     public $pembayaranPertama, $pembayaranKedua, $sisaPembayaranPertama, $kembalian;
+
+    protected $listeners = [
+        'deleteTransaction' => 'deleteTransaction',
+    ];
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
@@ -283,6 +287,42 @@ class RincianPesanan extends Component
             session()->flash('error', 'Pesanan gagal.');
         }
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
+    public function delete()
+    {
+        $this->alert('warning', 'Apakah Anda yakin ingin menghapus transaksi ini?', [
+            'showConfirmButton' => true,
+            'showCancelButton' => true,
+            'confirmButtonText' => 'Ya, hapus',
+            'cancelButtonText' => 'Batal',
+            'onConfirmed' => 'deleteTransaction',
+            'onCancelled' => 'cancelled',
+            'toast' => false,
+            'position' => 'center',
+            'timer' => null,
+        ]);
+    }
+
+    public function deleteTransaction()
+    {
+        $transaction = Transaction::find($this->transactionId);
+        if ($transaction) {
+            $transaction->delete();
+            if (!empty($transaction->payments)) {
+                $payment = Payment::where('transaction_id', $this->transactionId)->get();
+                $payment->each(function ($p) {
+                    if ($p->image) {
+                        Storage::disk('public')->delete($p->image);
+                    }
+                    $p->delete();
+                });
+            }
+            session()->flash('success', 'Transaksi berhasil dihapus.');
+            return redirect()->route('transaksi');
+        } else {
+            $this->alert('error', 'Transaksi tidak ditemukan.');
+        }
     }
 
     public function render()

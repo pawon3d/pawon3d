@@ -14,6 +14,7 @@
 -   [x] Print struk via WA
 -   [x] Kasir system
 -   [x] kasir bagian siap saji
+-   [x] Status di riwayat belanja (index dan riwayat berbeda)
 
 ## BELUM SELESAI
 
@@ -27,7 +28,6 @@
 
 ### Medium Priority
 
--   [ ] Status di riwayat belanja (konsistensi)
 -   [ ] Detail produk di bagian pesanan (layout untuk review)
 
 ### Low Priority

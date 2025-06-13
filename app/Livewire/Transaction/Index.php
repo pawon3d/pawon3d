@@ -36,6 +36,9 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Transaksi');
+        if (session()->has('success')) {
+            $this->alert('success', session('success'));
+        }
         $this->viewMode = session('viewMode', 'grid');
         $this->method = session('method', 'pesanan-reguler');
     }
