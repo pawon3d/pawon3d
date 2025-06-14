@@ -15,6 +15,7 @@
 -   [x] Kasir system
 -   [x] kasir bagian siap saji
 -   [x] Status di riwayat belanja (index dan riwayat berbeda)
+-   [x] sorting tabel
 
 ## BELUM SELESAI
 
@@ -27,7 +28,8 @@
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] produksi berubah total
--   [ ] sorting tabel
+-   [ ] persediaan berubah total
+-   [ ] belanja persediaan berubah total
 
 ### Medium Priority
 

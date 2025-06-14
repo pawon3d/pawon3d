@@ -130,14 +130,21 @@
                         <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $material->name }}</h3>
                         <p class="text-gray-600 mb-4 text-sm montserrat-regular">
                             @php
-                            $persediaan = App\Models\MaterialDetail::where('material_id', $material->id)
-                            ->where('is_main', 1)
-                            ->first();
+                            // Ambil semua detail
+                            $materialDetails = App\Models\MaterialDetail::where('material_id', $material->id)
+                            ->get();
+
+                            // Hitung supply_quantity_main sesuai rumus
+                            $supply_quantity_main = $materialDetails->sum(function ($detail) {
+                            return ($detail->supply_quantity ?? 0) * ($detail->quantity ?? 0);
+                            });
+
+                            // Ambil satu detail utama untuk unit (jika ada)
+                            $mainDetail = $materialDetails->where('is_main', true)->first();
                             @endphp
-                            {{ $persediaan
-                            ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias
-                            : 'Tidak
-                            Tersedia' }}
+                            {{ $materialDetails->isNotEmpty()
+                            ? $supply_quantity_main . ' ' . ($mainDetail->unit->alias ?? '')
+                            : 'Tidak Tersedia' }}
                         </p>
                         <p class="text-gray-600 mb-4 text-sm montserrat-regular">
                             {{ $material->status ?? 'Kosong' }}
@@ -212,14 +219,22 @@
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
                             @php
-                            $persediaan = App\Models\MaterialDetail::where('material_id', $material->id)
-                            ->where('is_main', 1)
-                            ->first();
+                            // Ambil semua detail
+                            $materialDetails = App\Models\MaterialDetail::where('material_id', $material->id)
+                            ->get();
+
+                            // Hitung supply_quantity_main sesuai rumus
+                            $supply_quantity_main = $materialDetails->sum(function ($detail) {
+                            return ($detail->supply_quantity ?? 0) * ($detail->quantity ?? 0);
+                            });
+
+                            // Ambil satu detail utama untuk unit (jika ada)
+                            $mainDetail = $materialDetails->where('is_main', true)->first();
                             @endphp
-                            {{ $persediaan
-                            ? $persediaan->supply_quantity . ' ' . $persediaan->unit->alias
-                            : 'Tidak
-                            Tersedia' }}
+                            {{ $materialDetails->isNotEmpty()
+                            ? $supply_quantity_main . ' ' . ($mainDetail->unit->alias ?? '')
+                            : 'Tidak Tersedia' }}
+                        </td>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-900">
                             {{ $material->expiry_date

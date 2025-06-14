@@ -172,10 +172,10 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="text-left px-6 py-3">Satuan Ukur</th>
-                        <th class="text-left px-6 py-3">Besar Satuan</th>
-                        <th class="text-left px-6 py-3">Besar Satuan (Utama)</th>
-                        <th class="text-left px-6 py-3">Jumlah Persediaan</th>
-                        <th class="text-left px-6 py-3">Jumlah Persediaan (Utama)</th>
+                        <th class="px-6 py-3 text-right">Besar Satuan</th>
+                        <th class="px-6 py-3 text-right">Besar Satuan (Utama)</th>
+                        <th class="px-6 py-3 text-right">Jumlah Persediaan</th>
+                        <th class="px-6 py-3 text-right">Jumlah Persediaan (Utama)</th>
                         <th class="text-left px-6 py-3"></th>
                     </tr>
                 </thead>
@@ -187,16 +187,19 @@
                                 }})
                             </span>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             <span class="text-gray-700">1 {{ $main_unit_alias ?? '' }}</span>
                         </td>
-                        <td class="px-6 py-3">
-                            <span class="text-gray-700">1 {{ $main_unit_alias ?? '' }}</span>
+                        <td class="px-6 py-3 text-right relative">
+                            <span class="text-gray-700">1</span>
+                            <span class="absolute right-0 text-sm text-gray-500">
+                                {{ $main_unit_alias ?? '' }}
+                            </span>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             <span class="text-gray-700">{{ $main_supply_quantity }} {{ $main_unit_alias ?? '' }}</span>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             <span class="text-gray-700">{{ $main_supply_quantity }} {{ $main_unit_alias ?? '' }}</span>
                         </td>
                         <td></td>
@@ -219,21 +222,21 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             1 {{ $detail['unit'] ?? '' }}
                         </td>
                         <td class="px-6 py-3 flex items-center flex-row relative">
                             <input type="number" placeholder="0" min="0"
                                 wire:model.number.live="material_details.{{ $index }}.quantity"
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none text-right" />
+                                class="w-full border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 rounded text-right text-sm" />
                             <span class="absolute align-bottom right-0 text-sm text-gray-500">
                                 {{ $main_unit_alias ?? '' }}
                             </span>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             {{ $detail['supply_quantity'] }} {{ $detail['unit'] ?? '' }}
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             {{ ($detail['supply_quantity'] ?? 0) * ($detail['quantity'] ?? 0) }} {{ $main_unit_alias ??
                             '' }}
                         </td>
@@ -247,14 +250,15 @@
                 </tbody>
                 <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <td class="px-6 py-3" colspan="5">
+                        <td class="px-6 py-3" colspan="4">
                             <span class="text-gray-700">Total Persediaan</span>
                         </td>
-                        <td class="px-6 py-3">
+                        <td class="px-6 py-3 text-right">
                             <span class="text-gray-700">
                                 {{ $supply_quantity_main }} {{ $main_unit_alias ?? '' }}
                             </span>
                         </td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>
