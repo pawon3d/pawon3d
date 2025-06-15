@@ -30,6 +30,7 @@
 -   [ ] produksi berubah total
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
+        .
 
 ### Medium Priority
 

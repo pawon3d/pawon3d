@@ -39,62 +39,63 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="text-left px-6 py-3 text-nowrap">Produk</th>
-                        <th class="text-left px-6 py-3">Rencana Produksi</th>
-                        <th class="text-left px-6 py-3">
+                        <th class="text-right px-6 py-3">Rencana Produksi</th>
+                        <th class="text-right px-6 py-3">
                             Jumlah Didapatkan
                         </th>
-                        <th class="text-left px-6 py-3">
-                            Selisih Didapatkan
+                        <th class="text-right px-6 py-3">
+                            Resep atau Barang (Hasil)
                         </th>
-                        <th class="text-left px-6 py-3">Hasil Produksi</th>
-                        <th class="text-left px-6 py-3">
-                            Pengulangan
+                        <th class="text-right px-6 py-3">Unit Gagal</th>
+                        <th class="text-right px-6 py-3">
+                            Jumlah Ulang
                         </th>
-                        <th class="text-left px-6 py-3">
-                            Produksi Ulang
+                        <th class="text-right px-6 py-3">
+                            Tandai Ulang
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($production_details as $index => $detail)
-                    <tr>
-                        <td class="px-6 py-3 text-nowrap">
-                            <span class="text-sm">
-                                {{ $detail['product_name'] ?? 'Produk Tidak Ditemukan' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail['quantity_plan'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail['quantity_get'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                @if ($detail['quantity_get'] > $detail['quantity_plan'])
-                                +
-                                @endif
-                                {{ $detail['quantity_get'] - $detail['quantity_plan'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <input type="number" placeholder="0"
-                                wire:model.number.live="production_details.{{ $index }}.quantity"
-                                class="w-full border-0 border-b focus:outline-none focus:ring-0 rounded-none text-right" />
-                        </td>
-                        <td class="px-6 py-3">
-                            {{ $detail['cycle'] }}
-                        </td>
-                        <td class="px-6 py-3">
-                            <flux:button icon="rotate-ccw" variant="ghost" wire:click="repeat({{ $index }})"
-                                tooltip="Produksi ulang akan menambah pengulangan dan mengurangi jumlah bahan sebanyak 1 kali rencana produksi" />
-                        </td>
+                    @foreach ($production_details as $index => $detail)
+                        <tr x-data="{ selectedProducts: @entangle('selectedProducts') }">
+                            <td class="px-6 py-3 text-nowrap">
+                                <span class="text-sm">
+                                    {{ $detail['product_name'] ?? 'Produk Tidak Ditemukan' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    {{ $detail['quantity_plan'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    {{ $detail['quantity_get'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right flex flex-row items-center gap-2">
+                                <input type="text"
+                                    wire:model.lazy="production_details.{{ $index }}.recipe_quantity"
+                                    class="w-full border-gray-300 rounded focus:outline-none focus:ring-0 text-right" />
+                                ({{ $detail['quantity'] }})
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <input type="number" placeholder="0"
+                                    wire:model.number="production_details.{{ $index }}.quantity_fail"
+                                    class="w-full border-gray-300 rounded focus:outline-none focus:ring-0 text-right" />
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                {{ $detail['cycle'] }}
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <input type="checkbox" :value="'{{ $detail['id'] }}'" x-model="selectedProducts"
+                                    {{ $detail['quantity_fail_raw'] == 0 ? 'disabled' : '' }}
+                                    class="
+                                form-checkbox h-4 w-4 text-black border-0 rounded-full focus:ring-0 focus:ring-offset-0 not-checked:bg-gray-400">
+                                <label for="selectedProducts" class="sr-only">Pilih Produk</label>
+                            </td>
 
-                    </tr>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -126,14 +127,14 @@
                 <h1 size="lg">Riwayat Pembaruan {{ $production->production_number }}</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

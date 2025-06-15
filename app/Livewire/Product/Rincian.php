@@ -78,6 +78,14 @@ class Rincian extends Component
                 'material_price' => $composition->material_price,
             ];
         })->toArray();
+        if (empty($this->product_compositions)) {
+            $this->product_compositions = [[
+                'material_id' => '',
+                'material_quantity' => 0,
+                'unit_id' => '',
+                'material_price' => 0,
+            ]];
+        }
         $this->other_costs = $product->other_costs->map(function ($cost) {
             return [
                 'name' => $cost->name,

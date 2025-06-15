@@ -15,7 +15,7 @@ class Rincian extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $total_quantity_plan, $total_quantity_get, $percentage;
-    public $is_start = false, $is_finish = false, $status, $end_date;
+    public $is_start = false, $is_finish = false, $status, $end_date, $date;
 
     protected $listeners = [
         'confirmDelete' => 'confirmDelete',
@@ -33,6 +33,7 @@ class Rincian extends Component
         $this->is_finish = $this->production->is_finish;
         $this->status = $this->production->status;
         $this->end_date = $this->production->end_date;
+        $this->date = $this->production->date;
         $this->total_quantity_plan = $this->production->details->sum('quantity_plan');
         $this->total_quantity_get = $this->production->details->sum('quantity_get');
         $this->percentage = $this->total_quantity_plan > 0 ? ($this->total_quantity_get / $this->total_quantity_plan) * 100 : 0;
@@ -96,25 +97,26 @@ class Rincian extends Component
     {
         $this->is_start = true;
         $this->status = 'Sedang Diproses';
+        $this->date = now()->format('Y-m-d H:i');
         $production = \App\Models\Production::findOrFail($this->production_id);
-        $production->update(['is_start' => $this->is_start, 'status' => $this->status]);
-        $production->details->each(function ($detail) {
-            $productComposition = \App\Models\ProductComposition::where('product_id', $detail->product_id)
-                ->first();
-            $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
-                ->where('unit_id', $productComposition->unit_id)
-                ->first();
-            $materialDetail->update([
-                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
-            ]);
-        });
+        $production->update(['is_start' => $this->is_start, 'status' => $this->status, 'date' => $this->date]);
+        // $production->details->each(function ($detail) {
+        //     $productComposition = \App\Models\ProductComposition::where('product_id', $detail->product_id)
+        //         ->first();
+        //     $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
+        //         ->where('unit_id', $productComposition->unit_id)
+        //         ->first();
+        //     $materialDetail->update([
+        //         'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
+        //     ]);
+        // });
         $this->alert('success', 'Produksi berhasil dimulai.');
     }
     public function finish()
     {
         $this->is_finish = true;
         $this->status = 'Selesai';
-        $this->end_date = now()->format('Y-m-d');
+        $this->end_date = now()->format('Y-m-d H:i');
         $production = \App\Models\Production::findOrFail($this->production_id);
         $production->update([
             'is_finish' => $this->is_finish,

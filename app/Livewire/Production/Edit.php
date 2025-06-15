@@ -12,7 +12,7 @@ class Edit extends Component
     public $production_details = [];
     public $production;
     public $user_ids;
-    public $start_date = 'dd-mm-yyyy', $note;
+    public $start_date = 'dd/mm/yyyy', $note, $time;
     public $method = 'pesanan-reguler';
     public $current_stock_total = 0, $suggested_amount_total = 0, $quantity_plan_total = 0;
 
@@ -21,7 +21,9 @@ class Edit extends Component
         $this->production_id = $id;
         $production = \App\Models\Production::findOrFail($this->production_id);
         $this->production = $production;
-        $this->start_date = \Carbon\Carbon::parse($production->start_date)->format('d-m-Y');
+        $this->start_date = \Carbon\Carbon::parse($production->start_date)->format('d/m/Y');
+        $this->method = $production->method;
+        $this->time = $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '00:00';
         $this->note = $production->note;
 
         $this->user_ids = $production->workers()->pluck('user_id')->toArray();
@@ -40,12 +42,16 @@ class Edit extends Component
     {
         $this->validate([
             'user_ids' => 'required|array',
-            'start_date' => $this->start_date != 'dd-mm-yyyy' ? 'nullable|date_format:d-m-Y' : 'nullable',
+            'start_date' => $this->start_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
         ]);
 
         $produkGagal = [];
 
+        if (empty($this->production_details) || $this->production_details[0]['product_id'] == '') {
+            $this->alert('error', 'Belum ada produk yang ditambahkan.');
+            return;
+        }
         foreach ($this->production_details as $detail) {
             $product = \App\Models\Product::find($detail['product_id']);
             $quantityPlan = $detail['quantity_plan'];
@@ -73,7 +79,8 @@ class Edit extends Component
 
         $production = \App\Models\Production::findOrFail($this->production_id);
         $production->update([
-            'start_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->start_date)->format('Y-m-d'),
+            'start_date' => $this->start_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->start_date)->format('Y-m-d') : null,
+            'time' => $this->time != '00:00' ? \Carbon\Carbon::createFromFormat('H:i', $this->time)->format('H:i') : null,
             'note' => $this->note,
             'status' => $production->status ? $production->status : 'Draft',
         ]);

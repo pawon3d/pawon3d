@@ -13,7 +13,7 @@ class Tambah extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
     public $production_details = [];
     public $user_ids;
-    public $start_date = 'dd-mm-yyyy', $note;
+    public $start_date = 'dd/mm/yyyy', $note, $time;
     public $method = 'pesanan-reguler';
     public $current_stock_total = 0, $suggested_amount_total = 0, $quantity_plan_total = 0;
 
@@ -79,15 +79,26 @@ class Tambah extends Component
 
     public function store()
     {
-        $this->validate([
-            'user_ids' => 'required|array',
-            'start_date' => $this->start_date != 'dd-mm-yyyy' ? 'nullable|date_format:d-m-Y' : 'nullable',
-            'note' => 'nullable|string|max:255',
-
-        ]);
+        $this->validate(
+            [
+                'user_ids' => 'required|array',
+                'start_date' => $this->start_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
+                'note' => 'nullable|string|max:255',
+                'production_details.*' => 'required|array',
+            ],
+            [
+                'user_ids.required' => 'Pilih minimal satu pekerja.',
+                'start_date.date_format' => 'Format tanggal harus dd/mm/yyyy.',
+                'production_details.*.product_id.required' => 'Pilih produk untuk produksi.',
+            ],
+        );
 
         $produkGagal = [];
 
+        if (empty($this->production_details) || $this->production_details[0]['product_id'] == '') {
+            $this->alert('error', 'Belum ada produk yang ditambahkan.');
+            return;
+        }
         foreach ($this->production_details as $detail) {
             $product = \App\Models\Product::find($detail['product_id']);
             $quantityPlan = $detail['quantity_plan'];
@@ -114,7 +125,8 @@ class Tambah extends Component
         }
 
         $production = \App\Models\Production::create([
-            'start_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->start_date)->format('Y-m-d'),
+            'start_date' => $this->start_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->start_date)->format('Y-m-d') : null,
+            'time' => $this->time,
             'note' => $this->note,
             'method' => $this->method,
             'status' => 'Draft',
@@ -142,7 +154,7 @@ class Tambah extends Component
     {
         $this->validate([
             'user_ids' => 'required|array',
-            'start_date' => $this->start_date != 'dd-mm-yyyy' ? 'nullable|date_format:d-m-Y' : 'nullable',
+            'start_date' => $this->start_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
         ]);
 
@@ -173,11 +185,12 @@ class Tambah extends Component
         }
 
         $production = \App\Models\Production::create([
-            'start_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $this->start_date)->format('Y-m-d'),
+            'start_date' => $this->start_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->start_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'method' => $this->method,
             'status' => 'Sedang Diproses',
             'is_start' => true,
+            'date' => now(),
         ]);
 
         foreach ($this->user_ids as $user_id) {
@@ -193,16 +206,16 @@ class Tambah extends Component
             ]);
         }
 
-        $production->details->each(function ($detail) {
-            $productComposition = \App\Models\ProductComposition::where('product_id', $detail->product_id)
-                ->first();
-            $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
-                ->where('unit_id', $productComposition->unit_id)
-                ->first();
-            $materialDetail->update([
-                'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
-            ]);
-        });
+        // $production->details->each(function ($detail) {
+        //     $productComposition = \App\Models\ProductComposition::where('product_id', $detail->product_id)
+        //         ->first();
+        //     $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
+        //         ->where('unit_id', $productComposition->unit_id)
+        //         ->first();
+        //     $materialDetail->update([
+        //         'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
+        //     ]);
+        // });
 
         session()->flash('success', 'Produksi berhasil dimulai.');
         return redirect()->route('produksi.rincian', ['id' => $production->id]);

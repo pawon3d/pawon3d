@@ -143,7 +143,7 @@ class Tambah extends Component
     {
         $this->validate([
             'action' => 'nullable',
-            'hitung_date' => 'nullable|date_format:d/m/Y',
+            'hitung_date' => $this->hitung_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
             'grand_total' => 'nullable|numeric|min:0',
             'hitung_details.*.material_id' => 'nullable|exists:materials,id',
@@ -154,7 +154,7 @@ class Tambah extends Component
 
         $hitung = \App\Models\Hitung::create([
             'action' => $this->action,
-            'hitung_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $this->hitung_date)->format('Y-m-d'),
+            'hitung_date' => $this->hitung_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->hitung_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total' => $this->grand_total,
             'status' => 'Sedang Diproses',

@@ -113,7 +113,7 @@ class Tambah extends Component
     {
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
-            'expense_date' => 'nullable|date_format:d/m/Y',
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
             'grand_total_expect' => 'required|numeric|min:0',
             'expense_details.*.material_id' => 'required|exists:materials,id',
@@ -124,7 +124,7 @@ class Tambah extends Component
 
         $expense = \App\Models\Expense::create([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d'),
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
         ]);
@@ -155,7 +155,7 @@ class Tambah extends Component
     {
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
-            'expense_date' => 'nullable|date_format:d/m/Y',
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
             'grand_total_expect' => 'required|numeric|min:0',
             'expense_details.*.material_id' => 'required|exists:materials,id',
@@ -166,7 +166,7 @@ class Tambah extends Component
 
         $expense = \App\Models\Expense::create([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d'),
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
             'status' => 'Dimulai',

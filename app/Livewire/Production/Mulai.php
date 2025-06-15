@@ -14,6 +14,8 @@ class Mulai extends Component
     public $production_details = [];
     public $showHistoryModal = false;
     public $activityLogs = [];
+    public $selectedProducts = [];
+    public $parsedQuantity;
 
     public function mount($id)
     {
@@ -23,11 +25,15 @@ class Mulai extends Component
         $this->production_details = $this->production->details->map(function ($detail) {
             return [
                 'id' => $detail->id,
+                'product_id' => $detail->product_id,
                 'product_name' => $detail->product->name,
                 'quantity_plan' => $detail->quantity_plan,
                 'quantity_get' => $detail->quantity_get,
                 'cycle' => $detail->cycle,
+                'quantity_fail' => 0,
+                'recipe_quantity' => 0,
                 'quantity' => 0,
+                'quantity_fail_raw' => $detail->quantity_fail,
             ];
         })->toArray();
         View::share('title', 'Dapatkan Hasil Produksi');
@@ -43,60 +49,95 @@ class Mulai extends Component
         $this->showHistoryModal = true;
     }
 
+    public function updatedProductionDetails()
+    {
+        foreach ($this->production_details as $index => $detail) {
+            $this->parsedQuantity = $this->parseFraction($detail['recipe_quantity'] ?? '');
+            $product = \App\Models\Product::find($detail['product_id']);
+            $detail['quantity'] = $this->parsedQuantity * $product->pcs;
+            $detail['quantity'] = ceil($detail['quantity']);
+            $this->production_details[$index]['quantity'] = $detail['quantity'] ?? 0;
+        }
+    }
+
+
+    private function parseFraction($input)
+    {
+        $input = str_replace(',', '.', $input); // Ubah koma ke titik
+        $input = preg_replace('/\s+/', ' ', trim($input));
+
+        // Format: 1 1/2
+        if (preg_match('/^(\d+)\s+(\d+)\/(\d+)$/', $input, $m)) {
+            return (float) $m[1] + ($m[2] / $m[3]);
+        }
+
+        // Format: 1/2
+        if (preg_match('/^(\d+)\/(\d+)$/', $input, $m)) {
+            return $m[1] / $m[2];
+        }
+
+        // Format: desimal langsung
+        if (is_numeric($input)) {
+            return (float) $input;
+        }
+
+        return null;
+    }
+
+
+
+
     public function save()
     {
-        $this->validate([
-            'production_details.*.quantity' => 'required|numeric',
-        ], [
-            'production_details.*.quantity.required' => 'Jumlah yang didapatkan harus diisi.',
-            'production_details.*.quantity.numeric' => 'Jumlah yang didapatkan harus berupa angka.',
-            'production_details.*.quantity.min' => 'Jumlah yang didapatkan tidak boleh kurang dari 0.',
-        ]);
+        foreach ($this->production_details as $detail) {
+            if ($this->parseFraction($detail['recipe_quantity'] ?? '') === null) {
+                $this->alert('error', 'Format kuantitas resep tidak valid. Gunakan format pecahan seperti "1/2", atau angka desimal.');
+                return;
+            }
+        }
+        // foreach ($this->production_details as $i => $detail) {
+        //     $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
+        // }
+        // dd($parsed, $this->production_details);
+        // dd($this->selectedProducts);
 
         foreach ($this->production_details as $detail) {
             $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
+            $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
             if ($productionDetail) {
                 // Hitung quantity baru yang ditambahkan
                 $quantityToAdd = $detail['quantity'];
-
-                // Update detail belanja
-                $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
-                $productionDetail->update([
-                    'quantity_get' => $updatedQuantityActual,
-                ]);
-
-                if ($productionDetail->quantity_get < $productionDetail->quantity_plan) {
-                    $productionDetail->update([
-                        'quantity_fail' => $productionDetail->quantity_plan - $productionDetail->quantity_get,
-                    ]);
-                }
-
                 $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
                     ->first();
                 $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
                     ->where('unit_id', $productComposition->unit_id)
                     ->first();
-                if ($productionDetail->cycle < $detail['cycle']) {
-                    $requiredQuantity = $productionDetail->quantity_plan * $productComposition->material_quantity;
+                $requiredQuantity = $quantityToAdd * $productComposition->material_quantity;
 
-                    if ($materialDetail->supply_quantity < $requiredQuantity) {
-                        $this->alert('error', 'Jumlah bahan baku produk' . $productionDetail->product->name . 'tidak cukup untuk produksi ini.');
-                        return;
-                    }
-
-                    // Bahan cukup, lanjut produksi
-                    $productionDetail->update([
-                        'cycle' => $detail['cycle'],
-                    ]);
-
-                    $materialDetail->update([
-                        'supply_quantity' => $materialDetail->supply_quantity - $requiredQuantity,
-                    ]);
-                    $productComposition->product->update([
-                        'stock' => $productComposition->product->stock + $quantityToAdd,
-                    ]);
+                if ($materialDetail->supply_quantity < $requiredQuantity) {
+                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
+                    return;
                 }
+
+                // Update detail belanja
+                $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
+                $productionDetail->update([
+                    'quantity_get' => $updatedQuantityActual - $detail['quantity_fail'],
+                    'quantity_fail' => $detail['quantity_fail'] + $detail['quantity_fail_raw'],
+                ]);
+
+                $materialDetail->update([
+                    'supply_quantity' => $materialDetail->supply_quantity - $requiredQuantity,
+                ]);
+                $productComposition->product->update([
+                    'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
+                ]);
             }
+        }
+        if (!empty($this->selectedProducts)) {
+            \App\Models\ProductionDetail::whereIn('id', $this->selectedProducts)
+                ->where('production_id', $this->production_id)
+                ->increment('cycle');
         }
 
         return redirect()->route('produksi.rincian', ['id' => $this->production_id])
@@ -120,25 +161,6 @@ class Mulai extends Component
         $this->save();
     }
 
-    public function repeat($index)
-    {
-        if ($this->production_details[$index]['quantity_get'] >= $this->production_details[$index]['quantity_plan']) {
-            $this->alert('error', 'Jumlah yang didapatkan sudah mencapai jumlah yang diharapkan.');
-            return;
-        }
-        $productionDetail = \App\Models\ProductionDetail::find($this->production_details[$index]['id']);
-        $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
-            ->first();
-        $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
-            ->where('unit_id', $productComposition->unit_id)
-            ->first();
-        $requiredQuantity = $productionDetail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity;
-        if ($materialDetail->supply_quantity < $requiredQuantity) {
-            $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk mengulang produksi.');
-            return;
-        }
-        $this->production_details[$index]['cycle'] += 1;
-    }
     public function render()
     {
         return view('livewire.production.mulai');

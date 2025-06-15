@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
+    <div class="w-full flex md:flex-row flex-col gap-4 mt-4">
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
             <flux:label>Pilih Pekerja</flux:label>
             <p class="text-sm text-gray-500">
@@ -27,7 +27,7 @@
 
             <select class="js-example-basic-multiple" wire:model.live="user_ids" multiple="multiple">
                 @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
                 @endforeach
             </select>
             <flux:error name="user_ids" />
@@ -36,24 +36,60 @@
                 Masukkan tanggal produksi.
             </p>
 
-            <input type="text"
-                class="w-full cursor-pointer border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] pl-3 pr-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5"
-                x-ref="datepicker" x-init="
-                        picker = new Pikaday({
-                        field: $refs.datepicker,
-                        format: 'DD-MM-YYYY',
-                        toString(date, format) {
-                            const day = String(date.getDate()).padStart(2, 0);
-                            const month = String(date.getMonth() + 1).padStart(2, 0);
-                            const year = date.getFullYear();
-                            return `${day}-${month}-${year}`;
-                        },
-                        onSelect: function() {
-                            @this.set('start_date', moment(this.getDate()).format('DD-MM-YYYY'));
-                            }
-                        });
-                        " wire:model.defer="start_date" id="datepicker" readonly />
-            <flux:error name="start_date" />
+            <div class="flex flex-row gap-2 w-full">
+                <div x-init="picker = new Pikaday({
+                    field: $refs.datepicker,
+                    format: 'DD/MM/YYYY',
+                    toString(date, format) {
+                        const day = String(date.getDate()).padStart(2, 0);
+                        const month = String(date.getMonth() + 1).padStart(2, 0);
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                    },
+                    onSelect: function() {
+                        @this.set('start_date', moment(this.getDate()).format('DD/MM/YYYY'));
+                    }
+                });" class="relative w-3/4">
+                    <!-- Icon kalender -->
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <!-- Heroicons outline calendar icon -->
+                        <flux:icon icon="calendar-date-range" />
+                    </div>
+
+                    <input type="text"
+                        class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full cursor-pointer"
+                        x-ref="datepicker" wire:model.defer="start_date" id="datepicker" placeholder="dd/mm/yyyy"
+                        readonly />
+                </div>
+                <div x-init="flatpickr($refs.input, {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true,
+                    onChange: function(selectedDates, dateStr) {
+                        time = dateStr;
+                        @this.set('time', dateStr);
+                    }
+                });" class="relative w-1/4">
+                    <!-- Icon jam -->
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <!-- Heroicons outline clock icon -->
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+
+                    <input x-ref="input" wire:model='time' type="text"
+                        class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
+                        placeholder="00:00" />
+                </div>
+
+            </div>
+
+            <flux:error name="date" />
+
         </div>
 
 
@@ -85,48 +121,47 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="text-left px-6 py-3">Produk</th>
-                        <th class="text-left px-6 py-3">Jumlah Terkini</th>
-                        <th class="text-left px-6 py-3">Jumlah Disarankan</th>
-                        <th class="text-left px-6 py-3">Rencana Produksi</th>
-                        <th class="text-left px-6 py-3"></th>
+                        <th class="text-right px-6 py-3">Jumlah Terkini</th>
+                        <th class="text-right px-6 py-3">Jumlah Disarankan</th>
+                        <th class="text-right px-6 py-3">Rencana Produksi</th>
+                        <th class="text-right px-6 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($production_details as $index => $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <select
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="production_details.{{ $index }}.product_id">
-                                <option value="" class="text-gray-700">- Pilih Barang -</option>
-                                @foreach ($products as $product)
-                                @php
-                                $pcs = $product->pcs > 1 ? ' (' . $product->pcs . ' pcs)' : '';
-                                @endphp
-                                <option value="{{ $product->id }}" class="text-gray-700">{{
-                                    $product->name }} {{ $pcs }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <span class="text-gray-700">
-                                {{ $detail['current_stock'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            {{ $detail['suggested_amount'] }}
-                        </td>
-                        <td class="px-6 py-3">
-                            <input type="number" placeholder="0"
-                                wire:model.number.live="production_details.{{ $index }}.quantity_plan"
-                                class="w-full border-0 border-b focus:outline-none focus:ring-0 rounded-none text-right" />
-                        </td>
-                        <td class="flex items-center justify-start gap-4 px-6 py-3">
-                            <flux:button icon="trash" type="button" variant="danger"
-                                wire:click.prevent="removeProduct({{ $index }})" />
-                        </td>
-                    </tr>
+                    @foreach ($production_details as $index => $detail)
+                        <tr>
+                            <td class="px-6 py-3">
+                                <select class="w-full border-0 focus:outline-none focus:ring-0 rounded-none"
+                                    wire:model="production_details.{{ $index }}.product_id">
+                                    <option value="" class="text-gray-700">- Pilih Barang -</option>
+                                    @foreach ($products as $product)
+                                        @php
+                                            $pcs = $product->pcs > 1 ? ' (' . $product->pcs . ' pcs)' : '';
+                                        @endphp
+                                        <option value="{{ $product->id }}" class="text-gray-700">{{ $product->name }}
+                                            {{ $pcs }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-gray-700">
+                                    {{ $detail['current_stock'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                {{ $detail['suggested_amount'] }}
+                            </td>
+                            <td class="px-6 py-3">
+                                <input type="number" placeholder="0"
+                                    wire:model.number.live="production_details.{{ $index }}.quantity_plan"
+                                    class="w-full border-gray-300 focus:outline-none focus:ring-0 rounded text-right" />
+                            </td>
+                            <td class="flex items-center justify-start gap-4 px-6 py-3">
+                                <flux:button icon="trash" type="button" variant="danger"
+                                    wire:click.prevent="removeProduct({{ $index }})" />
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -174,22 +209,22 @@
 
 
     @script
-    <script type="text/javascript">
-        document.addEventListener('livewire:initialized', function() {
-            function loadJavascript(){
-                $('.js-example-basic-multiple').select2({
-                    placeholder: "Cari Pekerja...",
-                    width: '100%',
-                }).on("change", function() {
-                    $wire.set("user_ids", $(this).val());
-                });
-            }
-            loadJavascript();
-
-            Livewire.hook("morphed", () => {
+        <script type="text/javascript">
+            document.addEventListener('livewire:initialized', function() {
+                function loadJavascript() {
+                    $('.js-example-basic-multiple').select2({
+                        placeholder: "Cari Pekerja...",
+                        width: '100%',
+                    }).on("change", function() {
+                        $wire.set("user_ids", $(this).val());
+                    });
+                }
                 loadJavascript();
-            })
-        });
-    </script>
+
+                Livewire.hook("morphed", () => {
+                    loadJavascript();
+                })
+            });
+        </script>
     @endscript
 </div>

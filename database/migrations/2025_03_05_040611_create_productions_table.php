@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('production_number')->nullable();
             $table->uuid('transaction_id')->nullable();
             $table->string('method')->nullable();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('note')->nullable();
