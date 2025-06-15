@@ -27,7 +27,7 @@
 
             <select class="js-example-basic-multiple" wire:model.live="user_ids" multiple="multiple">
                 @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
                 @endforeach
             </select>
             <flux:error name="user_ids" />
@@ -38,18 +38,18 @@
 
             <div class="flex flex-row gap-2 w-full">
                 <div x-init="picker = new Pikaday({
-                        field: $refs.datepicker,
-                        format: 'DD/MM/YYYY',
-                        toString(date, format) {
-                            const day = String(date.getDate()).padStart(2, 0);
-                            const month = String(date.getMonth() + 1).padStart(2, 0);
-                            const year = date.getFullYear();
-                            return `${day}/${month}/${year}`;
-                        },
-                        onSelect: function() {
-                            @this.set('start_date', moment(this.getDate()).format('DD/MM/YYYY'));
-                        }
-                    });" class="relative w-3/4">
+                    field: $refs.datepicker,
+                    format: 'DD/MM/YYYY',
+                    toString(date, format) {
+                        const day = String(date.getDate()).padStart(2, 0);
+                        const month = String(date.getMonth() + 1).padStart(2, 0);
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                    },
+                    onSelect: function() {
+                        @this.set('start_date', moment(this.getDate()).format('DD/MM/YYYY'));
+                    }
+                });" class="relative w-3/4">
                     <!-- Icon kalender -->
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <!-- Heroicons outline calendar icon -->
@@ -62,15 +62,15 @@
                         readonly />
                 </div>
                 <div x-init="flatpickr($refs.input, {
-                        enableTime: true,
-                        noCalendar: true,
-                        dateFormat: 'H:i',
-                        time_24hr: true,
-                        onChange: function(selectedDates, dateStr) {
-                            time = dateStr;
-                            @this.set('time', dateStr);
-                        }
-                    });" class="relative w-1/4">
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true,
+                    onChange: function(selectedDates, dateStr) {
+                        time = dateStr;
+                        @this.set('time', dateStr);
+                    }
+                });" class="relative w-1/4">
                     <!-- Icon jam -->
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <!-- Heroicons outline clock icon -->
@@ -128,40 +128,37 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($production_details as $index => $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <select class="w-full border-0 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="production_details.{{ $index }}.product_id">
-                                <option value="" class="text-gray-700">- Pilih Barang -</option>
-                                @foreach ($products as $product)
-                                @php
-                                $pcs = $product->pcs > 1 ? ' (' . $product->pcs . ' pcs)' : '';
-                                @endphp
-                                <option value="{{ $product->id }}" class="text-gray-700">{{
-                                    $product->name }} {{ $pcs }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <span class="text-gray-700">
-                                {{ $detail['current_stock'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            {{ $detail['suggested_amount'] }}
-                        </td>
-                        <td class="px-6 py-3">
-                            <input type="number" placeholder="0"
-                                wire:model.number.live="production_details.{{ $index }}.quantity_plan"
-                                class="w-full border-gray-300 focus:outline-none focus:ring-0 rounded text-right" />
-                        </td>
-                        <td class="flex items-center justify-start gap-4 px-6 py-3">
-                            <flux:button icon="trash" type="button" variant="danger"
-                                wire:click.prevent="removeProduct({{ $index }})" />
-                        </td>
-                    </tr>
+                    @foreach ($production_details as $index => $detail)
+                        <tr>
+                            <td class="px-6 py-3">
+                                <select class="w-full border-0 focus:outline-none focus:ring-0 rounded-none"
+                                    wire:model="production_details.{{ $index }}.product_id"
+                                    wire:change="setProduct({{ $index }})">
+                                    <option value="" class="text-gray-700">- Pilih Barang -</option>
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}" class="text-gray-700">{{ $product->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-gray-700">
+                                    {{ $detail['current_stock'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                {{ $detail['suggested_amount'] }}
+                            </td>
+                            <td class="px-6 py-3">
+                                <input type="number" placeholder="0"
+                                    wire:model.number.live="production_details.{{ $index }}.quantity_plan"
+                                    class="w-full border-gray-300 focus:outline-none focus:ring-0 rounded text-right" />
+                            </td>
+                            <td class="flex items-center justify-start gap-4 px-6 py-3">
+                                <flux:button icon="trash" type="button" variant="danger"
+                                    wire:click.prevent="removeProduct({{ $index }})" />
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -211,22 +208,22 @@
 
 
     @script
-    <script type="text/javascript">
-        document.addEventListener('livewire:initialized', function() {
-            function loadJavascript(){
-                $('.js-example-basic-multiple').select2({
-                    placeholder: "Cari Pekerja...",
-                    width: '100%',
-                }).on("change", function() {
-                    $wire.set("user_ids", $(this).val());
-                });
-            }
-            loadJavascript();
-
-            Livewire.hook("morphed", () => {
+        <script type="text/javascript">
+            document.addEventListener('livewire:initialized', function() {
+                function loadJavascript() {
+                    $('.js-example-basic-multiple').select2({
+                        placeholder: "Cari Pekerja...",
+                        width: '100%',
+                    }).on("change", function() {
+                        $wire.set("user_ids", $(this).val());
+                    });
+                }
                 loadJavascript();
-            })
-        });
-    </script>
+
+                Livewire.hook("morphed", () => {
+                    loadJavascript();
+                })
+            });
+        </script>
     @endscript
 </div>

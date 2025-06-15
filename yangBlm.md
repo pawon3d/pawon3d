@@ -16,6 +16,7 @@
 -   [x] kasir bagian siap saji
 -   [x] Status di riwayat belanja (index dan riwayat berbeda)
 -   [x] sorting tabel
+-   [x] produksi bagian produksi
 
 ## BELUM SELESAI
 
@@ -30,6 +31,7 @@
 -   [ ] produksi berubah total
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
+-   [ ] produksi bagian pesanan
         .
 
 ### Medium Priority

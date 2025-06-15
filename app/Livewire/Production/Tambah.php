@@ -51,17 +51,60 @@ class Tambah extends Component
     //     $this->production_details[$index]['product_id'] = $productId;
     //     $this->production_details[$index]['current_stock'] = \App\Models\Product::find($productId)->stock;
     // }
+    public function setProduct($index)
+    {
+        $productId = $this->production_details[$index]['product_id'] ?? null;
+
+        if ($productId) {
+            $product = \App\Models\Product::find($productId);
+
+            if ($product) {
+                // Update stok saat ini
+                $this->production_details[$index]['current_stock'] = $product->stock;
+
+                // Hitung suggested_amount
+                $yesterday = now()->subDay()->toDateString();
+                $weekAgo = now()->subDays(6)->startOfDay(); // 7 hari termasuk hari ini
+                $todayEnd = now()->endOfDay();
+
+                // Cek penjualan kemarin
+                $salesYesterday = \App\Models\TransactionDetail::where('product_id', $productId)
+                    ->whereHas('transaction', function ($query) use ($yesterday) {
+                        $query->whereDate('start_date', $yesterday);
+                    })
+                    ->sum('quantity');
+
+                if ($salesYesterday > 0) {
+                    $suggested = $salesYesterday;
+                } else {
+                    $weeklySales = \App\Models\TransactionDetail::where('product_id', $productId)
+                        ->whereHas('transaction', function ($query) use ($weekAgo, $todayEnd) {
+                            $query->whereBetween('start_date', [$weekAgo, $todayEnd]);
+                        })
+                        ->sum('quantity');
+
+                    $suggested = ceil($weeklySales / 7);
+                }
+
+                $this->production_details[$index]['suggested_amount'] = $suggested ?: 0;
+            }
+        }
+
+
+        $this->calculateTotals();
+    }
+
 
     public function updatedProductionDetails()
     {
-        foreach ($this->production_details as $index => $detail) {
-            if (isset($detail['product_id'])) {
-                $product = \App\Models\Product::find($detail['product_id']);
-                if ($product) {
-                    $this->production_details[$index]['current_stock'] = $product->stock;
-                }
-            }
-        }
+        // foreach ($this->production_details as $index => $detail) {
+        //     if (isset($detail['product_id'])) {
+        //         $product = \App\Models\Product::find($detail['product_id']);
+        //         if ($product) {
+        //             $this->production_details[$index]['current_stock'] = $product->stock;
+        //         }
+        //     }
+        // }
         $this->calculateTotals();
     }
     public function calculateTotals()

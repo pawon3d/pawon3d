@@ -132,14 +132,12 @@
                         <tr>
                             <td class="px-6 py-3">
                                 <select class="w-full border-0 focus:outline-none focus:ring-0 rounded-none"
-                                    wire:model="production_details.{{ $index }}.product_id">
+                                    wire:model="production_details.{{ $index }}.product_id"
+                                    wire:change="setProduct({{ $index }})">
                                     <option value="" class="text-gray-700">- Pilih Barang -</option>
                                     @foreach ($products as $product)
-                                        @php
-                                            $pcs = $product->pcs > 1 ? ' (' . $product->pcs . ' pcs)' : '';
-                                        @endphp
                                         <option value="{{ $product->id }}" class="text-gray-700">{{ $product->name }}
-                                            {{ $pcs }}
+
                                         </option>
                                     @endforeach
                                 </select>
