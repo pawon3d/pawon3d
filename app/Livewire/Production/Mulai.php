@@ -129,9 +129,18 @@ class Mulai extends Component
                 $materialDetail->update([
                     'supply_quantity' => $materialDetail->supply_quantity - $requiredQuantity,
                 ]);
-                $productComposition->product->update([
-                    'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
-                ]);
+                if ($productionDetail->production->method == 'siap-beli') {
+                    $productComposition->product->update([
+                        'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
+                    ]);
+                } else {
+                    $lebihan = $productionDetail->quantity_get - $productionDetail->quantity_plan;
+                    if ($lebihan > 0) {
+                        $productionDetail->product->update([
+                            'stock' => $productionDetail->product->stock + $lebihan,
+                        ]);
+                    }
+                }
             }
         }
         if (!empty($this->selectedProducts)) {

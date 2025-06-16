@@ -16,7 +16,7 @@
 -   [x] kasir bagian siap saji
 -   [x] Status di riwayat belanja (index dan riwayat berbeda)
 -   [x] sorting tabel
--   [x] produksi bagian produksi
+-   [x] produksi bagian siap beli
 
 ## BELUM SELESAI
 

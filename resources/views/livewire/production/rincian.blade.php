@@ -233,6 +233,12 @@
 
     @if ($is_start && !$is_finish)
         <div class="flex justify-end mt-16 gap-4">
+            @if ($production->method != 'siap-beli' && $total_quantity_get <= 0)
+                <flux:button icon="pencil" type="button"
+                    href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}">
+                    Ubah Rencana Produksi
+                </flux:button>
+            @endif
             <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
                 Selesaikan Produksi
             </flux:button>

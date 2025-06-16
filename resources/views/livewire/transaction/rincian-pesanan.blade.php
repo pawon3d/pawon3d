@@ -114,7 +114,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-1 gap-6 text-right">
                         <div class="flex flex-col gap-1">
                             <flux:heading class="text-lg font-semibold">Status Produksi</flux:heading>
-                            <p class="text-sm">-</p>
+                            <p class="text-sm">
+                                @if (!empty($transaction->production))
+                                    {{ $transaction->production->status }}
+                                @else
+                                    Belum Diproses
+                                @endif
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -171,14 +177,22 @@
                                 </span>
                             </td>
                             @if ($transaction->method != 'siap-beli')
+                                @php
+                                    $productionDetails = $transaction->production?->details ?? collect();
+                                    $prodDetail = $productionDetails->firstWhere('product_id', $detail['product_id']);
+                                    $qty_get =
+                                        $prodDetail?->quantity_get > $detail['quantity']
+                                            ? $detail['quantity']
+                                            : $prodDetail?->quantity_get;
+                                @endphp
                                 <td class="px-6 py-3">
                                     <span class="text-sm">
-                                        0
+                                        {{ $qty_get ?? 0 }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-3">
                                     <span class="text-sm">
-                                        {{ 0 - $detail['quantity'] }}
+                                        {{ ($qty_get ?? 0) - $detail['quantity'] }}
                                     </span>
                                 </td>
                             @endif
@@ -204,18 +218,18 @@
                         </td>
                         <td class="px-6 py-3">
                             <span class="text-gray-700">
-                                {{ collect($details)->sum('quantity') }}
+                                {{ $total_quantity_plan }}
                             </span>
                         </td>
                         @if ($transaction->method != 'siap-beli')
                             <td class="px-6 py-3">
                                 <span class="text-gray-700">
-                                    0
+                                    {{ $total_quantity_get }}
                                 </span>
                             </td>
                             <td class="px-6 py-3">
                                 <span class="text-gray-700">
-                                    {{ 0 - collect($details)->sum('quantity') }}
+                                    {{ $total_quantity_get - $total_quantity_plan }}
                                 </span>
                             </td>
                         @endif

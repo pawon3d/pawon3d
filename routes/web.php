@@ -134,6 +134,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produksi/{id}/mulai-produksi', App\Livewire\Production\Mulai::class)->name('produksi.mulai');
     Route::get('/produksi/riwayat/{method}', App\Livewire\Production\Riwayat::class)->name('produksi.riwayat');
     Route::get('/produksi/pesanan/{method}', App\Livewire\Production\Pesanan::class)->name('produksi.pesanan');
+    Route::get('/produksi/tambah-produksi-pesanan/{id}', App\Livewire\Production\TambahProduksiPesanan::class)
+        ->name('produksi.tambah-produksi-pesanan');
+    Route::get('/produksi/edit-produksi-pesanan/{id}', App\Livewire\Production\EditProduksiPesanan::class)
+        ->name('produksi.edit-produksi-pesanan');
+    Route::get('/produksi/{id}/rincian-pesanan', App\Livewire\Production\RincianPesanan::class)->name('produksi.rincian-pesanan');
     Route::get('/produksi/{status}/cetak', [PdfController::class, 'generateProductionPDF'])
         ->name('produksi.pdf');
     Route::get('/produksi/cetak/{id}', [PdfController::class, 'generateProductionDetailPDF'])

@@ -123,6 +123,11 @@ class Rincian extends Component
             'status' => 'Selesai',
             'end_date' => $this->end_date
         ]);
+        if ($production->method != 'siap-beli') {
+            if ($production->details->sum('quantity_get') >= $production->details->sum('quantity_plan')) {
+                $production->transaction->update(['status' => 'Dapat Diambil']);
+            }
+        }
 
         $this->alert('success', 'Produksi berhasil diselesaikan.');
     }

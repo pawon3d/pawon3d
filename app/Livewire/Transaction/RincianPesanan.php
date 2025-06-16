@@ -47,7 +47,7 @@ class RincianPesanan extends Component
             }
         }
         $this->transactionId = $id;
-        $transaction = \App\Models\Transaction::with(['details', 'user'])->find($id);
+        $transaction = \App\Models\Transaction::with(['details', 'user', 'payments', 'payments.channel', 'production'])->find($id);
         $this->totalAmount = $transaction->total_amount;
         $this->totalPayment = $transaction->payments->sum('paid_amount');
         $this->payments = \App\Models\Payment::where('transaction_id', $id)->latest()->get();
@@ -80,8 +80,30 @@ class RincianPesanan extends Component
                 ];
             })->toArray();
             $this->total_quantity_plan = $this->transaction->details->sum('quantity');
+
+            // Hitung total quantity_get dari production
             $this->total_quantity_get = 0;
-            $this->percentage = $this->total_quantity_plan > 0 ? ($this->total_quantity_get / $this->total_quantity_plan) * 100 : 0;
+
+            if ($this->production && $this->production->details) {
+                foreach ($this->transaction->details as $detail) {
+                    $productId = $detail->product_id;
+                    $planQty = $detail->quantity;
+
+                    $prodDetail = $this->production->details->firstWhere('product_id', $productId);
+
+                    if ($prodDetail) {
+                        // Ambil nilai minimum agar tidak melebihi rencana
+                        $qtyGet = min($prodDetail->quantity_get, $planQty);
+                        $this->total_quantity_get += $qtyGet;
+                    }
+                }
+            }
+
+            // Hitung persentase progres produksi
+            $this->percentage = $this->total_quantity_plan > 0
+                ? ($this->total_quantity_get / $this->total_quantity_plan) * 100
+                : 0;
+
             if ($this->percentage > 100) {
                 $this->percentage = 100;
             }
@@ -174,7 +196,7 @@ class RincianPesanan extends Component
                 }
             }
         } else {
-            if (!empty($this->payment) && $this->paidAmount < ($this->totalAmount - $this->totalPayment)) {
+            if (!empty($this->payments) && ($this->paidAmount < ($this->totalAmount - $this->totalPayment))) {
                 $this->alert('warning', 'Jumlah pembayaran harus lunas.');
                 return;
             } else {
@@ -190,7 +212,7 @@ class RincianPesanan extends Component
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
             $transaction->update([
-                'status' => 'Sedang Diproses',
+                // 'status' => 'Sedang Diproses',
                 'payment_status' => $status,
             ]);
 
