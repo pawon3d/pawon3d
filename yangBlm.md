@@ -32,7 +32,6 @@
 -   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
-        .
 
 ### Medium Priority
 
