@@ -17,6 +17,8 @@
 -   [x] Status di riwayat belanja (index dan riwayat berbeda)
 -   [x] sorting tabel
 -   [x] produksi bagian siap beli
+-   [x] produksi bagian pesanan
+-   [x] produksi berubah total
 
 ## BELUM SELESAI
 
@@ -28,10 +30,8 @@
 -   [ ] Tanggal kadaluarsa bahan
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
--   [ ] produksi berubah total
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
--   [ ] produksi bagian pesanan
         .
 
 ### Medium Priority
