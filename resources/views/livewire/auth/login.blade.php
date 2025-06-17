@@ -20,6 +20,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public bool $remember = false;
 
+    public array $pin = ['', '', '', '', '', ''];
+    public bool $showPin = false;
+
     public function mount()
     {
         View::share('title', 'Login');
@@ -33,8 +36,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate();
 
         $this->ensureIsNotRateLimited();
+        // $pinCode = implode('', $this->pin);
+        // if (!ctype_digit($pinCode) || strlen($pinCode) !== 6) {
+        //     $this->alert('pin', 'PIN harus terdiri dari 6 digit angka.');
+        //     return;
+        // }
+        // $this->password = $pinCode;
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -53,7 +62,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -74,7 +83,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }; ?>
 

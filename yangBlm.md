@@ -32,9 +32,9 @@
 -   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
+-   [ ] Detail produk di bagian pesanan (layout untuk review)
+-   [ ] Ganti field pin
 
 ### Medium Priority
-
--   [ ] Detail produk di bagian pesanan (layout untuk review)
 
 ### Low Priority

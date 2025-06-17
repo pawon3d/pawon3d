@@ -17,6 +17,8 @@ class Rincian extends Component
     public $userId;
     public $showHistoryModal = false;
     public $activityLogs = [];
+    public array $pin = ['', '', '', '', '', ''];
+    public bool $showPin = true;
 
     protected $listeners = [
         'delete' => 'delete',
@@ -65,16 +67,17 @@ class Rincian extends Component
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $this->userId,
-            'password' => 'nullable|string|min:4',
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
         ]);
 
+        $pinCode = implode('', $this->pin);
+
         $user = \App\Models\User::findOrFail($this->userId);
         $user->name = $this->name;
         $user->email = $this->email;
-        if ($this->password) {
-            $user->password = bcrypt($this->password);
+        if ($pinCode) {
+            $user->password = bcrypt($pinCode);
         }
         $user->phone = $this->phone;
         if ($this->image) {

@@ -110,23 +110,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/hitung/cetak/{id}', [PdfController::class, 'generateHitungDetailPDF'])
         ->name('rincian-hitung.pdf');
     Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
-    Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
-    Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
-    Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
-    Route::get('/transaksi/{id}/rincian-pesanan', App\Livewire\Transaction\RincianPesanan::class)->name('transaksi.rincian-pesanan');
-    Route::get('/transaksi/{id}/rincian-produk', App\Livewire\Transaction\RincianProduk::class)->name('transaksi.rincian-produk');
-    Route::get('/transaksi/{method}/pesanan', App\Livewire\Transaction\Pesanan::class)->name('transaksi.pesanan');
-    Route::get('/transaksi/{method}/riwayat', App\Livewire\Transaction\Riwayat::class)->name('transaksi.riwayat');
-    Route::get('/transaksi/{id}/buat-pesanan', App\Livewire\Transaction\BuatPesanan::class)->name('transaksi.buat-pesanan');
-    Route::get('/transaksi/cetak', [PdfController::class, 'generateTransactionPDF'])
-        ->name('transaksi.pdf');
-    Route::get('/transaksi/cetak/{id}', [PdfController::class, 'generateTransactionDetailPDF'])
-        ->name('rincian-transaksi.pdf');
-    Route::get('/transaksi/{id}/print', function () {
-        return view('pdf.pdf', [
-            'transaction' => \App\Models\Transaction::find(request()->id)
-        ]);
-    })->name('transaksi.cetak');
+    Route::group(['middleware' => ['permission:Kasir']], function () {
+        Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
+        Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
+        Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
+        Route::get('/transaksi/{id}/rincian-pesanan', App\Livewire\Transaction\RincianPesanan::class)->name('transaksi.rincian-pesanan');
+        Route::get('/transaksi/{id}/rincian-produk', App\Livewire\Transaction\RincianProduk::class)->name('transaksi.rincian-produk');
+        Route::get('/transaksi/{method}/pesanan', App\Livewire\Transaction\Pesanan::class)->name('transaksi.pesanan');
+        Route::get('/transaksi/{method}/riwayat', App\Livewire\Transaction\Riwayat::class)->name('transaksi.riwayat');
+        Route::get('/transaksi/{id}/buat-pesanan', App\Livewire\Transaction\BuatPesanan::class)->name('transaksi.buat-pesanan');
+        Route::get('/transaksi/cetak', [PdfController::class, 'generateTransactionPDF'])
+            ->name('transaksi.pdf');
+        Route::get('/transaksi/cetak/{id}', [PdfController::class, 'generateTransactionDetailPDF'])
+            ->name('rincian-transaksi.pdf');
+        Route::get('/transaksi/{id}/print', function () {
+            return view('pdf.pdf', [
+                'transaction' => \App\Models\Transaction::find(request()->id)
+            ]);
+        })->name('transaksi.cetak');
+    });
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
     Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
     Route::get('/produksi/{id}/edit', App\Livewire\Production\Edit::class)->name('produksi.edit');

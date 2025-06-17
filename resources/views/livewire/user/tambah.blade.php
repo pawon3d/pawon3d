@@ -36,24 +36,24 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                            <!-- Image Preview -->
-                            <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                id="image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="image-preview" />
                             @else
-                            <!-- Default Content -->
-                            <div class="flex flex-col items-center justify-center p-4 text-center">
-                                <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                <p class="mb-2 text-xs text-gray-600 mt-4">
-                                    Ukuran gambar tidak lebih dari
-                                    <span class="font-semibold">2mb</span>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    Pastikan gambar dalam format
-                                    <span class="font-semibold">JPG </span> atau
-                                    <span class="font-semibold">PNG</span>
-                                </p>
-                            </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                             @endif
                         </div>
                     </label>
@@ -71,9 +71,9 @@
 
                 <!-- Error Message -->
                 @error('image')
-                <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                    {{ $message }}
-                </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                 @enderror
 
                 <!-- Loading Indicator -->
@@ -110,7 +110,7 @@
             <flux:select placeholder="Pilih Peran" wire:model.defer="role">
                 <option value="" hidden>Pilih Peran</option>
                 @foreach ($roles as $role)
-                <option value="{{ $role->name }}">{{ $role->name }}</option>
+                    <option value="{{ $role->name }}">{{ $role->name }}</option>
                 @endforeach
             </flux:select>
             <flux:error name="role" />
@@ -118,8 +118,27 @@
             <p class="text-sm text-gray-500">
                 Masukkan PIN masuk untuk keamanan lebih.
             </p>
-            <flux:input placeholder="112233" wire:model.defer="password" type="password" viewable />
-            <flux:error name="password" />
+            <div id="pin-inputs" class="flex mb-2 space-x-2">
+                @for ($i = 0; $i < 6; $i++)
+                    <div>
+                        <input type="{{ $showPin ? 'text' : 'password' }}" maxlength="1"
+                            wire:model="pin.{{ $i }}"
+                            class="block w-9 h-9 text-center font-bold text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+                @endfor
+
+                <!-- Tombol toggle mata -->
+                <div class="flex items-center">
+                    <flux:button type="button" variant="ghost" wire:click="$toggle('showPin')">
+                        @if ($showPin)
+                            <flux:icon.eye class="w-6 h-6 text-gray-700" />
+                        @else
+                            <flux:icon.eye-slash class="w-6 h-6 text-gray-700" />
+                        @endif
+                    </flux:button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -130,26 +149,26 @@
 
     <script>
         function handleDrop(event) {
-        event.preventDefault();
-        const container = event.currentTarget;
-        container.classList.remove('border-blue-500', 'bg-gray-100');
-        
-        const files = event.dataTransfer.files;
-        if (files.length > 0) {
-            const input = document.getElementById('dropzone-file');
-            input.files = files;
-            previewImage(input);
-            input.dispatchEvent(new Event('change'));
+            event.preventDefault();
+            const container = event.currentTarget;
+            container.classList.remove('border-blue-500', 'bg-gray-100');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const input = document.getElementById('dropzone-file');
+                input.files = files;
+                previewImage(input);
+                input.dispatchEvent(new Event('change'));
+            }
         }
-     }
 
         function previewImage(input) {
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
+
                 reader.onload = function(e) {
                     // Update preview image
                     let previewImg = document.getElementById('image-preview');
@@ -160,14 +179,36 @@
                         previewContainer.appendChild(previewImg);
                     }
                     previewImg.src = e.target.result;
-                    
+
                     // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
-                
+
                 reader.readAsDataURL(input.files[0]);
             }
         }
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('pin-inputs');
+            if (!container) return;
+
+            const inputs = container.querySelectorAll('input[type="text"], input[type="password"]');
+            inputs.forEach((el, idx, arr) => {
+                el.addEventListener('input', () => {
+                    if (el.value.length === 1 && idx < arr.length - 1) {
+                        arr[idx + 1].focus();
+                    }
+                });
+
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && el.value === '' && idx > 0) {
+                        arr[idx - 1].focus();
+                    }
+                });
+            });
+        });
+    </script>
+
 
 </div>
