@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Expense;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -15,7 +16,7 @@ class Rincian extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $total_quantity_expect, $total_quantity_get, $percentage;
-    public $is_start = false, $is_finish = false, $status;
+    public $is_start = false, $is_finish = false, $status, $end_date;
 
     protected $listeners = [
         'delete'
@@ -29,9 +30,11 @@ class Rincian extends Component
         $this->is_start = $this->expense->is_start;
         $this->is_finish = $this->expense->is_finish;
         $this->status = $this->expense->status;
+        $this->end_date = $this->expense->end_date;
         $this->total_quantity_expect = $this->expense->expenseDetails->sum('quantity_expect');
         $this->total_quantity_get = $this->expense->expenseDetails->sum('quantity_get');
         $this->percentage = $this->total_quantity_expect > 0 ? ($this->total_quantity_get / $this->total_quantity_expect) * 100 : 0;
+        $this->percentage = floor($this->percentage);
         $this->expenseDetails = $this->expense->expenseDetails;
         View::share('title', 'Rincian Belanja Persediaan');
 
@@ -96,9 +99,13 @@ class Rincian extends Component
     public function finish()
     {
         $this->is_finish = true;
+        $this->status = 'Selesai';
+        $this->end_date = Carbon::now()->toDateTimeString();
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         $expense->update([
             'is_finish' => $this->is_finish,
+            'status' => 'Selesai',
+            'end_date' => Carbon::now()->toDateTimeString(),
         ]);
         $expense->expenseDetails->each(function ($detail) {
             $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
@@ -107,6 +114,30 @@ class Rincian extends Component
             if ($materialDetail) {
                 $materialDetail->update([
                     'supply_quantity' => $materialDetail->supply_quantity + $detail->quantity_get,
+                ]);
+            }
+            // Generate a batch number if not present in detail
+            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
+
+            // Cek apakah sudah ada batch dengan batch_number dan unit_id yang sama
+            $materialBatch = \App\Models\MaterialBatch::where('batch_number', $batchNumber)
+                ->where('unit_id', $detail->unit_id)
+                ->first();
+
+            if ($materialBatch) {
+                // Jika ada, update batch_quantity
+                $materialBatch->update([
+                    'batch_quantity' => $materialBatch->batch_quantity + $detail->quantity_get,
+                    'date' => $detail->expiry_date,
+                    'material_id' => $detail->material_id,
+                ]);
+            } else {
+                // Jika tidak ada, create baru
+                \App\Models\MaterialBatch::create([
+                    'unit_id' => $detail->unit_id,
+                    'material_id' => $detail->material_id,
+                    'batch_quantity' => $detail->quantity_get,
+                    'date' => $detail->expiry_date,
                 ]);
             }
         });

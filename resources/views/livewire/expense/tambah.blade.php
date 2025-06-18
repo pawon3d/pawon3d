@@ -26,8 +26,8 @@
             </p>
             <flux:select placeholder="- Pilih Toko Persediaan -" wire:model="supplier_id">
                 @foreach ($suppliers as $supplier)
-                <flux:select.option value="{{ $supplier->id }}" class="text-gray-700">{{ $supplier->name }}
-                </flux:select.option>
+                    <flux:select.option value="{{ $supplier->id }}" class="text-gray-700">{{ $supplier->name }}
+                    </flux:select.option>
                 @endforeach
             </flux:select>
             <flux:error name="supplier_id" />
@@ -37,21 +37,19 @@
             </p>
             <input type="text"
                 class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] pl-3 pr-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5"
-                x-ref="datepicker" x-init="
-                        picker = new Pikaday({
-                        field: $refs.datepicker,
-                        format: 'DD/MM/YYYY',
-                        toString(date, format) {
-                            const day = String(date.getDate()).padStart(2, 0);
-                            const month = String(date.getMonth() + 1).padStart(2, 0);
-                            const year = date.getFullYear();
-                            return `${day}/${month}/${year}`;
-                        },
-                        onSelect: function() {
-                            @this.set('expense_date', moment(this.getDate()).format('DD/MM/YYYY'));
-                            }
-                        });
-                        " wire:model.defer="expense_date" id="datepicker" readonly />
+                x-ref="datepicker" x-init="picker = new Pikaday({
+                    field: $refs.datepicker,
+                    format: 'DD/MM/YYYY',
+                    toString(date, format) {
+                        const day = String(date.getDate()).padStart(2, 0);
+                        const month = String(date.getMonth() + 1).padStart(2, 0);
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                    },
+                    onSelect: function() {
+                        @this.set('expense_date', moment(this.getDate()).format('DD/MM/YYYY'));
+                    }
+                });" wire:model.defer="expense_date" id="datepicker" readonly />
             <flux:error name="expense_date" />
         </div>
 
@@ -88,77 +86,78 @@
                         <th class="text-left px-6 py-3">Jumlah Belanja</th>
                         <th class="text-left px-6 py-3">Satuan Ukur Belanja</th>
                         <th class="text-left px-6 py-3">Harga / Satuan</th>
-                        <th class="text-left px-6 py-3">Total Harga (Perkiraan)</th>
+                        <th class="text-left px-6 py-3">Total Harga</th>
                         <th class="text-left px-6 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($expense_details as $index => $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <select
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="expense_details.{{ $index }}.material_id"
-                                wire:change="setMaterial({{ $index }}, $event.target.value)">
-                                <option value="" class="text-gray-700">- Pilih Bahan Baku -</option>
-                                @foreach ($materials as $material)
-                                <option value="{{ $material->id }}" class="text-gray-700">{{
-                                    $material->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td class="px-6 py-3">
-                            {{ $detail['material_quantity'] }}
-                        </td>
-                        <td class="px-6 py-3 flex items-center flex-row relative">
-                            <input type="number" placeholder="0" min="0"
-                                wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none text-right" />
-                        </td>
-                        <td class="px-6 py-3">
-                            <select
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                wire:model="expense_details.{{ $index }}.unit_id"
-                                wire:change="setUnit({{ $index }}, $event.target.value)">
-                                @php
-                                $material = $materials->firstWhere('id', $detail['material_id']);
-                                $units = $material?->material_details->map(function ($detail) {
-                                return $detail->unit; // pastikan ada relasi unit() di MaterialDetail
-                                })->filter(); // filter() untuk menghindari null jika unit tidak ditemukan
-                                @endphp
-                                <option value="" class="text-gray-700">- Pilih Satuan Ukur -</option>
-                                @foreach ($units ?? [] as $unit)
-                                <option value="{{ $unit->id }}" class="text-gray-700">
-                                    {{ $unit->name }} ({{ $unit->alias }})
-                                </option>
-                                @endforeach
+                    @foreach ($expense_details as $index => $detail)
+                        <tr>
+                            <td class="px-6 py-3">
+                                <select
+                                    class="w-full border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded"
+                                    wire:model="expense_details.{{ $index }}.material_id"
+                                    wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                    <option value="" class="text-gray-700">- Pilih Bahan Baku -</option>
+                                    @foreach ($materials as $material)
+                                        <option value="{{ $material->id }}" class="text-gray-700">{{ $material->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ $detail['material_quantity'] }}
+                            </td>
+                            <td class="px-6 py-3">
+                                <input type="number" placeholder="0" min="0"
+                                    wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
+                                    class="w-full border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded text-right" />
+                            </td>
+                            <td class="px-6 py-3">
+                                <select
+                                    class="border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded"
+                                    wire:model="expense_details.{{ $index }}.unit_id"
+                                    wire:change="setUnit({{ $index }}, $event.target.value)">
+                                    @php
+                                        $material = $materials->firstWhere('id', $detail['material_id']);
+                                        $units = $material?->material_details
+                                            ->map(function ($detail) {
+                                                return $detail->unit; // pastikan ada relasi unit() di MaterialDetail
+                                            })
+                                            ->filter(); // filter() untuk menghindari null jika unit tidak ditemukan
+                                    @endphp
+                                    <option value="" class="text-gray-700">- Pilih Satuan Ukur -</option>
+                                    @foreach ($units ?? [] as $unit)
+                                        <option value="{{ $unit->id }}" class="text-gray-700">
+                                            {{ $unit->name }} ({{ $unit->alias }})
+                                        </option>
+                                    @endforeach
 
-                            </select>
-                        </td>
-                        <td class="px-6 py-3">
-                            <input type="number" placeholder="0" min="0"
-                                wire:model.number.live="expense_details.{{ $index }}.price_expect"
-                                class="w-full border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none text-right" />
-                            @if (isset($prevInputs[$index]))
-                            <span class="text-xs text-blue-500">Harga Sebelumnya: Rp{{ number_format($prevPrice[$index],
-                                0, ',', '.') }}</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-3">
-                            Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
-                        </td>
-                        <td class="flex items-center justify-start gap-4 px-6 py-3">
-                            <flux:button icon="trash" type="button" variant="danger"
-                                wire:click.prevent="removeDetail({{ $index }})" />
-                        </td>
-                    </tr>
+                                </select>
+                            </td>
+                            <td class="px-6 py-3">
+                                <input type="number" placeholder="0" min="0"
+                                    wire:model.number.live="expense_details.{{ $index }}.price_expect"
+                                    class="border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded text-right" />
+                                @if (isset($prevInputs[$index]))
+                                    <span class="text-xs text-blue-500 block">Harga Sebelumnya:
+                                        Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3">
+                                Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
+                            </td>
+                            <td class="flex items-center justify-start gap-4 px-6 py-3">
+                                <flux:button icon="trash" type="button" variant="danger"
+                                    wire:click.prevent="removeDetail({{ $index }})" />
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
                 <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <td class="px-6 py-3" colspan="6">
+                        <td class="px-6 py-3" colspan="5">
                             <span class="text-gray-700">Total Harga Keseluruhan</span>
                         </td>
                         <td class="px-6 py-3">
@@ -166,6 +165,7 @@
                                 Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
                             </span>
                         </td>
+                        <td></td>
                     </tr>
                 </tfoot>
             </table>

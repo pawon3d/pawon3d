@@ -35,17 +35,29 @@
         <h1 class="text-3xl font-bold">{{ $expense->expense_number }}</h1>
         <p class="text-lg text-gray-500">{{ $status }}</p>
         <div class="flex items-center justify-between gap-4 flex-row">
-            <div class="flex items-start gap-4 flex-col">
-                <flux:heading class="text-lg font-semibold">Toko Persediaan</flux:heading>
-                <p class="text-sm text-start">{{ $expense->supplier->name }}</p>
+
+            <div class="flex items-center gap-16 flex-row">
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Belanja</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d/m/Y') : '-' }}
+                    </p>
+                </div>
+
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Selesai</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d/m/Y') : '-' }}
+                    </p>
+                </div>
+
             </div>
             <div class="flex items-center gap-16 flex-row">
                 <div class="flex items-end gap-4 flex-col">
-                    <flux:heading class="text-lg font-semibold">Tanggal</flux:heading>
-                    <p class="text-sm">
-                        {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') : '-' }}
-                    </p>
+                    <flux:heading class="text-lg font-semibold">Toko Persediaan</flux:heading>
+                    <p class="text-sm text-end">{{ $expense->supplier->name }}</p>
                 </div>
+
                 <div class="flex items-end gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Dibelanja Oleh</flux:heading>
                     <p class="text-sm">{{ $logName }}</p>
@@ -83,8 +95,9 @@
                         <th class="text-left px-6 py-3">Jumlah Didapatkan</th>
                         <th class="text-left px-6 py-3">Satuan Ukur Belanja</th>
                         <th class="text-left px-6 py-3">Harga / Satuan</th>
-                        <th class="text-left px-6 py-3">Total Harga (Perkiraan)</th>
-                        <th class="text-left px-6 py-3">Total Harga (Sebenarnya)</th>
+                        <th class="text-left px-6 py-3">Total Harga</th>
+                        <th class="text-left px-6 py-3">Total Harga (Harus Dibayar)</th>
+                        {{-- <th class="text-left px-6 py-3">exp</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -125,6 +138,11 @@
                                     Rp{{ number_format($detail->total_actual, 0, ',', '.') }}
                                 </span>
                             </td>
+                            {{-- <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->expiry_date ? \Carbon\Carbon::parse($detail->expiry_date)->format('d/m/Y') : '-' }}
+                                </span>
+                            </td> --}}
                         </tr>
                     @endforeach
 

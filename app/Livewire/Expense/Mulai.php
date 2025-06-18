@@ -104,6 +104,7 @@ class Mulai extends Component
                 $expenseDetail->update([
                     'quantity_get' => $updatedQuantityGet,
                     'total_actual' => $updatedQuantityGet * $expenseDetail->price_expect,
+                    'expiry_date' => $detail['expiry_date'] ? \Carbon\Carbon::createFromFormat('d/m/Y', $detail['expiry_date'])->format('Y-m-d') : null,
                 ]);
 
                 // Update total keseluruhan belanja
@@ -146,7 +147,7 @@ class Mulai extends Component
         }
 
         // Panggil fungsi simpan biasa
-        $this->save();
+        // $this->save();
     }
 
     public function render()

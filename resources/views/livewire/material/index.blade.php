@@ -53,9 +53,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Kategori
+                        Semua Kategori
                     @endif
                     ({{ $materials->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -110,152 +110,188 @@
     </div>
 
     @if ($viewMode === 'grid')
-    {{-- grid view --}}
-    <div class="bg-white">
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
-            @forelse($materials as $material)
-            <div class="p-4 text-center">
-                {{-- <a href="{{ route('bahan-baku.edit', $material->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                    --}}
-                    <div class="flex justify-center mb-4">
-                        @if ($material->image)
-                        <img src="{{ asset('storage/' . $material->image) }}" alt="{{ $material->name }}"
-                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
-                        @else
-                        <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
-                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
-                        @endif
-                    </div>
-                    <div class="text-center">
-                        <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $material->name }}</h3>
-                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+        {{-- grid view --}}
+        <div class="bg-white">
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+                @forelse($materials as $material)
+                    <div class="p-4 text-center">
+                        {{-- <a href="{{ route('bahan-baku.edit', $material->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                        --}}
+                        <div class="flex justify-center mb-4">
+                            @if ($material->image)
+                                <img src="{{ asset('storage/' . $material->image) }}" alt="{{ $material->name }}"
+                                    class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                            @else
+                                <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
+                                    class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                            @endif
+                        </div>
+                        <div class="text-center">
+                            <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $material->name }}</h3>
+                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                                @php
+                                    $quantity_main_total = 0;
+                                    $batches = $material->batches;
+
+                                    foreach ($batches as $b) {
+                                        $detail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                            ->where('unit_id', $b->unit_id)
+                                            ->first();
+
+                                        if ($detail) {
+                                            $quantity_main = ($b->batch_quantity ?? 0) * ($detail->quantity ?? 0);
+                                            $quantity_main_total += $quantity_main;
+                                        }
+                                    }
+
+                                    // Ambil satu detail utama untuk unit (jika ada)
+                                    $mainDetail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                        ->where('is_main', true)
+                                        ->first();
+                                @endphp
+                                {{ $batches->isNotEmpty() ? $quantity_main_total . ' ' . ($mainDetail->unit->alias ?? '') : 'Tidak Tersedia' }}
+                            </p>
+                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                                {{ $material->status ?? 'Kosong' }}
+                            </p>
                             @php
-                            // Ambil semua detail
-                            $materialDetails = App\Models\MaterialDetail::where('material_id', $material->id)
-                            ->get();
+                                // Ambil semua batch
+                                $batches = $material->batches;
 
-                            // Hitung supply_quantity_main sesuai rumus
-                            $supply_quantity_main = $materialDetails->sum(function ($detail) {
-                            return ($detail->supply_quantity ?? 0) * ($detail->quantity ?? 0);
-                            });
-
-                            // Ambil satu detail utama untuk unit (jika ada)
-                            $mainDetail = $materialDetails->where('is_main', true)->first();
+                                // Filter batch yang belum kadaluarsa dan urutkan dari yang paling dekat
+                                $nextBatch = $batches
+                                    ->filter(fn($batch) => \Carbon\Carbon::parse($batch->date)->isFuture())
+                                    ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
+                                    ->first();
                             @endphp
-                            {{ $materialDetails->isNotEmpty()
-                            ? $supply_quantity_main . ' ' . ($mainDetail->unit->alias ?? '')
-                            : 'Tidak Tersedia' }}
-                        </p>
-                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                            {{ $material->status ?? 'Kosong' }}
-                        </p>
-                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                            {{ $material->expiry_date
-                            ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y')
-                            : 'Belum Ada Tanggal' }}
-                        </p>
+
+                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                                {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y') : 'Belum Ada Tanggal' }}
+                            </p>
+                        </div>
+                        <flux:button class="w-full" variant="primary" type="button"
+                            href="{{ route('bahan-baku.edit', $material->id) }}">
+                            Lihat
+                        </flux:button>
+                        {{--
+                        </a> --}}
                     </div>
-                    <flux:button class="w-full" variant="primary" type="button"
-                        href="{{ route('bahan-baku.edit', $material->id) }}">
-                        Lihat
-                    </flux:button>
-                    {{--
-                </a> --}}
+                @empty
+                    <div
+                        class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+                        <p class="text-gray-700 font-semibold">Belum ada persediaan.</p>
+                        <p class="text-gray-700">Tekan tombol “Tambah Persediaan” untuk menambahkan persediaan.</p>
+                    </div>
+                @endforelse
             </div>
-            @empty
+            <div class="p-4">
+                {{ $materials->links() }}
+            </div>
+        </div>
+    @elseif ($viewMode === 'list')
+        {{-- list view --}}
+        @if ($materials->isEmpty())
             <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-                <p class="text-gray-700 font-semibold">Belum ada persediaan.</p>
+                <p class="text-gray-700 font-semibold">Belum ada barang persediaan.</p>
                 <p class="text-gray-700">Tekan tombol “Tambah Persediaan” untuk menambahkan persediaan.</p>
             </div>
-            @endforelse
-        </div>
-        <div class="p-4">
-            {{ $materials->links() }}
-        </div>
-    </div>
-    @elseif ($viewMode === 'list')
-    {{-- list view --}}
-    @if ($materials->isEmpty())
-    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum ada barang persediaan.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah Persediaan” untuk menambahkan persediaan.</p>
-    </div>
-    @else
-    <div class="bg-white rounded-xl border">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                            wire:click="sortBy('name')">Barang Persediaan
-                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                            wire:click='sortBy("is_active")'>Status Tampil
-                            {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jumlah Persediaan
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                            wire:click='sortBy("expiry_date")'>Tanggal Expired
-                            {{ $sortDirection === 'asc' && $sortField === 'expiry_date' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                            wire:click='sortBy("status")'>Status Persediaan</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($materials as $material)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('bahan-baku.edit', $material->id) }}"
-                                class="hover:bg-gray-50 cursor-pointer">
-                                {{ $material->name }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
-                            {{ $material->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
-                            @php
-                            // Ambil semua detail
-                            $materialDetails = App\Models\MaterialDetail::where('material_id', $material->id)
-                            ->get();
+        @else
+            <div class="bg-white rounded-xl border">
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                    wire:click="sortBy('name')">Barang Persediaan
+                                    {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                                </th>
+                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                    wire:click='sortBy("is_active")'>Status Tampil
+                                    {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                                </th>
+                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Jumlah Persediaan
+                                </th>
+                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                    wire:click='sortBy("expiry_date")'>Tanggal Expired
+                                    {{ $sortDirection === 'asc' && $sortField === 'expiry_date' ? '↑' : '↓' }}
+                                </th>
+                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                    wire:click='sortBy("status")'>Status Persediaan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($materials as $material)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('bahan-baku.edit', $material->id) }}"
+                                            class="hover:bg-gray-50 cursor-pointer">
+                                            {{ $material->name }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                                        {{ $material->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-900">
+                                        @php
+                                            $quantity_main_total = 0;
+                                            $batches = $material->batches;
 
-                            // Hitung supply_quantity_main sesuai rumus
-                            $supply_quantity_main = $materialDetails->sum(function ($detail) {
-                            return ($detail->supply_quantity ?? 0) * ($detail->quantity ?? 0);
-                            });
+                                            foreach ($batches as $b) {
+                                                $detail = \App\Models\MaterialDetail::where(
+                                                    'material_id',
+                                                    $material->id,
+                                                )
+                                                    ->where('unit_id', $b->unit_id)
+                                                    ->first();
 
-                            // Ambil satu detail utama untuk unit (jika ada)
-                            $mainDetail = $materialDetails->where('is_main', true)->first();
-                            @endphp
-                            {{ $materialDetails->isNotEmpty()
-                            ? $supply_quantity_main . ' ' . ($mainDetail->unit->alias ?? '')
-                            : 'Tidak Tersedia' }}
-                        </td>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
-                            {{ $material->expiry_date
-                            ? \Carbon\Carbon::parse($material->expiry_date)->format('d-M-Y')
-                            : 'Belum Ada Tanggal' }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-900">
-                            {{ $material->status ?? 'Kosong' }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                                                if ($detail) {
+                                                    $quantity_main =
+                                                        ($b->batch_quantity ?? 0) * ($detail->quantity ?? 0);
+                                                    $quantity_main_total += $quantity_main;
+                                                }
+                                            }
 
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $materials->links() }}
-        </div>
-    </div>
-    @endif
+                                            // Ambil satu detail utama untuk unit (jika ada)
+                                            $mainDetail = \App\Models\MaterialDetail::where(
+                                                'material_id',
+                                                $material->id,
+                                            )
+                                                ->where('is_main', true)
+                                                ->first();
+                                        @endphp
+                                        {{ $batches->isNotEmpty() ? $quantity_main_total . ' ' . ($mainDetail->unit->alias ?? '') : 'Tidak Tersedia' }}
+                                    </td>
+                                    </td>
+                                    @php
+                                        // Ambil semua batch
+                                        $batches = $material->batches;
+
+                                        // Filter batch yang belum kadaluarsa dan urutkan dari yang paling dekat
+                                        $nextBatch = $batches
+                                            ->filter(fn($batch) => \Carbon\Carbon::parse($batch->date)->isFuture())
+                                            ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
+                                            ->first();
+                                    @endphp
+
+                                    <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                                        {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y') : 'Belum Ada Tanggal' }}
+                                    </p>
+                                    <td class="px-6 py-4 text-sm text-gray-900">
+                                        {{ $material->status ?? 'Kosong' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="p-4">
+                    {{ $materials->links() }}
+                </div>
+            </div>
+        @endif
     @endif
 
 
@@ -267,13 +303,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

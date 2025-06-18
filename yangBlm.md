@@ -19,6 +19,7 @@
 -   [x] produksi bagian siap beli
 -   [x] produksi bagian pesanan
 -   [x] produksi berubah total
+-   [x] Ganti field pin
 
 ## BELUM SELESAI
 
@@ -33,7 +34,6 @@
 -   [ ] persediaan berubah total
 -   [ ] belanja persediaan berubah total
 -   [ ] Detail produk di bagian pesanan (layout untuk review)
--   [ ] Ganti field pin
 
 ### Medium Priority
 

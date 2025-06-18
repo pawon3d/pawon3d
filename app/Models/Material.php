@@ -56,6 +56,11 @@ class Material extends Model
         return $this->hasMany(ExpenseDetail::class, 'material_id', 'id');
     }
 
+    public function batches()
+    {
+        return $this->hasMany(MaterialBatch::class, 'material_id', 'id');
+    }
+
     public static function boot()
     {
         parent::boot();

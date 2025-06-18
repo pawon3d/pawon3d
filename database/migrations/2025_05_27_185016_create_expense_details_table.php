@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('price_get', 10, 2)->default(0);
             $table->decimal('total_expect', 10, 2)->default(0);
             $table->decimal('total_actual', 10, 2)->default(0);
+            $table->date('expiry_date')->nullable();
             $table->timestamps();
 
             $table->foreign('expense_id')->references('id')->on('expenses')->onDelete('cascade');

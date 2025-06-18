@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('expense_number')->unique();
             $table->date('expense_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->uuid('supplier_id')->nullable();
             $table->string('note')->nullable();
             $table->string('status')->default('Draft');

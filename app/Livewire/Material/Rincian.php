@@ -13,16 +13,20 @@ class Rincian extends Component
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
     public $material_id;
-    public $name, $description, $expiry_date = '00-00-0000', $status = 'kosong', $category_ids, $minimum = 0, $is_active = false;
+    public $name, $description, $expiry_date = '00-00-0000', $status = 'Kosong', $category_ids, $minimum = 0, $is_active = false;
     public $main_unit_id, $main_unit_alias, $main_unit_name, $main_supply_quantity = 0;
     public $previewImage;
     public $image;
     public $material_details = [];
     public $ingredient_category_details = [];
-    public $supply_quantity_main;
+    public $supply_quantity_main, $supply_quantity_total = 0, $supply_quantity_modal = 0;
     public $supply_price_total;
     public $showHistoryModal = false;
     public $activityLogs = [];
+    public $material;
+    public $is_recipe = false;
+
+    public $quantity_main, $quantity_main_total;
 
     protected $listeners = [
         'delete',
@@ -41,6 +45,7 @@ class Rincian extends Component
         \Illuminate\Support\Facades\View::share('title', 'Rincian Bahan Baku');
         $this->material_id = $id;
         $material = \App\Models\Material::findOrFail($id);
+        $this->material = $material;
         $this->main_unit_id = $material->material_details->first()->unit_id ?? null;
         $this->main_unit_alias = $material->material_details->first()->unit->alias ?? '';
         $this->main_unit_name = $material->material_details->first()->unit->name ?? '';
@@ -50,7 +55,8 @@ class Rincian extends Component
         $this->expiry_date = $material->expiry_date ? $material->expiry_date->format('d/m/Y') : '00/00/0000';
         $this->status = $material->status;
         $this->minimum = $material->minimum;
-        $this->is_active = $material->is_active;
+        $this->is_active = $material->is_active ?? false;
+        $this->is_recipe = $material->is_recipe ?? false;
         $this->category_ids = $material->ingredientCategoryDetails->pluck('ingredient_category_id')->toArray();
         if ($material->material_details->isEmpty()) {
             $this->material_details = [[
@@ -73,11 +79,19 @@ class Rincian extends Component
 
             $this->supply_quantity_main = collect($this->material_details)
                 ->sum(function ($detail) {
-                    return ($detail['supply_quantity'] ?? 0) * ($detail['quantity'] ?? 0);
+                    return ($detail['quantity'] ?? 0);
                 });
             $this->supply_price_total = collect($this->material_details)
                 ->sum(function ($detail) {
                     return ($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0);
+                });
+            $this->supply_quantity_total = collect($this->material_details)
+                ->sum(function ($detail) {
+                    return (($detail['supply_quantity'] <= 0 ? 1 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
+                });
+            $this->supply_quantity_modal = collect($this->material_details)
+                ->sum(function ($detail) {
+                    return (($detail['supply_quantity'] <= 0 ? 0 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
                 });
         }
 
@@ -162,11 +176,19 @@ class Rincian extends Component
         }, $this->material_details);
         $this->supply_quantity_main = collect($this->material_details)
             ->sum(function ($detail) {
-                return ($detail['supply_quantity'] ?? 0) * ($detail['quantity'] ?? 0);
+                return ($detail['quantity'] ?? 0);
             });
         $this->supply_price_total = collect($this->material_details)
             ->sum(function ($detail) {
                 return ($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0);
+            });
+        $this->supply_quantity_total = collect($this->material_details)
+            ->sum(function ($detail) {
+                return (($detail['supply_quantity'] <= 0 ? 1 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
+            });
+        $this->supply_quantity_modal = collect($this->material_details)
+            ->sum(function ($detail) {
+                return (($detail['supply_quantity'] <= 0 ? 0 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
             });
     }
 
@@ -212,18 +234,34 @@ class Rincian extends Component
             'status' => 'nullable|string|max:20',
             'minimum' => 'nullable|numeric|min:0',
             'is_active' => 'boolean',
+            'is_recipe' => 'boolean',
             'material_details.*.unit_id' => 'nullable|exists:units,id',
             'material_details.*.quantity' => 'nullable|numeric|min:0',
             'material_details.*.is_main' => 'boolean',
         ]);
         $material = \App\Models\Material::findOrFail($this->material_id);
+
+        foreach ($this->material_details as $detail) {
+            if ($this->supply_quantity_total <= 0) {
+                $status = 'Kosong';
+            } elseif ($this->supply_quantity_total <= $this->minimum) {
+                $status = 'Habis';
+            } elseif ($this->supply_quantity_total > $this->minimum * 2) {
+                $status = 'Tersedia';
+            } elseif ($this->supply_quantity_total >= $this->minimum && $this->supply_quantity_total <= $this->minimum * 2) {
+                $status = 'Hampir Habis';
+            } else {
+                $status = 'Kosong';
+            }
+        }
+
         $material->update([
             'name' => $this->name,
             'description' => $this->description,
-            'expiry_date' => null,
-            'status' => $this->status,
+            'status' => $status,
             'minimum' => $this->minimum,
             'is_active' => $this->is_active,
+            'is_recipe' => $this->is_recipe,
         ]);
 
         if ($this->image) {

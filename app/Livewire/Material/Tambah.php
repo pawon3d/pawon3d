@@ -10,7 +10,8 @@ class Tambah extends Component
 {
     use \Livewire\WithFileUploads;
 
-    public $name, $description, $expiry_date = '00/00/0000', $status = 'kosong', $category_ids, $minimum = 0, $is_active = false;
+    public $name, $description, $expiry_date = '00/00/0000', $status = 'Kosong', $category_ids, $minimum = 0, $is_active = false,
+        $is_recipe = false;
     public $main_unit_id, $main_unit_alias, $main_unit_name;
     public $previewImage;
     public $image;
@@ -98,7 +99,7 @@ class Tambah extends Component
         }, $this->material_details);
         $this->supply_quantity_main = collect($this->material_details)
             ->sum(function ($detail) {
-                return ($detail['supply_quantity'] ?? 0) * ($detail['quantity'] ?? 0);
+                return ($detail['quantity'] ?? 0);
             });
         $this->supply_price_total = collect($this->material_details)
             ->sum(function ($detail) {
@@ -115,6 +116,7 @@ class Tambah extends Component
             'status' => 'nullable|string|max:20',
             'minimum' => 'nullable|numeric|min:0',
             'is_active' => 'boolean',
+            'is_recipe' => 'boolean',
             'material_details.*.unit_id' => 'nullable|exists:units,id',
             'material_details.*.quantity' => 'nullable|numeric|min:0',
             'material_details.*.is_main' => 'boolean',
@@ -127,6 +129,7 @@ class Tambah extends Component
             'status' => $this->status,
             'minimum' => $this->minimum,
             'is_active' => $this->is_active,
+            'is_recipe' => $this->is_recipe,
         ]);
 
         if ($this->image) {
