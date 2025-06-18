@@ -35,6 +35,8 @@ class RincianPesanan extends Component
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
     ];
+
+
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
@@ -45,6 +47,28 @@ class RincianPesanan extends Component
                 $this->showPrintModal = true;
                 session()->forget('print');
             }
+        }
+        if (session()->has('notif')) {
+            $this->alert('success', 'Notifikasi', [
+                'toast' => true,
+                'position' => 'top-end',
+                'timer' => null,
+                'showConfirmButton' => false,
+                'showCancelButton' => false,
+                'showCloseButton' => true,
+                'icon' => null,
+                'text' => session('notif'),
+                'background' => '#666666',
+                'customClass' => [
+                    'title' => 'text-color-white text-size-sm text-position-center',
+                    'popup' => '',
+                    'confirmButton' => '',
+                    'cancelButton' => '',
+                    'container' => '',
+                    'htmlContainer' => 'text-color-white text-size-xs text-position-center',
+                ],
+            ]);
+            session()->forget('notif');
         }
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::with(['details', 'user', 'payments', 'payments.channel', 'production'])->find($id);
@@ -290,6 +314,11 @@ class RincianPesanan extends Component
         $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
+    }
+
+    public function strukPrint()
+    {
+        return redirect()->route('cetak-struk', ['id' => $this->transactionId]);
     }
 
     public function finish()

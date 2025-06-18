@@ -5,8 +5,9 @@
 
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-@if(!empty($storeSetting->logo))
-<link rel="icon" href="{{ asset('storage/' . $storeSetting->logo) }}" type="image/x-icon" />
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+@if (!empty($storeSetting->logo))
+    <link rel="icon" href="{{ asset('storage/' . $storeSetting->logo) }}" type="image/x-icon" />
 @endif
 <link rel="stylesheet" type="text/css" href="{{ asset('css/pikaday.css') }}" />
 <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
@@ -15,5 +16,6 @@
 <script src="{{ asset('flowbite/flatpickr.js') }}"></script>
 <script src="{{ asset('scripts/jquery.min.js') }}"></script>
 <script src="{{ asset('scripts/select2.min.js') }}"></script>
+@yield('css')
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])

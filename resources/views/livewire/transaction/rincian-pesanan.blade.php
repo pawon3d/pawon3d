@@ -298,16 +298,10 @@
             @if ($payments && $payments->count())
                 @foreach ($payments as $index => $payment)
                     @php
-                        $paidAt = $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d-m-Y') : '-';
+                        $paidAt = $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y') : '-';
                         $method = $payment->payment_method ? ucfirst($payment->payment_method) : '-';
                         $bank = $payment->channel->bank_name ?? null;
                         $label = $method . ($bank ? ' - ' . ucfirst($bank) : '');
-
-                        // $isSecondPayment = $index === 0 && isset($payments[1]);
-                        // $firstPaidAmount = $payments[1]->paid_amount ?? 0;
-                        // $remaining = max(0, $totalAmount - $firstPaidAmount);
-                        // $change = $payment->paid_amount - $remaining;
-
                     @endphp
 
                     <div class="grid grid-cols-2 gap-4 w-full py-2 border-b">
@@ -526,8 +520,7 @@
             </flux:button>
         @endif
         @if ($transaction->status == 'Gagal' || $transaction->status == 'Selesai')
-            <flux:button icon="printer" type="button" variant="primary"
-                wire:click.prevent="$set('showPrintModal', true)">
+            <flux:button icon="printer" type="button" variant="primary" wire:click.prevent="strukPrint">
                 Cetak Kembali Struk Pembayaran
             </flux:button>
         @elseif($transaction->payment_status != 'Lunas')
@@ -544,7 +537,7 @@
     </div>
 
 
-    <flux:modal class="w-full max-w-xs" wire:model="showPrintModal">
+    {{-- <flux:modal class="w-full max-w-xs" wire:model="showPrintModal">
         @if ($transaction)
             <style>
                 @media print {
@@ -630,7 +623,7 @@
                 </flux:button>
             </div>
         @endif
-    </flux:modal>
+    </flux:modal> --}}
 
     <flux:modal class="w-full max-w-xs" wire:model="showImage">
         @if (!empty($paymentImage) && $showImage)
@@ -649,13 +642,31 @@
         @endif
     </flux:modal>
 
-
     @section('scripts')
         <script>
             window.addEventListener('open-wa', event => {
                 window.open(event.detail[0].url, '_blank');
             });
         </script>
+    @endsection
+    @section('css')
+        <style>
+            .text-color-white {
+                color: #ffffff !important;
+            }
+
+            .text-position-center {
+                text-align: center !important;
+            }
+
+            .text-size-xs {
+                font-size: 0.75rem !important;
+            }
+
+            .text-size-sm {
+                font-size: 0.875rem !important;
+            }
+        </style>
     @endsection
 
 </div>

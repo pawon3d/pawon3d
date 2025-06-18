@@ -128,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
                 'transaction' => \App\Models\Transaction::find(request()->id)
             ]);
         })->name('transaksi.cetak');
+        Route::get('/cetak-struk/{id}', App\Livewire\Receipt::class)->name('cetak-struk');
     });
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
     Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
