@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('expiry_date')->nullable();
             $table->string('status', 20)->default('kosong');
             $table->boolean('is_active')->default(false);
+            $table->boolean('is_recipe')->default(false);
             $table->decimal('minimum', 15, 5)->default(0);
             $table->timestamps();
         });

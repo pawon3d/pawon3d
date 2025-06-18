@@ -27,6 +27,10 @@ class HitungDetail extends Model
     {
         return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
+    public function materialBatch()
+    {
+        return $this->belongsTo(MaterialBatch::class, 'material_batch_id', 'id');
+    }
 
     public static function boot()
     {

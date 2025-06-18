@@ -38,15 +38,14 @@
             <div class="flex items-center gap-16 flex-row">
                 <div class="flex items-start gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Tanggal Aksi</flux:heading>
-                    <p class="text-sm text-start">{{ $hitung->hitung_date ?
-                        \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y') : '-'
-                        }}</p>
+                    <p class="text-sm text-start">
+                        {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d/m/Y') : '-' }}
+                    </p>
                 </div>
                 <div class="flex items-start gap-4 flex-col">
                     <flux:heading class="text-lg font-semibold">Tanggal Selesai</flux:heading>
                     <p class="text-sm text-start">
-                        {{ $finish_date ? \Carbon\Carbon::parse($finish_date)->format('d-m-Y')
-                        : '-' }}
+                        {{ $finish_date ? \Carbon\Carbon::parse($finish_date)->format('d/m/Y') : '-' }}
                     </p>
 
                 </div>
@@ -85,74 +84,74 @@
                         <th class="text-left px-6 py-3">
                             Jumlah
                             @if ($hitung->action == 'Hitung Persediaan')
-                            Terhitung
+                                Terhitung
                             @elseif ($hitung->action == 'Catat Persediaan Rusak')
-                            Rusak
+                                Rusak
                             @elseif ($hitung->action == 'Catat Persediaan Hilang')
-                            Hilang
+                                Hilang
                             @endif
                         </th>
                         <th class="text-left px-6 py-3">
                             @if ($hitung->action == 'Hitung Persediaan')
-                            Selisih Jumlah
+                                Selisih Jumlah
                             @else
-                            Jumlah Sebenarnya
+                                Jumlah Sebenarnya
                             @endif
                         </th>
                         <th class="text-left px-6 py-3">Satuan Ukur</th>
                         <th class="text-left px-6 py-3">Modal</th>
                         <th class="text-left px-6 py-3">
-                            @if($hitung->action == 'Hitung Persediaan')
-                            Selisih Modal
+                            @if ($hitung->action == 'Hitung Persediaan')
+                                Selisih Modal
                             @else
-                            Kerugian
+                                Kerugian
                             @endif
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($hitungDetails as $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->quantity_expect }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->quantity_actual ?? 0 }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                @if ($hitung->action == 'Hitung Persediaan')
-                                {{ $detail->quantity_actual - $detail->quantity_expect }}
-                                @else
-                                {{ $detail->quantity_expect - $detail->quantity_actual }}
-                                @endif
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->unit->name ?? '' }} ({{ $detail->unit->alias ?? '' }})
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                Rp{{ number_format($detail->total, 0, ',', '.') }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                Rp{{ number_format($detail->loss_total, 0, ',', '.') }}
-                            </span>
-                        </td>
-                    </tr>
+                    @foreach ($hitungDetails as $detail)
+                        <tr>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->quantity_expect }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->quantity_actual ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    @if ($hitung->action == 'Hitung Persediaan')
+                                        {{ $detail->quantity_actual - $detail->quantity_expect }}
+                                    @else
+                                        {{ $detail->quantity_expect - $detail->quantity_actual }}
+                                    @endif
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->materialBatch->unit->alias ?? '' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    Rp{{ number_format($detail->total, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    Rp{{ number_format($detail->loss_total, 0, ',', '.') }}
+                                </span>
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -178,32 +177,32 @@
     </div>
 
     @if ($is_start && !$is_finish)
-    <div class="flex justify-end mt-16 gap-4">
-        <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
-            Selesaikan
-            @if ($hitung->action == 'Hitung Persediaan')
-            Hitung
-            @else
-            Catat
+        <div class="flex justify-end mt-16 gap-4">
+            <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
+                Selesaikan
+                @if ($hitung->action == 'Hitung Persediaan')
+                    Hitung
+                @else
+                    Catat
+                @endif
+            </flux:button>
+            @if ($status != 'Selesai')
+                <flux:button icon="pencil-square" type="button" variant="primary"
+                    href="{{ route('hitung.mulai', $hitung->id) }}">
+                    {{ $hitung->action }}
+                </flux:button>
             @endif
-        </flux:button>
-        @if($status != 'Selesai')
-        <flux:button icon="pencil-square" type="button" variant="primary"
-            href="{{ route('hitung.mulai', $hitung->id) }}">
-            {{ $hitung->action }}
-        </flux:button>
-        @endif
-    </div>
+        </div>
     @elseif (!$is_start && !$is_finish)
-    <div class="flex justify-end mt-16 gap-4">
-        <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
-        <flux:button icon="pencil" type="button" href="{{ route('hitung.edit', $hitung_id) }}">
-            Ubah Daftar Persediaan
-        </flux:button>
-        <flux:button icon="play" variant="solid" type="button" variant="primary" wire:click="start">
-            Mulai {{ $hitung->action }}
-        </flux:button>
-    </div>
+        <div class="flex justify-end mt-16 gap-4">
+            <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
+            <flux:button icon="pencil" type="button" href="{{ route('hitung.edit', $hitung_id) }}">
+                Ubah Daftar Persediaan
+            </flux:button>
+            <flux:button icon="play" variant="solid" type="button" variant="primary" wire:click="start">
+                Mulai {{ $hitung->action }}
+            </flux:button>
+        </div>
     @endif
 
 
@@ -215,14 +214,14 @@
                 <h1 size="lg">Riwayat Pembaruan {{ $hitung->hitung_number }}</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

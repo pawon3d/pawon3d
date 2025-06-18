@@ -28,7 +28,7 @@ class Rincian extends Component
         $this->is_start = $this->hitung->is_start;
         $this->is_finish = $this->hitung->is_finish;
         $this->status = $this->hitung->status;
-        $this->finish_date = $this->hitung->finish_date;
+        $this->finish_date = $this->hitung->hitung_date_finish;
         $this->hitungDetails = $this->hitung->details;
         View::share('title', 'Rincian ' . $this->hitung->action);
 
@@ -101,20 +101,20 @@ class Rincian extends Component
             'status' => 'Selesai',
             'hitung_finish_date' => $this->finish_date
         ]);
-        $hitung->details->each(function ($detail) {
-            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
-                ->where('unit_id', $detail->unit_id)
-                ->first();
-            if ($this->hitung->action == 'Hitung Persediaan') {
-                $materialDetail->update([
-                    'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_expect - $detail->quantity_actual),
-                ]);
-            } else {
-                $materialDetail->update([
-                    'supply_quantity' => $materialDetail->supply_quantity - $detail->quantity_actual,
-                ]);
-            }
-        });
+        // $hitung->details->each(function ($detail) {
+        //     $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
+        //         ->where('unit_id', $detail->unit_id)
+        //         ->first();
+        //     if ($this->hitung->action == 'Hitung Persediaan') {
+        //         $materialDetail->update([
+        //             'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_expect - $detail->quantity_actual),
+        //         ]);
+        //     } else {
+        //         $materialDetail->update([
+        //             'supply_quantity' => $materialDetail->supply_quantity - $detail->quantity_actual,
+        //         ]);
+        //     }
+        // });
         $this->alert('success', $hitung->action . ' berhasil diselesaikan.');
     }
 

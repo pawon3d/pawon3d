@@ -26,7 +26,7 @@ class Mulai extends Component
                 'material_name' => $detail->material->name,
                 'quantity_expect' => $detail->quantity_expect,
                 'quantity_actual' => $detail->quantity_actual,
-                'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
+                'unit' => $detail->materialBatch->unit->name . ' (' . $detail->materialBatch->unit->alias . ')',
                 'quantity' => 0,
             ];
         })->toArray();
@@ -130,7 +130,7 @@ class Mulai extends Component
         }
 
         // Panggil fungsi simpan biasa
-        $this->save();
+        // $this->save();
     }
     public function render()
     {

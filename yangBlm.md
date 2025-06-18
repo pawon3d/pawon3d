@@ -20,6 +20,8 @@
 -   [x] produksi bagian pesanan
 -   [x] produksi berubah total
 -   [x] Ganti field pin
+-   [x] persediaan berubah total
+-   [x] belanja persediaan berubah total
 
 ## BELUM SELESAI
 
@@ -31,9 +33,9 @@
 -   [ ] Tanggal kadaluarsa bahan
 -   [ ] Rincian pesanan-produksi
 -   [ ] Kurangi stok dari produk ketika buat pesanan
--   [ ] persediaan berubah total
--   [ ] belanja persediaan berubah total
 -   [ ] Detail produk di bagian pesanan (layout untuk review)
+-   [ ] Hitung dan Catat diperbarui
+-   [ ] Produk
 
 ### Medium Priority
 

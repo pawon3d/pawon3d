@@ -33,10 +33,10 @@
         <div class="p-4 flex">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    @if($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @if ($filterStatus)
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Toko
+                        Semua Toko
                     @endif
                     ({{ $hitungs->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -70,76 +70,71 @@
     </div>
 
     @if ($hitungs->isEmpty())
-    <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum Ada Riwayat Aksi.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah aksi” di halaman utama untuk menambahkan aksi.</p>
-    </div>
+        <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+            <p class="text-gray-700 font-semibold">Belum Ada Riwayat Aksi.</p>
+            <p class="text-gray-700">Tekan tombol “Tambah aksi” di halaman utama untuk menambahkan aksi.</p>
+        </div>
     @else
-    <div class="bg-white rounded-xl border">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('hitung_number')">
-                            ID Aksi
-                            {{ $sortDirection === 'asc' && $sortField === 'hitung_number' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('hitung_date')">
-                            Tanggal Dibuat
-                            {{ $sortDirection === 'asc' && $sortField === 'hitung_date' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('action')">
-                            Aksi
-                            {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('status')">
-                            Status
-                            {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($hitungs as $hitung)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('hitung.rincian', $hitung->id) }}"
-                                class="hover:bg-gray-50 cursor-pointer">
-                                {{ $hitung->hitung_number }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d-m-Y')
-                            :
-                            '-' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $hitung->hitung_date_finish ?
-                            \Carbon\Carbon::parse($hitung->hitung_date_finish)->format('d-m-Y')
-                            :
-                            '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $hitung->action ??'-' }}
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $hitung->status ?? '-' }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        <div class="bg-white rounded-xl border">
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('hitung_number')">
+                                ID Aksi
+                                {{ $sortDirection === 'asc' && $sortField === 'hitung_number' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('hitung_date')">
+                                Tanggal Dibuat
+                                {{ $sortDirection === 'asc' && $sortField === 'hitung_date' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('action')">
+                                Aksi
+                                {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('status')">
+                                Status
+                                {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($hitungs as $hitung)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="{{ route('hitung.rincian', $hitung->id) }}"
+                                        class="hover:bg-gray-50 cursor-pointer">
+                                        {{ $hitung->hitung_number }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d/m/Y') : '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $hitung->hitung_date_finish ? \Carbon\Carbon::parse($hitung->hitung_date_finish)->format('d/m/Y') : '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-left whitespace-nowrap">
+                                    {{ $hitung->action ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-left whitespace-nowrap">
+                                    {{ $hitung->status ?? '-' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $hitungs->links() }}
+            <!-- Pagination -->
+            <div class="p-4">
+                {{ $hitungs->links() }}
+            </div>
         </div>
-    </div>
     @endif
 
 </div>

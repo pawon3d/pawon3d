@@ -33,11 +33,11 @@
             <flux:button type="button" variant="primary" wire:click="markAllReceived">
                 Tandai
                 @if ($hitung->action === 'Hitung Persediaan')
-                Hitung
+                    Hitung
                 @elseif ($hitung->action === 'Catat Persediaan Rusak')
-                Rusak
+                    Rusak
                 @elseif ($hitung->action === 'Catat Persediaan Hilang')
-                Hilang
+                    Hilang
                 @endif
                 Semua
             </flux:button>
@@ -47,81 +47,82 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="text-left px-6 py-3 text-nowrap">Barang Persediaan</th>
-                        <th class="text-left px-6 py-3">Jumlah Diharapkan</th>
-                        <th class="text-left px-6 py-3">
+                        <th class="text-right px-6 py-3">Jumlah Diharapkan</th>
+                        <th class="text-right px-6 py-3">
                             Jumlah
                             @if ($hitung->action === 'Hitung Persediaan')
-                            Terhitung
+                                Terhitung
                             @elseif ($hitung->action === 'Catat Persediaan Rusak')
-                            Rusak
+                                Rusak
                             @elseif ($hitung->action === 'Catat Persediaan Hilang')
-                            Hilang
+                                Hilang
                             @endif
                         </th>
-                        <th class="text-left px-6 py-3">
+                        <th class="text-right px-6 py-3">
                             @if ($hitung->action === 'Hitung Persediaan')
-                            Selisih Jumlah
+                                Selisih Jumlah
                             @else
-                            Jumlah Sebenarnya
+                                Jumlah Sebenarnya
                             @endif
                         </th>
-                        <th class="text-left px-6 py-3">Satuan Ukur</th>
-                        <th class="text-left px-6 py-3">
+                        <th class="text-right px-6 py-3">Satuan Ukur</th>
+                        <th class="text-right px-6 py-3">
                             Barang
                             @if ($hitung->action === 'Hitung Persediaan')
-                            Terhitung
+                                Terhitung
                             @elseif ($hitung->action === 'Catat Persediaan Rusak')
-                            Rusak
+                                Rusak
                             @elseif ($hitung->action === 'Catat Persediaan Hilang')
-                            Hilang
+                                Hilang
                             @endif
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($hitungDetails as $index => $detail)
-                    <tr>
-                        <td class="px-6 py-3 text-nowrap">
-                            <span class="text-sm">
-                                {{ $detail['material_name'] ?? 'Barang Tidak Ditemukan' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail['quantity_expect'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail['quantity_actual'] ? $detail['quantity_actual'] : 0 }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                @if ($hitung->action === 'Hitung Persediaan')
-                                {{ $detail['quantity_actual'] - $detail['quantity_expect'] }}
-                                @else
-                                {{ $detail['quantity_expect'] - $detail['quantity_actual'] }}
+                    @foreach ($hitungDetails as $index => $detail)
+                        <tr>
+                            <td class="px-6 py-3 text-nowrap">
+                                <span class="text-sm">
+                                    {{ $detail['material_name'] ?? 'Barang Tidak Ditemukan' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    {{ $detail['quantity_expect'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    {{ $detail['quantity_actual'] ? $detail['quantity_actual'] : 0 }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    @if ($hitung->action === 'Hitung Persediaan')
+                                        {{ $detail['quantity_actual'] - $detail['quantity_expect'] }}
+                                    @else
+                                        {{ $detail['quantity_expect'] - $detail['quantity_actual'] }}
+                                    @endif
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm">
+                                    {{ $detail['unit'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <input type="number" placeholder="0"
+                                    wire:model.number.live="hitungDetails.{{ $index }}.quantity"
+                                    class="w-full border-gray-300
+                                {{ isset($errorInputs[$index]) ? 'border-red-500' : 'border-gray-300' }}
+                                focus:outline-none focus:ring-0 rounded text-right" />
+                                @if (isset($errorInputs[$index]))
+                                    <span class="text-xs text-red-500">Nilai melebihi jumlah yang ada</span>
                                 @endif
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail['unit'] }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            <input type="number" placeholder="0"
-                                wire:model.number.live="hitungDetails.{{ $index }}.quantity" class="w-full border-0 border-b 
-                                {{ isset($errorInputs[$index]) ? 'border-b-red-500' : 'border-b-gray-300' }}
-                                focus:outline-none focus:ring-0 rounded-none text-right" />
-                            @if (isset($errorInputs[$index]))
-                            <span class="text-xs text-red-500">Nilai melebihi jumlah yang ada</span>
-                            @endif
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -153,14 +154,14 @@
                 <h1 size="lg">Riwayat Pembaruan {{ $hitung->hitung_number }}</h1>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
