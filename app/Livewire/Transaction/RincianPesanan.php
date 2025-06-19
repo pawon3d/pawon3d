@@ -29,14 +29,20 @@ class RincianPesanan extends Component
     public $total_quantity_plan, $total_quantity_get, $percentage;
     public $showPrintModal = false;
     public $showImage = false;
+    public $showStruk = false;
+    public $phoneNumber = '';
 
     public $pembayaranPertama, $pembayaranKedua, $sisaPembayaranPertama, $kembalian;
 
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
+        'showStrukChanged',
     ];
 
-
+    public function updatedShowStruk($value)
+    {
+        $this->dispatch('showStrukChanged', show: $value);
+    }
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
@@ -44,7 +50,7 @@ class RincianPesanan extends Component
         if (session()->has('success')) {
             $this->alert('success', session('success'));
             if (session()->has('print')) {
-                $this->showPrintModal = true;
+                $this->showStruk = true;
                 session()->forget('print');
             }
         }
@@ -90,6 +96,7 @@ class RincianPesanan extends Component
         }
 
         $this->transaction = $transaction;
+        $this->phoneNumber = $transaction->phone ?? '';
         $this->production = !empty($transaction->production) ? $transaction->production : null;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
@@ -235,8 +242,22 @@ class RincianPesanan extends Component
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
+            if ($transaction->method == 'siap-beli' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
+                $transaction->details()->each(function ($detail) {
+                    // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
+                    if ($detail->product->stock < $detail->quantity) {
+                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
+                        return;
+                    }
+                    // Kurangi stok produk sesuai quantity yang dibeli
+                    $product = $detail->product;
+                    if ($product) {
+                        $product->decrement('stock', $detail->quantity);
+                    }
+                });
+            }
             $transaction->update([
-                // 'status' => 'Sedang Diproses',
+                'status' => $this->transaction->status == 'Draft' || $this->transaction->status == 'temp' ? 'Belum Diproses' : $this->transaction->status,
                 'payment_status' => $status,
             ]);
 
@@ -257,6 +278,8 @@ class RincianPesanan extends Component
                     $payment->update(['image' => $path]);
                 }
             }
+
+
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
             session()->flash('print', true);
@@ -305,7 +328,7 @@ class RincianPesanan extends Component
 
 
         // 4. Kirim ke WhatsApp
-        $phone = $this->transaction->phone;
+        $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
             $phone = '62' . substr($phone, 1);
         }
@@ -314,6 +337,8 @@ class RincianPesanan extends Component
         $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
+
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId])->with('notif', 'Struk berhasil dikirim!');
     }
 
     public function strukPrint()
@@ -374,6 +399,11 @@ class RincianPesanan extends Component
         } else {
             $this->alert('error', 'Transaksi tidak ditemukan.');
         }
+    }
+
+    public function kembali()
+    {
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
     public function render()

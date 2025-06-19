@@ -36,6 +36,7 @@
 -   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
+-   [ ] Cetak struk di bagian lain
 
 ### Medium Priority
 

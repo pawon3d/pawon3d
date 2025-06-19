@@ -73,9 +73,11 @@ class Edit extends Component
         if (isset($this->details[$itemId])) {
             $this->details[$itemId]['quantity']++;
             // Jika quantity nya sudah sama dengan stock, tidak akan menambah quantity lagi
-            if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
-                $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+            if ($this->method == 'siap-beli') {
+                if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
+                    $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                }
             }
         }
     }
@@ -98,9 +100,11 @@ class Edit extends Component
             // Jika produk sudah ada di keranjang, tingkatkan kuantitasnya
             $this->details[$productId]['quantity']++;
         } else {
-            if ($product->stock <= 0) {
-                $this->alert('warning', 'Stok produk ini sudah habis!');
-                return;
+            if ($this->method == 'siap-beli') {
+                if ($product->stock <= 0) {
+                    $this->alert('warning', 'Stok produk ini sudah habis!');
+                    return;
+                }
             }
             $this->cart[$productId] = [
                 'product_id' => $product->id,

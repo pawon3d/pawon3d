@@ -180,7 +180,7 @@
                         'sm:grid-cols-2 lg:grid-cols-3' => count($cart) > 0,
                         'sm:grid-cols-3 lg:grid-cols-5' => count($cart) === 0,
                     ])>
-                        @foreach ($products as $product)
+                        @forelse ($products as $product)
                             <div
                                 class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
                                 <div class="p-3">
@@ -193,13 +193,14 @@
                                             <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
                                                 class="w-full h-32 object-cover rounded-md bg-gray-100">
                                         @endif
-
-                                        <div class="absolute top-2 left-2 flex gap-1">
-                                            <span
-                                                class="bg-gray-600 text-white text-xs px-1.5 py-1 rounded-full flex items-center">
-                                                {{ $product->stock }}
-                                            </span>
-                                        </div>
+                                        @if ($method == 'siap-beli')
+                                            <div class="absolute top-2 left-2 flex gap-1">
+                                                <span
+                                                    class="bg-gray-600 text-white text-xs px-1.5 py-1 rounded-full flex items-center">
+                                                    {{ $product->stock }}
+                                                </span>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="text-center">
@@ -256,7 +257,14 @@
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div
+                                class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+                                <p class="text-gray-700 font-semibold">Belum ada produk.</p>
+                                <p class="text-gray-700">Tekan tombol “Tambah Produk” di Halaman Produk untuk
+                                    menambahkan produk.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 

@@ -68,6 +68,7 @@ class Index extends Component
     public function updatedMethod($value)
     {
         session()->put('method', $value);
+        $this->cart = []; // Reset keranjang saat metode berubah
     }
 
     // Untuk handle increment/decrement
@@ -76,8 +77,10 @@ class Index extends Component
         if (isset($this->cart[$itemId])) {
             $this->cart[$itemId]['quantity']++;
             // Jika quantity nya sudah sama dengan stock, tidak akan menambah quantity lagi
-            if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
-                $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
+            if ($this->method == 'siap-beli') {
+                if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
+                    $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
+                }
             }
         }
     }
@@ -100,9 +103,11 @@ class Index extends Component
             // Jika produk sudah ada di keranjang, tingkatkan kuantitasnya
             $this->cart[$productId]['quantity']++;
         } else {
-            if ($product->stock <= 0) {
-                $this->alert('warning', 'Stok produk ini sudah habis!');
-                return;
+            if ($this->method == 'siap-beli') {
+                if ($product->stock <= 0) {
+                    $this->alert('warning', 'Stok produk ini sudah habis!');
+                    return;
+                }
             }
             $this->cart[$productId] = [
                 'product_id' => $product->id,
