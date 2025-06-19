@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('description', 50)->nullable();
             $table->decimal('price', 10, 0)->default(0);
             $table->decimal('stock', 10, 0)->default(0);
-            $table->string('method', 50)->nullable();
+            $table->json('method')->nullable();
             $table->string('product_image', 255)->nullable();
             $table->boolean('is_recipe')->default(false);
             $table->boolean('is_active')->default(false);

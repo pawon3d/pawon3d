@@ -39,11 +39,10 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
--   [ ] Tambah produksi berlebih ke siap beli
 -   [ ] Pengaturan
+-   [ ] Tambah produksi berlebih ke siap beli
+-   [ ] Ubah kolom metode produk
 
 ### Medium Priority
 
 ### Low Priority
-
--   [ ] Fitur tambah otomatis

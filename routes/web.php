@@ -78,8 +78,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
         ->name('kategori-persediaan.pdf');
     Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
-    Route::get('/produk/tambah/{method}', App\Livewire\Product\Tambah::class)->name('produk.tambah');
-    Route::get('/produk/salin/{method}', App\Livewire\Product\Salin::class)->name('produk.salin');
+    Route::get('/produk/tambah/', App\Livewire\Product\Tambah::class)->name('produk.tambah');
+    // Route::get('/produk/salin/{method}', App\Livewire\Product\Salin::class)->name('produk.salin');
     Route::get('/produk/{id}/rincian', App\Livewire\Product\Rincian::class)->name('produk.edit');
     Route::get('/produk/cetak', [PdfController::class, 'generateProductPDF'])
         ->name('produk.pdf');

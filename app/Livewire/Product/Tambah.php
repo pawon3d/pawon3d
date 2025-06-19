@@ -22,7 +22,7 @@ class Tambah extends Component
 
     public $price = 0, $total = 0;
     public $stock = 0;
-    public $method;
+    public $selectedMethods = [];
 
 
     protected $listeners = [
@@ -42,11 +42,9 @@ class Tambah extends Component
         'product_image.mimes' => 'Format gambar yang diizinkan adalah jpg, jpeg, png.',
     ];
 
-    public function mount($method)
+    public function mount()
     {
         View::share('title', 'Tambah Produk');
-
-        $this->method = $method;
 
         $this->product_compositions = [[
             'material_id' => '',
@@ -61,6 +59,7 @@ class Tambah extends Component
 
         $this->recalculateCapital();
     }
+
 
     public function updatedIsRecipe()
     {
@@ -174,7 +173,7 @@ class Tambah extends Component
             'description' => $this->description,
             'price' => $this->price,
             'stock' => 0,
-            'method' => $this->method,
+            'method' => $this->selectedMethods,
             'is_recipe' => $this->is_recipe,
             'is_active' => $this->is_active,
             'is_recommended' => $this->is_recommended,
@@ -198,7 +197,7 @@ class Tambah extends Component
             }
         }
 
-        if ($this->product_compositions) {
+        if ($this->product_compositions[0]['material_id'] !== '') {
             foreach ($this->product_compositions as $composition) {
                 $cleanData = [
                     'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
@@ -317,7 +316,7 @@ class Tambah extends Component
     {
         return view('livewire.product.tambah', [
             'categories' => \App\Models\Category::lazy(),
-            'materials' => \App\Models\Material::lazy(),
+            'materials' => \App\Models\Material::where('is_recipe', false)->with(['batches', 'material_details'])->lazy(),
         ]);
     }
 }

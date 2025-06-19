@@ -22,6 +22,10 @@ class Product extends Model
         'id',
     ];
 
+    protected $casts = [
+        'method' => 'array'
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

@@ -226,7 +226,9 @@ class Edit extends Component
     {
         return view('livewire.production.edit', [
             'users' => \App\Models\User::lazy(),
-            'products' => \App\Models\Product::where('method', $this->production->method)
+            'products' => \App\Models\Product::when($this->production->method, function ($query) {
+                $query->whereJsonContains('method', $this->production->method);
+            })
                 ->get(),
         ]);
     }

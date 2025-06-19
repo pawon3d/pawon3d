@@ -34,6 +34,9 @@ class DatabaseSeeder extends Seeder
 
         $role = Role::firstOrCreate(['name' => 'Manajemen Sistem'])->givePermissionTo([
             'Manajemen Sistem',
+            'Inventori',
+            'Produksi',
+            'Kasir',
         ]);
 
         // Buat user default

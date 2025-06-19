@@ -324,7 +324,9 @@ class BuatPesanan extends Component
     {
         return view('livewire.transaction.buat-pesanan', [
             'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
-                ->where('method', $this->method)->get(),
+                ->when($this->method, function ($query) {
+                    $query->whereJsonContains('method', $this->method);
+                })->get(),
             'total' => $this->getTotalProperty(),
         ]);
     }

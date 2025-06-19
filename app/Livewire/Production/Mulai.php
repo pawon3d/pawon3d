@@ -133,13 +133,6 @@ class Mulai extends Component
                     $productComposition->product->update([
                         'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
                     ]);
-                } else {
-                    $lebihan = $productionDetail->quantity_get - $productionDetail->quantity_plan;
-                    if ($lebihan > 0) {
-                        $productionDetail->product->update([
-                            'stock' => $productionDetail->product->stock + $lebihan,
-                        ]);
-                    }
                 }
             }
         }
@@ -167,7 +160,7 @@ class Mulai extends Component
         }
 
         // Panggil fungsi simpan biasa
-        $this->save();
+        // $this->save();
     }
 
     public function render()

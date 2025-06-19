@@ -90,14 +90,13 @@
         </div>
         <div class="flex gap-2 items-center">
             <div class="flex gap-2 items-center">
-                <flux:button variant="primary" icon="plus"
-                    href="{{ route('produk.tambah', ['method' => $method]) }}">
+                <flux:button variant="primary" icon="plus" href="{{ route('produk.tambah')}}">
                     Tambah Produk
                 </flux:button>
-                <flux:button icon="document-duplicate" type="button" variant="primary"
+                {{-- <flux:button icon="document-duplicate" type="button" variant="primary"
                     href="{{ route('produk.salin', ['method' => $method]) }}">
                     Salin dari Metode Lain
-                </flux:button>
+                </flux:button> --}}
             </div>
         </div>
     </div>
@@ -106,9 +105,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                        Semua Kategori
+                    Semua Kategori
                     @endif
                     ({{ $products->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -163,174 +162,167 @@
     </div>
 
     @if ($viewMode === 'grid')
-        {{-- grid view --}}
-        <div class="bg-white">
-            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
-                @forelse($products as $product)
-                    <div class="p-4 text-center">
-                        {{-- <a href="{{ route('produk.edit', $product->id) }}" class="hover:bg-gray-50 cursor-pointer"> --}}
-                        <div class="flex justify-center mb-4 relative">
-                            @if ($product->product_image)
-                                <img src="{{ asset('storage/' . $product->product_image) }}"
-                                    alt="{{ $product->name }}"
-                                    class="w-full h-36 object-fill rounded-lg border border-gray-200" />
-                            @else
-                                <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
-                                    class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+    {{-- grid view --}}
+    <div class="bg-white">
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
+            @forelse($products as $product)
+            <div class="p-4 text-center">
+                {{-- <a href="{{ route('produk.edit', $product->id) }}" class="hover:bg-gray-50 cursor-pointer"> --}}
+                    <div class="flex justify-center mb-4 relative">
+                        @if ($product->product_image)
+                        <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
+                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                        @else
+                        <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
+                            class="w-full h-36 object-fill rounded-lg border border-gray-200" />
+                        @endif
+                        <div class="absolute top-2 left-2 flex items-center justify-start gap-2">
+                            @if ($product->is_recommended)
+                            <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
+                                <flux:icon icon="heart" variant="mini" class="size-3" />
+                            </span>
                             @endif
-                            <div class="absolute top-2 left-2 flex items-center justify-start gap-2">
-                                @if ($product->is_recommended)
-                                    <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
-                                        <flux:icon icon="heart" variant="mini" class="size-3" />
-                                    </span>
-                                @endif
-                                <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
-                                    <flux:icon icon="{{ $product->is_active ? 'eye' : 'eye-slash' }}" variant="mini"
-                                        class="size-3" />
-                                </span>
+                            <span class="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
+                                <flux:icon icon="{{ $product->is_active ? 'eye' : 'eye-slash' }}" variant="mini"
+                                    class="size-3" />
+                            </span>
 
-                            </div>
                         </div>
-                        <div class="text-center">
-                            <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
-                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                                @if ($product->reviews->count() > 0)
-                                    {{ number_format($product->reviews->avg('rating'), 1) }}
-                                    <i class="bi bi-star-fill text-yellow-500"></i>
-                                @else
-                                    Belum ada penilaian
-                                @endif
-                                @if ($product->reviews->count() > 10)
-                                    (10+ Penilai)
-                                @elseif ($product->reviews->count() > 0)
-                                    ({{ $product->reviews->count() }} Penilai)
-                                @endif
-                            </p>
-                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp
-                                {{ number_format($product->price, 0, ',', '.') }}</p>
-                        </div>
-                        <flux:button class="w-full" variant="primary" type="button"
-                            href="{{ route('produk.edit', $product->id) }}">
-                            Lihat
-                        </flux:button>
-                        {{--
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                            @if ($product->reviews->count() > 0)
+                            {{ number_format($product->reviews->avg('rating'), 1) }}
+                            <i class="bi bi-star-fill text-yellow-500"></i>
+                            @else
+                            Belum ada penilaian
+                            @endif
+                            @if ($product->reviews->count() > 10)
+                            (10+ Penilai)
+                            @elseif ($product->reviews->count() > 0)
+                            ({{ $product->reviews->count() }} Penilai)
+                            @endif
+                        </p>
+                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp
+                            {{ number_format($product->price, 0, ',', '.') }}</p>
+                    </div>
+                    <flux:button class="w-full" variant="primary" type="button"
+                        href="{{ route('produk.edit', $product->id) }}">
+                        Lihat
+                    </flux:button>
+                    {{--
                 </a> --}}
-                    </div>
-                @empty
-                    <div
-                        class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-                        <p class="text-gray-700 font-semibold">Belum ada produk.</p>
-                        <p class="text-gray-700">Tekan tombol “Tambah Produk” untuk menambahkan produk.</p>
-                    </div>
-                @endforelse
             </div>
-            <div class="p-4">
-                {{ $products->links() }}
-            </div>
-        </div>
-    @elseif ($viewMode === 'list')
-        {{-- list view --}}
-        @if ($products->isEmpty())
+            @empty
             <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
                 <p class="text-gray-700 font-semibold">Belum ada produk.</p>
                 <p class="text-gray-700">Tekan tombol “Tambah Produk” untuk menambahkan produk.</p>
             </div>
-        @else
-            <div class="bg-white rounded-xl border">
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                    wire:click='sortBy("name")'>Produk
-                                    {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
-                                </th>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                    wire:click='sortBy("is_active")'>Status Tampil
-                                    {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
-                                </th>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                    wire:click='sortBy("is_recommended")'>Status Rekomendasi
-                                    {{ $sortDirection === 'asc' && $sortField === 'is_recommended' ? '↑' : '↓' }}
-                                </th>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                    wire:click='sortBy("reviews_rating_avg")'>Nilai
-                                    {{ $sortDirection === 'asc' && $sortField === 'reviews_rating_avg' ? '↑' : '↓' }}
-                                </th>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                    wire:click='sortBy("reviews_count")'>Penilai
-                                    {{ $sortDirection === 'asc' && $sortField === 'reviews_count' ? '↑' : '↓' }}
-                                </th>
-                                <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Harga Jual
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($products as $product)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="{{ route('produk.edit', $product->id) }}"
-                                            class="hover:bg-gray-50 cursor-pointer">
-                                            {{ $product->name }}
-                                        </a>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
-                                        @if ($product->is_active)
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
-                                                Aktif
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
-                                                Tidak Aktif
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
-                                        @if ($product->is_recommended)
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
-                                                Aktif
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
-                                                Tidak Aktif
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        @if ($product->reviews->count() > 0)
-                                            {{ number_format($product->reviews->avg('rating'), 1) }}
-                                            <i class="bi bi-star-fill text-yellow-500"></i>
-                                        @else
-                                            Belum ada penilaian
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        @if ($product->reviews->count() > 0)
-                                            ({{ $product->reviews->count() }} Penilai)
-                                        @else
-                                            Belum ada penilaian
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            @endforelse
+        </div>
+        <div class="p-4">
+            {{ $products->links() }}
+        </div>
+    </div>
+    @elseif ($viewMode === 'list')
+    {{-- list view --}}
+    @if ($products->isEmpty())
+    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+        <p class="text-gray-700 font-semibold">Belum ada produk.</p>
+        <p class="text-gray-700">Tekan tombol “Tambah Produk” untuk menambahkan produk.</p>
+    </div>
+    @else
+    <div class="bg-white rounded-xl border">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("name")'>Produk
+                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("is_active")'>Status Tampil
+                            {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("is_recommended")'>Status Rekomendasi
+                            {{ $sortDirection === 'asc' && $sortField === 'is_recommended' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("reviews_rating_avg")'>Nilai
+                            {{ $sortDirection === 'asc' && $sortField === 'reviews_rating_avg' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                            wire:click='sortBy("reviews_count")'>Penilai
+                            {{ $sortDirection === 'asc' && $sortField === 'reviews_count' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Harga Jual
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($products as $product)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ route('produk.edit', $product->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                                {{ $product->name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            @if ($product->is_active)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Aktif
+                            </span>
+                            @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Tidak Aktif
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 space-x-2 whitespace-nowrap">
+                            @if ($product->is_recommended)
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Aktif
+                            </span>
+                            @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ">
+                                Tidak Aktif
+                            </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @if ($product->reviews->count() > 0)
+                            {{ number_format($product->reviews->avg('rating'), 1) }}
+                            <i class="bi bi-star-fill text-yellow-500"></i>
+                            @else
+                            Belum ada penilaian
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            @if ($product->reviews->count() > 0)
+                            ({{ $product->reviews->count() }} Penilai)
+                            @else
+                            Belum ada penilaian
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-                <!-- Pagination -->
-                <div class="p-4">
-                    {{ $products->links() }}
-                </div>
-            </div>
-        @endif
+        <!-- Pagination -->
+        <div class="p-4">
+            {{ $products->links() }}
+        </div>
+    </div>
+    @endif
     @endif
 
 
@@ -342,13 +334,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

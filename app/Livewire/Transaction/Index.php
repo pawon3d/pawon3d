@@ -169,7 +169,9 @@ class Index extends Component
     {
         return view('livewire.transaction.index', [
             "products" => Product::with(['product_categories', 'product_compositions', 'reviews'])
-                ->where('method', $this->method)
+                ->when($this->method, function ($query) {
+                    $query->whereJsonContains('method', $this->method);
+                })
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->paginate(10),
         ]);

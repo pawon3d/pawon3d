@@ -267,7 +267,9 @@ class Tambah extends Component
     {
         return view('livewire.production.tambah', [
             'users' => \App\Models\User::lazy(),
-            'products' => \App\Models\Product::where('method', $this->method)
+            'products' => \App\Models\Product::when($this->method, function ($query) {
+                $query->whereJsonContains('method', $this->method);
+            })
                 ->get(),
         ]);
     }

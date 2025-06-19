@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Production;
 
+use App\Models\Product;
+use App\Models\Production;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -127,9 +131,38 @@ class Rincian extends Component
             if ($production->details->sum('quantity_get') >= $production->details->sum('quantity_plan')) {
                 $production->transaction->update(['status' => 'Dapat Diambil']);
             }
+            $this->handleExcessProduction($production);
         }
 
         $this->alert('success', 'Produksi berhasil diselesaikan.');
+    }
+
+    private function handleExcessProduction(Production $production)
+    {
+        DB::transaction(function () use ($production) {
+            foreach ($production->details as $detail) {
+                // Hitung kelebihan produksi
+                $excess = $detail->quantity_get - $detail->quantity_plan;
+
+                if ($excess > 0) {
+                    $product = Product::lockForUpdate()->find($detail->product_id);
+
+                    // Cek apakah produk memiliki metode "siap-beli"
+                    if ($product && in_array('siap-beli', $product->method)) {
+                        // Tambahkan kelebihan ke stok
+                        $product->stock += $excess;
+                        $product->save();
+
+                        // Opsional: Log/track penambahan stok
+                        Log::info("Excess production added to stock", [
+                            'production_id' => $production->id,
+                            'product_id' => $product->id,
+                            'excess_quantity' => $excess
+                        ]);
+                    }
+                }
+            }
+        });
     }
     public function render()
     {

@@ -22,11 +22,11 @@ class Rincian extends Component
 
     public $price = 0, $total = 0;
     public $stock = 0;
-    public $method;
     public $product_id;
     public $previewImage = null;
     public $showHistoryModal = false;
     public $activityLogs = [];
+    public $selectedMethods = [];
 
     protected $listeners = [
         'delete',
@@ -94,7 +94,7 @@ class Rincian extends Component
         })->toArray();
         $this->price = $product->price;
         $this->stock = $product->stock;
-        $this->method = $product->method;
+        $this->selectedMethods = $product->method ? $product->method : [];
         if ($product->product_image) {
             $this->previewImage = env('APP_URL') . '/storage/' . $product->product_image;
         } else {
@@ -227,7 +227,7 @@ class Rincian extends Component
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'method' => $this->method,
+            'method' => $this->selectedMethods,
             'is_recipe' => $this->is_recipe,
             'is_active' => $this->is_active,
             'is_recommended' => $this->is_recommended,
@@ -262,7 +262,7 @@ class Rincian extends Component
             }
         }
 
-        if ($this->product_compositions) {
+        if ($this->product_compositions && $this->product_compositions[0]['material_id'] !== '') {
             // Hapus komposisi lama
             $product->product_compositions()->delete();
             // Tambah komposisi baru
@@ -400,7 +400,8 @@ class Rincian extends Component
     {
         return view('livewire.product.rincian', [
             'categories' => \App\Models\Category::lazy(),
-            'materials' => \App\Models\Material::lazy(),
+            'materials' => \App\Models\Material::where('is_recipe', false)->with(['batches', 'material_details'])->lazy(),
+
         ]);
     }
 }

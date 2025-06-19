@@ -6,10 +6,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Product;
-use App\Models\Category;
-use App\Models\Material;
-use App\Models\ProcessedMaterial;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Spatie\Activitylog\Models\Activity;
@@ -83,7 +79,9 @@ class Index extends Component
     public function render()
     {
         $products = Product::with(['product_categories', 'product_compositions', 'reviews'])
-            ->where('method', $this->method)
+            ->when($this->method, function ($query) {
+                $query->whereJsonContains('method', $this->method);
+            })
             ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
             ->withAvg('reviews', 'rating')->withCount('reviews')->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
