@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="exclamation-triangle" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">Pilih salah satu metode penjualan terlebih dahulu (Siap Beli, Pesanan
                 Reguler, atau Pesanan Box), lalu tekan tombol "Tambah Produk" untuk menambahkan produk ke metode yang

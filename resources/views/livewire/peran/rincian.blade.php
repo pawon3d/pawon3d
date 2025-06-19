@@ -8,7 +8,7 @@
         <h1 class="text-2xl">Rincian Peran</h1>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur. Bibendum sit in habitant id. Quis aenean placerat aliquet
@@ -98,17 +98,18 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($users as $user)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $user->name }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->phone ?? '-' }}</td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $user->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->phone ?? '-' }}</td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="3" class="text-center px-6 py-4">Tidak ada pekerja yang memiliki peran ini.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="3" class="text-center px-6 py-4">Tidak ada pekerja yang memiliki peran ini.
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

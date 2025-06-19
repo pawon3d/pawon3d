@@ -16,7 +16,7 @@
     </div>
 
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur. In semper nisi proin malesuada. Vehicula vestibulum consequat
@@ -50,10 +50,10 @@
         <div class="p-4 flex">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    @if($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @if ($filterStatus)
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Peran
+                        Semua Peran
                     @endif
                     ({{ $roles->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -92,40 +92,43 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("name")'>
-                            Peran 
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("name")'>
+                            Peran
                             {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("permissions_count")'>
-                            Akses 
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("permissions_count")'>
+                            Akses
                             {{ $sortDirection === 'asc' && $sortField === 'permissions_count' ? '↑' : '↓' }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" wire:click='sortBy("users_count")'>
-                            Jumlah Pekerja 
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click='sortBy("users_count")'>
+                            Jumlah Pekerja
                             {{ $sortDirection === 'asc' && $sortField === 'users_count' ? '↑' : '↓' }}
                         </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($roles as $role)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('role.edit', $role->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                {{ $role->name }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $role->permissions_count > 0 ?
-                            $role->permissions->pluck('name')->implode(', ') : 'Tidak ada akses' }}
-                        </td>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ route('role.edit', $role->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                                    {{ $role->name }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $role->permissions_count > 0 ? $role->permissions->pluck('name')->implode(', ') : 'Tidak ada akses' }}
+                            </td>
 
-                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            {{ $role->users_count }}
-                        </td>
-                    </tr>
+                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                {{ $role->users_count }}
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="3" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="3" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -144,14 +147,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Peran</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

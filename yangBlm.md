@@ -23,6 +23,10 @@
 -   [x] persediaan berubah total
 -   [x] belanja persediaan berubah total
 -   [x] Hitung dan Catat diperbarui
+-   [x] Rincian pesanan-produksi
+-   [x] Kurangi stok dari produk ketika buat pesanan
+-   [x] Cetak struk di bagian lain
+-   [x] Tanggal kadaluarsa bahan
 
 ## BELUM SELESAI
 
@@ -30,14 +34,12 @@
 
 -   [ ] Pergantian harga bahan di belanja?
 -   [ ] Rincian produk: tambahkan review
--   [ ] Fitur tambah otomatis
--   [ ] Tanggal kadaluarsa bahan
--   [ ] Rincian pesanan-produksi
--   [ ] Kurangi stok dari produk ketika buat pesanan
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
--   [ ] Cetak struk di bagian lain
+-   [ ] Tambah produksi berlebih ke siap beli
 
 ### Medium Priority
 
 ### Low Priority
+
+-   [ ] Fitur tambah otomatis

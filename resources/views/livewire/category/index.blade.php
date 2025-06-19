@@ -14,6 +14,17 @@
             </button>
         </div>
     </div>
+
+    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+        <flux:icon icon="message-square-warning" class="size-16" />
+        <div class="ml-3">
+            <p class="mt-1 text-sm text-gray-500">
+                Kategori Produk digunakan untuk mengelompokkan produk berdasarkan ciri khas atau kriteria tertentu.
+                Seunit produk dapat memiliki lebih dari satu kategori. Pastikan kategori dan produk yang dikelompokkan
+                benar dan tepat.
+            </p>
+        </div>
+    </div>
     <div class="flex justify-between items-center mb-7">
         <!-- Search Input -->
         <div class="p-4 flex">
@@ -25,24 +36,26 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            <a href="{{ route('kategori.tambah') }}"
+            {{-- <a href="{{ route('kategori.tambah') }}"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
                 wire:navigate>
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Tambah Kategori
-            </a>
+            </a> --}}
+            <flux:button type="button" variant="primary" wire:click="$set('showModal', true)" icon="plus">Tambah
+                Kategori</flux:button>
         </div>
     </div>
     <div class="flex justify-between items-center mb-7">
         <div class="p-4 flex">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    @if($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @if ($filterStatus)
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Kategori
+                        Semua Kategori
                     @endif
                     {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
                     --}}
@@ -103,23 +116,23 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories as $category)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('kategori.edit', $category->id) }}"
-                                class="hover:bg-gray-50 cursor-pointer">
-                                {{ $category->name }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                        </td>
-                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                            {{ $category->products_count }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ route('kategori.edit', $category->id) }}"
+                                    class="hover:bg-gray-50 cursor-pointer">
+                                    {{ $category->name }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                            </td>
+                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                                {{ $category->products_count }}
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -138,14 +151,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Kategori</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

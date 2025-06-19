@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="exclamation-triangle" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
                 Form ini digunakan untuk menambahkan toko persediaan. Lengkapi informasi yang diminta, pastikan
@@ -41,24 +41,24 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                            <!-- Image Preview -->
-                            <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                id="image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="image-preview" />
                             @else
-                            <!-- Default Content -->
-                            <div class="flex flex-col items-center justify-center p-4 text-center">
-                                <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                <p class="mb-2 text-xs text-gray-600 mt-4">
-                                    Ukuran gambar tidak lebih dari
-                                    <span class="font-semibold">2mb</span>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    Pastikan gambar dalam format
-                                    <span class="font-semibold">JPG </span> atau
-                                    <span class="font-semibold">PNG</span>
-                                </p>
-                            </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                             @endif
                         </div>
                     </label>
@@ -76,9 +76,9 @@
 
                 <!-- Error Message -->
                 @error('image')
-                <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                    {{ $message }}
-                </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                 @enderror
 
                 <!-- Loading Indicator -->
@@ -143,14 +143,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Toko Persediaan</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
@@ -158,26 +158,26 @@
 
     <script>
         function handleDrop(event) {
-        event.preventDefault();
-        const container = event.currentTarget;
-        container.classList.remove('border-blue-500', 'bg-gray-100');
-        
-        const files = event.dataTransfer.files;
-        if (files.length > 0) {
-            const input = document.getElementById('dropzone-file');
-            input.files = files;
-            previewImage(input);
-            input.dispatchEvent(new Event('change'));
+            event.preventDefault();
+            const container = event.currentTarget;
+            container.classList.remove('border-blue-500', 'bg-gray-100');
+
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const input = document.getElementById('dropzone-file');
+                input.files = files;
+                previewImage(input);
+                input.dispatchEvent(new Event('change'));
+            }
         }
-     }
 
         function previewImage(input) {
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
+
                 reader.onload = function(e) {
                     // Update preview image
                     let previewImg = document.getElementById('image-preview');
@@ -188,11 +188,11 @@
                         previewContainer.appendChild(previewImg);
                     }
                     previewImg.src = e.target.result;
-                    
+
                     // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
-                
+
                 reader.readAsDataURL(input.files[0]);
             }
         }

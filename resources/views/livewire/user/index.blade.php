@@ -16,7 +16,7 @@
     </div>
 
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
                 Lorem ipsum dolor sit amet consectetur. In semper nisi proin malesuada. Vehicula vestibulum consequat
@@ -50,10 +50,10 @@
         <div class="p-4 flex">
             <flux:dropdown>
                 <flux:button variant="ghost">
-                    @if($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    @if ($filterStatus)
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Pekerja
+                        Semua Pekerja
                     @endif
                     ({{ $users->total() }})
                     <flux:icon.chevron-down variant="mini" />
@@ -116,25 +116,25 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($users as $user)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('user.edit', $user->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                {{ $user->name }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}
-                        </td>
-                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            {{ $user->phone ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            {{ $user->role_name ?? 'Tidak ada peran' }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ route('user.edit', $user->id) }}" class="hover:bg-gray-50 cursor-pointer">
+                                    {{ $user->name }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}
+                            </td>
+                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                {{ $user->phone ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                {{ $user->role_name ?? 'Tidak ada peran' }}
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -153,14 +153,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Pekerja</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

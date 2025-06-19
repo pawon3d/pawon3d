@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="exclamation-triangle" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">Form ini digunakan untuk menambahkan produk ke dalam metode penjualan
                 terpilih. Unggah gambar, isi nama dan deskripsi produk, atur tampilan atau keterlihatan produk, aktifkan

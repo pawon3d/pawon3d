@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="exclamation-triangle" />
+        <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">Form ini digunakan untuk mengubah nama kategori dan status tampil
                 kategori. Kemudian Anda dapat melihat jumlah produk yang menggunakan kategori sebelum melakukan
@@ -62,14 +62,14 @@
                 <flux:heading size="lg">Riwayat Pembaruan Kategori</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @foreach ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
