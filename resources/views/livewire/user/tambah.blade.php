@@ -144,7 +144,7 @@
 
     <div class="flex justify-end gap-2 mt-4">
         <flux:button href="{{ route('user') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="createUser" icon="archive-box" variant="primary">Simpan</flux:button>
+        <flux:button wire:click="createUser" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
     <script>

@@ -39,13 +39,21 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            <a href="{{ route('bahan-baku.tambah') }}"
+            {{-- <a href="{{ route('bahan-baku.tambah') }}"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Tambah Persediaan
-            </a>
+            </a> --}}
+            <flux:button type="button" variant="primary" href="{{ route('satuan-ukur') }}" icon="lamp-ceiling">Daftar
+                Satuan Ukur</flux:button>
+            <flux:button type="button" variant="primary" href="{{ route('kategori-persediaan') }}" icon="shapes">
+                Daftar Kategori
+            </flux:button>
+            <flux:button type="button" variant="primary" href="{{ route('bahan-baku.tambah') }}" icon="plus">Tambah
+                Persediaan
+            </flux:button>
         </div>
     </div>
     <div class="flex justify-between items-center mb-4">

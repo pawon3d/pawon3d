@@ -78,7 +78,7 @@
 
     <div class="flex justify-end gap-2 mt-4">
         <flux:button href="{{ route('role') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="createRole" icon="archive-box" variant="primary">Simpan</flux:button>
+        <flux:button wire:click="createRole" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
 </div>

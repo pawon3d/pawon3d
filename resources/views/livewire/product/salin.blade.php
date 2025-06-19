@@ -106,7 +106,7 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            <flux:button icon="archive-box" type="button" variant="primary" wire:click.prevent="saveCopy">
+            <flux:button icon="save" type="button" variant="primary" wire:click.prevent="saveCopy">
                 Simpan Salinan
             </flux:button>
         </div>

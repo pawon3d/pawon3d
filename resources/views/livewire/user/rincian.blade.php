@@ -149,7 +149,7 @@
     <div class="flex justify-end gap-8 mt-4">
         <flux:button wire:click='confirmDelete' icon="trash" variant="danger" />
         <flux:button href="{{ route('user') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="updateUser" icon="archive-box" variant="primary">Simpan</flux:button>
+        <flux:button wire:click="updateUser" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
     <script>

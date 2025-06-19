@@ -1,6 +1,6 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Kategori</h1>
+        <h1 class="text-3xl font-bold">Daftar Satuan Ukur</h1>
         <div class="flex gap-2 items-center">
             <button type="button" wire:click="cetakInformasi"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
@@ -14,14 +14,14 @@
             </button>
         </div>
     </div>
-
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
-                Kategori Produk digunakan untuk mengelompokkan produk berdasarkan ciri khas atau kriteria tertentu.
-                Seunit produk dapat memiliki lebih dari satu kategori. Pastikan kategori dan produk yang dikelompokkan
-                benar dan tepat.
+                Belanja Persediaan dapat dilakukan apabila daftar toko dan daftar barang persediaan telah ditambah.
+                Belanja Persediaan digunakan untuk menentukan harga dari barang persediaan, sehingga harga modal suatu
+                produk dapat ditentukan dengan tepat. Belanja dapat dilakukan dengan mendatangi toko atau lewat telepon
+                dan whatsapp untuk memesan.
             </p>
         </div>
     </div>
@@ -36,16 +36,8 @@
             </flux:button>
         </div>
         <div class="flex gap-2 items-center">
-            {{-- <a href="{{ route('kategori.tambah') }}"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                wire:navigate>
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Tambah Kategori
-            </a> --}}
             <flux:button type="button" variant="primary" wire:click="showAddModal" icon="plus">Tambah
-                Kategori</flux:button>
+                Satuan</flux:button>
         </div>
     </div>
     <div class="flex justify-between items-center mb-7">
@@ -55,11 +47,11 @@
                     @if ($filterStatus)
                         {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                        Semua Kategori
+                        Semua Satuan
                     @endif
-                    {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
+                    {{-- {{ $filterStatus ? ' (' . $units->total() . ')' : ' (' . $units->count() . ')' }}
                     --}}
-                    ({{ $categories->total() }})
+                    ({{ $units->total() }})
                     <flux:icon.chevron-down variant="mini" />
                 </flux:button>
                 <flux:menu>
@@ -91,40 +83,41 @@
     </div>
 
     <div class="bg-white rounded-xl border">
+
+
         <!-- Table -->
         <div class="overflow-x-auto">
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click='sortBy("name")'>
-                            Nama
-                            Kategori
+                            wire:click="sortBy('name')">Nama
+                            Satuan
                             {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click='sortBy("is_active")'>
-                            Status Kategori
-                            {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                            wire:click="sortBy('alias')">Status
+                            Singkatan
+                            {{ $sortDirection === 'asc' && $sortField === 'alias' ? '↑' : '↓' }}
                         </th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click='sortBy("products_count")'>
-                            Jenis Produk
-                            {{ $sortDirection === 'asc' && $sortField === 'products_count' ? '↑' : '↓' }}
+                            wire:click="sortBy('material_details_count')">
+                            Jumlah Penggunaan
+                            {{ $sortDirection === 'asc' && $sortField === 'material_details_count' ? '↑' : '↓' }}
                         </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($categories as $category)
+                    @forelse($units as $unit)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
-                                wire:click="edit('{{ $category->id }}')">
-                                {{ $category->name }}
+                                wire:click="edit('{{ $unit->id }}')">
+                                {{ $unit->name }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
                             </td>
                             <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                                {{ $category->products_count }}
+                                {{ $unit->material_details_count }}
                             </td>
                         </tr>
                     @empty
@@ -138,22 +131,31 @@
 
         <!-- Pagination -->
         <div class="p-4">
-            {{ $categories->links() }}
+            {{ $units->links() }}
         </div>
     </div>
 
     <flux:modal name="tambah-kategori" class="w-full max-w-md" wire:model="showModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Tambah Kategori</flux:heading>
+                <flux:heading size="lg">Tambah Satuan</flux:heading>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Satuan</label>
                     <input type="text" id="name" wire:model.lazy="name"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="alias" class="block text-sm font-medium text-gray-700">Singkatan</label>
+                    <input type="text" id="alias" wire:model.lazy="alias"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('alias')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
@@ -162,7 +164,7 @@
                 <flux:modal.close>
                     <flux:button type="button" icon="x-mark">Batal</flux:button>
                 </flux:modal.close>
-                <flux:button type="button" icon="save" variant="primary" wire:click="store">Simpan Kategori
+                <flux:button type="button" icon="save" variant="primary" wire:click="store">Simpan
                 </flux:button>
             </div>
         </div>
@@ -171,11 +173,11 @@
     <flux:modal name="rincian-kategori" class="w-full max-w-md" wire:model="showEditModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Rincian Kategori</flux:heading>
+                <flux:heading size="lg">Rincian Satuan Ukur</flux:heading>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Satuan</label>
                     <input type="text" id="name" wire:model.lazy="name"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
@@ -184,23 +186,32 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="products" class="block text-sm font-medium text-gray-700">Jumlah Penggunaan</label>
-                    <input type="text" id="products" wire:model.lazy="products"
+                    <label for="alias" class="block text-sm font-medium text-gray-700">Singkatan</label>
+                    <input type="text" id="alias" wire:model.lazy="alias"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('alias')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="materials" class="block text-sm font-medium text-gray-700">Jumlah Penggunaan</label>
+                    <input type="text" id="materials" wire:model.lazy="materials"
                         class="mt-1 block w-full border-gray-300 bg-gray-200 rounded-md shadow-sm" disabled />
                 </div>
             </div>
             <div class="mt-6 flex justify-end space-x-2">
-                <flux:modal.trigger name="delete-category" class="mr-4">
+                <flux:modal.trigger name="delete-unit" class="mr-4">
                     <flux:button variant="ghost" icon="trash" />
                 </flux:modal.trigger>
 
-                <flux:modal name="delete-category" class="min-w-[22rem]">
+                <flux:modal name="delete-unit" class="min-w-[22rem]">
                     <div class="space-y-6">
                         <div>
-                            <flux:heading size="lg">Hapus Kategori</flux:heading>
+                            <flux:heading size="lg">Hapus Satuan</flux:heading>
 
                             <flux:text class="mt-2">
-                                <p>Apakah Anda yakin ingin menghapus kategori ini?</p>
+                                <p>Apakah Anda yakin ingin menghapus satuan ini?</p>
                             </flux:text>
                         </div>
 
@@ -217,7 +228,7 @@
                 </flux:modal>
                 <flux:button type="button" icon="x-mark" wire:click="$set('showEditModal', false)">Batal
                 </flux:button>
-                <flux:button type="button" icon="save" variant="primary" wire:click="update">Simpan Kategori
+                <flux:button type="button" icon="save" variant="primary" wire:click="update">Simpan Perubahan
                 </flux:button>
             </div>
         </div>
@@ -227,7 +238,7 @@
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">Riwayat Pembaruan Kategori</flux:heading>
+                <flux:heading size="lg">Riwayat Pembaruan Satuan Ukur</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)

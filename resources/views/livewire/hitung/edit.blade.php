@@ -170,7 +170,7 @@
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal
         </a>
-        <flux:button icon="archive-box" type="button" variant="primary" wire:click.prevent="update">
+        <flux:button icon="save" type="button" variant="primary" wire:click.prevent="update">
             Simpan
         </flux:button>
     </div>

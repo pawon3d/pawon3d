@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Livewire\IngredientCategory;
+namespace App\Livewire\Unit;
 
-use App\Models\IngredientCategory;
+use App\Models\Unit;
 use Flux\Flux;
-use Livewire\Component;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
@@ -20,7 +20,7 @@ class Index extends Component
     public $filterStatus = '';
     public $sortField = 'name';
     public $sortDirection = 'desc';
-    public $name, $is_active = true, $category_id, $products;
+    public $name, $alias, $unit_id, $materials;
     public $showModal = false;
     public $showEditModal = false;
     public $sortByCategory = false;
@@ -53,7 +53,7 @@ class Index extends Component
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('ingredient_categories')
+        $this->activityLogs = Activity::inLog('units')
             ->latest()
             ->limit(50)
             ->get();
@@ -63,19 +63,16 @@ class Index extends Component
 
     public function mount()
     {
-        View::share('title', 'Kategori Persediaan');
+        View::share('title', 'Satuan Ukur');
     }
     public function render()
     {
-        $categories = IngredientCategory::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
-        })
-            ->when($this->filterStatus, function ($query) {
-                return $query->where('is_active', $this->filterStatus === 'aktif');
-            })->with('details')->withCount('details')
+        $units = \App\Models\Unit::when($this->search, function ($query) {
+            $query->where('name', 'like', '%' . $this->search . '%');
+        })->with('material_details')->withCount('material_details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-        return view('livewire.ingredient-category.index', compact('categories'));
+        return view('livewire.unit.index', compact('units'));
     }
 
     public function showAddModal()
@@ -88,22 +85,22 @@ class Index extends Component
     {
         $this->validate();
 
-        IngredientCategory::create([
+        Unit::create([
             'name' => $this->name,
-            'is_active' => true,
+            'alias' => $this->alias,
         ]);
 
         $this->resetForm();
-        $this->alert('success', 'Kategori berhasil ditambahkan');
+        $this->alert('success', 'Satuan Ukur berhasil ditambahkan');
         $this->showModal = false;
     }
 
     public function edit($id)
     {
-        $this->category_id = $id;
-        $this->products = \App\Models\IngredientCategory::where('id', $this->category_id)->withCount('details')->first()->details_count;
-        $this->name = \App\Models\IngredientCategory::find($this->category_id)->name;
-        $this->is_active = \App\Models\IngredientCategory::find($this->category_id)->is_active;
+        $this->unit_id = $id;
+        $this->materials = \App\Models\Unit::where('id', $this->unit_id)->withCount('material_details')->first()->material_details_count;
+        $this->name = \App\Models\Unit::find($this->unit_id)->name;
+        $this->alias = \App\Models\Unit::find($this->unit_id)->alias;
         $this->showEditModal = true;
     }
 
@@ -113,16 +110,16 @@ class Index extends Component
             'name' => [
                 'required',
                 'min:3',
-                Rule::unique('categories')->ignore($this->category_id),
+                Rule::unique('units')->ignore($this->unit_id),
             ],
         ]);
 
-        $category = \App\Models\IngredientCategory::find($this->category_id);
-        $category->update([
+        $unit = \App\Models\Unit::find($this->unit_id);
+        $unit->update([
             'name' => $this->name,
-            'is_active' => true,
+            'alias' => $this->alias,
         ]);
-        $this->alert('success', 'Kategori berhasil diperbarui');
+        $this->alert('success', 'Satuan Ukur berhasil diperbarui');
         $this->showEditModal = false;
         $this->resetForm();
     }
@@ -145,12 +142,12 @@ class Index extends Component
     public function delete()
     {
 
-        $category = IngredientCategory::find($this->category_id);
+        $unit = Unit::find($this->unit_id);
 
-        if ($category) {
-            $category->delete();
+        if ($unit) {
+            $unit->delete();
             $this->alert('success', 'Kategori berhasil dihapus!');
-            $this->reset('category_id');
+            $this->reset('unit_id');
             Flux::modals()->close();
         } else {
             $this->alert('error', 'Kategori tidak ditemukan!');
@@ -161,13 +158,13 @@ class Index extends Component
     public function resetForm()
     {
         $this->name = '';
-        $this->is_active = false;
-        $this->category_id = null;
+        $this->alias = '';
+        $this->unit_id = null;
     }
 
     public function cetakInformasi()
     {
-        return redirect()->route('kategori-persediaan.pdf', [
+        return redirect()->route('satuan-ukur.pdf', [
             'search' => $this->search,
         ]);
     }

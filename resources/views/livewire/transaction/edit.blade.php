@@ -284,7 +284,7 @@
             href="{{ route('transaksi.rincian-pesanan', $transactionId) }}">
             Batal
         </flux:button>
-        <flux:button icon="archive-box" :loading="false" type="button" variant="primary"
+        <flux:button icon="save" :loading="false" type="button" variant="primary"
             wire:click.prevent="save">
             Simpan Perubahan
         </flux:button>

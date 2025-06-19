@@ -27,6 +27,7 @@
 -   [x] Kurangi stok dari produk ketika buat pesanan
 -   [x] Cetak struk di bagian lain
 -   [x] Tanggal kadaluarsa bahan
+-   [x] Kategori ganti pakai modal
 
 ## BELUM SELESAI
 
@@ -37,7 +38,8 @@
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
 -   [ ] Tambah produksi berlebih ke siap beli
--   [ ] Kategori ganti pakai modal
+-   [ ] Kategori persediaan ganti pakai modal
+-   [ ] Daftar satuan ukur
 
 ### Medium Priority
 

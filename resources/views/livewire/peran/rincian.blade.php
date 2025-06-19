@@ -120,7 +120,7 @@
         {{-- delete button --}}
         <flux:button wire:click="deleteRole" icon="trash" variant="danger" />
         <flux:button href="{{ route('role') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="updateRole" icon="archive-box" variant="primary">Simpan</flux:button>
+        <flux:button wire:click="updateRole" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
 </div>
