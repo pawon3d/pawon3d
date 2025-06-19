@@ -112,7 +112,7 @@ class Index extends Component
             $this->cart[$productId] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
-                'price' => $product->pcs > 1 ? $product->pcs_price : $product->price,
+                'price' => $product->price,
                 'quantity' => 1,
                 'stock' => $product->stock,
             ];

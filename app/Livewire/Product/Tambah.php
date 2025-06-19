@@ -15,7 +15,7 @@ class Tambah extends Component
 {
     use WithFileUploads;
 
-    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_price = 0, $pcs_capital = 0;
+    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_capital = 0;
     public $previewImage;
     public $product_compositions = [];
     public $other_costs = [];
@@ -23,6 +23,7 @@ class Tambah extends Component
     public $price = 0, $total = 0;
     public $stock = 0;
     public $selectedMethods = [];
+    public $suhu_ruangan = 0, $suhu_dingin = 0, $suhu_beku = 0;
 
 
     protected $listeners = [
@@ -32,7 +33,6 @@ class Tambah extends Component
 
     protected array $rules = [
         'price' => 'nullable|numeric|min:0',
-        'pcs_price' => 'nullable|numeric|min:0',
     ];
 
     protected $messages = [
@@ -63,7 +63,7 @@ class Tambah extends Component
 
     public function updatedIsRecipe()
     {
-        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_price', 'pcs_capital', 'price');
+        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_capital', 'price');
         $this->product_compositions = [[
             'material_id' => '',
             'material_quantity' => 0,
@@ -180,8 +180,10 @@ class Tambah extends Component
             'is_other' => $this->is_other,
             'pcs' => $this->pcs,
             'capital' => $this->capital,
-            'pcs_price' => $this->pcs_price,
             'pcs_capital' => $this->pcs_capital,
+            'suhu_ruangan' => $this->suhu_ruangan,
+            'suhu_dingin' => $this->suhu_dingin,
+            'suhu_beku' => $this->suhu_beku,
         ]);
 
         if ($this->product_image) {
@@ -241,9 +243,14 @@ class Tambah extends Component
         $this->resetErrorBag('price');
 
         $this->validateOnly('price');
-
-        if ($value < $this->capital) {
-            $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
+        if ($this->pcs > 1) {
+            if ($value < $this->pcs_capital) {
+                $this->addError('price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
+            } else {
+            }
+            if ($value < $this->capital) {
+                $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
+            }
         }
     }
 
@@ -288,17 +295,6 @@ class Tambah extends Component
 
         $this->recalculateCapital();
         $this->recalculatePcsCapital();
-    }
-
-    public function updatedPcsPrice($value)
-    {
-        $this->resetErrorBag('pcs_price');
-
-        $this->validateOnly('pcs_price');
-
-        if ($value < $this->pcs_capital) {
-            $this->addError('pcs_price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
-        }
     }
 
     public function resetForm()

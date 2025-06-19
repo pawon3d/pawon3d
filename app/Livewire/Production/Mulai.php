@@ -160,7 +160,7 @@ class Mulai extends Component
         }
 
         // Panggil fungsi simpan biasa
-        // $this->save();
+        $this->save();
     }
 
     public function render()

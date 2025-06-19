@@ -85,9 +85,7 @@ class Index extends Component
             ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
             ->withAvg('reviews', 'rating')->withCount('reviews')->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-        foreach ($products as $product) {
-            $product->price = $product->pcs > 1 ? $product->pcs_price : $product->price;
-        }
+
 
         return view('livewire.product.index', [
             'products' => $products,

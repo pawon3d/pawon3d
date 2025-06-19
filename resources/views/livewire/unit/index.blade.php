@@ -1,6 +1,13 @@
 <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Daftar Satuan Ukur</h1>
+        <div class="flex items-center">
+            <a href="{{ route('bahan-baku') }}"
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                <flux:icon.arrow-left variant="mini" class="mr-2" />
+                Kembali
+            </a>
+            <h1 class="text-2xl hidden md:block">Daftar Satuan Ukur</h1>
+        </div>
         <div class="flex gap-2 items-center">
             <button type="button" wire:click="cetakInformasi"
                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
@@ -45,9 +52,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                        Semua Satuan
+                    Semua Satuan
                     @endif
                     {{-- {{ $filterStatus ? ' (' . $units->total() . ')' : ' (' . $units->count() . ')' }}
                     --}}
@@ -109,21 +116,21 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($units as $unit)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
-                                wire:click="edit('{{ $unit->id }}')">
-                                {{ $unit->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
-                            </td>
-                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                                {{ $unit->material_details_count }}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
+                            wire:click="edit('{{ $unit->id }}')">
+                            {{ $unit->name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
+                        </td>
+                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                            {{ $unit->material_details_count }}
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -147,7 +154,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -156,7 +163,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -182,7 +189,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -191,7 +198,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -242,13 +249,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

@@ -167,7 +167,6 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'name' => 'Product 1',
             'pcs' => 1,
-            'pcs_price' => 10000,
             'price' => 10000,
             'stock' => 15,
             'method' => 'pesanan-reguler',
@@ -175,7 +174,6 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'name' => 'Product 2',
             'pcs' => 1,
-            'pcs_price' => 20000,
             'price' => 20000,
             'stock' => 10,
             'method' => 'pesanan-reguler',
@@ -185,7 +183,6 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'name' => 'Product 3',
             'pcs' => 1,
-            'pcs_price' => 30000,
             'price' => 30000,
             'stock' => 5,
             'method' => 'pesanan-reguler',
@@ -195,7 +192,6 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'name' => 'Product 4',
             'pcs' => 1,
-            'pcs_price' => 40000,
             'price' => 40000,
             'stock' => 20,
             'method' => 'pesanan-reguler',
@@ -205,7 +201,6 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'name' => 'Product 5',
             'pcs' => 1,
-            'pcs_price' => 50000,
             'price' => 50000,
             'stock' => 8,
             'method' => 'pesanan-reguler',
