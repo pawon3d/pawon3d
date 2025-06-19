@@ -5,6 +5,7 @@ namespace App\Livewire\Category;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Category;
+use Flux\Flux;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -20,9 +21,14 @@ class Index extends Component
     public $filterStatus = '';
     public $sortField = 'name';
     public $sortDirection = 'desc';
-    public $name, $is_active = false, $category_id;
+    public $name, $is_active = true, $category_id, $products;
     public $showModal = false;
     public $showEditModal = false;
+    public $sortByCategory = false;
+    protected $listeners = [
+        'delete',
+        'cancelled',
+    ];
     protected $rules = [
         'name' => 'required|min:3|unique:categories,name',
     ];
@@ -75,18 +81,33 @@ class Index extends Component
         return view('livewire.category.index', compact('categories'));
     }
 
+    public function showAddModal()
+    {
+        $this->resetForm();
+        $this->showModal = true;
+    }
+
     public function store()
     {
         $this->validate();
 
         Category::create([
             'name' => $this->name,
-            'is_active' => $this->is_active,
+            'is_active' => true,
         ]);
 
         $this->resetForm();
         $this->alert('success', 'Kategori berhasil ditambahkan');
         $this->showModal = false;
+    }
+
+    public function edit($id)
+    {
+        $this->category_id = $id;
+        $this->products = \App\Models\Product::where('category_id', $this->category_id)->count();
+        $this->name = \App\Models\Category::find($this->category_id)->name;
+        $this->is_active = \App\Models\Category::find($this->category_id)->is_active;
+        $this->showEditModal = true;
     }
 
     public function update()
@@ -102,7 +123,7 @@ class Index extends Component
         $category = \App\Models\Category::find($this->category_id);
         $category->update([
             'name' => $this->name,
-            'is_active' => $this->is_active,
+            'is_active' => true,
         ]);
         $this->alert('success', 'Kategori berhasil diperbarui');
         $this->showEditModal = false;
@@ -133,11 +154,12 @@ class Index extends Component
             $category->delete();
             $this->alert('success', 'Kategori berhasil dihapus!');
             $this->reset('category_id');
-            return redirect()->intended(route('kategori'));
+            Flux::modals()->close();
         } else {
             $this->alert('error', 'Kategori tidak ditemukan!');
         }
     }
+
 
     public function resetForm()
     {

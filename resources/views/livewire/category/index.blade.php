@@ -44,7 +44,7 @@
                 </svg>
                 Tambah Kategori
             </a> --}}
-            <flux:button type="button" variant="primary" wire:click="$set('showModal', true)" icon="plus">Tambah
+            <flux:button type="button" variant="primary" wire:click="showAddModal" icon="plus">Tambah
                 Kategori</flux:button>
         </div>
     </div>
@@ -117,11 +117,9 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories as $category)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('kategori.edit', $category->id) }}"
-                                    class="hover:bg-gray-50 cursor-pointer">
-                                    {{ $category->name }}
-                                </a>
+                            <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
+                                wire:click="edit('{{ $category->id }}')">
+                                {{ $category->name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
                             </td>
@@ -143,6 +141,87 @@
             {{ $categories->links() }}
         </div>
     </div>
+
+    <flux:modal name="tambah-kategori" class="w-full max-w-md" wire:model="showModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Tambah Kategori</flux:heading>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
+                    <input type="text" id="name" wire:model.lazy="name"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('name')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <flux:modal.close>
+                    <flux:button type="button" icon="x-mark">Batal</flux:button>
+                </flux:modal.close>
+                <flux:button type="button" icon="archive-box" variant="primary" wire:click="store">Simpan Kategori
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="rincian-kategori" class="w-full max-w-md" wire:model="showEditModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Rincian Kategori</flux:heading>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
+                    <input type="text" id="name" wire:model.lazy="name"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('name')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="products" class="block text-sm font-medium text-gray-700">Jumlah Penggunaan</label>
+                    <input type="text" id="products" wire:model.lazy="products"
+                        class="mt-1 block w-full border-gray-300 bg-gray-200 rounded-md shadow-sm" disabled />
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <flux:modal.trigger name="delete-category" class="mr-4">
+                    <flux:button variant="ghost" icon="trash" />
+                </flux:modal.trigger>
+
+                <flux:modal name="delete-category" class="min-w-[22rem]">
+                    <div class="space-y-6">
+                        <div>
+                            <flux:heading size="lg">Hapus Kategori</flux:heading>
+
+                            <flux:text class="mt-2">
+                                <p>Apakah Anda yakin ingin menghapus kategori ini?</p>
+                            </flux:text>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <flux:spacer />
+
+                            <flux:modal.close>
+                                <flux:button variant="ghost">Batal</flux:button>
+                            </flux:modal.close>
+
+                            <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
+                        </div>
+                    </div>
+                </flux:modal>
+                <flux:button type="button" icon="x-mark" wire:click="$set('showEditModal', false)">Batal
+                </flux:button>
+                <flux:button type="button" icon="archive-box" variant="primary" wire:click="update">Simpan Kategori
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 
     <!-- Modal Riwayat Pembaruan -->
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">

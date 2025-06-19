@@ -37,6 +37,7 @@
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
 -   [ ] Tambah produksi berlebih ke siap beli
+-   [ ] Kategori ganti pakai modal
 
 ### Medium Priority
 
