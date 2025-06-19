@@ -113,7 +113,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('hitung.pdf');
     Route::get('/hitung/cetak/{id}', [PdfController::class, 'generateHitungDetailPDF'])
         ->name('rincian-hitung.pdf');
-    Route::get('/bahan-olahan', App\Livewire\ProcessedMaterial\Index::class)->name('bahan-olahan');
     Route::group(['middleware' => ['permission:Kasir']], function () {
         Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
         Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');

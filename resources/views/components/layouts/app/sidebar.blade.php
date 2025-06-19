@@ -38,12 +38,9 @@ use Illuminate\Support\Facades\Route;
                 <flux:navlist.item :href="route('bahan-baku')"
                     :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>{{ __('Bahan
                     Baku') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('bahan-olahan')" :current="request()->routeIs('bahan-olahan')"
-                    wire:navigate>{{ __('Bahan Baku Olahan') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('kategori-persediaan')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'kategori-persediaan')" wire:navigate>{{
-                    __('Kategori') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('supplier')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>{{
+                    __('Toko Persediaan') }}</flux:navlist.item>
                 <flux:navlist.item :href="route('belanja')"
                     :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{
                     __('Belanja') }}</flux:navlist.item>

@@ -28,6 +28,8 @@
 -   [x] Cetak struk di bagian lain
 -   [x] Tanggal kadaluarsa bahan
 -   [x] Kategori ganti pakai modal
+-   [x] Kategori persediaan ganti pakai modal
+-   [x] Daftar satuan ukur
 
 ## BELUM SELESAI
 
@@ -38,8 +40,7 @@
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Produk
 -   [ ] Tambah produksi berlebih ke siap beli
--   [ ] Kategori persediaan ganti pakai modal
--   [ ] Daftar satuan ukur
+-   [ ] Pengaturan
 
 ### Medium Priority
 
