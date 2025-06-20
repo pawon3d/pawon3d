@@ -8,6 +8,7 @@ use Livewire\Component;
 
 class TambahProduksiPesanan extends Component
 {
+    use \Jantinnerezo\LivewireAlert\LivewireAlert;
     public $transactionId;
     public $transaction;
     public $method;
@@ -32,8 +33,7 @@ class TambahProduksiPesanan extends Component
         $transactionDate = \Carbon\Carbon::parse($this->transaction->date);
         $today = now()->startOfDay();
 
-        $diffInDays = $transactionDate->diffInDays($today, false); // false untuk nilai negatif kalau hari ini > transaction date
-
+        $diffInDays = $today->diffInDays($transactionDate, false); // false untuk nilai negatif kalau hari ini > transaction date
         if ($diffInDays >= 3) {
             $this->start_date = $transactionDate->copy()->subDays(3)->toDateString();
         } elseif ($diffInDays === 2) {
@@ -63,9 +63,14 @@ class TambahProduksiPesanan extends Component
             $kurang = false;
 
             foreach ($product->product_compositions as $composition) {
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
+                $materialBatches = \App\Models\MaterialBatch::where('material_id', $composition->material_id)
+                    ->where('unit_id', $composition->unit_id)
+                    ->orderBy('date')
+                    ->where('date', '>=', now()->format('Y-m-d'))
+                    ->get();
+                $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
+                if (!$materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }

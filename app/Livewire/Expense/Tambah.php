@@ -48,16 +48,23 @@ class Tambah extends Component
         if ($materialId) {
             $material = \App\Models\Material::find($materialId);
             $this->expense_details[$index]['material_id'] = $materialId;
+            $persediaan = $material->batches;
+
             if ($this->expense_details[$index]['unit_id'] != '') {
                 $unit = \App\Models\Unit::find($this->expense_details[$index]['unit_id']);
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                if ($persediaan->isEmpty()) {
+                    $satuan = $material->material_details->where('unit_id', $unit->id)->first();
+                } else {
+                    $satuan = $persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                }
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
                 $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;
                     $this->prevPrice[$index] = $price;
                 }
             } else {
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
             $this->expense_details[$index]['price_expect'] = 0;
@@ -80,7 +87,13 @@ class Tambah extends Component
             if ($this->expense_details[$index]['material_id'] != '') {
                 $material = \App\Models\Material::find($this->expense_details[$index]['material_id']);
                 $unit = \App\Models\Unit::find($unitId);
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                $persediaan = $material->batches;
+                if ($persediaan->isEmpty()) {
+                    $satuan = $material->material_details->where('unit_id', $unitId)->first();
+                } else {
+                    $satuan = $persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                }
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
                 $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;

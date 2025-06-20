@@ -241,19 +241,24 @@ class Rincian extends Component
         ]);
         $material = \App\Models\Material::findOrFail($this->material_id);
 
-        foreach ($this->material_details as $detail) {
-            if ($this->supply_quantity_total <= 0) {
-                $status = 'Kosong';
-            } elseif ($this->supply_quantity_total <= $this->minimum) {
-                $status = 'Habis';
-            } elseif ($this->supply_quantity_total > $this->minimum * 2) {
-                $status = 'Tersedia';
-            } elseif ($this->supply_quantity_total >= $this->minimum && $this->supply_quantity_total <= $this->minimum * 2) {
-                $status = 'Hampir Habis';
-            } else {
-                $status = 'Kosong';
-            }
+
+        // Cek apakah ada batch yang sudah expired
+        $hasExpiredBatch = $material->batches->contains(function ($batch) {
+            return $batch->date < now()->format('Y-m-d');
+        });
+
+        if ($hasExpiredBatch) {
+            $status = 'Expired';
+        } elseif ($material->batches->sum('batch_quantity') <= $this->minimum) {
+            $status = 'Habis';
+        } elseif ($material->batches->sum('batch_quantity') > $this->minimum * 2) {
+            $status = 'Tersedia';
+        } elseif ($material->batches->sum('batch_quantity') >= $this->minimum && $material->batches->sum('batch_quantity') <= $this->minimum * 2) {
+            $status = 'Hampir Habis';
+        } else {
+            $status = 'Kosong';
         }
+
 
         $material->update([
             'name' => $this->name,

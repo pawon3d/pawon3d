@@ -8,6 +8,8 @@ use Livewire\Component;
 
 class EditProduksiPesanan extends Component
 {
+    use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $productionId;
     public $production;
     public $transaction;
@@ -55,9 +57,14 @@ class EditProduksiPesanan extends Component
             $kurang = false;
 
             foreach ($product->product_compositions as $composition) {
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
+                $materialBatches = \App\Models\MaterialBatch::where('material_id', $composition->material_id)
+                    ->where('unit_id', $composition->unit_id)
+                    ->orderBy('date')
+                    ->where('date', '>=', now()->format('Y-m-d'))
+                    ->get();
+                $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
+                if (!$materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }

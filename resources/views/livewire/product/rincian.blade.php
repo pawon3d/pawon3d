@@ -424,7 +424,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($material->batches as $b)
+                            @forelse ($material->batches as $b)
                                 <tr>
                                     <td class="px-6 py-3">
                                         <span class="text-gray-700">
@@ -456,22 +456,31 @@
                                         </span>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td class="px-6 py-3" colspan="4">
+                                        <span class="text-gray-700">Tidak ada persediaan untuk produk ini.</span>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
-                        <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <td class="px-6 py-3" colspan="2">
-                                    <span class="text-gray-700">Total</span>
-                                </td>
-                                <td class="px-6 py-3 text-right">
-                                    <span class="text-gray-700">
-                                        {{ $quantity_main_total . ' ' . ($main_unit_alias ?? '') }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                </td>
-                            </tr>
-                        </tfoot>
+                        @if ($material->batches->isNotEmpty())
+                            <tfoot
+                                class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <td class="px-6 py-3" colspan="2">
+                                        <span class="text-gray-700">Total</span>
+                                    </td>
+                                    <td class="px-6 py-3 text-right">
+                                        <span class="text-gray-700">
+                                            {{ $quantity_main_total . ' ' . ($main_unit_alias ?? '') }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        @endif
                     </table>
                 </div>
             @endif

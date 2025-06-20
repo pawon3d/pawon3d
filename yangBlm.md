@@ -32,16 +32,18 @@
 -   [x] Daftar satuan ukur
 -   [x] Tambah produksi berlebih ke siap beli
 -   [x] Ubah kolom metode produk
+-   [x] Produk expired dan harga jual
 
 ## BELUM SELESAI
 
 ### High Priority
 
--   [ ] Pergantian harga bahan di belanja?
+-   [ ] Bagian produksi blm
+-   [ ] Pergantian harga bahan di belanja
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Pengaturan
--   [ ] Produk expired dan harga jual
+-   [ ] pdf pdf yang belum
 
 ### Medium Priority
 

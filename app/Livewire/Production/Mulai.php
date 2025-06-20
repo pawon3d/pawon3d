@@ -109,16 +109,35 @@ class Mulai extends Component
                 $quantityToAdd = $detail['quantity'];
                 $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
                     ->first();
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $productComposition->material_id)
+                $materialBatches = \App\Models\MaterialBatch::where('material_id', $productComposition->material_id)
                     ->where('unit_id', $productComposition->unit_id)
-                    ->first();
-                $requiredQuantity = $quantityToAdd * $productComposition->material_quantity;
-
-                if ($materialDetail->supply_quantity < $requiredQuantity) {
+                    ->orderBy('date')
+                    ->where('date', '>=', now()->format('Y-m-d'))
+                    ->get();
+                $batchQty = $materialBatches->sum('batch_quantity');
+                $requiredQuantity = $parsed * $productComposition->material_quantity;
+                if ($batchQty < $requiredQuantity) {
                     $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
                     return;
                 }
 
+                $remaining = $requiredQuantity;
+
+                foreach ($materialBatches as $batch) {
+                    if ($remaining <= 0) break;
+
+                    if ($batch->batch_quantity >= $remaining) {
+                        // Batch ini cukup, kurangi langsung
+                        $batch->batch_quantity -= $remaining;
+                        $batch->save();
+                        $remaining = 0;
+                    } else {
+                        // Batch ini tidak cukup, habiskan batch ini dan lanjut
+                        $remaining -= $batch->batch_quantity;
+                        $batch->batch_quantity = 0;
+                        $batch->save();
+                    }
+                }
                 // Update detail belanja
                 $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
                 $productionDetail->update([
@@ -126,9 +145,6 @@ class Mulai extends Component
                     'quantity_fail' => $detail['quantity_fail'] + $detail['quantity_fail_raw'],
                 ]);
 
-                $materialDetail->update([
-                    'supply_quantity' => $materialDetail->supply_quantity - $requiredQuantity,
-                ]);
                 if ($productionDetail->production->method == 'siap-beli') {
                     $productComposition->product->update([
                         'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),

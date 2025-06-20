@@ -21,9 +21,17 @@ class Edit extends Component
         $this->note = $expense->note;
         $this->grand_total_expect = $expense->grand_total_expect;
         $this->expense_details = $expense->expenseDetails->map(function ($detail) {
+            $material = \App\Models\Material::find($detail->material_id);
+            $persediaan = $material->batches;
+            if ($persediaan->isEmpty()) {
+                $satuan = $material->material_details->where('unit_id', $detail->unit->id)->first();
+            } else {
+                $satuan = $persediaan->where('unit_id', $detail->unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+            }
+            $material_quantity = ($persediaan->where('unit_id', $detail->unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
             return [
                 'material_id' => $detail->material_id,
-                'material_quantity' => ($detail->material->material_details->where('unit_id', $detail->unit_id)->first()->supply_quantity ?? 0) . ' (' . ($detail->material->material_details->where('unit_id', $detail->unit_id)->first()->unit->alias ?? '-') . ')',
+                'material_quantity' => $material_quantity,
                 'quantity_expect' => $detail->quantity_expect,
                 'unit_id' => $detail->unit_id,
                 'price_expect' => $detail->price_expect,
@@ -67,22 +75,28 @@ class Edit extends Component
         if ($materialId) {
             $material = \App\Models\Material::find($materialId);
             $this->expense_details[$index]['material_id'] = $materialId;
+            $persediaan = $material->batches;
+
             if ($this->expense_details[$index]['unit_id'] != '') {
                 $unit = \App\Models\Unit::find($this->expense_details[$index]['unit_id']);
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                if ($persediaan->isEmpty()) {
+                    $satuan = $material->material_details->where('unit_id', $unit->id)->first();
+                } else {
+                    $satuan = $persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                }
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
                 $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;
                     $this->prevPrice[$index] = $price;
                 }
             } else {
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('is_main', true)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
-            $this->expense_details[$index]['quantity_expect'] = 0; // Reset quantity when changing material
-            $this->expense_details[$index]['price_expect'] = 0; // Reset price when changing material
-            $this->expense_details[$index]['detail_total_expect'] = 0; // Reset total when changing material
-
+            $this->expense_details[$index]['price_expect'] = 0;
+            $this->expense_details[$index]['detail_total_expect'] = 0;
+            $this->expense_details[$index]['quantity_expect'] = 0;
         } else {
             $this->expense_details[$index]['material_id'] = '';
             $this->expense_details[$index]['unit_id'] = '';
@@ -100,7 +114,13 @@ class Edit extends Component
             if ($this->expense_details[$index]['material_id'] != '') {
                 $material = \App\Models\Material::find($this->expense_details[$index]['material_id']);
                 $unit = \App\Models\Unit::find($unitId);
-                $this->expense_details[$index]['material_quantity'] = ($material->material_details->where('unit_id', $unit->id)->first()->supply_quantity ?? 0) . ' (' . ($material->material_details->where('unit_id', $unit->id)->first()->unit->alias ?? '-') . ')';
+                $persediaan = $material->batches;
+                if ($persediaan->isEmpty()) {
+                    $satuan = $material->material_details->where('unit_id', $unitId)->first();
+                } else {
+                    $satuan = $persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                }
+                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
                 $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;

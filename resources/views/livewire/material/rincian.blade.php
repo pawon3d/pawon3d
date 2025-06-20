@@ -416,18 +416,18 @@
                                         </span>
                                     </td>
                                     @php
-                                        $batch = \App\Models\MaterialBatch::where('material_id', $material->id)
+                                        $batchQty = \App\Models\MaterialBatch::where('material_id', $material->id)
                                             ->where('unit_id', $detail['unit_id'])
-                                            ->first();
+                                            ->sum('batch_quantity');
                                     @endphp
                                     <td class="px-6 py-3">
                                         <span class="text-gray-700">
-                                            {{ $batch->batch_quantity ?? 0 }} {{ $detail['unit'] ?? '' }}
+                                            {{ $batchQty ?? 0 }} {{ $detail['unit'] ?? '' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
                                         <span class="text-gray-700">
-                                            Rp{{ number_format(($detail['supply_price'] ?? 0) * ($batch->batch_quantity ?? 0), 0, ',', '.') }}
+                                            Rp{{ number_format(($detail['supply_price'] ?? 0) * ($batchQty ?? 0), 0, ',', '.') }}
                                         </span>
                                     </td>
                                 </tr>
@@ -449,12 +449,14 @@
                                         @php
                                             $price_total = 0;
                                             foreach ($material_details as $detail) {
-                                                $batch = \App\Models\MaterialBatch::where('material_id', $material->id)
+                                                $batchQty = \App\Models\MaterialBatch::where(
+                                                    'material_id',
+                                                    $material->id,
+                                                )
                                                     ->where('unit_id', $detail['unit_id'])
-                                                    ->first();
-                                                if ($batch) {
-                                                    $price_total +=
-                                                        ($detail['supply_price'] ?? 0) * ($batch->batch_quantity ?? 0);
+                                                    ->sum('batch_quantity');
+                                                if ($batchQty > 0) {
+                                                    $price_total += ($detail['supply_price'] ?? 0) * ($batchQty ?? 0);
                                                 }
                                             }
                                         @endphp

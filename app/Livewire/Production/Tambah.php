@@ -148,10 +148,14 @@ class Tambah extends Component
             $kurang = false;
 
             foreach ($product->product_compositions as $composition) {
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
+                $materialBatches = \App\Models\MaterialBatch::where('material_id', $composition->material_id)
+                    ->where('unit_id', $composition->unit_id)
+                    ->orderBy('date')
+                    ->where('date', '>=', now()->format('Y-m-d'))
+                    ->get();
+                $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-
-                if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
+                if (!$materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -209,9 +213,14 @@ class Tambah extends Component
             $kurang = false;
 
             foreach ($product->product_compositions as $composition) {
-                $materialDetail = \App\Models\MaterialDetail::where('material_id', $composition->material_id)->first();
+                $materialBatches = \App\Models\MaterialBatch::where('material_id', $composition->material_id)
+                    ->where('unit_id', $composition->unit_id)
+                    ->orderBy('date')
+                    ->where('date', '>=', now()->format('Y-m-d'))
+                    ->get();
+                $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialDetail || $materialDetail->supply_quantity < $requiredQuantity) {
+                if (!$materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -230,6 +239,7 @@ class Tambah extends Component
         $production = \App\Models\Production::create([
             'start_date' => $this->start_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->start_date)->format('Y-m-d') : null,
             'note' => $this->note,
+            'time' => $this->time,
             'method' => $this->method,
             'status' => 'Sedang Diproses',
             'is_start' => true,
