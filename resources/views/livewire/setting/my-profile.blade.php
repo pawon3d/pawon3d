@@ -1,11 +1,13 @@
 <div>
-    <div class="mb-4 flex items-center">
-        <a href="{{ route('user') }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
-            Kembali
-        </a>
-        <h1 class="text-2xl">Tambah Pekerja</h1>
+    <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <a href="{{ route('pengaturan') }}"
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                <flux:icon.arrow-left variant="mini" class="mr-2" />
+                Kembali
+            </a>
+            <h1 class="text-2xl hidden md:block">Profil Saya</h1>
+        </div>
     </div>
     <div class="flex items-center border border-gray-500 rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
@@ -20,10 +22,7 @@
 
     <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Unggah Foto</flux:label>
-            <p class="text-sm text-gray-500">
-                Pilih foto pekerja yang ingin diunggah dan sesuai dengan nama yang akan ditambah.
-            </p>
+            <flux:label>Foto Profil</flux:label>
 
             <div class="flex flex-col items-center w-full max-w-md mx-auto space-y-4">
                 <!-- Dropzone Area -->
@@ -86,41 +85,21 @@
 
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
             <flux:label>Nama</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan nama lengkap sesuai nama di KTP.
-            </p>
-            <flux:input placeholder="Nama Lengkap" wire:model.defer="name" />
+            <flux:input placeholder="Nama Lengkap" wire:model.defer="name" disabled />
             <flux:error name="name" />
             <flux:label>Email</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan alamat email aktif.
-            </p>
-            <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" />
+            <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" disabled />
             <flux:error name="email" />
+            {{-- <flux:label>Password</flux:label>
+            <flux:input placeholder="Password" wire:model.live="password" type="text" />
+            <flux:error name="password" /> --}}
             <flux:label>Nomor Telepon</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan nomor telepon aktif (WhatsApp).
-            </p>
-            <flux:input placeholder="08xxxxxx" wire:model.defer="phone" />
+            <flux:input placeholder="08xxxxxx" wire:model.defer="phone" disabled />
             <flux:error name="phone" />
             <flux:label>Peran</flux:label>
+            <flux:input placeholder="Pilih Peran" wire:model.defer="role" disabled />
+            {{-- <flux:label>Pin</flux:label>
             <p class="text-sm text-gray-500">
-                Pilih peran pekerja yang akan ditambahkan.
-            </p>
-            <flux:select placeholder="Pilih Peran" wire:model.defer="role">
-                <option value="" hidden>Pilih Peran</option>
-                @foreach ($roles as $role)
-                    <option value="{{ $role->name }}">{{ $role->name }}</option>
-                @endforeach
-            </flux:select>
-            <flux:error name="role" />
-            <flux:label>Password</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan password dengan kombinasi huruf dan angka (minimal 8 karakter)
-            </p>
-            <flux:input placeholder="Password" wire:model.live="password" type="password" viewable />
-            <flux:error name="password" />
-            {{-- <p class="text-sm text-gray-500">
                 Masukkan PIN masuk untuk keamanan lebih.
             </p>
             <div id="pin-inputs" class="flex mb-2 space-x-2">
@@ -143,13 +122,12 @@
                     </flux:button>
                 </div>
             </div> --}}
-
         </div>
     </div>
 
-    <div class="flex justify-end gap-2 mt-4">
-        <flux:button href="{{ route('user') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="createUser" icon="save" variant="primary">Simpan</flux:button>
+    <div class="flex justify-end gap-8 mt-4">
+        <flux:button href="{{ route('pengaturan') }}" icon="x-mark">Batal</flux:button>
+        <flux:button wire:click="updateUser" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
     <script>
@@ -214,6 +192,5 @@
             });
         });
     </script>
-
 
 </div>

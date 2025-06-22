@@ -154,7 +154,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/penukaran', App\Livewire\Prize\Exchange::class)->name('penukaran');
     Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
     Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
-    Route::get('/pengaturan', App\Livewire\StoreSetting\Index::class)->name('pengaturan');
+    Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
+    Route::get('/profil-saya/{id}', App\Livewire\Setting\MyProfile::class)->name('profil-saya');
+    Route::get('/profil-usaha', App\Livewire\Setting\StoreProfile::class)->name('profil-usaha');
+    Route::get('/metode-pembayaran', App\Livewire\Setting\PaymentMethod::class)->name('metode-pembayaran');
+    Route::get('/panduan-pengguna', App\Livewire\Setting\UserManual::class)->name('panduan-pengguna');
+
 
 
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');

@@ -31,15 +31,30 @@ class Tambah extends Component
         $this->previewImage = $this->image->temporaryUrl();
     }
 
+    public function updatedPassword()
+    {
+        $this->validate(
+            [
+                'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Minimal 8 karakter, harus mengandung huruf dan angka
+            ],
+            [
+                'password.required' => 'Password harus diisi.',
+                'password.min' => 'Password minimal 8 karakter.',
+                'password.alpha_num' => 'Password harus terdiri dari huruf dan angka.',
+                'password.regex' => 'Password harus mengandung setidaknya satu huruf dan satu angka.',
+            ]
+        );
+    }
+
     public function createUser()
     {
-        $pinCode = implode('', $this->pin);
+        // $pinCode = implode('', $this->pin);
 
-        // Validasi jika perlu
-        if (!ctype_digit($pinCode) || strlen($pinCode) !== 6) {
-            $this->alert('pin', 'PIN harus terdiri dari 6 digit angka.');
-            return;
-        }
+        // // Validasi jika perlu
+        // if (!ctype_digit($pinCode) || strlen($pinCode) !== 6) {
+        //     $this->alert('pin', 'PIN harus terdiri dari 6 digit angka.');
+        //     return;
+        // }
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -50,7 +65,7 @@ class Tambah extends Component
         $user = new \App\Models\User();
         $user->name = $this->name;
         $user->email = $this->email;
-        $user->password = bcrypt($pinCode);
+        $user->password = bcrypt($this->password);
         $user->phone = $this->phone;
         if ($this->image) {
             $user->image = $this->image->store('user_images', 'public');

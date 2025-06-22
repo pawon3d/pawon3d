@@ -33,13 +33,13 @@
 -   [x] Tambah produksi berlebih ke siap beli
 -   [x] Ubah kolom metode produk
 -   [x] Produk expired dan harga jual
+-   [x] Bagian produksi blm
+-   [x] Pergantian harga bahan di belanja
 
 ## BELUM SELESAI
 
 ### High Priority
 
--   [ ] Bagian produksi blm
--   [ ] Pergantian harga bahan di belanja
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] Pengaturan

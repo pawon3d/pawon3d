@@ -51,9 +51,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Kategori
+                        Semua Kategori
                     @endif
                     {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
                     --}}
@@ -102,7 +102,7 @@
                             {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('is_active')">Status
+                            wire:click="sortBy('is_active')">
                             Status Kategori
                             {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
                         </th>
@@ -115,21 +115,21 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories as $category)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
-                            wire:click="edit('{{ $category->id }}')">
-                            {{ $category->name }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                        </td>
-                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                            {{ $category->details_count }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
+                                wire:click="edit('{{ $category->id }}')">
+                                {{ $category->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                            </td>
+                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                                {{ $category->details_count }}
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -153,7 +153,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -179,7 +179,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -230,13 +230,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

@@ -20,9 +20,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public bool $remember = false;
 
-    public array $pin = ['', '', '', '', '', ''];
-    public bool $showPin = false;
-
     public function mount()
     {
         View::share('title', 'Login');
@@ -36,18 +33,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate();
 
         $this->ensureIsNotRateLimited();
-        // $pinCode = implode('', $this->pin);
-        // if (!ctype_digit($pinCode) || strlen($pinCode) !== 6) {
-        //     $this->alert('pin', 'PIN harus terdiri dari 6 digit angka.');
-        //     return;
-        // }
-        // $this->password = $pinCode;
 
         if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => __('Salah email atau pin'),
+                'email' => __('Salah email atau password'),
             ]);
         }
 
@@ -100,8 +91,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         <!-- password -->
         <div class="relative">
-            <flux:input wire:model="password" :label="__('Pin')" type="password" name="password" required
-                autocomplete="current-password" placeholder="Pin" viewable />
+            <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required
+                autocomplete="current-password" placeholder="Password" viewable />
         </div>
 
         <!-- Remember Me -->

@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('payment_channels', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('type', 10)->nullable();
+            $table->string('group', 50)->nullable();
             $table->string('bank_name', 50)->nullable();
             $table->string('account_number')->nullable();
             $table->string('account_name', 50)->nullable();
             $table->string('qris_image')->nullable();
-            $table->boolean('is_active')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

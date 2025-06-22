@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Livewire\User;
+namespace App\Livewire\Setting;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
-use Spatie\Activitylog\Models\Activity;
 
-class Rincian extends Component
+class MyProfile extends Component
 {
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
@@ -34,6 +32,9 @@ class Rincian extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        $this->password = $user->password; // Ambil password yang sudah ada, jika perlu
+        // sensor sebagian password
+        $this->password = str_repeat('*', strlen($user->password) - 4) . substr($user->password, -4);
         $this->role = $user->getRoleNames()->first();
         if ($user->image) {
             $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
@@ -50,16 +51,6 @@ class Rincian extends Component
 
         // Untuk preview langsung setelah upload
         $this->previewImage = $this->image->temporaryUrl();
-    }
-
-    public function riwayatPembaruan()
-    {
-        $this->activityLogs = Activity::inLog('users')->where('subject_id', $this->userId)
-            ->latest()
-            ->limit(50)
-            ->get();
-
-        $this->showHistoryModal = true;
     }
 
     public function updatedPassword()
@@ -105,7 +96,7 @@ class Rincian extends Component
         // if ($pinCode) {
         //     $user->password = bcrypt($pinCode);
         // }
-        if ($this->password) {
+        if ($this->password && $this->password !== str_repeat('*', strlen($user->password) - 4) . substr($user->password, -4)) {
             $user->password = bcrypt($this->password);
         }
         $user->phone = $this->phone;
@@ -127,37 +118,8 @@ class Rincian extends Component
         session()->flash('success', 'Pekerja berhasil diperbarui.');
         return redirect()->route('user');
     }
-
-    public function confirmDelete()
-    {
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus pekerja ini?', [
-            'showConfirmButton' => true,
-            'showCancelButton' => true,
-            'confirmButtonText' => 'Ya, hapus',
-            'cancelButtonText' => 'Batal',
-            'onConfirmed' => 'delete',
-            'onCancelled' => 'cancelled',
-            'toast' => false,
-            'position' => 'center',
-            'timer' => null,
-        ]);
-    }
-    public function delete()
-    {
-        $user = \App\Models\User::findOrFail($this->userId);
-        if ($user->image) {
-            $oldImagePath = public_path('storage/' . $user->image);
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
-        }
-        $user->delete();
-
-        session()->flash('success', 'Pekerja berhasil dihapus.');
-        return redirect()->route('user');
-    }
     public function render()
     {
-        return view('livewire.user.rincian');
+        return view('livewire.setting.my-profile');
     }
 }

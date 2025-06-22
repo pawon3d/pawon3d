@@ -119,8 +119,13 @@
                 @endforeach
             </flux:select>
             <flux:error name="role" />
-            <flux:label>Pin</flux:label>
+            <flux:label>Password</flux:label>
             <p class="text-sm text-gray-500">
+                Masukkan password dengan kombinasi huruf dan angka (minimal 8 karakter)
+            </p>
+            <flux:input placeholder="Password" wire:model.live="password" type="password" viewable />
+            <flux:error name="password" />
+            {{-- <p class="text-sm text-gray-500">
                 Masukkan PIN masuk untuk keamanan lebih.
             </p>
             <div id="pin-inputs" class="flex mb-2 space-x-2">
@@ -142,7 +147,7 @@
                         @endif
                     </flux:button>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 
