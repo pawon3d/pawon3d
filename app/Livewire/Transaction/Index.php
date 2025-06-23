@@ -36,6 +36,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Transaksi');
+        View::share('mainTitle', 'Kasir');
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }

@@ -35,6 +35,7 @@
 -   [x] Produk expired dan harga jual
 -   [x] Bagian produksi blm
 -   [x] Pergantian harga bahan di belanja
+-   [x] Pengaturan
 
 ## BELUM SELESAI
 
@@ -42,7 +43,6 @@
 
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
--   [ ] Pengaturan
 -   [ ] pdf pdf yang belum
 
 ### Medium Priority

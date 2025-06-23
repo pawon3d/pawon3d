@@ -26,6 +26,7 @@ class Rincian extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Toko Persediaan');
+        View::share('mainTitle', 'Inventori');
         $this->id = $id;
         $supplier = \App\Models\Supplier::find($this->id);
         $this->name = $supplier->name;

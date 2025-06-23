@@ -18,6 +18,7 @@ class RincianProduk extends Component
             abort(404, 'Product not found');
         }
         View::share('title', 'Rincian Produk: ' . $this->product->name);
+        View::share('mainTitle', 'Kasir');
     }
     public function render()
     {

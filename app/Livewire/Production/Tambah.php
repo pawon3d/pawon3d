@@ -20,6 +20,7 @@ class Tambah extends Component
     public function mount($method)
     {
         View::share('title', 'Tambah Produksi');
+        View::share('mainTitle', 'Produksi');
 
         $this->method = $method;
 

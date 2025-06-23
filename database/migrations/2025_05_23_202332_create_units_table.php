@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name', 20)->unique();
             $table->string('alias', 10)->nullable();
+            $table->string('group', 20)->nullable();
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hitung;
 
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Edit extends Component
@@ -13,6 +14,7 @@ class Edit extends Component
 
     public function mount($id)
     {
+        View::share('mainTitle', 'Inventori');
         \Illuminate\Support\Facades\View::share('title', 'Ubah Daftar Belanja');
         $this->hitung_id = $id;
         $hitung = \App\Models\Hitung::with(['details', 'details.material', 'details.unit'])->findOrFail($this->hitung_id);

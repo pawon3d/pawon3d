@@ -51,6 +51,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Peran');
+        View::share('mainTitle', 'Pekerja');
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
@@ -61,11 +62,11 @@ class Index extends Component
             'roles' => Role::when($this->search, function ($query) {
                 return $query->where('name', 'like', '%' . $this->search . '%');
             })->with('permissions', 'users')->orderBy('name')->withCount('users')->withCount('permissions')
-             ->orderBy(
-        $this->sortField,
-        $this->sortDirection
-    )
-            ->paginate(10)
+                ->orderBy(
+                    $this->sortField,
+                    $this->sortDirection
+                )
+                ->paginate(10)
         ]);
     }
 }

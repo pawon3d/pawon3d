@@ -5,6 +5,7 @@ namespace App\Livewire\Material;
 use App\Models\IngredientCategoryDetail;
 use App\Models\Material;
 use App\Models\Unit;
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 
@@ -43,6 +44,7 @@ class Rincian extends Component
     public function mount($id)
     {
         \Illuminate\Support\Facades\View::share('title', 'Rincian Bahan Baku');
+        View::share('mainTitle', 'Inventori');
         $this->material_id = $id;
         $material = \App\Models\Material::findOrFail($id);
         $this->material = $material;

@@ -36,6 +36,7 @@ class StoreProfile extends Component
     public function mount()
     {
         View::share('title', 'Profil Toko');
+        View::share('mainTitle', 'Pengaturan');
         $storeProfile = \App\Models\StoreProfile::first();
         if ($storeProfile) {
             // $this->logo = $storeProfile->logo;

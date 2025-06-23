@@ -46,6 +46,7 @@ class Rincian extends Component
         }
         $this->production_details = $this->production->details;
         View::share('title', 'Rincian Produksi');
+        View::share('mainTitle', 'Produksi');
 
         if (session()->has('success')) {
             $this->alert('success', session('success'));

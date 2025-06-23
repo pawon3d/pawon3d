@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Expense;
 
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Tambah extends Component
@@ -14,7 +15,7 @@ class Tambah extends Component
     public function mount()
     {
         \Illuminate\Support\Facades\View::share('title', 'Tambah Daftar Belanja');
-
+        View::share('mainTitle', 'Inventori');
         $this->expense_details = [[
             'material_id' => '',
             'material_quantity' => '0 (satuan)',

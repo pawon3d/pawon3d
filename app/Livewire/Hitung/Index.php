@@ -43,6 +43,7 @@ class Index extends Component
 
     public function mount()
     {
+        View::share('mainTitle', 'Inventori');
         View::share('title', 'Hitung dan Catat Persediaan');
         if (session()->has('success')) {
             $this->alert('success', session('success'));

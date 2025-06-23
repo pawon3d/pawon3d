@@ -46,6 +46,8 @@ class RincianPesanan extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
+        View::share('mainTitle', 'Kasir');
+
 
         if (session()->has('success')) {
             $this->alert('success', session('success'));

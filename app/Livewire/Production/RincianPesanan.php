@@ -16,6 +16,7 @@ class RincianPesanan extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Pesanan');
+        View::share('mainTitle', 'Produksi');
         $this->transactionId = $id;
         $this->transaction = \App\Models\Transaction::with(['details.product', 'user'])
             ->findOrFail($this->transactionId);

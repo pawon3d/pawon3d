@@ -39,6 +39,7 @@ class EditProduksiPesanan extends Component
         $this->user_ids = $this->production->workers->pluck('user_id')->toArray();
 
         View::share('title', 'Rencana Produksi ' . $this->method);
+        View::share('mainTitle', 'Produksi');
     }
 
     public function start()

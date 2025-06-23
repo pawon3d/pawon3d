@@ -9,6 +9,7 @@
 'accent' => true,
 'badge' => null,
 'icon' => null,
+'solo' => false,
 ])
 
 @php
@@ -16,10 +17,10 @@
 $square ??= $slot->isEmpty();
 
 // Size-up icons in square/icon-only buttons...
-$iconClasses = Flux::classes($square ? 'size-5!' : 'size-4!');
+$iconClasses = Flux::classes($square ? 'size-6!' : 'size-6!');
 
 $classes = Flux::classes()
-->add('h-10 lg:h-8 relative flex items-center gap-3 rounded-lg')
+->add('h-10 lg:h-8 relative flex items-center gap-3 rounded overflow-hidden')
 ->add($square ? 'px-2.5!' : '')
 ->add('py-0 text-left w-full px-3 my-px')
 ->add('text-zinc-500 dark:text-white/80')
@@ -28,7 +29,8 @@ match ($variant) {
 'outline' => match ($accent) {
 true => [
 'data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content)',
-'data-current:bg-white dark:data-current:bg-white/[7%] data-current:border data-current:border-zinc-200
+'data-current:bg-zinc-800/[20%] dark:data-current:bg-white/[7%] data-current:border data-current:border-l-3
+data-current:border-l-zinc-800
 dark:data-current:border-transparent',
 'hover:text-zinc-800 dark:hover:text-white dark:hover:bg-white/[7%] hover:bg-zinc-800/5 ',
 'border border-transparent',
@@ -74,12 +76,13 @@ false => [
     <?php endif; ?>
 
     <?php if ($slot->isNotEmpty()): ?>
-    <div class="flex-1 text-sm ml-3 font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block"
-        data-content>{{ $slot }}</div>
+    <span
+        class="{{ $solo ? 'ml-1' : 'ml-3'  }} flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block"
+        data-content>{{ $slot }}</span>
     <?php endif; ?>
 
     <?php if (is_string($iconTrailing) && $iconTrailing !== ''): ?>
-    <flux:icon :icon="$iconTrailing" :variant="$iconVariant" class="size-4!" />
+    <flux:icon :icon="$iconTrailing" :variant="$iconVariant" class="size-6!" />
     <?php elseif ($iconTrailing): ?>
     {{ $iconTrailing }}
     <?php endif; ?>

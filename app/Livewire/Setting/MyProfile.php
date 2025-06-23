@@ -26,6 +26,7 @@ class MyProfile extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Pekerja');
+        View::share('mainTitle', 'Pengaturan');
         $this->roles = \App\Models\SpatieRole::all();
         $this->userId = $id;
         $user = \App\Models\User::findOrFail($id);

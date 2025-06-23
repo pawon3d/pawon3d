@@ -52,6 +52,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Pekerja');
+        View::share('mainTitle', 'Pekerja');
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }

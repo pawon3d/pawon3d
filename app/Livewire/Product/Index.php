@@ -56,6 +56,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Produk');
+        View::share('mainTitle', 'Inventori');
 
 
         if (session()->has('success')) {

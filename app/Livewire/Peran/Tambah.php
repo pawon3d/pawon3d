@@ -14,6 +14,7 @@ class Tambah extends Component
     public function mount()
     {
         View::share('title', 'Tambah Peran');
+        View::share('mainTitle', 'Pekerja');
     }
 
     public function createRole()

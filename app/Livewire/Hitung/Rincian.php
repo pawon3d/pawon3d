@@ -31,6 +31,8 @@ class Rincian extends Component
         $this->finish_date = $this->hitung->hitung_date_finish;
         $this->hitungDetails = $this->hitung->details;
         View::share('title', 'Rincian ' . $this->hitung->action);
+        View::share('mainTitle', 'Inventori');
+
 
         if (session()->has('success')) {
             $this->alert('success', session('success'));

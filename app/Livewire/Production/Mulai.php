@@ -37,6 +37,7 @@ class Mulai extends Component
             ];
         })->toArray();
         View::share('title', 'Dapatkan Hasil Produksi');
+        View::share('mainTitle', 'Produksi');
     }
 
     public function riwayatPembaruan()

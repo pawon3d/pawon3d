@@ -20,51 +20,49 @@ use Illuminate\Support\Facades\Route;
                     {{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
 
-            <flux:navlist.group heading="Kasir" expandable :expanded="false" icon="cashier">
-                <flux:navlist.item :href="route('pos')" :current="request()->routeIs('pos')" wire:navigate>
-                    {{ __('Point of Sale') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('transaksi')" :current="request()->routeIs('transaksi')" wire:navigate>
-                    {{ __('Transaksi') }}</flux:navlist.item>
-            </flux:navlist.group>
 
-            <flux:navlist.group expandable :expanded="false" heading="Produksi" icon="chef-hat">
-                <flux:navlist.item :href="route('produksi')" :current="request()->routeIs('produksi')" wire:navigate>{{
-                    __('Produksi') }}</flux:navlist.item>
-            </flux:navlist.group>
+            <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
+                :current="request()->routeIs('transaksi')" wire:navigate>
+                {{ __('Transaksi') }}
+            </flux:navlist.item>
+
+
+            <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
+                icon="chef-hat" wire:navigate>
+                {{ __('Produksi') }}
+            </flux:navlist.item>
 
 
             <flux:navlist.group heading="Inventori" expandable icon="warehouse" :expanded="false">
                 <flux:navlist.item :href="route('bahan-baku')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>{{ __('Bahan
+                    :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
+                    {{ __('Bahan
                     Baku') }}</flux:navlist.item>
                 <flux:navlist.item :href="route('supplier')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>{{
-                    __('Toko Persediaan') }}</flux:navlist.item>
+                    :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
+                    {{ __('Toko Persediaan') }}</flux:navlist.item>
                 <flux:navlist.item :href="route('belanja')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{
-                    __('Belanja') }}</flux:navlist.item>
+                    :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{ __('Belanja') }}
+                </flux:navlist.item>
                 <flux:navlist.item :href="route('hitung')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>{{
-                    __('Hitung dan Catat') }}</flux:navlist.item>
+                    :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>
+                    {{ __('Hitung dan Catat') }}</flux:navlist.item>
                 <flux:navlist.group heading="Produk" expandable sub :expanded="false">
                     <flux:navlist.item :href="route('kategori')" :current="request()->routeIs('kategori')"
                         wire:navigate>{{ __('Kategori') }}</flux:navlist.item>
-                    <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>{{
-                        __('Daftar Produk') }}
+                    <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>
+                        {{ __('Daftar Produk') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
 
             <flux:navlist.group heading="Penilaian" expandable :expanded="false" icon="star" iconVariant="solid">
-                <flux:navlist.item :href="route('hadiah')"
-                    :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs('hadiah.ditukar')"
-                    wire:navigate>
+                <flux:navlist.item :href="route('hadiah')" :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs(
+                        'hadiah.ditukar')" wire:navigate>
                     {{ __('Hadiah') }}
                 </flux:navlist.item>
                 <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
-                    {{
-                    __('Penilaian') }}</flux:navlist.item>
+                    {{ __('Penilaian') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group heading="Karyawan" expandable icon="users" :expanded="false">
@@ -77,11 +75,9 @@ use Illuminate\Support\Facades\Route;
             </flux:navlist.group>
 
 
-            <flux:navlist.group expandable :expanded="false" heading="Pengaturan" icon="cog-6-tooth">
-                <flux:navlist.item :href="route('pengaturan')" :current="request()->routeIs('pengaturan')"
-                    wire:navigate>{{ __('Pengaturan Toko') }}
-                </flux:navlist.item>
-            </flux:navlist.group>
+            <flux:navlist.item solo="true" :href="route('pengaturan')" icon="cog-6-tooth"
+                :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan') }}
+            </flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />
@@ -210,7 +206,7 @@ use Illuminate\Support\Facades\Route;
                 @if (!empty($mainTitle))
                 <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
                     <div class="ml-1 grid flex-1 text-left text-lg">
-                        <span class="mb-0.5 truncate leading-none text-white">{{ $mainTitle }}</span>
+                        <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
                     </div>
                 </div>
                 @else
@@ -305,23 +301,23 @@ use Illuminate\Support\Facades\Route;
     </script>
     <script>
         function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const labels = document.querySelectorAll('.menu-label');
-      const content = document.getElementById('main-content');
+            const sidebar = document.getElementById('sidebar');
+            const labels = document.querySelectorAll('.menu-label');
+            const content = document.getElementById('main-content');
 
-      // Toggle lebar sidebar
-      sidebar.classList.toggle('w-56');
-      sidebar.classList.toggle('w-16');
+            // Toggle lebar sidebar
+            sidebar.classList.toggle('w-56');
+            sidebar.classList.toggle('w-16');
 
-      // Toggle label teks
-      labels.forEach(label => {
-        label.classList.toggle('hidden');
-      });
+            // Toggle label teks
+            labels.forEach(label => {
+                label.classList.toggle('hidden');
+            });
 
-      // Geser konten utama
-      content.classList.toggle('lg:ml-56');
-      content.classList.toggle('lg:ml-12');
-    }
+            // Geser konten utama
+            content.classList.toggle('lg:ml-56');
+            content.classList.toggle('lg:ml-12');
+        }
     </script>
     @yield('scripts')
 </body>

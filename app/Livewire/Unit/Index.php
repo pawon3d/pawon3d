@@ -18,9 +18,9 @@ class Index extends Component
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $filterStatus = '';
-    public $sortField = 'name';
-    public $sortDirection = 'desc';
-    public $name, $alias, $unit_id, $materials;
+    public $sortField = 'group';
+    public $sortDirection = 'asc';
+    public $name, $alias, $unit_id, $materials, $group;
     public $showModal = false;
     public $showEditModal = false;
     public $sortByCategory = false;
@@ -64,6 +64,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Satuan Ukur');
+        View::share('mainTitle', 'Inventori');
     }
     public function render()
     {
@@ -88,6 +89,7 @@ class Index extends Component
         Unit::create([
             'name' => $this->name,
             'alias' => $this->alias,
+            'group' => $this->group,
         ]);
 
         $this->resetForm();
@@ -101,6 +103,7 @@ class Index extends Component
         $this->materials = \App\Models\Unit::where('id', $this->unit_id)->withCount('material_details')->first()->material_details_count;
         $this->name = \App\Models\Unit::find($this->unit_id)->name;
         $this->alias = \App\Models\Unit::find($this->unit_id)->alias;
+        $this->group = \App\Models\Unit::find($this->unit_id)->group;
         $this->showEditModal = true;
     }
 
@@ -118,6 +121,7 @@ class Index extends Component
         $unit->update([
             'name' => $this->name,
             'alias' => $this->alias,
+            'group' => $this->group,
         ]);
         $this->alert('success', 'Satuan Ukur berhasil diperbarui');
         $this->showEditModal = false;
@@ -159,6 +163,7 @@ class Index extends Component
     {
         $this->name = '';
         $this->alias = '';
+        $this->group = '';
         $this->unit_id = null;
     }
 

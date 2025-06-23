@@ -48,6 +48,8 @@ class Rincian extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Produk');
+        View::share('mainTitle', 'Inventori');
+
         $this->product_id = $id;
         $product = Product::with('product_compositions', 'product_categories', 'other_costs')->findOrFail($this->product_id);
         $this->name = $product->name;

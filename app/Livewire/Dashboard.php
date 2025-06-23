@@ -24,19 +24,19 @@ class Dashboard extends Component
 
     public function render()
     {
-        $transactions = Transaction::whereBetween('created_at', [now()->subDays(30), now()])
-            ->get()
+        $transactions = Transaction::whereBetween('start_date', [now()->subDays(30), now()])
+            ->latest()->get()
             ->groupBy(function ($item) {
-                return $item->created_at->format('d M');
+                return Carbon::parse($item->start_date)->format('d M');
             });
 
 
         return view('dashboard', [
             'stats' => [
-                'today_sales' => Transaction::whereDate('created_at', today())->sum('total_amount'),
-                'monthly_revenue' => Transaction::whereMonth('created_at', now()->month)->sum('total_amount'),
+                'today_sales' => Transaction::whereDate('start_date', today())->sum('total_amount'),
+                'monthly_revenue' => Transaction::whereMonth('start_date', now()->month)->sum('total_amount'),
                 'pending_orders' => Transaction::where('status', 'pending')->count(),
-                'completed_productions' => Production::where('status', 'completed')->count()
+                'completed_productions' => Production::where('status', 'Selesai')->count()
             ],
             'transactions' => Transaction::latest()
                 ->with('user')
@@ -47,8 +47,8 @@ class Dashboard extends Component
                     'total' => $item->sum('total_amount')
                 ];
             })->values()->toJson(),
-            'productions' => Production::with('product')
-                ->whereIn('status', ['processing', 'pending'])
+            'productions' => Production::with('details.product')
+                ->whereIn('status', ['Sedang Diproses', 'pending'])
                 ->latest()
                 ->limit(5)
                 ->get(),
@@ -60,10 +60,10 @@ class Dashboard extends Component
                 ->get(),
             'lowStockProducts' => Product::where('stock', '<', 10)
                 ->get(),
-            'latestOrders' => Transaction::orderBy('created_at', 'desc')
+            'latestOrders' => Transaction::orderBy('start_date', 'desc')
                 ->take(5)
                 ->get(),
-            'totalSalesToday' => Transaction::whereDate('created_at', today())->sum('total_amount'),
+            'totalSalesToday' => Transaction::whereDate('start_date', today())->sum('total_amount'),
         ]);
     }
 }

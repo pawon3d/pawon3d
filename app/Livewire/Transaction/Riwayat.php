@@ -34,6 +34,7 @@ class Riwayat extends Component
     public function mount($method)
     {
         View::share('title', 'Riwayat Transaksi');
+        View::share('mainTitle', 'Kasir');
         if ($method == 'pesanan-reguler') {
             $this->methodName = 'Pesanan Reguler';
             $this->method = 'pesanan-reguler';

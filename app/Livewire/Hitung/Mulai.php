@@ -31,6 +31,7 @@ class Mulai extends Component
             ];
         })->toArray();
         View::share('title', $this->hitung->action);
+        View::share('mainTitle', 'Inventori');
     }
 
     public function riwayatPembaruan()

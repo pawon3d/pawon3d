@@ -20,6 +20,7 @@ class Tambah extends Component
     public function mount()
     {
         View::share('title', 'Tambah Toko Persediaan');
+        View::share('mainTitle', 'Inventori');
     }
 
     public function updatedImage()

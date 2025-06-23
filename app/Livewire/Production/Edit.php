@@ -3,6 +3,7 @@
 namespace App\Livewire\Production;
 
 use App\Models\ProductionWorker;
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Edit extends Component
@@ -18,6 +19,8 @@ class Edit extends Component
 
     public function mount($id)
     {
+        View::share('mainTitle', 'Produksi');
+        View::share('title', 'Ubah Produksi');
         $this->production_id = $id;
         $production = \App\Models\Production::findOrFail($this->production_id);
         $this->production = $production;

@@ -27,6 +27,7 @@ class Riwayat extends Component
     public function mount()
     {
         View::share('title', 'Riwayat Belanja Persediaan');
+        View::share('mainTitle', 'Inventori');
     }
 
     public function cetakInformasi()

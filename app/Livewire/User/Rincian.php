@@ -28,6 +28,7 @@ class Rincian extends Component
     public function mount($id)
     {
         View::share('title', 'Rincian Pekerja');
+        View::share('mainTitle', 'Pekerja');
         $this->roles = \App\Models\SpatieRole::all();
         $this->userId = $id;
         $user = \App\Models\User::findOrFail($id);

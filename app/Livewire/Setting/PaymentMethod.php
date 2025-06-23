@@ -22,6 +22,7 @@ class PaymentMethod extends Component
     public function mount()
     {
         View::share('title', 'Metode Pembayaran');
+        View::share('mainTitle', 'Pengaturan');
     }
 
     public function resetFields()

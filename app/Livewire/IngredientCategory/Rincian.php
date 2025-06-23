@@ -35,6 +35,7 @@ class Rincian extends Component
         $this->name = \App\Models\IngredientCategory::find($this->category_id)->name;
         $this->is_active = \App\Models\IngredientCategory::find($this->category_id)->is_active;
         View::share('title', 'Rincian Kategori Persediaan');
+        View::share('mainTitle', 'Inventori');
     }
 
     public function riwayatPembaruan()

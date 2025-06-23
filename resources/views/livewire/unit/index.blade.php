@@ -52,9 +52,9 @@
             <flux:dropdown>
                 <flux:button variant="ghost">
                     @if ($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                     @else
-                    Semua Satuan
+                        Semua Satuan
                     @endif
                     {{-- {{ $filterStatus ? ' (' . $units->total() . ')' : ' (' . $units->count() . ')' }}
                     --}}
@@ -103,7 +103,12 @@
                             {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('alias')">Status
+                            wire:click="sortBy('group')">
+                            Kelompok Satuan
+                            {{ $sortDirection === 'asc' && $sortField === 'group' ? '↑' : '↓' }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            wire:click="sortBy('alias')">
                             Singkatan
                             {{ $sortDirection === 'asc' && $sortField === 'alias' ? '↑' : '↓' }}
                         </th>
@@ -116,21 +121,32 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($units as $unit)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
-                            wire:click="edit('{{ $unit->id }}')">
-                            {{ $unit->name }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
-                        </td>
-                        <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                            {{ $unit->material_details_count }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
+                                wire:click="edit('{{ $unit->id }}')">
+                                {{ $unit->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if ($unit->group === 'Berat')
+                                    Berat / Massa
+                                @elseif ($unit->group === 'Volume')
+                                    Volume
+                                @elseif ($unit->group === 'Jumlah')
+                                    Jumlah
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
+                            </td>
+                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                                {{ $unit->material_details_count }}
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -150,20 +166,34 @@
             <div class="space-y-4">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Nama Satuan</label>
-                    <input type="text" id="name" wire:model.lazy="name"
+                    <input type="text" id="name" wire:model.lazy="name" placeholder="Contoh: Kilogram"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="group" class="block text-sm font-medium text-gray-700">Kelompok Satuan</label>
+                    <select type="text" id="group" wire:model.lazy="group"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required>
+                        <option value="">Pilih Kelompok Satuan</option>
+                        <option value="Berat">Berat / Massa</option>
+                        <option value="Volume">Volume</option>
+                        <option value="Jumlah">Jumlah</option>
+                    </select>
+                    @error('group')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="alias" class="block text-sm font-medium text-gray-700">Singkatan</label>
-                    <input type="text" id="alias" wire:model.lazy="alias"
+                    <input type="text" id="alias" wire:model.lazy="alias" placeholder="Contoh: Kg"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -185,20 +215,34 @@
             <div class="space-y-4">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Nama Satuan</label>
-                    <input type="text" id="name" wire:model.lazy="name"
+                    <input type="text" id="name" wire:model.lazy="name" placeholder="Contoh: Kilogram"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="group" class="block text-sm font-medium text-gray-700">Kelompok Satuan</label>
+                    <select type="text" id="group" wire:model.lazy="group"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required>
+                        <option value="">Pilih Kelompok Satuan</option>
+                        <option value="Berat">Berat / Massa</option>
+                        <option value="Volume">Volume</option>
+                        <option value="Jumlah">Jumlah</option>
+                    </select>
+                    @error('group')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
                     <label for="alias" class="block text-sm font-medium text-gray-700">Singkatan</label>
-                    <input type="text" id="alias" wire:model.lazy="alias"
+                    <input type="text" id="alias" wire:model.lazy="alias" placeholder="Contoh: Kg"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -249,13 +293,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

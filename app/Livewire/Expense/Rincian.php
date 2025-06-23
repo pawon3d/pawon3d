@@ -37,6 +37,7 @@ class Rincian extends Component
         $this->percentage = floor($this->percentage);
         $this->expenseDetails = $this->expense->expenseDetails;
         View::share('title', 'Rincian Belanja Persediaan');
+        View::share('mainTitle', 'Inventori');
 
         if (session()->has('success')) {
             $this->alert('success', session('success'));

@@ -29,6 +29,7 @@ class Edit extends Component
     public function mount($id)
     {
         View::share('title', 'Buat Pesanan');
+        View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);
         $this->transaction = $transaction;

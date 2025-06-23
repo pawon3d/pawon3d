@@ -39,6 +39,7 @@ class Riwayat extends Component
             $this->methodName = 'Siap Beli';
         }
         View::share('title', 'Riwayat Produksi ' . $this->methodName);
+        View::share('mainTitle', 'Produksi');
     }
     public function render()
     {

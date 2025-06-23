@@ -3,6 +3,7 @@
 namespace App\Livewire\Peran;
 
 use App\Models\SpatieRole;
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Rincian extends Component
@@ -18,6 +19,8 @@ class Rincian extends Component
     ];
     public function mount($id)
     {
+        View::share('mainTitle', 'Pekerja');
+        View::share('title', 'Rincian Peran');
         $role = SpatieRole::findOrFail($id);
 
         $this->roleId = $role->id;

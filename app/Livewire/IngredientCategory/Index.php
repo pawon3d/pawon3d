@@ -64,6 +64,7 @@ class Index extends Component
     public function mount()
     {
         View::share('title', 'Kategori Persediaan');
+        View::share('mainTitle', 'Inventori');
     }
     public function render()
     {

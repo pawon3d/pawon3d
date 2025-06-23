@@ -83,15 +83,16 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($transactions as $transaction)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->created_at->format('d M Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">Rp
-                                {{ number_format($transaction->total_amount, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($transaction->status) }}</td>
-                        </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ \Carbon\Carbon::parse($transaction->start_date)->format('d / m / Y H:i') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">Rp
+                                    {{ number_format($transaction->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($transaction->status) }}</td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -106,10 +107,10 @@
             <h2 class="text-xl font-semibold mb-4">Produk Stok Rendah</h2>
             <ul class="divide-y divide-gray-200">
                 @foreach ($lowStockProducts as $product)
-                <li class="py-2 flex justify-between">
-                    <span>{{ $product->name }}</span>
-                    <span class="text-red-500 font-bold">{{ $product->stock }}</span>
-                </li>
+                    <li class="py-2 flex justify-between">
+                        <span>{{ $product->name }}</span>
+                        <span class="text-red-500 font-bold">{{ $product->stock }}</span>
+                    </li>
                 @endforeach
             </ul>
         </div>
@@ -128,10 +129,10 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($topSellingProducts as $detail)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $detail->product->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $detail->total_quantity }}</td>
-                        </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $detail->product->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $detail->total_quantity }}</td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -153,12 +154,17 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($productions as $production)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $production->product->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($production->status) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $production->created_at->format('d M Y') }}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $production->details->count() > 0
+                                        ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
+                                        : 'Tidak ada produk' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($production->status) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $production->created_at->format('d / m / Y H:i') }}
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -167,48 +173,49 @@
     </div>
 
     @section('scripts')
-    <script src="{{ asset('scripts/chart.js') }}"></script>
-    <script>
-        function initializeChart() {
-            const ctx = document.getElementById('transactionsChart').getContext('2d');
-            const chartData = {!! $transactions_chart !!};
-        
-            const labels = chartData.map(item => item.date);
-            const totals = chartData.map(item => item.total);
-        
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Penjualan',
-                        data: totals,
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return 'Rp ' + value.toLocaleString();
+        <script src="{{ asset('scripts/chart.js') }}"></script>
+        <script>
+            function initializeChart() {
+                const ctx = document.getElementById('transactionsChart').getContext('2d');
+                const chartData = {!! $transactions_chart !!};
+
+                const labels = chartData.map(item => item.date);
+                const totals = chartData.map(item => item.total);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Penjualan',
+                            data: totals,
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toLocaleString();
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                });
+            }
+
+            document.addEventListener('livewire:navigated', function() {
+                initializeChart();
+            }, {
+                once: true
             });
-        }
-
-        document.addEventListener('livewire:navigated', function () {
-            initializeChart();
-        },{ once: true });
-
-    </script>
+        </script>
     @endsection
 </div>

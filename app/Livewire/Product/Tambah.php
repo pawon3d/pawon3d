@@ -45,6 +45,7 @@ class Tambah extends Component
     public function mount()
     {
         View::share('title', 'Tambah Produk');
+        View::share('mainTitle', 'Inventori');
 
         $this->product_compositions = [[
             'material_id' => '',

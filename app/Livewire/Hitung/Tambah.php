@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hitung;
 
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Tambah extends Component
@@ -19,6 +20,7 @@ class Tambah extends Component
     public function mount()
     {
         \Illuminate\Support\Facades\View::share('title', 'Tambah Aksi');
+        View::share('mainTitle', 'Inventori');
 
         $this->hitung_details = [[
             'material_id' => '',

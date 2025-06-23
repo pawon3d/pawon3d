@@ -36,6 +36,7 @@ class Pesanan extends Component
     public function mount($method)
     {
         View::share('title', 'Daftar Pesanan');
+        View::share('mainTitle', 'Produksi');
         if ($method == 'pesanan-reguler') {
             $this->methodName = 'Pesanan Reguler';
             $this->method = 'pesanan-reguler';

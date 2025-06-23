@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Expense;
 
+use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
 class Edit extends Component
@@ -14,6 +15,7 @@ class Edit extends Component
     public function mount($id)
     {
         \Illuminate\Support\Facades\View::share('title', 'Ubah Daftar Belanja');
+        View::share('mainTitle', 'Inventori');
         $this->expense_id = $id;
         $expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])->findOrFail($this->expense_id);
         $this->supplier_id = $expense->supplier_id;

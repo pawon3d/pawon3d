@@ -45,6 +45,7 @@ class TambahProduksiPesanan extends Component
         $this->start_date = \Carbon\Carbon::parse($this->start_date)->format('d/m/Y');
 
         View::share('title', 'Rencana Produksi ' . $this->method);
+        View::share('mainTitle', 'Produksi');
     }
 
     public function start()

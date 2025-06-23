@@ -18,6 +18,7 @@ class Tambah extends Component
     public function mount()
     {
         View::share('title', 'Tambah Pekerja');
+        View::share('mainTitle', 'Pekerja');
         $this->roles = SpatieRole::all();
     }
 
