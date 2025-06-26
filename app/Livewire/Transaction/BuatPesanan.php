@@ -48,6 +48,7 @@ class BuatPesanan extends Component
             })->toArray();
             $this->totalAmount = $transaction->total_amount;
             $this->method = $transaction->method;
+            $this->paidAmount = 0.5 * $this->totalAmount;
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
             return redirect()->route('transaksi');

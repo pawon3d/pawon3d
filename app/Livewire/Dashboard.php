@@ -35,7 +35,7 @@ class Dashboard extends Component
             'stats' => [
                 'today_sales' => Transaction::whereDate('start_date', today())->sum('total_amount'),
                 'monthly_revenue' => Transaction::whereMonth('start_date', now()->month)->sum('total_amount'),
-                'pending_orders' => Transaction::where('status', 'pending')->count(),
+                'pending_orders' => Transaction::where('status', 'Belum Diproses')->count(),
                 'completed_productions' => Production::where('status', 'Selesai')->count()
             ],
             'transactions' => Transaction::latest()

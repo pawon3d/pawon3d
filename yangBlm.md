@@ -36,6 +36,7 @@
 -   [x] Bagian produksi blm
 -   [x] Pergantian harga bahan di belanja
 -   [x] Pengaturan
+-   [x] Main Title
 
 ## BELUM SELESAI
 
@@ -44,6 +45,9 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
+-   [ ] kelola pelanggan
+-   [ ] shift kasir
+-   [ ] refund
 
 ### Medium Priority
 

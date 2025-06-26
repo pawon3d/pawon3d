@@ -7,10 +7,7 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-blue-100">
-                        <!-- Icon bisa diganti sesuai preferensi -->
-                        <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3z" />
-                        </svg>
+                        <flux:icon name="banknotes" class="h-8 w-8 text-blue-500" />
                     </div>
                     <div class="ml-4">
                         <p class="text-sm text-gray-500">Penjualan Hari Ini</p>
@@ -21,9 +18,7 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-green-100">
-                        <svg class="h-8 w-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
-                        </svg>
+                        <flux:icon name="arrow-up" class="h-8 w-8 text-green-500" />
                     </div>
                     <div class="ml-4">
                         <p class="text-sm text-gray-500">Pendapatan Bulan Ini</p>
@@ -35,13 +30,10 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-yellow-100">
-                        <svg class="h-8 w-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M3 6h18M3 14h18" />
-                        </svg>
+                        <flux:icon name="minus" class="h-8 w-8 text-yellow-500" />
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm text-gray-500">Order Pending</p>
+                        <p class="text-sm text-gray-500">Pesanan Belum Diproses</p>
                         <p class="text-2xl font-semibold">{{ $stats['pending_orders'] }}</p>
                     </div>
                 </div>
@@ -49,9 +41,7 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-purple-100">
-                        <svg class="h-8 w-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
-                        </svg>
+                        <flux:icon name="check-circle" class="h-8 w-8 text-purple-500" />
                     </div>
                     <div class="ml-4">
                         <p class="text-sm text-gray-500">Produksi Selesai</p>
@@ -83,16 +73,16 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($transactions as $transaction)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ \Carbon\Carbon::parse($transaction->start_date)->format('d / m / Y H:i') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp
-                                    {{ number_format($transaction->total_amount, 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($transaction->status) }}</td>
-                            </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $transaction->invoice_number }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($transaction->start_date)->format('d / m / Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">Rp
+                                {{ number_format($transaction->total_amount, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($transaction->status) }}</td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -107,10 +97,10 @@
             <h2 class="text-xl font-semibold mb-4">Produk Stok Rendah</h2>
             <ul class="divide-y divide-gray-200">
                 @foreach ($lowStockProducts as $product)
-                    <li class="py-2 flex justify-between">
-                        <span>{{ $product->name }}</span>
-                        <span class="text-red-500 font-bold">{{ $product->stock }}</span>
-                    </li>
+                <li class="py-2 flex justify-between">
+                    <span>{{ $product->name }}</span>
+                    <span class="text-red-500 font-bold">{{ $product->stock }}</span>
+                </li>
                 @endforeach
             </ul>
         </div>
@@ -129,10 +119,10 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($topSellingProducts as $detail)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $detail->product->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $detail->total_quantity }}</td>
-                            </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $detail->product->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $detail->total_quantity }}</td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -154,17 +144,17 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($productions as $production)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $production->details->count() > 0
-                                        ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
-                                        : 'Tidak ada produk' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($production->status) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {{ $production->created_at->format('d / m / Y H:i') }}
-                                </td>
-                            </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $production->details->count() > 0
+                                ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
+                                : 'Tidak ada produk' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($production->status) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $production->created_at->format('d / m / Y H:i') }}
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -173,9 +163,9 @@
     </div>
 
     @section('scripts')
-        <script src="{{ asset('scripts/chart.js') }}"></script>
-        <script>
-            function initializeChart() {
+    <script src="{{ asset('scripts/chart.js') }}"></script>
+    <script>
+        function initializeChart() {
                 const ctx = document.getElementById('transactionsChart').getContext('2d');
                 const chartData = {!! $transactions_chart !!};
 
@@ -216,6 +206,6 @@
             }, {
                 once: true
             });
-        </script>
+    </script>
     @endsection
 </div>

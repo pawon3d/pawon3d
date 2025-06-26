@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
         <flux:navlist variant="outline" class="my-4 gap-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
             <flux:navlist.group expandable :expanded="false" heading="Dashboard" icon="align-end-horizontal">
-                <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
 
@@ -265,7 +265,7 @@ use Illuminate\Support\Facades\Route;
         </div>
     </div>
 
-    <div id="main-content" class="lg:ml-12 ml-12 mt-16 transition-all duration-300">
+    <div id="main-content" class="lg:ml-12 ml-12 mt-16 transition-all duration-300 bg-gray-100">
         {{ $slot }}
     </div>
 

@@ -3,6 +3,7 @@
 namespace App\Livewire\Transaction;
 
 use App\Models\Product;
+use App\Models\Shift;
 use Livewire\Component;
 use Mike42\Escpos\Printer;
 use App\Models\Transaction;
@@ -22,11 +23,32 @@ class Index extends Component
     public $filterStatus = '';
     public $search = '';
     public $showHistoryModal = false;
-    public $viewMode = 'grid';
     public $method = 'pesanan-reguler';
     public array $cart = [];
+    public $todayShiftId;
+    public $todayShiftNumber;
+    public $todayShiftStatus;
+    public $todayShiftStartTime;
+    public $todayShiftEndTime;
+    public $todayShiftOpenedBy;
+    public $todayShiftClosedBy;
+    public $initialCash = 0;
+    public $finalCash = 0;
+    public $receivedCash = 0;
+    public $discountToday = 0;
+    public $expectedCash = 0;
+    public $openShiftModal = false;
+    public $closeShiftModal = false;
+    public $finishShiftModal = false;
 
-    protected $queryString = ['viewMode', 'method'];
+    public $historyShifts = [];
+    public $showHistoryShiftModal = false;
+    public $searchHistoryShift = '';
+    public $showDetailHistoryShiftModal = false;
+    public $selectedShiftId = null;
+    public $selectedShift;
+
+    protected $queryString = ['method'];
 
     protected $listeners = [
         'refreshTransactions' => '$refresh',
@@ -40,8 +62,123 @@ class Index extends Component
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
-        $this->viewMode = session('viewMode', 'grid');
         $this->method = session('method', 'pesanan-reguler');
+        $todayShift = \App\Models\Shift::whereDate('start_time', now())
+            ->where('status', 'open')
+            ->latest()->first();
+        $transaction = \App\Models\Transaction::whereDate('start_date', now())
+            ->whereHas('payments', function ($query) {
+                $query->where('payment_method', 'tunai');
+            })
+            ->sum('total_amount');
+        if ($todayShift) {
+            $this->todayShiftId = $todayShift->id;
+            $this->todayShiftNumber = $todayShift->shift_number;
+            $this->todayShiftStatus = $todayShift->status;
+            $this->todayShiftStartTime = $todayShift->start_time;
+            $this->todayShiftOpenedBy = $todayShift->opened_by ? $todayShift->openedBy->name : 'System';
+            $this->initialCash = $todayShift->initial_cash;
+            $this->finalCash = $todayShift->final_cash;
+            $this->receivedCash = $transaction ?? 0;
+            $this->discountToday = 0;
+            $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday;
+        } else {
+            $this->todayShiftId = null;
+            $this->todayShiftNumber = null;
+            $this->todayShiftStatus = 'closed';
+            $this->todayShiftStartTime = null;
+            $this->todayShiftOpenedBy = 'System';
+        }
+    }
+
+    public function openShift()
+    {
+        if ($this->todayShiftId) {
+            $this->alert('warning', 'Shift hari ini sudah dibuka!');
+            return;
+        }
+
+        $shift = \App\Models\Shift::create([
+            'opened_by' => Auth::id(),
+            'start_time' => now(),
+            'status' => 'open',
+            'initial_cash' => $this->initialCash,
+        ]);
+        $shift->refresh();
+        $this->todayShiftId = $shift->id;
+        $this->todayShiftNumber = $shift->shift_number;
+        $this->todayShiftStatus = $shift->status;
+        $this->todayShiftStartTime = $shift->start_time;
+        $this->todayShiftOpenedBy = $shift->openedBy ? $shift->openedBy->name : 'System';
+        $this->initialCash = $shift->initial_cash;
+        $this->finalCash = 0;
+        $this->receivedCash = 0;
+        $this->discountToday = 0;
+        $this->expectedCash = $this->initialCash + $this->receivedCash - $this->discountToday;
+        $this->openShiftModal = false;
+
+        $this->alert('success', 'Sesi berhasil dibuka!');
+    }
+
+    public function closeShift()
+    {
+        if (!$this->todayShiftId) {
+            $this->alert('warning', 'Tidak ada sesi yang dibuka hari ini!');
+            return;
+        }
+
+        $shift = \App\Models\Shift::find($this->todayShiftId);
+        if (!$shift) {
+            $this->alert('warning', 'Sesi tidak ditemukan!');
+            return;
+        }
+
+        $shift->update([
+            'closed_by' => Auth::id(),
+            'end_time' => now(),
+            'status' => 'closed',
+            'final_cash' => $this->finalCash,
+        ]);
+        $shift->refresh();
+        $this->todayShiftClosedBy = $shift->closedBy ? $shift->closedBy->name : 'System';
+        $this->todayShiftEndTime = $shift->end_time;
+        $this->todayShiftId = null;
+        $this->todayShiftNumber = null;
+        $this->todayShiftStatus = 'closed';
+        $this->todayShiftStartTime = null;
+        $this->closeShiftModal = false;
+        $this->finishShiftModal = true;
+
+        $this->alert('success', 'Sesi berhasil ditutup!');
+    }
+
+    public function openHistoryShiftModal()
+    {
+        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
+            ->orderBy('shift_number')
+            ->get();
+        $this->searchHistoryShift = '';
+
+        $this->showHistoryShiftModal = true;
+    }
+
+    public function updatedSearchHistoryShift($value)
+    {
+        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
+            ->when($value, function ($query) use ($value) {
+                $query->where('shift_number', 'like', '%' . $value . '%')
+                    ->orWhere('status', 'like', '%' . $value . '%');
+            })
+            ->orderBy('shift_number')
+            ->get();
+    }
+
+    public function viewShift($id)
+    {
+        $this->selectedShiftId = $id;
+        $shift = Shift::findOrFail($this->selectedShiftId);
+        $this->selectedShift = $shift;
+        $this->showDetailHistoryShiftModal = true;
     }
 
     public function riwayatPembaruan()
@@ -61,15 +198,10 @@ class Index extends Component
         ]);
     }
 
-    public function updatedViewMode($value)
-    {
-        session()->put('viewMode', $value);
-    }
-
     public function updatedMethod($value)
     {
         session()->put('method', $value);
-        $this->cart = []; // Reset keranjang saat metode berubah
+        $this->cart = [];
     }
 
     // Untuk handle increment/decrement
