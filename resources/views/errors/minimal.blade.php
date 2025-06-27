@@ -594,7 +594,9 @@
             <p class="text-sm">Halaman yang kamu cari tidak ditemukan. Kembali ke halaman
                 utama.</p>
             <div class="buttons whitespace-nowrap inline-block">
-                <a href="/" class="button">Kembali</a>
+                {{-- <a href="/" class="button">Kembali</a> --}}
+                {{-- jika ada halaman sebelumnya kembali ke halaman sebelumnya, jika tidak ada kembali ke home --}}
+                <a href="{{ url()->previous() }}" class="button">Kembali</a>
             </div>
         </div>
     </div>

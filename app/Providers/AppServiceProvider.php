@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\StoreProfile;
 use App\Models\StoreSetting;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $storeSetting = StoreSetting::first();
         View::share('storeSetting', $storeSetting);
+        View::composer('*', function ($view) {
+            $view->with('storeProfile', \App\Models\StoreProfile::first());
+        });
+
         Livewire::component('livewire-alert', \Jantinnerezo\LivewireAlert\LivewireAlert::class);
     }
 }

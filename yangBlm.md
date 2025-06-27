@@ -37,6 +37,7 @@
 -   [x] Pergantian harga bahan di belanja
 -   [x] Pengaturan
 -   [x] Main Title
+-   [x] shift kasir
 
 ## BELUM SELESAI
 
@@ -46,7 +47,6 @@
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
 -   [ ] kelola pelanggan
--   [ ] shift kasir
 -   [ ] refund
 
 ### Medium Priority

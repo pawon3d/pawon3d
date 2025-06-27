@@ -45,7 +45,26 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: false);
+            // $this->redirectIntended(default: route('dashboard', absolute: false), navigate: false);
+        $user = Auth::user();
+
+        $permissionRoutes = [
+            'Manajemen Sistem' => 'dashboard',
+            'Kasir' => 'transaksi',
+            'Produksi' => 'produksi',
+            'Inventori' => 'bahan-baku',
+        ];
+
+        foreach ($permissionRoutes as $permission => $routeName) {
+            if ($user->hasPermissionTo($permission)) {
+                $this->redirect(route($routeName), navigate: false);
+                return;
+            }
+        }
+
+        $this->redirect(route('home'), navigate: false);
+
+        
     }
 
     /**

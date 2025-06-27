@@ -25,16 +25,33 @@ class Dashboard extends Component
     public function render()
     {
         $transactions = Transaction::whereBetween('start_date', [now()->subDays(30), now()])
-            ->latest()->get()
+            ->get()
             ->groupBy(function ($item) {
                 return Carbon::parse($item->start_date)->format('d M');
             });
-
+        $today_sales = Transaction::whereDate('start_date', now())
+            ->where('payment_status', '=', 'Lunas')
+            ->sum('total_amount');
+        $today_sales_belum_lunas = Transaction::whereDate('start_date', now())
+            ->where('payment_status', '!=', 'Lunas')
+            ->whereNotIn('status', ['Draft', 'temp'])
+            ->withSum('payments', 'paid_amount')
+            ->get()
+            ->sum('payments_sum_paid_amount');
+        $monthly_revenue = Transaction::whereMonth('start_date', now()->month)
+            ->where('payment_status', '=', 'Lunas')
+            ->sum('total_amount');
+        $monthly_revenue_belum_lunas = Transaction::whereMonth('start_date', now()->month)
+            ->where('payment_status', '!=', 'Lunas')
+            ->whereNotIn('status', ['Draft', 'temp'])
+            ->withSum('payments', 'paid_amount')
+            ->get()
+            ->sum('payments_sum_paid_amount');
 
         return view('dashboard', [
             'stats' => [
-                'today_sales' => Transaction::whereDate('start_date', today())->sum('total_amount'),
-                'monthly_revenue' => Transaction::whereMonth('start_date', now()->month)->sum('total_amount'),
+                'today_sales' => $today_sales + $today_sales_belum_lunas,
+                'monthly_revenue' => $monthly_revenue + $monthly_revenue_belum_lunas,
                 'pending_orders' => Transaction::where('status', 'Belum Diproses')->count(),
                 'completed_productions' => Production::where('status', 'Selesai')->count()
             ],
@@ -58,7 +75,7 @@ class Dashboard extends Component
                 ->with('product')
                 ->take(5)
                 ->get(),
-            'lowStockProducts' => Product::where('stock', '<', 10)
+            'lowStockProducts' => Product::where('stock', '<', 10)->where('stock', '>', 0)
                 ->get(),
             'latestOrders' => Transaction::orderBy('start_date', 'desc')
                 ->take(5)

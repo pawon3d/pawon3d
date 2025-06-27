@@ -15,24 +15,28 @@ use Illuminate\Support\Facades\Route;
         class="fixed inset-y-0 px-2 left-0 z-40 w-16 mt-16 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
         <flux:navlist variant="outline" class="my-4 gap-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
+            @can('Manajemen Sistem')
             <flux:navlist.group expandable :expanded="false" heading="Dashboard" icon="align-end-horizontal">
                 <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
+            @endcan
 
-
+            @can('Kasir')
             <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
                 :current="request()->routeIs('transaksi')" wire:navigate>
                 {{ __('Transaksi') }}
             </flux:navlist.item>
+            @endcan
 
-
+            @can('Produksi')
             <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
                 icon="chef-hat" wire:navigate>
                 {{ __('Produksi') }}
             </flux:navlist.item>
+            @endcan
 
-
+            @can('Inventori')
             <flux:navlist.group heading="Inventori" expandable icon="warehouse" :expanded="false">
                 <flux:navlist.item :href="route('bahan-baku')"
                     :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
@@ -55,7 +59,9 @@ use Illuminate\Support\Facades\Route;
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist.group>
+            @endcan
 
+            @canany(['Manajemen Sistem', 'Kasir'])
             <flux:navlist.group heading="Penilaian" expandable :expanded="false" icon="star" iconVariant="solid">
                 <flux:navlist.item :href="route('hadiah')" :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs(
                         'hadiah.ditukar')" wire:navigate>
@@ -64,7 +70,9 @@ use Illuminate\Support\Facades\Route;
                 <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
                     {{ __('Penilaian') }}</flux:navlist.item>
             </flux:navlist.group>
+            @endcanany
 
+            @can('Manajemen Sistem')
             <flux:navlist.group heading="Karyawan" expandable icon="users" :expanded="false">
                 <flux:navlist.item :href="route('user')" :current="Str::startsWith(Route::currentRouteName(), 'user')"
                     wire:navigate>{{ __('Pekerja') }}
@@ -73,8 +81,7 @@ use Illuminate\Support\Facades\Route;
                     wire:navigate>{{ __('Peran') }}
                 </flux:navlist.item>
             </flux:navlist.group>
-
-
+            @endcan
             <flux:navlist.item solo="true" :href="route('pengaturan')" icon="cog-6-tooth"
                 :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan') }}
             </flux:navlist.item>
@@ -205,7 +212,12 @@ use Illuminate\Support\Facades\Route;
                 </flux:button>
                 @if (!empty($mainTitle))
                 <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
-                    <div class="ml-1 grid flex-1 text-left text-lg">
+                    <div class="ml-1 flex flex-row gap-3 items-center flex-1 text-left text-lg">
+                        @if (!empty($storeProfile?->logo))
+                        <img src="{{ asset('storage/' . $storeProfile->logo) }}" alt="Logo"
+                            class="w-14 h-14 object-cover rounded-full">
+                        @endif
+
                         <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
                     </div>
                 </div>
@@ -218,10 +230,15 @@ use Illuminate\Support\Facades\Route;
             <flux:dropdown position="top" align="start">
                 <flux:button variant="ghost">
                     <div class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                        @if (auth()->user()->image)
+                        <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"
+                            class="h-full w-full object-cover rounded-full">
+                        @else
                         <span
                             class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                             {{ auth()->user()->initials() }}
                         </span>
+                        @endif
                     </div>
                     <span class="font-semibold text-gray-100">{{ auth()->user()->name }}</span>
                     <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
@@ -232,10 +249,16 @@ use Illuminate\Support\Facades\Route;
                         <div class="p-0 text-sm font-normal">
                             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                                    @if (auth()->user()->image)
+                                    <img src="{{ asset('storage/' . auth()->user()->image) }}"
+                                        alt="{{ auth()->user()->name }}"
+                                        class="h-full w-full object-cover rounded-full">
+                                    @else
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                         {{ auth()->user()->initials() }}
                                     </span>
+                                    @endif
                                 </span>
 
                                 <div class="grid flex-1 text-left text-sm leading-tight">
@@ -265,7 +288,7 @@ use Illuminate\Support\Facades\Route;
         </div>
     </div>
 
-    <div id="main-content" class="lg:ml-12 ml-12 mt-16 transition-all duration-300 bg-gray-100">
+    <div id="main-content" class="lg:ml-12 ml-12 mt-16 transition-all duration-300 bg-gray-100 min-h-screen">
         {{ $slot }}
     </div>
 

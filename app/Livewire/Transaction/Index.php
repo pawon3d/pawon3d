@@ -155,7 +155,6 @@ class Index extends Component
     public function openHistoryShiftModal()
     {
         $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
-            ->orderBy('shift_number')
             ->get();
         $this->searchHistoryShift = '';
 

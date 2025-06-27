@@ -38,6 +38,9 @@ class StoreProfile extends Component
         View::share('title', 'Profil Toko');
         View::share('mainTitle', 'Pengaturan');
         $storeProfile = \App\Models\StoreProfile::first();
+        if (session()->has('success')) {
+            $this->alert('success', session('success'));
+        }
         if ($storeProfile) {
             // $this->logo = $storeProfile->logo;
             // $this->banner = $storeProfile->banner;
@@ -344,12 +347,16 @@ class StoreProfile extends Component
             $storeProfile->logo = $this->logo ? $this->logo->store('store_profiles', 'public') : $storeProfile->logo;
             $storeProfile->save();
         }
-        $this->alert('success', 'Profil Toko berhasil diperbarui!', [
-            'position' => 'top-end',
-            'timer' => 3000,
-            'toast' => true,
-            'showConfirmButton' => false,
-        ]);
+        if ($this->logo) {
+            return redirect()->route('profil-usaha')->with('success', 'Profil Toko berhasil diperbarui!');
+        } else {
+            $this->alert('success', 'Profil Toko berhasil diperbarui!', [
+                'position' => 'top-end',
+                'timer' => 3000,
+                'toast' => true,
+                'showConfirmButton' => false,
+            ]);
+        }
     }
     public function render()
     {

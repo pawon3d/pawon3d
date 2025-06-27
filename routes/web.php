@@ -45,17 +45,19 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
-    Route::get('/pekerja', Index::class)->name('user');
-    Route::get('/pekerja/tambah', App\Livewire\User\Tambah::class)->name('user.tambah');
-    Route::get('/pekerja/{id}/rincian', App\Livewire\User\Rincian::class)->name('user.edit');
-    Route::get('/pekerja/cetak', [PdfController::class, 'generateUserPDF'])
-        ->name('user.pdf');
-
-    Route::get('/peran', App\Livewire\Peran\Index::class)->name('role');
-    Route::get('/peran/tambah', App\Livewire\Peran\Tambah::class)->name('role.tambah');
-    Route::get('/peran/{id}/rincian', App\Livewire\Peran\Rincian::class)->name('role.edit');
-    Route::get('/peran/cetak', [PdfController::class, 'generateRolePDF'])
-        ->name('role.pdf');
+    Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
+        Route::get('/pekerja', Index::class)->name('user');
+        Route::get('/pekerja/tambah', App\Livewire\User\Tambah::class)->name('user.tambah');
+        Route::get('/pekerja/{id}/rincian', App\Livewire\User\Rincian::class)->name('user.edit');
+        Route::get('/pekerja/cetak', [PdfController::class, 'generateUserPDF'])
+            ->name('user.pdf');
+    
+        Route::get('/peran', App\Livewire\Peran\Index::class)->name('role');
+        Route::get('/peran/tambah', App\Livewire\Peran\Tambah::class)->name('role.tambah');
+        Route::get('/peran/{id}/rincian', App\Livewire\Peran\Rincian::class)->name('role.edit');
+        Route::get('/peran/cetak', [PdfController::class, 'generateRolePDF'])
+            ->name('role.pdf');
+    });
 
     Route::post('/read-notification/{id}', function ($id) {
         $notification = \App\Models\Notification::find($id);
@@ -63,6 +65,8 @@ Route::middleware(['auth'])->group(function () {
         return response()->json(['message' => 'Notification has been read']);
     })->name('read-notification');
 
+
+    Route::group(['middleware' => ['permission:Inventori']], function () {
     Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
     Route::get('/kategori/tambah', App\Livewire\Category\Tambah::class)->name('kategori.tambah');
     Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
@@ -113,6 +117,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('hitung.pdf');
     Route::get('/hitung/cetak/{id}', [PdfController::class, 'generateHitungDetailPDF'])
         ->name('rincian-hitung.pdf');
+});
+
     Route::group(['middleware' => ['permission:Kasir']], function () {
         Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
         Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
@@ -133,6 +139,8 @@ Route::middleware(['auth'])->group(function () {
         })->name('transaksi.cetak');
         Route::get('/cetak-struk/{id}', App\Livewire\Receipt::class)->name('cetak-struk');
     });
+
+Route::group(['middleware' => ['permission:Produksi']], function () {
     Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
     Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
     Route::get('/produksi/{id}/edit', App\Livewire\Production\Edit::class)->name('produksi.edit');
@@ -149,15 +157,23 @@ Route::middleware(['auth'])->group(function () {
         ->name('produksi.pdf');
     Route::get('/produksi/cetak/{id}', [PdfController::class, 'generateProductionDetailPDF'])
         ->name('rincian-produksi.pdf');
+});
+
     Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
     Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
     Route::get('/penukaran', App\Livewire\Prize\Exchange::class)->name('penukaran');
     Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
     Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
+
     Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
     Route::get('/profil-saya/{id}', App\Livewire\Setting\MyProfile::class)->name('profil-saya');
+
+
+    Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
     Route::get('/profil-usaha', App\Livewire\Setting\StoreProfile::class)->name('profil-usaha');
     Route::get('/metode-pembayaran', App\Livewire\Setting\PaymentMethod::class)->name('metode-pembayaran');
+    });
+
     Route::get('/panduan-pengguna', App\Livewire\Setting\UserManual::class)->name('panduan-pengguna');
 
 

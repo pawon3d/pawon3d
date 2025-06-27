@@ -40,24 +40,24 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-logo-container" class="w-full h-full">
                                 @if ($previewLogoImage)
-                                    <!-- Image Preview -->
-                                    <img src="{{ $previewLogoImage }}" alt="Preview" class="object-cover w-full h-full"
-                                        id="logo-image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewLogoImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="logo-image-preview" />
                                 @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -75,9 +75,9 @@
 
                     <!-- Error Message -->
                     @error('logo')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                     <!-- Loading Indicator -->
@@ -117,24 +117,24 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-banner-container" class="w-full h-full">
                                 @if ($previewBannerImage)
-                                    <!-- Image Preview -->
-                                    <img src="{{ $previewBannerImage }}" alt="Preview"
-                                        class="object-cover w-full h-full" id="banner-image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewBannerImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="banner-image-preview" />
                                 @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -152,9 +152,9 @@
 
                     <!-- Error Message -->
                     @error('banner')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                     <!-- Loading Indicator -->
@@ -196,24 +196,24 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-building-container" class="w-full h-full">
                                 @if ($previewBuildingImage)
-                                    <!-- Image Preview -->
-                                    <img src="{{ $previewBuildingImage }}" alt="Preview"
-                                        class="object-cover w-full h-full" id="building-image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewBuildingImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="building-image-preview" />
                                 @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -231,9 +231,9 @@
 
                     <!-- Error Message -->
                     @error('building')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                     <!-- Loading Indicator -->
@@ -271,7 +271,7 @@
             Informasi Jam Operasional
         </h4>
         <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Senin</flux:label>
                     <flux:switch wire:model.live="is_senin" :checked="$is_senin ? true : false"
@@ -314,7 +314,7 @@
                     </div>
                 </div>
             </div>
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Selasa</flux:label>
                     <flux:switch wire:model.live="is_selasa" :checked="$is_selasa ? true : false"
@@ -357,7 +357,7 @@
                     </div>
                 </div>
             </div>
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Rabu</flux:label>
                     <flux:switch wire:model.live="is_rabu" :checked="$is_rabu ? true : false"
@@ -402,7 +402,7 @@
             </div>
         </div>
         <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Kamis</flux:label>
                     <flux:switch wire:model.live="is_kamis" :checked="$is_kamis ? true : false"
@@ -445,7 +445,7 @@
                     </div>
                 </div>
             </div>
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Jumat</flux:label>
                     <flux:switch wire:model.live="is_jumat" :checked="$is_jumat ? true : false"
@@ -488,7 +488,7 @@
                     </div>
                 </div>
             </div>
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Sabtu</flux:label>
                     <flux:switch wire:model.live="is_sabtu" :checked="$is_sabtu ? true : false"
@@ -533,7 +533,7 @@
             </div>
         </div>
         <div class="w-full grid grid-cols-1 gap-4 mt-2">
-            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4">
+            <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
                 <div class="flex flex-row items-center justify-between">
                     <flux:label>Minggu</flux:label>
                     <flux:switch wire:model.live="is_minggu" :checked="$is_minggu ? true : false"
@@ -615,11 +615,13 @@
                         <tr>
                             <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('document_name')">
                                 Dokumen Legalitas
-                                <span>{{ $sortDirection === 'asc' && $sortField === 'document_name' ? '↑' : '↓' }}</span>
+                                <span>{{ $sortDirection === 'asc' && $sortField === 'document_name' ? '↑' : '↓'
+                                    }}</span>
                             </th>
                             <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('document_number')">
                                 Nomor Dokumen
-                                <span>{{ $sortDirection === 'asc' && $sortField === 'document_number' ? '↑' : '↓' }}</span>
+                                <span>{{ $sortDirection === 'asc' && $sortField === 'document_number' ? '↑' : '↓'
+                                    }}</span>
                             </th>
                             <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("valid_from")'>
                                 Tanggal Terbit
@@ -633,28 +635,30 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200 text-gray-900">
                         @foreach ($storeDocuments as $document)
-                            <tr class="hover:bg-gray-100">
-                                <td class="px-6 py-4 hover:text-black cursor-pointer"
-                                    wire:click="editModal('{{ $document->id }}')">
-                                    {{ $document->document_name }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->document_number }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->format('d/m/Y') : '-' }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->format('d/m/Y') : 'Tidak Terbatas' }}
-                                </td>
-                            </tr>
+                        <tr class="hover:bg-gray-100">
+                            <td class="px-6 py-4 hover:text-black cursor-pointer"
+                                wire:click="editModal('{{ $document->id }}')">
+                                {{ $document->document_name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $document->document_number }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->format('d/m/Y')
+                                : '-' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $document->valid_until ?
+                                \Carbon\Carbon::parse($document->valid_until)->format('d/m/Y') : 'Tidak Terbatas' }}
+                            </td>
+                        </tr>
                         @endforeach
                         @if (!$storeDocuments)
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                    Tidak ada dokumen legalitas yang tersedia.
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                Tidak ada dokumen legalitas yang tersedia.
+                            </td>
+                        </tr>
                         @endif
                     </tbody>
                 </table>
@@ -679,7 +683,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('documentName')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -687,7 +691,7 @@
                     <input type="text" id="documentNumber" wire:model.lazy="documentNumber"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
                     @error('documentNumber')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -697,7 +701,7 @@
                         wire:model.defer="validFrom" id="validFrom" placeholder="dd/mm/yyyy" />
                 </div>
                 @error('validFrom')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <div>
@@ -717,20 +721,20 @@
                         </label>
 
                         @if ($documentFile)
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
-                                readonly wire:loading.remove wire:target="documentFile">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload File..." readonly wire:loading wire:target="documentFile">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
+                            readonly wire:loading.remove wire:target="documentFile">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="Mengupload File..." readonly wire:loading wire:target="documentFile">
                         @else
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload File..." readonly wire:loading wire:target="documentFile">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="Mengupload File..." readonly wire:loading wire:target="documentFile">
                         @endif
 
                     </div>
@@ -739,39 +743,39 @@
             </div>
             <div class="mt-6 flex justify-end space-x-2">
                 @if ($edit)
-                    <flux:modal.trigger name="delete-document" class="mr-4">
-                        <flux:button variant="ghost" icon="trash" />
-                    </flux:modal.trigger>
-                    <flux:modal name="delete-document" class="min-w-[22rem]">
-                        <div class="space-y-6">
-                            <div>
-                                <flux:heading size="lg">Hapus Dokumen</flux:heading>
+                <flux:modal.trigger name="delete-document" class="mr-4">
+                    <flux:button variant="ghost" icon="trash" />
+                </flux:modal.trigger>
+                <flux:modal name="delete-document" class="min-w-[22rem]">
+                    <div class="space-y-6">
+                        <div>
+                            <flux:heading size="lg">Hapus Dokumen</flux:heading>
 
-                                <flux:text class="mt-2">
-                                    <p>Apakah Anda yakin ingin menghapus dokumen ini?</p>
-                                </flux:text>
-                            </div>
-
-                            <div class="flex gap-2">
-                                <flux:spacer />
-
-                                <flux:modal.close>
-                                    <flux:button variant="ghost">Batal</flux:button>
-                                </flux:modal.close>
-
-                                <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
-                            </div>
+                            <flux:text class="mt-2">
+                                <p>Apakah Anda yakin ingin menghapus dokumen ini?</p>
+                            </flux:text>
                         </div>
-                    </flux:modal>
+
+                        <div class="flex gap-2">
+                            <flux:spacer />
+
+                            <flux:modal.close>
+                                <flux:button variant="ghost">Batal</flux:button>
+                            </flux:modal.close>
+
+                            <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
+                        </div>
+                    </div>
+                </flux:modal>
                 @endif
                 <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)">Batal
                 </flux:button>
                 @if ($edit)
-                    <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
-                    </flux:button>
+                <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
+                </flux:button>
                 @else
-                    <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
-                    </flux:button>
+                <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
+                </flux:button>
                 @endif
             </div>
         </div>
