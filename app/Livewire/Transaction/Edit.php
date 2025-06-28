@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Transaction;
 
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\PaymentChannel;
 use Livewire\Component;
@@ -22,6 +23,10 @@ class Edit extends Component
     public $totalAmount = 0;
     public $paidAmount = 0;
     public $showItemModal = false;
+    public $customer;
+
+    public $phoneCustomer, $nameCustomer;
+    public $customerModal = false;
 
 
     public $name, $phone, $date, $time, $note, $method;
@@ -32,6 +37,9 @@ class Edit extends Component
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);
+        if ($transaction->status != 'Draft') {
+            return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
+        }
         $this->transaction = $transaction;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
@@ -62,12 +70,48 @@ class Edit extends Component
             $this->paymentAccountNumber = $transaction->payment ? $transaction->payment->channel->account_number : '';
             $this->paymentAccountName = $transaction->payment ? $transaction->payment->channel->account_name : '';
             $this->paymentAccount = $this->paymentAccountName . ' - ' . $this->paymentAccountNumber;
+            $customer = Customer::where('phone', $this->phone)->first();
+            if ($customer) {
+                $this->customer = $customer;
+                $this->name = $customer->name;
+            } else {
+                $this->customer = null;
+                $this->name = null;
+            }
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
             return redirect()->route('transaksi');
         }
     }
 
+    public function showCustomerModal()
+    {
+        $this->customerModal = true;
+        $this->phoneCustomer = $this->phone;
+    }
+
+    public function addCustomer()
+    {
+        $customer = Customer::create([
+            'name' => $this->nameCustomer,
+            'phone' => $this->phoneCustomer
+        ]);
+        $this->customer = $customer;
+        $this->name = $customer->name;
+        $this->customerModal = false;
+    }
+
+    public function updatedPhone($value)
+    {
+        $customer = Customer::where('phone', $value)->first();
+        if ($customer) {
+            $this->customer = $customer;
+            $this->name = $customer->name;
+        } else {
+            $this->customer = null;
+            $this->name = null;
+        }
+    }
 
     public function incrementItem($itemId)
     {

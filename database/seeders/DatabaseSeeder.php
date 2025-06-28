@@ -9,6 +9,7 @@ use App\Models\IngredientCategory;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Material;
+use App\Models\MaterialBatch;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Supplier;
@@ -86,9 +87,11 @@ class DatabaseSeeder extends Seeder
             'alias' => 'pcs',
         ]);
 
-        Material::create([
+        $material1 = Material::create([
             'name' => 'Bahan Baku 1',
-        ])->material_details()->create([
+        ]);
+
+        $material1->material_details()->create([
             'supply_quantity' => 100,
             'supply_price' => 10000,
             'quantity' => 1,
@@ -96,18 +99,46 @@ class DatabaseSeeder extends Seeder
             'is_main' => true,
         ]);
 
-        Material::create([
+        MaterialBatch::create([
+            'batch_number' => 'BB-001',
+            'date' => now()->subDays(30),
+            'batch_quantity' => 100,
+            'unit_id' => Unit::where('alias', 'kg')->first()->id,
+            'material_id' => $material1->id,
+        ]);
+
+
+        $material2 = Material::create([
             'name' => 'Bahan Baku 2',
-        ])->material_details()->create([
+        ]);
+        $material2->material_details()->create([
             'supply_quantity' => 50,
             'supply_price' => 20000,
             'quantity' => 1,
-            'unit_id' => Unit::where('alias', 'l')->first()->id,
+            'unit_id' => Unit::where('alias', 'kg')->first()->id,
             'is_main' => true,
         ]);
-
-        Material::create([
+        $material2->batches()->create([
+            'batch_number' => 'BB-002',
+            'date' => now()->subDays(30),
+            'batch_quantity' => 50,
+            'unit_id' => Unit::where('alias', 'kg')->first()->id,
+        ]);
+        $material3 = Material::create([
             'name' => 'Bahan Baku 3',
+        ]);
+        $material3->material_details()->create([
+            'supply_quantity' => 20,
+            'supply_price' => 25000,
+            'quantity' => 1,
+            'unit_id' => Unit::where('alias', 'kg')->first()->id,
+            'is_main' => true,
+        ]);
+        $material3->batches()->create([
+            'batch_number' => 'BB-003',
+            'date' => now()->subDays(30),
+            'batch_quantity' => 20,
+            'unit_id' => Unit::where('alias', 'kg')->first()->id,
         ]);
 
         $supplier = Supplier::create([

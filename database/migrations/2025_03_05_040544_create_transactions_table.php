@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('user_id')->nullable();
             $table->string('invoice_number')->unique();
-            $table->string('name')->nullable();
+            $table->string('name')->nullable()->default('Unregistered');
             $table->string('phone')->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
@@ -30,6 +30,7 @@ return new class extends Migration
 
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('phone')->references('phone')->on('customers')->onDelete('set null');
         });
     }
 

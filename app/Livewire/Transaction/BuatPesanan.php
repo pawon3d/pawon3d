@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Transaction;
 
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\PaymentChannel;
 use App\Models\Product;
@@ -23,9 +24,20 @@ class BuatPesanan extends Component
     public $totalAmount = 0;
     public $paidAmount = 0;
     public $showItemModal = false;
+    public $customer;
+
+    public $phoneCustomer, $nameCustomer;
+    public $customerModal = false;
 
 
     public $name, $phone, $date, $time, $note, $method;
+
+    protected $messages = [
+        'name.required' => 'Nama harus diisi.',
+        'phone.required' => 'Nomor telepon harus diisi.',
+        'date.required' => 'Tanggal harus diisi.',
+        'time.required' => 'Jam harus diisi'
+    ];
 
     public function mount($id)
     {
@@ -55,6 +67,33 @@ class BuatPesanan extends Component
         }
     }
 
+    public function showCustomerModal()
+    {
+        $this->customerModal = true;
+        $this->phoneCustomer = $this->phone;
+    }
+
+    public function addCustomer()
+    {
+        $customer = Customer::create([
+            'name' => $this->nameCustomer,
+            'phone' => $this->phoneCustomer
+        ]);
+        $this->customer = $customer;
+        $this->name = $customer->name;
+        $this->customerModal = false;
+    }
+    public function updatedPhone($value)
+    {
+        $customer = Customer::where('phone', $value)->first();
+        if ($customer) {
+            $this->customer = $customer;
+            $this->name = $customer->name;
+        } else {
+            $this->customer = null;
+            $this->name = null;
+        }
+    }
 
     public function incrementItem($itemId)
     {
@@ -144,19 +183,35 @@ class BuatPesanan extends Component
         }
     }
 
+
+
     public function save()
     {
-        $this->validate([
-            'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:15',
-            'date' => 'nullable|date',
-            'time' => 'nullable|date_format:H:i',
-            'note' => 'nullable|string|max:500',
-            'method' => 'nullable|string',
-            'paymentMethod' => 'nullable|string',
-            'paymentBank' => 'nullable|string',
-            'paymentAccount' => 'nullable|string',
-        ]);
+        if ($this->method != 'siap-beli') {
+            $this->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:15',
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
+                'note' => 'nullable|string|max:500',
+                'method' => 'nullable|string',
+                'paymentMethod' => 'nullable|string',
+                'paymentBank' => 'nullable|string',
+                'paymentAccount' => 'nullable|string',
+            ]);
+        } else {
+            $this->validate([
+                'name' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:15',
+                'date' => 'nullable|date',
+                'time' => 'nullable|date_format:H:i',
+                'note' => 'nullable|string|max:500',
+                'method' => 'nullable|string',
+                'paymentMethod' => 'nullable|string',
+                'paymentBank' => 'nullable|string',
+                'paymentAccount' => 'nullable|string',
+            ]);
+        }
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
@@ -182,24 +237,24 @@ class BuatPesanan extends Component
                 );
             }
 
-            if ($this->paidAmount > 0 && $this->paymentMethod != '') {
-                $payment = Payment::create([
-                    'transaction_id' => $transaction->id,
-                    'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
-                    'payment_method' => $this->paymentMethod,
-                    'paid_amount' => $this->paidAmount,
-                    'paid_at' => now(),
-                ]);
+            // if ($this->paidAmount > 0 && $this->paymentMethod != '') {
+            //     $payment = Payment::create([
+            //         'transaction_id' => $transaction->id,
+            //         'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
+            //         'payment_method' => $this->paymentMethod,
+            //         'paid_amount' => $this->paidAmount,
+            //         'paid_at' => now(),
+            //     ]);
 
-                if ($this->image) {
-                    // hapuskan gambar lama jika ada
-                    if ($payment->image) {
-                        Storage::disk('public')->delete($payment->image);
-                    }
-                    $path = $this->image->store('payments', 'public');
-                    $payment->update(['image' => $path]);
-                }
-            }
+            //     if ($this->image) {
+            //         // hapuskan gambar lama jika ada
+            //         if ($payment->image) {
+            //             Storage::disk('public')->delete($payment->image);
+            //         }
+            //         $path = $this->image->store('payments', 'public');
+            //         $payment->update(['image' => $path]);
+            //     }
+            // }
 
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
@@ -211,6 +266,31 @@ class BuatPesanan extends Component
 
     public function pay()
     {
+        if ($this->method != 'siap-beli') {
+            $this->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:15',
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
+                'note' => 'nullable|string|max:500',
+                'method' => 'nullable|string',
+                'paymentMethod' => 'nullable|string',
+                'paymentBank' => 'nullable|string',
+                'paymentAccount' => 'nullable|string',
+            ]);
+        } else {
+            $this->validate([
+                'name' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:15',
+                'date' => 'nullable|date',
+                'time' => 'nullable|date_format:H:i',
+                'note' => 'nullable|string|max:500',
+                'method' => 'nullable|string',
+                'paymentMethod' => 'nullable|string',
+                'paymentBank' => 'nullable|string',
+                'paymentAccount' => 'nullable|string',
+            ]);
+        }
 
         // Set default status
         $status = 'Belum Lunas';
@@ -227,11 +307,6 @@ class BuatPesanan extends Component
             // }
 
             // sementara
-        } elseif ($this->paymentMethod != '') {
-            if ($this->image == null && $this->paymentMethod != 'tunai') {
-                $this->alert('warning', 'Silakan unggah bukti pembayaran.');
-                return;
-            }
         }
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             if ($this->paidAmount < 0.5 * $this->getTotalProperty()) {
@@ -245,6 +320,8 @@ class BuatPesanan extends Component
                 }
             }
         }
+
+
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {

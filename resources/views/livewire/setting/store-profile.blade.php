@@ -696,9 +696,9 @@
                 </div>
                 <div>
                     <label for="validFrom" class="block text-sm font-medium text-gray-700">Tanggal Terbit</label>
-                    <input type="date" wire:ignore
-                        class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                        wire:model.defer="validFrom" id="validFrom" placeholder="dd/mm/yyyy" />
+                    <input type="date" class="tanggal" onclick="this.showPicker()"
+                        data-date="{{ $validFrom ? \Carbon\Carbon::parse($validFrom)->format('d/m/Y') : 'dd/mm/yyyy' }}"
+                        wire:model.live="validFrom" id="validFrom" placeholder="dd/mm/yyyy" />
                 </div>
                 @error('validFrom')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -707,9 +707,9 @@
                 <div>
                     <label for="documentNumber" class="block text-sm font-medium text-gray-700">Tanggal Berlaku
                         Sampai</label>
-                    <input type="date" wire:ignore
-                        class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                        wire:model.defer="validUntil" id="validUntil" placeholder="dd/mm/yyyy" />
+                    <input type="date" class="tanggal" onclick="this.showPicker()"
+                        data-date="{{ $validUntil ? \Carbon\Carbon::parse($validUntil)->format('d/m/Y') : 'dd/mm/yyyy' }}"
+                        wire:model.live="validUntil" id="validUntil" placeholder="dd/mm/yyyy" />
                 </div>
                 <div class="mb-5 w-full">
                     <div class="flex flex-row items-center gap-4">
@@ -904,5 +904,58 @@
             }
         }
     </script>
+    @section('css')
+    <style>
+        .tanggal {
+            position: relative;
+            width: 100%;
+            height: 2.5rem;
+            /* Sesuaikan tinggi input */
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            /* Biar ada ruang untuk teks dan ikon */
+            color: transparent;
+            /* Sembunyikan teks aslinya */
+            background-color: #f9fafb;
+            /* gray-50 */
+            border: 1px solid #d1d5db;
+            /* gray-300 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            font-size: 0.875rem;
+            /* text-sm */
+            outline: none;
+        }
 
+        .tanggal:before {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            content: attr(data-date);
+            display: inline-block;
+            color: #111827;
+            /* gray-900 */
+            pointer-events: none;
+            font-size: 0.875rem;
+            /* text-sm */
+        }
+
+        .tanggal::-webkit-datetime-edit,
+        .tanggal::-webkit-inner-spin-button,
+        .tanggal::-webkit-clear-button {
+            display: none;
+        }
+
+        .tanggal::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            opacity: 1;
+            color: #6b7280;
+            /* gray-500 */
+            cursor: pointer;
+        }
+    </style>
+    @endsection
 </div>

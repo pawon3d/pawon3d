@@ -29,7 +29,7 @@ class StoreProfile extends Component
     public $sortDirection = 'desc';
     public $sortField = 'created_at';
     public $storeDocuments = [];
-    public $documentName, $documentFile, $documentNumber, $validFrom = 'dd/mm/yyyy', $validUntil;
+    public $documentName, $documentFile, $documentNumber, $validFrom, $validUntil;
     public $documentId, $edit = false;
     public $showModal = false;
 

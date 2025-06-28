@@ -37,13 +37,14 @@ class Index extends Component
     public $receivedCash = 0;
     public $discountToday = 0;
     public $expectedCash = 0;
+    public $refundTotal = 0;
     public $openShiftModal = false;
     public $closeShiftModal = false;
     public $finishShiftModal = false;
 
     public $historyShifts = [];
     public $showHistoryShiftModal = false;
-    public $searchHistoryShift = '';
+    public $searchHistoryShift = '', $searchDate = '';
     public $showDetailHistoryShiftModal = false;
     public $selectedShiftId = null;
     public $selectedShift;
@@ -66,12 +67,13 @@ class Index extends Component
         $todayShift = \App\Models\Shift::whereDate('start_time', now())
             ->where('status', 'open')
             ->latest()->first();
-        $transaction = \App\Models\Transaction::whereDate('start_date', now())
-            ->whereHas('payments', function ($query) {
-                $query->where('payment_method', 'tunai');
-            })
-            ->sum('total_amount');
         if ($todayShift) {
+            $transaction = \App\Models\Transaction::where('created_by_shift', $todayShift ? $todayShift->id : null)
+                ->whereHas('payments', function ($query) {
+                    $query->where('payment_method', 'tunai');
+                })
+                ->sum('total_amount');
+            $transactionShift = \App\Models\Transaction::where('refund_by_shift', $todayShift->id)->sum('total_refund');
             $this->todayShiftId = $todayShift->id;
             $this->todayShiftNumber = $todayShift->shift_number;
             $this->todayShiftStatus = $todayShift->status;
@@ -81,7 +83,8 @@ class Index extends Component
             $this->finalCash = $todayShift->final_cash;
             $this->receivedCash = $transaction ?? 0;
             $this->discountToday = 0;
-            $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday;
+            $this->refundTotal = $transactionShift;
+            $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday - $this->refundTotal;
         } else {
             $this->todayShiftId = null;
             $this->todayShiftNumber = null;
@@ -165,11 +168,22 @@ class Index extends Component
     {
         $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
             ->when($value, function ($query) use ($value) {
-                $query->where('shift_number', 'like', '%' . $value . '%')
-                    ->orWhere('status', 'like', '%' . $value . '%');
+                $query->where('shift_number', 'like', '%' . $value . '%');
             })
             ->orderBy('shift_number')
             ->get();
+        $this->searchDate = null;
+    }
+
+    public function updatedSearchDate($value)
+    {
+        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
+            ->when($value, function ($query) use ($value) {
+                $query->whereDate('start_time', $value);
+            })
+            ->orderBy('shift_number')
+            ->get();
+        $this->searchHistoryShift = null;
     }
 
     public function viewShift($id)
@@ -282,6 +296,7 @@ class Index extends Component
             'total_amount' => $this->getTotalProperty(),
             'method' => $this->method,
             'status' => 'temp',
+            'created_by_shift' => $this->todayShiftId,
         ]);
 
         foreach ($this->cart as $item) {

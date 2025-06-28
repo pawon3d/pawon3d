@@ -38,6 +38,7 @@
 -   [x] Pengaturan
 -   [x] Main Title
 -   [x] shift kasir
+-   [x] Tambah Permission
 
 ## BELUM SELESAI
 

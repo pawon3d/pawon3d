@@ -1,13 +1,12 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('transaksi') }}"
+        <flux:button wire:click.prevent="delete" icon="arrow-left" variant="primary"
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
-        </a>
+        </flux:button>
         <h1 class="text-2xl">Buat Pesanan</h1>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+    <div class="flex items-center border bg-white border-gray-500 rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
@@ -19,20 +18,43 @@
     </div>
 
     @if ($transaction->method != 'siap-beli')
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
+    <div class="w-full bg-white border-gray-300 shadow-md flex md:flex-row flex-col gap-8 mt-4 p-4 rounded-lg">
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+            <flux:label>Nomor Telepon</flux:label>
+            <p class="text-sm text-gray-500">
+                Masukkan Nomor Telepon Aktif
+            </p>
+            <div>
+                <flux:input placeholder="081122345678" wire:model.live="phone" />
+                @if ($phone)
+                @if($customer)
+                <div class="text-xs text-gray-500 mt-1 flex flex-row justify-between items-center">
+                    <span>
+                        Terdaftar Sebagai Pelanggan
+                    </span>
+                    <span>
+                        0 Poin
+                    </span>
+                </div>
+                @else
+                <div class="text-xs text-gray-500 mt-1 flex flex-row justify-between items-center">
+                    <span>
+                        Ingin menjadi pelanggan?
+                    </span>
+                    <span class="underline cursor-pointer" wire:click="showCustomerModal">
+                        Tambah Pelanggan
+                    </span>
+                </div>
+                @endif
+                @endif
+            </div>
+            <flux:error name="phone" />
             <flux:label>Nama Pemesan</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan Nama Pemesan
             </p>
             <flux:input placeholder="Masukkan Nama Pemesan..." wire:model="name" />
             <flux:error name="name" />
-            <flux:label>Nomor Telepon</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan Nomor Telepon Aktif
-            </p>
-            <flux:input placeholder="081122345678" wire:model="phone" />
-            <flux:error name="phone" />
             <flux:label>Tanggal Pengambilan Pesanan</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan kapan tanggal pengambilan pesanan akan dilakukan.
@@ -90,6 +112,7 @@
             </div>
 
             <flux:error name="date" />
+            <flux:error name="time" />
         </div>
 
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
@@ -188,7 +211,7 @@
             </div>
         </div>
     </div>
-    <div class="w-full flex flex-col gap-4">
+    <div class="w-full flex flex-col gap-4 bg-white border-gray-300 shadow-md p-4 rounded-lg">
 
         <flux:label>Metode Pembayaran</flux:label>
         <p class="text-sm text-gray-500">
@@ -350,6 +373,41 @@
                     </div>
                 </div>
                 @endforeach
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="tambah-customer" class="w-full max-w-md" wire:model="customerModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Tambah Pelanggan</flux:heading>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="phoneCustomer" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                    <input type="text" id="phoneCustomer" wire:model="phoneCustomer"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('phoneCustomer')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <label for="nameCustomer" class="block text-sm font-medium text-gray-700">Nama</label>
+                    <input type="text" id="nameCustomer" wire:model="nameCustomer"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required />
+                    @error('nameCustomer')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <flux:modal.close>
+                    <flux:button type="button" icon="x-mark">Batal</flux:button>
+                </flux:modal.close>
+                <flux:button type="button" icon="save" variant="primary" wire:click="addCustomer">Simpan
+                </flux:button>
             </div>
         </div>
     </flux:modal>

@@ -435,6 +435,10 @@
                     <span class="text-sm text-gray-500">Rp{{ number_format($receivedCash, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
+                    <span class="text-sm text-gray-500">Refund</span>
+                    <span class="text-sm text-gray-500">Rp{{ number_format($refundTotal, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Diskon/Hadian</span>
                     <span class="text-sm text-gray-500">Rp{{ number_format($discountToday, 0, ',', '.') }}</span>
                 </div>
@@ -495,6 +499,10 @@
                     <span class="text-sm text-gray-500">Rp{{ number_format($receivedCash, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
+                    <span class="text-sm text-gray-500">Refund</span>
+                    <span class="text-sm text-gray-500">Rp{{ number_format($refundTotal, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Diskon/Hadian</span>
                     <span class="text-sm text-gray-500">Rp{{ number_format($discountToday, 0, ',', '.') }}</span>
                 </div>
@@ -545,11 +553,17 @@
                         class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Cari shift...">
                 </div>
+                <div class="relative mt-2">
+                    <input type="date" wire:model.live="searchDate" onclick="this.showPicker()"
+                        data-date="{{ $searchDate ? \Carbon\Carbon::parse($searchDate)->format('d/m/Y') : 'dd/mm/yyyy' }}"
+                        class="tanggal" placeholder="Cari berdasarkan tanggal...">
+
+                </div>
             </div>
             <!-- Area Scroll (Hanya bagian inilah yang discroll) -->
             <div class="flex-1 overflow-y-auto px-4 pb-2">
                 <!-- flex-1 + overflow-auto -->
-                @foreach ($historyShifts as $shift)
+                @forelse ($historyShifts as $shift)
                 <div class="border-b py-2">
                     <div class="flex justify-between items-center">
                         <div>
@@ -574,7 +588,9 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <p class="text-sm text-center text-gray-500">Tidak ada riwayat sesi penjualan.</p>
+                @endforelse
             </div>
 
             <!-- Footer (Tetap di bawah tanpa scroll) -->
@@ -627,7 +643,24 @@
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Penerimaan</span>
-                    <span class="text-sm text-gray-500">Rp{{ number_format(0, 0, ',', '.') }}</span>
+                    @php
+                    $transactionPenerimaan = \App\Models\Transaction::where('created_by_shift', $selectedShift->id)
+                    ->whereHas('payments', function ($query) {
+                    $query->where('payment_method', 'tunai');
+                    })
+                    ->sum('total_amount');
+                    @endphp
+                    <span class="text-sm text-gray-500">Rp{{ number_format($transactionPenerimaan, 0, ',', '.')
+                        }}</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 mb-2">
+                    <span class="text-sm text-gray-500">Refund</span>
+                    @php
+                    $transactionRefund = \App\Models\Transaction::where('refund_by_shift', $selectedShift->id)
+                    ->sum('total_refund');
+                    @endphp
+                    <span class="text-sm text-gray-500">Rp{{ number_format($transactionRefund, 0, ',', '.')
+                        }}</span>
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Diskon/Hadian</span>
@@ -635,7 +668,8 @@
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Jumlah Yang Diharapkan</span>
-                    <span class="text-sm text-gray-500">Rp{{ number_format($selectedShift->initial_cash + 0, 0, ',',
+                    <span class="text-sm text-gray-500">Rp{{ number_format($selectedShift->initial_cash +
+                        $transactionPenerimaan - $transactionRefund, 0, ',',
                         '.') }}</span>
                 </div>
                 <div class="flex items-center justify-between mt-2 mb-2">
@@ -646,7 +680,7 @@
                 <div class="flex items-center justify-between mt-2 mb-2">
                     <span class="text-sm text-gray-500">Selisih Jumlah</span>
                     <span class="text-sm text-gray-500">Rp{{ number_format($selectedShift->final_cash -
-                        $selectedShift->initial_cash + 0, 0, ',', '.')
+                        ($selectedShift->initial_cash + $transactionPenerimaan - $transactionRefund), 0, ',', '.')
                         }}</span>
                 </div>
             </div>
@@ -665,4 +699,59 @@
             </flux:modal.close>
         </div>
     </flux:modal>
+
+    @section('css')
+    <style>
+        .tanggal {
+            position: relative;
+            width: 100%;
+            height: 2.5rem;
+            /* Sesuaikan tinggi input */
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            /* Biar ada ruang untuk teks dan ikon */
+            color: transparent;
+            /* Sembunyikan teks aslinya */
+            background-color: #f9fafb;
+            /* gray-50 */
+            border: 1px solid #d1d5db;
+            /* gray-300 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+            font-size: 0.875rem;
+            /* text-sm */
+            outline: none;
+        }
+
+        .tanggal:before {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            content: attr(data-date);
+            display: inline-block;
+            color: #111827;
+            /* gray-900 */
+            pointer-events: none;
+            font-size: 0.875rem;
+            /* text-sm */
+        }
+
+        .tanggal::-webkit-datetime-edit,
+        .tanggal::-webkit-inner-spin-button,
+        .tanggal::-webkit-clear-button {
+            display: none;
+        }
+
+        .tanggal::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            opacity: 1;
+            color: #6b7280;
+            /* gray-500 */
+            cursor: pointer;
+        }
+    </style>
+    @endsection
 </div>

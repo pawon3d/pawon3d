@@ -4,7 +4,9 @@ namespace App\Livewire\Transaction;
 
 use App\Models\Payment;
 use App\Models\PaymentChannel;
+use App\Models\Shift;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -33,6 +35,13 @@ class RincianPesanan extends Component
     public $phoneNumber = '';
 
     public $pembayaranPertama, $pembayaranKedua, $sisaPembayaranPertama, $kembalian;
+
+
+    public $uploadModal = false;
+    public $uploadImage = null, $paymentId;
+    public $previewUploadImage = null;
+
+    public $refundModal = false;
 
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
@@ -109,6 +118,7 @@ class RincianPesanan extends Component
                         'price' => $detail->price,
                         'name' => $detail->product->name,
                         'stock' => $detail->product->stock,
+                        'refund_quantity' => $detail->refund_quantity ?? 0,
                     ],
                 ];
             })->toArray();
@@ -144,6 +154,33 @@ class RincianPesanan extends Component
             session()->flash('error', 'Transaksi tidak ditemukan.');
             return redirect()->route('transaksi');
         }
+    }
+
+    public function incrementItem($itemId)
+    {
+        if (isset($this->details[$itemId])) {
+            $this->details[$itemId]['refund_quantity']++;
+            if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
+                $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
+            }
+        }
+    }
+
+    public function decrementItem($itemId)
+    {
+        if (isset($this->details[$itemId]) && $this->details[$itemId]['refund_quantity'] > 0) {
+            $this->details[$itemId]['refund_quantity']--;
+        } else {
+            $this->details[$itemId]['refund_quantity'] = 0;
+        }
+    }
+
+    protected function getRefundTotalProperty()
+    {
+        return collect($this->details)->sum(function ($item) {
+            return $item['price'] * $item['refund_quantity'];
+        });
     }
 
     public function getRemainingAmountProperty()
@@ -211,11 +248,6 @@ class RincianPesanan extends Component
             // }
 
             // sementara
-        } elseif ($this->paymentMethod != '') {
-            if ($this->image == null && $this->paymentMethod != 'tunai') {
-                $this->alert('warning', 'Silakan unggah bukti pembayaran.');
-                return;
-            }
         }
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             if ($this->paidAmount < 0.5 * $this->transaction->total_amount) {
@@ -408,12 +440,92 @@ class RincianPesanan extends Component
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
+    public function updatedUploadImage()
+    {
+        $this->validate([
+            'uploadImage' => 'image|max:2048|mimes:jpg,jpeg,png',
+        ]);
+
+        // Untuk preview langsung setelah upload
+        $this->previewUploadImage = $this->uploadImage->temporaryUrl();
+    }
+
+    public function showUploadModal($id)
+    {
+        $this->reset(['uploadImage', 'previewUploadImage', 'paymentId']);
+        $payment = Payment::find($id);
+        $this->paymentId = $payment->id;
+        $this->uploadModal = true;
+    }
+
+    public function uploadImageStore()
+    {
+        $payment = Payment::find($this->paymentId);
+        if ($this->uploadImage) {
+            if ($payment->image) {
+                Storage::disk('public')->delete($payment->image);
+            }
+            $path = $this->uploadImage->store('payments', 'public');
+            $payment->update(['image' => $path]);
+        }
+        $this->uploadModal = false;
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId])->with('success', 'Bukti Pembayaran Berhasil Diupload!');
+    }
+    public function downloadImage($id)
+    {
+        $payment = Payment::findOrFail($id);
+
+        $path = storage_path('app/public/' . $payment->image);
+
+        if (!file_exists($path)) {
+            $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
+        }
+        $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
+        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
+
+        return response()->download($path, $customName);
+    }
+
+    public function showRefundModal()
+    {
+        $this->refundModal = true;
+        $this->details = $this->transaction->details->mapWithKeys(function ($detail) {
+            return [
+                (string) $detail->product_id => [
+                    'product_id' => $detail->product_id,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                    'name' => $detail->product->name,
+                    'stock' => $detail->product->stock,
+                    'refund_quantity' => $detail->refund_quantity ?? 0,
+                ],
+            ];
+        })->toArray();
+    }
+
+    public function refundStore()
+    {
+        foreach ($this->details as $detail) {
+            if ($detail['refund_quantity'] > 0) {
+                TransactionDetail::where('transaction_id', $this->transactionId)->where('product_id', $detail['product_id'])->update(['refund_quantity' => $detail['refund_quantity']]);
+            }
+        }
+        Transaction::where('id', $this->transactionId)->update([
+            'total_refund' => $this->getRefundTotalProperty(),
+            'refund_by_shift' => Shift::where('status', 'open')->latest()->first()->id
+        ]);
+
+        $this->refundModal = false;
+        $this->alert('success', 'Refund berhasil disimpan.');
+    }
+
     public function render()
     {
         return view('livewire.transaction.rincian-pesanan', [
             'remainingAmount' => $this->getRemainingAmountProperty(),
             'changeAmount' => $this->getChangeAmountProperty(),
             'transactionStatus' => Transaction::where('id', $this->transactionId)->whereNotIn('status', ['Gagal', 'Selesai'])->first(),
+            'refundTotal' => $this->getRefundTotalProperty()
         ]);
     }
 }
