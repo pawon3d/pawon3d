@@ -39,6 +39,8 @@
 -   [x] Main Title
 -   [x] shift kasir
 -   [x] Tambah Permission
+-   [x] kelola pelanggan
+-   [x] refund
 
 ## BELUM SELESAI
 
@@ -47,8 +49,6 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
--   [ ] kelola pelanggan
--   [ ] refund
 
 ### Medium Priority
 

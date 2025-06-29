@@ -32,9 +32,6 @@ class EditProduksiPesanan extends Component
         }
 
         $this->details = $this->transaction->details;
-
-        $this->start_date = \Carbon\Carbon::parse($this->production->start_date)->format('d/m/Y');
-        $this->time = \Carbon\Carbon::parse($this->production->time)->format('H:i') ?? '00:00';
         $this->note = $this->production->note ?? '';
         $this->user_ids = $this->production->workers->pluck('user_id')->toArray();
 
@@ -46,7 +43,6 @@ class EditProduksiPesanan extends Component
     {
         $this->validate([
             'user_ids' => 'required|array',
-            'start_date' => $this->start_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
         ]);
 
@@ -83,8 +79,6 @@ class EditProduksiPesanan extends Component
         $production = \App\Models\Production::findOrFail($this->productionId);
         $production->update([
             'note' => $this->note,
-            'date' => now(),
-            'time' => $this->time,
         ]);
 
         $transaction = \App\Models\Transaction::find($this->production->transaction_id);

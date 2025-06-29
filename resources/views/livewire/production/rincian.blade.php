@@ -37,36 +37,39 @@
         <div class="flex items-center justify-between gap-4 flex-row">
             <div class="flex items-center gap-16 flex-row">
                 @if ($production->method == 'siap-beli')
-                    <div class="flex items-start gap-4 flex-col">
-                        <flux:heading class="text-lg font-semibold">Tanggal Pembuatan Rencana</flux:heading>
-                        <p class="text-sm text-start">
-                            {{ $date ? \Carbon\Carbon::parse($date)->format('d / m / Y H:i') : '-' }}
-                        </p>
-                    </div>
-                    <div class="flex items-start gap-4 flex-col">
-                        <flux:heading class="text-lg font-semibold">Tanggal Pelaksanaan Produksi</flux:heading>
-                        <p class="text-sm text-start">
-                            {{ $production->start_date ? \Carbon\Carbon::parse($production->start_date)->format('d / m / Y') : '-' }}
-                            {{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '-' }}
-                        </p>
-                    </div>
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Pembuatan Rencana</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $date ? \Carbon\Carbon::parse($date)->format('d / m / Y H:i') : '-' }}
+                    </p>
+                </div>
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Pelaksanaan Produksi</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $production->start_date ? \Carbon\Carbon::parse($production->start_date)->format('d / m / Y')
+                        : '-' }}
+                        {{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '-' }}
+                    </p>
+                </div>
                 @else
-                    <div class="flex items-start gap-4 flex-col">
-                        <flux:heading class="text-lg font-semibold">Tanggal Pengaktifan Produksi</flux:heading>
-                        <p class="text-sm text-start">
-                            {{ $production->start_date ? \Carbon\Carbon::parse($production->start_date)->format('d / m / Y') : '-' }}
-                            {{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '-' }}
-                        </p>
-                    </div>
-                    <div class="flex items-start gap-4 flex-col">
-                        <flux:heading class="text-lg font-semibold">Tanggal Pengambilan Pesanan</flux:heading>
-                        <p class="text-sm text-start">
-                            {{ $production->transaction->date
-                                ? \Carbon\Carbon::parse($production->transaction->date)->format('d / m / Y')
-                                : '-' }}
-                            {{ $production->transaction->time ? \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '-' }}
-                        </p>
-                    </div>
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Pengaktifan Produksi</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $production->start_date ? \Carbon\Carbon::parse($production->start_date)->format('d / m / Y')
+                        : '-' }}
+                        {{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '-' }}
+                    </p>
+                </div>
+                <div class="flex items-start gap-4 flex-col">
+                    <flux:heading class="text-lg font-semibold">Tanggal Pengambilan Pesanan</flux:heading>
+                    <p class="text-sm text-start">
+                        {{ $production->transaction->date
+                        ? \Carbon\Carbon::parse($production->transaction->date)->format('d / m / Y')
+                        : '-' }}
+                        {{ $production->transaction->time ?
+                        \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '-' }}
+                    </p>
+                </div>
                 @endif
 
                 <div class="flex items-start gap-4 flex-col">
@@ -82,8 +85,8 @@
                     <flux:heading class="text-lg font-semibold">Dikerjakan Oleh</flux:heading>
                     <p class="text-sm">
                         {{ $production->workers->count() > 0
-                            ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
-                            : '-' }}
+                        ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
+                        : '-' }}
                     </p>
                 </div>
             </div>
@@ -99,11 +102,11 @@
             </span>
         </div>
         @if ($production->method != 'siap-beli')
-            <div class="flex items-start text-start space-x-2 gap-3 flex-col mt-4">
-                <flux:heading class="text-lg font-semibold">Catatan Pesanan</flux:heading>
-                <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $production->transaction->note }}
-                </flux:textarea>
-            </div>
+        <div class="flex items-start text-start space-x-2 gap-3 flex-col mt-4">
+            <flux:heading class="text-lg font-semibold">Catatan Pesanan</flux:heading>
+            <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $production->transaction->note }}
+            </flux:textarea>
+        </div>
         @endif
     </div>
 
@@ -127,51 +130,51 @@
                 </thead>
                 <tbody>
                     @foreach ($production_details as $detail)
-                        <tr>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->quantity_plan }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    @if ($detail->quantity_get > $detail->quantity_plan)
-                                        +{{ $detail->quantity_get - $detail->quantity_plan }}
-                                    @else
-                                        {{ $detail->quantity_get - $detail->quantity_plan }}
-                                    @endif
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->quantity_get }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->cycle }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->quantity_fail }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    @if ($detail->quantity_get > $detail->quantity_plan)
-                                        {{ $detail->quantity_get - $detail->quantity_plan }}
-                                    @else
-                                        0
-                                    @endif
-                                </span>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->quantity_plan }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                @if ($detail->quantity_get > $detail->quantity_plan)
+                                +{{ $detail->quantity_get - $detail->quantity_plan }}
+                                @else
+                                {{ $detail->quantity_get - $detail->quantity_plan }}
+                                @endif
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->quantity_get }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->cycle }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->quantity_fail }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                @if ($detail->quantity_get > $detail->quantity_plan)
+                                {{ $detail->quantity_get - $detail->quantity_plan }}
+                                @else
+                                0
+                                @endif
+                            </span>
+                        </td>
+                    </tr>
                     @endforeach
 
                 </tbody>
@@ -188,9 +191,9 @@
                         <td class="px-6 py-3">
                             <span class="text-gray-700">
                                 @if ($production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) > 0)
-                                    +{{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
+                                +{{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
                                 @else
-                                    {{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
+                                {{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
                                 @endif
                             </span>
                         </td>
@@ -212,10 +215,11 @@
                         <td class="px-6 py-3">
                             <span class="text-gray-700">
                                 {{-- Check if quantity_get is greater than quantity_plan --}}
-                                @if ($production_details->sum('quantity_get') > $production_details->sum('quantity_plan'))
-                                    {{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
+                                @if ($production_details->sum('quantity_get') >
+                                $production_details->sum('quantity_plan'))
+                                {{ $production_details->sum(fn($d) => $d->quantity_get - $d->quantity_plan) }}
                                 @else
-                                    0
+                                0
                                 @endif
                             </span>
                         </td>
@@ -232,34 +236,35 @@
     </div>
 
     @if ($is_start && !$is_finish)
-        <div class="flex justify-end mt-16 gap-4">
-            @if ($production->method != 'siap-beli' && $total_quantity_get <= 0)
-                <flux:button icon="pencil" type="button"
-                    href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}">
-                    Ubah Rencana Produksi
+    <div class="flex justify-between mt-16 gap-4">
+        <div class="flex gap-4 items-center">
+            @if ($production->method != 'siap-beli' && $total_quantity_get <= 0) <flux:button icon="pencil"
+                type="button" href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}">
+                Ubah Rencana Produksi
                 </flux:button>
-            @endif
-            <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
+                @endif
+        </div>
+        <div class="flex gap-4 items-center">
+            <flux:button icon="check-circle" type="button" wire:click="finish">
                 Selesaikan Produksi
             </flux:button>
-            @if ($total_quantity_get < $total_quantity_plan)
-                <flux:button icon="pencil-square" type="button" variant="primary"
-                    href="{{ route('produksi.mulai', $production->id) }}">
-                    Dapatkan Hasil
+            @if ($total_quantity_get < $total_quantity_plan) <flux:button icon="pencil-square" type="button"
+                variant="primary" href="{{ route('produksi.mulai', $production->id) }}">
+                Dapatkan Hasil
                 </flux:button>
-            @endif
+                @endif
         </div>
+    </div>
     @elseif (!$is_start && !$is_finish)
-        <div class="flex justify-end mt-16 gap-4">
-            <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
-            <flux:button icon="pencil" type="button" variant="primary"
-                href="{{ route('produksi.edit', $production->id) }}">
-                Ubah Daftar Produk
-            </flux:button>
-            <flux:button icon="dessert" type="button" variant="primary" wire:click="start">
-                Mulai Produksi
-            </flux:button>
-        </div>
+    <div class="flex justify-end mt-16 gap-4">
+        <flux:button wire:click="confirmDelete" icon="trash" type="button" variant="danger" />
+        <flux:button icon="pencil" type="button" variant="primary" href="{{ route('produksi.edit', $production->id) }}">
+            Ubah Daftar Produk
+        </flux:button>
+        <flux:button icon="dessert" type="button" variant="primary" wire:click="start">
+            Mulai Produksi
+        </flux:button>
+    </div>
     @endif
 
 
@@ -272,13 +277,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

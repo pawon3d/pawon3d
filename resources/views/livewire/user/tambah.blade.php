@@ -7,7 +7,7 @@
         </a>
         <h1 class="text-2xl">Tambah Pekerja</h1>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+    <div class="flex items-center bg-white shadow-lg rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
+    <div class="w-full flex md:flex-row flex-col gap-8 mt-4 bg-white p-4 rounded-lg shadow">
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
             <flux:label>Unggah Foto</flux:label>
             <p class="text-sm text-gray-500">
@@ -36,24 +36,24 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                                <!-- Image Preview -->
-                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                    id="image-preview" />
+                            <!-- Image Preview -->
+                            <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                id="image-preview" />
                             @else
-                                <!-- Default Content -->
-                                <div class="flex flex-col items-center justify-center p-4 text-center">
-                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                    <p class="mb-2 text-xs text-gray-600 mt-4">
-                                        Ukuran gambar tidak lebih dari
-                                        <span class="font-semibold">2mb</span>
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        Pastikan gambar dalam format
-                                        <span class="font-semibold">JPG </span> atau
-                                        <span class="font-semibold">PNG</span>
-                                    </p>
-                                </div>
+                            <!-- Default Content -->
+                            <div class="flex flex-col items-center justify-center p-4 text-center">
+                                <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                <p class="mb-2 text-xs text-gray-600 mt-4">
+                                    Ukuran gambar tidak lebih dari
+                                    <span class="font-semibold">2mb</span>
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    Pastikan gambar dalam format
+                                    <span class="font-semibold">JPG </span> atau
+                                    <span class="font-semibold">PNG</span>
+                                </p>
+                            </div>
                             @endif
                         </div>
                     </label>
@@ -71,9 +71,9 @@
 
                 <!-- Error Message -->
                 @error('image')
-                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                        {{ $message }}
-                    </div>
+                <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                    {{ $message }}
+                </div>
                 @enderror
 
                 <!-- Loading Indicator -->
@@ -91,12 +91,28 @@
             </p>
             <flux:input placeholder="Nama Lengkap" wire:model.defer="name" />
             <flux:error name="name" />
+            <flux:label>Jenis Kelamin</flux:label>
+            <p class="text-sm text-gray-500">
+                Pilih jenis kelamin.
+            </p>
+            <flux:select placeholder="Pilih Jenis Kelamin" wire:model.defer="gender">
+                <option value="" hidden>Pilih Jenis Kelamin</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </flux:select>
+            <flux:error name="gender" />
             <flux:label>Email</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan alamat email aktif.
             </p>
             <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" />
             <flux:error name="email" />
+            <flux:label>Password</flux:label>
+            <p class="text-sm text-gray-500">
+                Masukkan password dengan kombinasi huruf dan angka (minimal 8 karakter)
+            </p>
+            <flux:input placeholder="Password" wire:model.live="password" type="password" viewable />
+            <flux:error name="password" />
             <flux:label>Nomor Telepon</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan nomor telepon aktif (WhatsApp).
@@ -110,39 +126,10 @@
             <flux:select placeholder="Pilih Peran" wire:model.defer="role">
                 <option value="" hidden>Pilih Peran</option>
                 @foreach ($roles as $role)
-                    <option value="{{ $role->name }}">{{ $role->name }}</option>
+                <option value="{{ $role->name }}">{{ $role->name }}</option>
                 @endforeach
             </flux:select>
             <flux:error name="role" />
-            <flux:label>Password</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan password dengan kombinasi huruf dan angka (minimal 8 karakter)
-            </p>
-            <flux:input placeholder="Password" wire:model.live="password" type="password" viewable />
-            <flux:error name="password" />
-            {{-- <p class="text-sm text-gray-500">
-                Masukkan PIN masuk untuk keamanan lebih.
-            </p>
-            <div id="pin-inputs" class="flex mb-2 space-x-2">
-                @for ($i = 0; $i < 6; $i++)
-                    <div>
-                        <input type="{{ $showPin ? 'text' : 'password' }}" maxlength="1"
-                            wire:model="pin.{{ $i }}"
-                            class="block w-9 h-9 text-center font-bold text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-                @endfor
-
-                <!-- Tombol toggle mata -->
-                <div class="flex items-center">
-                    <flux:button type="button" variant="ghost" wire:click="$toggle('showPin')">
-                        @if ($showPin)
-                            <flux:icon.eye class="w-6 h-6 text-gray-700" />
-                        @else
-                            <flux:icon.eye-slash class="w-6 h-6 text-gray-700" />
-                        @endif
-                    </flux:button>
-                </div>
-            </div> --}}
 
         </div>
     </div>

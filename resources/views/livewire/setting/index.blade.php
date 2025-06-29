@@ -1,5 +1,5 @@
 <div class="max-h-96 overflow-y-auto ml-12">
-    <div class="flex items-center gap-4 mb-4 flex-row">
+    <div class="flex items-center gap-4 mb-4 flex-row bg-white p-4 rounded-lg shadow-lg">
         <div class="relative flex h-16 w-16 shrink-0 overflow-hidden rounded-full">
             @if (auth()->user()->image)
             <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"

@@ -7,7 +7,7 @@
         </a>
         <h1 class="text-2xl">Rencana Pesanan {{ $method }}</h1>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+    <div class="flex items-center rounded-lg p-4 bg-white shadow-lg">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-4 mt-4">
+    <div class="w-full flex md:flex-row flex-col gap-4 mt-4 bg-white p-4 rounded-lg shadow">
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
             <flux:label>Pilih Pekerja</flux:label>
             <p class="text-sm text-gray-500">
@@ -26,11 +26,11 @@
 
             <select class="js-example-basic-multiple" wire:model.live="user_ids" multiple="multiple">
                 @foreach ($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                <option value="{{ $user->id }}">{{ $user->name }}</option>
                 @endforeach
             </select>
             <flux:error name="user_ids" />
-            <flux:label>Jadwal Produksi</flux:label>
+            {{-- <flux:label>Jadwal Produksi</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan tanggal produksi.
             </p>
@@ -87,7 +87,7 @@
 
             </div>
 
-            <flux:error name="date" />
+            <flux:error name="date" /> --}}
 
         </div>
 
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div class="w-full mt-8 flex flex-col gap-4">
+    <div class="w-full mt-8 flex flex-col gap-4 bg-white p-4 rounded-lg shadow">
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <flux:label>Daftar Produk</flux:label>
         </div>
@@ -115,18 +115,18 @@
                 </thead>
                 <tbody>
                     @foreach ($details as $detail)
-                        <tr>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm ">
-                                    {{ $detail->quantity ?? 0 }}
-                                </span>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="px-6 py-3">
+                            <span class="text-sm">
+                                {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-right">
+                            <span class="text-sm ">
+                                {{ $detail->quantity ?? 0 }}
+                            </span>
+                        </td>
+                    </tr>
                     @endforeach
 
                 </tbody>
@@ -162,8 +162,8 @@
 
 
     @script
-        <script type="text/javascript">
-            document.addEventListener('livewire:initialized', function() {
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
                 function loadJavascript() {
                     $('.js-example-basic-multiple').select2({
                         placeholder: "Cari Pekerja...",
@@ -178,6 +178,45 @@
                     loadJavascript();
                 })
             });
-        </script>
+    </script>
     @endscript
+
+    @section('css')
+    <style>
+        .select2-search__field {
+            height: 10.5rem !important;
+            /* sekitar 176px */
+            min-height: 10.5rem !important;
+            max-height: 10.5rem !important;
+            padding: 0.75rem !important;
+            font-size: 0.875rem !important;
+            line-height: 1.5rem !important;
+            resize: none !important;
+            border-radius: 0.375rem !important;
+            border: none !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            align-content: flex-start;
+            min-height: 10.5rem;
+            max-height: 10.5rem !important;
+            padding: 0.5rem;
+            gap: 0.25rem;
+            border-radius: 0.375rem !important;
+            border: 1px solid #e5e7eb !important;
+        }
+
+
+        .select2-selection__rendered {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: flex-start !important;
+            align-content: flex-start !important;
+            width: 100%;
+        }
+    </style>
+    @endsection
 </div>

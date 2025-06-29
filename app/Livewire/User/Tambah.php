@@ -10,7 +10,7 @@ class Tambah extends Component
 {
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $name, $email, $password, $image, $role, $phone;
+    public $name, $email, $password, $image, $role, $phone, $gender;
     public $previewImage;
     public $roles;
     public array $pin = ['', '', '', '', '', ''];
@@ -61,6 +61,8 @@ class Tambah extends Component
             'email' => 'required|email|unique:users,email',
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
+            'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Minimal 8 karakter, harus mengandung huruf dan angka
+            'gender' => 'required',
         ]);
 
         $user = new \App\Models\User();
@@ -68,6 +70,7 @@ class Tambah extends Component
         $user->email = $this->email;
         $user->password = bcrypt($this->password);
         $user->phone = $this->phone;
+        $user->gender = $this->gender;
         if ($this->image) {
             $user->image = $this->image->store('user_images', 'public');
         }

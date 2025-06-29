@@ -14,7 +14,7 @@ class TambahProduksiPesanan extends Component
     public $method;
     public $details = [];
     public $user_ids;
-    public $start_date = 'dd/mm/yyyy', $note, $time;
+    public $note;
 
     public function mount($id)
     {
@@ -29,21 +29,6 @@ class TambahProduksiPesanan extends Component
 
         $this->details = $this->transaction->details;
 
-        // Hitung start_date
-        $transactionDate = \Carbon\Carbon::parse($this->transaction->date);
-        $today = now()->startOfDay();
-
-        $diffInDays = $today->diffInDays($transactionDate, false); // false untuk nilai negatif kalau hari ini > transaction date
-        if ($diffInDays >= 3) {
-            $this->start_date = $transactionDate->copy()->subDays(3)->toDateString();
-        } elseif ($diffInDays === 2) {
-            $this->start_date = $transactionDate->copy()->subDays(2)->toDateString();
-        } else {
-            // fallback ke 1 hari sebelum
-            $this->start_date = $transactionDate->copy()->subDays(1)->toDateString();
-        }
-        $this->start_date = \Carbon\Carbon::parse($this->start_date)->format('d/m/Y');
-
         View::share('title', 'Rencana Produksi ' . $this->method);
         View::share('mainTitle', 'Produksi');
     }
@@ -52,7 +37,6 @@ class TambahProduksiPesanan extends Component
     {
         $this->validate([
             'user_ids' => 'required|array',
-            'start_date' => $this->start_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
             'note' => 'nullable|string|max:255',
         ]);
 
@@ -88,13 +72,13 @@ class TambahProduksiPesanan extends Component
         }
 
         $production = \App\Models\Production::create([
-            'start_date' => $this->start_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->start_date)->format('Y-m-d') : null,
+            'start_date' => now()->format('Y-m-d'),
             'note' => $this->note,
             'method' => $this->transaction->method,
             'status' => 'Sedang Diproses',
             'is_start' => true,
             'date' => now(),
-            'time' => $this->time,
+            'time' => now()->format('H:i'),
             'transaction_id' => $this->transactionId,
         ]);
 

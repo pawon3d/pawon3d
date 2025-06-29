@@ -11,7 +11,7 @@ class Rincian extends Component
 {
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $name, $email, $password, $image, $role, $phone;
+    public $name, $email, $password, $image, $role, $phone, $gender;
     public $previewImage;
     public $roles;
     public $userId;
@@ -35,6 +35,7 @@ class Rincian extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        $this->gender = $user->gender;
         $this->role = $user->getRoleNames()->first();
         if ($user->image) {
             $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
@@ -110,6 +111,7 @@ class Rincian extends Component
             $user->password = bcrypt($this->password);
         }
         $user->phone = $this->phone;
+        $user->gender = $this->gender;
         if ($this->image) {
             // Hapus gambar lama jika ada
             if ($user->image) {

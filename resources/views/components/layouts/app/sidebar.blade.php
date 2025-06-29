@@ -73,7 +73,11 @@ use Illuminate\Support\Facades\Route;
             @endcanany
 
             @can('Manajemen Sistem')
-            <flux:navlist.group heading="Karyawan" expandable icon="users" :expanded="false">
+            <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer')"
+                icon="user-group" wire:navigate>
+                {{ __('Pelanggan') }}
+            </flux:navlist.item>
+            <flux:navlist.group heading="Karyawan" expandable icon="id-card" :expanded="false">
                 <flux:navlist.item :href="route('user')" :current="Str::startsWith(Route::currentRouteName(), 'user')"
                     wire:navigate>{{ __('Pekerja') }}
                 </flux:navlist.item>

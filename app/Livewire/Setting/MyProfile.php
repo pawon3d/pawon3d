@@ -9,7 +9,7 @@ class MyProfile extends Component
 {
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $name, $email, $password, $image, $role, $phone;
+    public $name, $email, $password, $image, $role, $phone, $gender;
     public $previewImage;
     public $roles;
     public $userId;
@@ -33,6 +33,7 @@ class MyProfile extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone;
+        $this->gender = $user->gender;
         $this->password = $user->password; // Ambil password yang sudah ada, jika perlu
         // sensor sebagian password
         $this->password = str_repeat('*', strlen($user->password) - 4) . substr($user->password, -4);
@@ -101,6 +102,7 @@ class MyProfile extends Component
             $user->password = bcrypt($this->password);
         }
         $user->phone = $this->phone;
+        $user->gender = $this->gender;
         if ($this->image) {
             // Hapus gambar lama jika ada
             if ($user->image) {
