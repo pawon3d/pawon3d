@@ -41,6 +41,8 @@
 -   [x] Tambah Permission
 -   [x] kelola pelanggan
 -   [x] refund
+-   [x] halaman pelanggan
+-   [x] kelola poin
 
 ## BELUM SELESAI
 

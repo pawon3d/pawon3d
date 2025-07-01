@@ -12,15 +12,17 @@ use Illuminate\Support\Facades\Route;
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <div id="sidebar"
-        class="fixed inset-y-0 px-2 left-0 z-40 w-16 mt-16 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
+        class="fixed inset-y-0 left-0 z-40 w-12 mt-16 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
         <flux:navlist variant="outline" class="my-4 gap-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
-            @can('Manajemen Sistem')
-            <flux:navlist.group expandable :expanded="false" heading="Dashboard" icon="align-end-horizontal">
-                <flux:navlist.item :href="route('dashboard')" :current="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}</flux:navlist.item>
+
+            <flux:navlist.group expandable :expanded="false"
+                current="{{ Str::startsWith(Route::currentRouteName(), 'ringkasan') }}" heading="Dashboard"
+                icon="align-end-horizontal">
+                <flux:navlist.item :href="route('ringkasan-umum')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'ringkasan')" wire:navigate>
+                    {{ __('Ringkasan Umum') }}</flux:navlist.item>
             </flux:navlist.group>
-            @endcan
 
             @can('Kasir')
             <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
@@ -334,7 +336,7 @@ use Illuminate\Support\Facades\Route;
 
             // Toggle lebar sidebar
             sidebar.classList.toggle('w-56');
-            sidebar.classList.toggle('w-16');
+            sidebar.classList.toggle('w-12');
 
             // Toggle label teks
             labels.forEach(label => {

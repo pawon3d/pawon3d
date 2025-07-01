@@ -313,7 +313,7 @@
                     <div class="flex flex-col text-sm text-gray-600 gap-1">
                         <div class="flex items-center gap-2">
                             <span class="px-4 py-2">{{ $paidAt }}</span>
-                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">{{ $label }}</span>
+                            <span class="px-2 py-1 text-xs text-gray-500 rounded-full">{{ $label }}</span>
 
                             @if ($payment->payment_method && $payment->payment_method !== 'tunai')
                             <div class="flex flex-row text-xs ml-2 gap-3 items-center">

@@ -20,47 +20,23 @@ $square ??= $slot->isEmpty();
 $iconClasses = Flux::classes($square ? 'size-6!' : 'size-6!');
 
 $classes = Flux::classes()
-->add('h-10 lg:h-8 relative flex items-center gap-3 rounded overflow-hidden')
+->add($solo ? '' : 'pl-9')
+->add('h-10 lg:h-8 relative flex items-center gap-3 overflow-hidden')
 ->add($square ? 'px-2.5!' : '')
-->add('py-0 text-left w-full px-3 my-px')
+->add('py-0 text-left w-full ps-[calc(0.75rem-1px)] pe-3 my-px')
 ->add('text-zinc-500 dark:text-white/80')
-->add(
-match ($variant) {
-'outline' => match ($accent) {
-true => [
-'data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content)',
-'data-current:bg-zinc-800/[20%] dark:data-current:bg-white/[7%] data-current:border data-current:border-l-3
-data-current:border-l-zinc-800
-dark:data-current:border-transparent',
-'hover:text-zinc-800 dark:hover:text-white dark:hover:bg-white/[7%] hover:bg-zinc-800/5 ',
-'border border-transparent',
-],
-false => [
-'data-current:text-zinc-800 dark:data-current:text-zinc-100 data-current:border-zinc-200',
-'data-current:bg-white dark:data-current:bg-white/10 data-current:border data-current:border-zinc-200
-dark:data-current:border-white/10 data-current:shadow-xs',
-'hover:text-zinc-800 dark:hover:text-white',
-],
-},
-default => match ($accent) {
-true => [
-'data-current:text-(--color-accent-content) hover:data-current:text-(--color-accent-content)',
-'data-current:bg-zinc-800/[4%] dark:data-current:bg-white/[7%]',
-'hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/[7%]',
-],
-false => [
-'data-current:text-zinc-800 dark:data-current:text-zinc-100',
-'data-current:bg-zinc-800/[4%] dark:data-current:bg-white/10',
-'hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-800/[4%] dark:hover:bg-white/10',
-],
-},
-},
-);
+->add([
+'data-current:bg-zinc-100',
+'data-current:border-l-4 data-current:border-zinc-800',
+'data-current:text-zinc-900 data-current:font-semibold',
+'hover:bg-zinc-100 hover:text-zinc-800',
+]);
 @endphp
 
 <flux:button-or-link :attributes="$attributes->class($classes)" data-flux-navlist-item>
     <?php if ($icon): ?>
-    <div class="relative">
+    <!-- Perubahan di sini: gunakan kelas CSS khusus -->
+    <div class="relative group-data-[current]:-ml-1">
         <?php if (is_string($icon) && $icon !== ''): ?>
         <flux:icon :$icon :variant="$iconVariant" class="{!! $iconClasses !!}" />
         <?php else: ?>
@@ -91,3 +67,11 @@ false => [
     <flux:navlist.badge :color="$badgeColor">{{ $badge }}</flux:navlist.badge>
     <?php endif; ?>
 </flux:button-or-link>
+
+<!-- Tambahkan style khusus untuk menangani margin -->
+<style>
+    [data-flux-navlist-item][data-current] .relative {
+        margin-left: -0.25rem;
+        /* Setara dengan -ml-1 */
+    }
+</style>

@@ -16,6 +16,7 @@ class Edit extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
     public $transactionId;
     public $transaction;
+    public $search = '';
     public $details = [];
     public $paymentChannels = [];
     public $paymentChannelId = '';
@@ -234,23 +235,23 @@ class Edit extends Component
                 );
             }
 
-            if ($this->paidAmount > 0 && $this->paymentMethod != '') {
-                $payment = Payment::updateOrCreate(['transaction_id' => $transaction->id], [
-                    'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
-                    'payment_method' => $this->paymentMethod,
-                    'paid_amount' => $this->paidAmount,
-                    'paid_at' => now(),
-                ]);
+            // if ($this->paidAmount > 0 && $this->paymentMethod != '') {
+            //     $payment = Payment::updateOrCreate(['transaction_id' => $transaction->id], [
+            //         'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
+            //         'payment_method' => $this->paymentMethod,
+            //         'paid_amount' => $this->paidAmount >= $this->totalAmount ? $this->totalAmount : $this->paidAmount,
+            //         'paid_at' => now(),
+            //     ]);
 
-                if ($this->image instanceof \Illuminate\Http\UploadedFile) {
-                    // hapuskan gambar lama jika ada
-                    if ($payment->image) {
-                        Storage::disk('public')->delete($payment->image);
-                    }
-                    $path = $this->image->store('payments', 'public');
-                    $payment->update(['image' => $path]);
-                }
-            }
+            //     if ($this->image instanceof \Illuminate\Http\UploadedFile) {
+            //         // hapuskan gambar lama jika ada
+            //         if ($payment->image) {
+            //             Storage::disk('public')->delete($payment->image);
+            //         }
+            //         $path = $this->image->store('payments', 'public');
+            //         $payment->update(['image' => $path]);
+            //     }
+            // }
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
         } else {
@@ -264,7 +265,10 @@ class Edit extends Component
             'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
-                })->get(),
+                })->when($this->search, function ($query) {
+                    $query->where('name', 'like', '%' . $this->search . '%');
+                })
+                ->get(),
             'total' => $this->getTotalProperty(),
         ]);
     }

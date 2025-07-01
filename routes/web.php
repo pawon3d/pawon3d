@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PdfController;
 use App\Livewire\User\Index;
 use App\Livewire\Dashboard;
 use App\Livewire\Review\ReviewForm;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -34,6 +36,18 @@ Route::get('/tes', function () {
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
+Route::get('/ringkasan-kasir', App\Livewire\Dashboard\RingkasanKasir::class)
+    ->middleware(['auth'])
+    ->name('ringkasan-kasir');
+Route::get('/ringkasan-produksi', App\Livewire\Dashboard\RingkasanProduksi::class)
+    ->middleware(['auth'])
+    ->name('ringkasan-produksi');
+Route::get('/ringkasan-inventori', App\Livewire\Dashboard\RingkasanInventori::class)
+    ->middleware(['auth'])
+    ->name('ringkasan-inventori');
+Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
+    ->middleware('auth')
+    ->name('ringkasan-umum');
 
 Route::get('/ulasan/{transaction_id}', ReviewForm::class)
     ->name('ulasan');

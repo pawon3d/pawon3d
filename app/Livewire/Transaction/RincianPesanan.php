@@ -256,6 +256,7 @@ class RincianPesanan extends Component
             } else {
                 if ($this->paidAmount >= $this->totalAmount) {
                     $status = 'Lunas';
+                    $this->paidAmount = $this->totalAmount;
                 } else {
                     $status = 'Belum Lunas';
                 }
@@ -266,6 +267,7 @@ class RincianPesanan extends Component
                 return;
             } else {
                 $status = 'Lunas';
+                $this->paidAmount = $this->totalAmount - $this->totalPayment;
             }
         }
         $this->validate([

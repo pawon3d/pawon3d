@@ -16,6 +16,7 @@ class BuatPesanan extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
     public $transactionId;
+    public $search = '';
     public $transaction;
     public $details = [];
     public $paymentChannels = [];
@@ -312,12 +313,6 @@ class BuatPesanan extends Component
             if ($this->paidAmount < 0.5 * $this->getTotalProperty()) {
                 $this->alert('warning', 'Jumlah pembayaran minimal 50% dari sisa.');
                 return;
-            } else {
-                if ($this->paidAmount >= $this->getTotalProperty()) {
-                    $status = 'Lunas';
-                } else {
-                    $status = 'Belum Lunas';
-                }
             }
         }
 
@@ -366,7 +361,7 @@ class BuatPesanan extends Component
                     'transaction_id' => $transaction->id,
                     'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
                     'payment_method' => $this->paymentMethod,
-                    'paid_amount' => $this->paidAmount,
+                    'paid_amount' => $this->paidAmount >= $this->getTotalProperty() ? $this->getTotalProperty() : $this->paidAmount,
                     'paid_at' => now(),
                 ]);
 
@@ -405,7 +400,10 @@ class BuatPesanan extends Component
             'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
-                })->get(),
+                })->when($this->search, function ($query) {
+                    $query->where('name', 'like', '%' . $this->search . '%');
+                })
+                ->get(),
             'total' => $this->getTotalProperty(),
         ]);
     }

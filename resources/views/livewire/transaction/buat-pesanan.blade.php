@@ -33,7 +33,7 @@
                         Terdaftar Sebagai Pelanggan
                     </span>
                     <span>
-                        0 Poin
+                        {{ $customer->points ?? 0 }} Poin
                     </span>
                 </div>
                 @else
@@ -59,7 +59,7 @@
             <p class="text-sm text-gray-500">
                 Masukkan kapan tanggal pengambilan pesanan akan dilakukan.
             </p>
-            <div class="flex flex-row gap-2 w-full">
+            <div class="flex flex-row justify-between gap-2 w-full">
                 <div x-init="picker = new Pikaday({
                         field: $refs.datepicker,
                         format: 'DD-MM-YYYY',
@@ -73,7 +73,7 @@
                             @this.set('date', moment(this.getDate()).format('DD-MM-YYYY'));
                             console.log(moment(this.getDate()).format('DD-MM-YYYY'));
                         }
-                    });" class="relative">
+                    });" class="relative w-full">
                     <!-- Icon kalender -->
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <!-- Heroicons outline calendar icon -->
@@ -93,7 +93,7 @@
                             time = dateStr;
                             @this.set('time', dateStr);
                         }
-                    });" class="relative">
+                    });" class="relative w-full">
                     <!-- Icon jam -->
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <!-- Heroicons outline clock icon -->
@@ -110,9 +110,10 @@
                 </div>
 
             </div>
-
-            <flux:error name="date" />
-            <flux:error name="time" />
+            <div class="flex flex-row gap-2 w-full">
+                <flux:error name="date" class="w-1/2" />
+                <flux:error name="time" class="w-1/2" />
+            </div>
         </div>
 
         <div class="md:w-1/2 flex flex-col gap-4 mt-4">
@@ -321,11 +322,30 @@
         </flux:button>
     </div>
 
-    <flux:modal name="tambah-item" class="w-1/2 max-w-sm" wire:model="showItemModal">
+    <flux:modal name="tambah-item" class="w-full max-w-2xl bg-white rounded-2xl p-4" variant="bare"
+        wire:model="showItemModal">
         <div class="w-full">
-            <div class="grid grid-cols-1 gap-4 p-4 max-h[400px] overflow-y-auto">
-                @foreach ($products as $product)
-                <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-center mb-4 max-w-full">
+                <!-- Search Input -->
+                <div class="p-4 flex w-full">
+                    <input wire:model.live="search" placeholder="Cari..."
+                        class="w-full px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-0" />
+                    <flux:button :loading="false" class="ml-2" variant="ghost">
+                        <flux:icon.funnel variant="mini" />
+                        <span>Filter</span>
+                    </flux:button>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <flux:modal.close>
+                        <flux:button icon="x-circle" variant="primary" type="button">
+                            Batal
+                        </flux:button>
+                    </flux:modal.close>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 grid-cols-1 gap-4 p-4 max-h[400px] overflow-y-auto">
+                @forelse ($products as $product)
+                <div class="overflow-hidden hover:shadow-md transition-shadow">
                     <div class="p-3">
                         <div class="relative mb-3">
                             @if ($product->product_image)
@@ -372,7 +392,11 @@
                         </div>
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <div class="col-span-3 text-center p-4">
+                    <p class="text-gray-500">Tidak ada produk yang ditemukan.</p>
+                </div>
+                @endforelse
             </div>
         </div>
     </flux:modal>
