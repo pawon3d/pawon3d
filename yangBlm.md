@@ -43,6 +43,8 @@
 -   [x] refund
 -   [x] halaman pelanggan
 -   [x] kelola poin
+-   [x] hilangkan kembalian
+-   [x] ringkasan kasir
 
 ## BELUM SELESAI
 
@@ -51,6 +53,8 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
+-   [ ] ringkasan produksi
+-   [ ] ringkasan inventori
 
 ### Medium Priority
 

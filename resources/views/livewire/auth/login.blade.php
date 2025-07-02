@@ -45,24 +45,24 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-            // $this->redirectIntended(default: route('dashboard', absolute: false), navigate: false);
-        $user = Auth::user();
+            $this->redirectIntended(default: route('ringkasan-umum', absolute: false), navigate: false);
+        // $user = Auth::user();
 
-        $permissionRoutes = [
-            'Manajemen Sistem' => 'dashboard',
-            'Kasir' => 'transaksi',
-            'Produksi' => 'produksi',
-            'Inventori' => 'bahan-baku',
-        ];
+        // $permissionRoutes = [
+        //     'Manajemen Sistem' => 'dashboard',
+        //     'Kasir' => 'transaksi',
+        //     'Produksi' => 'produksi',
+        //     'Inventori' => 'bahan-baku',
+        // ];
 
-        foreach ($permissionRoutes as $permission => $routeName) {
-            if ($user->hasPermissionTo($permission)) {
-                $this->redirect(route($routeName), navigate: false);
-                return;
-            }
-        }
+        // foreach ($permissionRoutes as $permission => $routeName) {
+        //     if ($user->hasPermissionTo($permission)) {
+        //         $this->redirect(route($routeName), navigate: false);
+        //         return;
+        //     }
+        // }
 
-        $this->redirect(route('home'), navigate: false);
+        // $this->redirect(route('home'), navigate: false);
 
         
     }
@@ -98,7 +98,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Pawon3D" description="Silahkan log in" />
+    <x-auth-header title="Login" description="" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -115,10 +115,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
+        <label for="remember">
+            <input type="checkbox" id="remember" name="remember" wire:model="remember"
+                class="form-checkbox h-4 w-4 text-black border-gray-500 rounded-full focus:ring-0 focus:ring-offset-0 not-checked:bg-white" />
+            <span class="text-sm ml-4 font-medium select-none text-zinc-800">
+                Ingat Saya
+            </span>
+        </label>
 
         <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
+            <flux:button variant="primary" type="submit" class="w-full">{{ __('Masuk') }}</flux:button>
         </div>
     </form>
 

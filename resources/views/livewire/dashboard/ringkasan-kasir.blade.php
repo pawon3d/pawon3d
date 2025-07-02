@@ -9,12 +9,15 @@
         </div>
     </div>
     <div class="flex items-center mr-4 gap-2 my-8">
+        @can('Kasir')
         <div class="cursor-pointer">
             <a href="{{ route('ringkasan-kasir') }}"
                 class="text-gray-100 bg-gray-800 rounded-xl py-2 px-4 border border-gray-600 hover:text-gray-100 hover:bg-gray-800 transition-colors size-8">
                 Kasir
             </a>
         </div>
+        @endcan
+        @can('Produksi')
 
         <div class="cursor-pointer">
             <a href="{{ route('ringkasan-produksi') }}"
@@ -22,12 +25,16 @@
                 Produksi
             </a>
         </div>
+        @endcan
+        @can('Inventori')
+
         <div class="cursor-pointer">
             <a href="{{ route('ringkasan-inventori') }}"
                 class="text-gray-800 bg-gray-200 rounded-xl py-2 px-4 border border-gray-600 hover:text-gray-100 hover:bg-gray-800 transition-colors size-8">
                 Inventori
             </a>
         </div>
+        @endcan
 
     </div>
     <div class="flex flex-col overflow-hidden  bg-white rounded-lg shadow p-4 md:flex-row gap-6" style="height: 26rem;">

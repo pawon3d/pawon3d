@@ -59,7 +59,7 @@ class Expense extends Model
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
                 $today = Carbon::now()->format('ymd'); // YYMMDD
-                $prefix = 'BB-' . $today;
+                $prefix = 'BP-' . $today;
 
                 // Ambil produksi terakhir untuk hari ini
                 $lastExpense = DB::table('expenses')
