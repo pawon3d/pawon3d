@@ -19,13 +19,11 @@
             </p>
         </div>
         <div class="ml-auto">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <flux:button type="submit" icon="arrow-left-end-on-rectangle" variant="primary"
-                    wire:loading.attr="disabled">
+            <flux:modal.trigger name="logoutModal">
+                <flux:button type="button" icon="arrow-left-end-on-rectangle" variant="primary">
                     Keluar
                 </flux:button>
-            </form>
+            </flux:modal.trigger>
         </div>
     </div>
     <div class="flex flex-col gap-4 mt-8">

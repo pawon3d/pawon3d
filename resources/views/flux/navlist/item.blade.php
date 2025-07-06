@@ -20,23 +20,23 @@ $square ??= $slot->isEmpty();
 $iconClasses = Flux::classes($square ? 'size-6!' : 'size-6!');
 
 $classes = Flux::classes()
-->add($solo ? '' : 'pl-9')
-->add('h-10 lg:h-8 relative flex items-center gap-3 overflow-hidden')
+->add($solo ? '' : 'pl-10')
+->add('relative flex items-center gap-3 overflow-hidden')
 ->add($square ? 'px-2.5!' : '')
-->add('py-0 text-left w-full ps-[calc(0.75rem-1px)] pe-3 my-px')
-->add('text-zinc-500 dark:text-white/80')
+->add('py-3 text-left w-full ps-[calc(0.75rem-1px)] pe-3')
+->add('text-zinc-800 dark:text-white/80')
 ->add([
-'data-current:bg-zinc-100',
-'data-current:border-l-4 data-current:border-zinc-800',
-'data-current:text-zinc-900 data-current:font-semibold',
-'hover:bg-zinc-100 hover:text-zinc-800',
+'data-current:bg-[#74512d20]',
+'data-current:border-zinc-800',
+'data-current:text-[#74512D] data-current:font-semibold',
+'hover:bg-[#74512d20] hover:text-[#74512D] hover:font-semibold',
 ]);
 @endphp
 
 <flux:button-or-link :attributes="$attributes->class($classes)" data-flux-navlist-item>
     <?php if ($icon): ?>
     <!-- Perubahan di sini: gunakan kelas CSS khusus -->
-    <div class="relative group-data-[current]:-ml-1">
+    <div class="relative">
         <?php if (is_string($icon) && $icon !== ''): ?>
         <flux:icon :$icon :variant="$iconVariant" class="{!! $iconClasses !!}" />
         <?php else: ?>
@@ -67,11 +67,3 @@ $classes = Flux::classes()
     <flux:navlist.badge :color="$badgeColor">{{ $badge }}</flux:navlist.badge>
     <?php endif; ?>
 </flux:button-or-link>
-
-<!-- Tambahkan style khusus untuk menangani margin -->
-<style>
-    [data-flux-navlist-item][data-current] .relative {
-        margin-left: -0.25rem;
-        /* Setara dengan -ml-1 */
-    }
-</style>

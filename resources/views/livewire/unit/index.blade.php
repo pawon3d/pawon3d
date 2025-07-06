@@ -21,7 +21,7 @@
             </button>
         </div>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+    <div class="flex items-center border bg-white shadow-lg rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
@@ -32,95 +32,97 @@
             </p>
         </div>
     </div>
-    <div class="flex justify-between items-center mb-7">
-        <!-- Search Input -->
-        <div class="p-4 flex">
-            <input wire:model.live="search" placeholder="Cari..."
-                class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <flux:button :loading="false" class="ml-2" variant="ghost">
-                <flux:icon.funnel variant="mini" />
-                <span>Filter</span>
-            </flux:button>
+
+    <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
+        <div class="flex justify-between items-center mb-7">
+            <!-- Search Input -->
+            <div class="p-4 flex">
+                <input wire:model.live="search" placeholder="Cari..."
+                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <flux:button :loading="false" class="ml-2" variant="ghost">
+                    <flux:icon.funnel variant="mini" />
+                    <span>Filter</span>
+                </flux:button>
+            </div>
+            <div class="flex gap-2 items-center">
+                <flux:button type="button" variant="primary" wire:click="showAddModal" icon="plus">Tambah
+                    Satuan</flux:button>
+            </div>
         </div>
-        <div class="flex gap-2 items-center">
-            <flux:button type="button" variant="primary" wire:click="showAddModal" icon="plus">Tambah
-                Satuan</flux:button>
-        </div>
-    </div>
-    <div class="flex justify-between items-center mb-7">
-        <div class="p-4 flex">
-            <flux:dropdown>
-                <flux:button variant="ghost">
-                    @if ($filterStatus)
+        <div class="flex justify-between items-center mb-7">
+            <div class="p-4 flex">
+                <flux:dropdown>
+                    <flux:button variant="ghost">
+                        @if ($filterStatus)
                         {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                    @else
+                        @else
                         Semua Satuan
-                    @endif
-                    {{-- {{ $filterStatus ? ' (' . $units->total() . ')' : ' (' . $units->count() . ')' }}
-                    --}}
-                    ({{ $units->total() }})
-                    <flux:icon.chevron-down variant="mini" />
-                </flux:button>
-                <flux:menu>
-                    <flux:menu.radio.group wire:model.live="filterStatus">
-                        <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
-                        <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                        <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                    </flux:menu.radio.group>
-                </flux:menu>
-            </flux:dropdown>
+                        @endif
+                        {{-- {{ $filterStatus ? ' (' . $units->total() . ')' : ' (' . $units->count() . ')' }}
+                        --}}
+                        ({{ $units->total() }})
+                        <flux:icon.chevron-down variant="mini" />
+                    </flux:button>
+                    <flux:menu>
+                        <flux:menu.radio.group wire:model.live="filterStatus">
+                            <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
+                            <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
+                            <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
+            <div class="flex gap-2 items-center">
+                <flux:dropdown>
+                    <flux:button variant="ghost">
+                        Urutkan Kategori
+                        <flux:icon.chevron-down variant="mini" />
+
+                    </flux:button>
+
+                    <flux:menu>
+                        <flux:menu.radio.group wire:model="sortByCategory">
+                            <flux:menu.radio value="name">Nama</flux:menu.radio>
+                            <flux:menu.radio value="status">Status</flux:menu.radio>
+                            <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
         </div>
-        <div class="flex gap-2 items-center">
-            <flux:dropdown>
-                <flux:button variant="ghost">
-                    Urutkan Kategori
-                    <flux:icon.chevron-down variant="mini" />
 
-                </flux:button>
-
-                <flux:menu>
-                    <flux:menu.radio.group wire:model="sortByCategory">
-                        <flux:menu.radio value="name">Nama</flux:menu.radio>
-                        <flux:menu.radio value="status">Status</flux:menu.radio>
-                        <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                    </flux:menu.radio.group>
-                </flux:menu>
-            </flux:dropdown>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl border">
+        <div class="bg-white rounded-xl border">
 
 
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('name')">Nama
-                            Satuan
-                            {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('group')">
-                            Kelompok Satuan
-                            {{ $sortDirection === 'asc' && $sortField === 'group' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('alias')">
-                            Singkatan
-                            {{ $sortDirection === 'asc' && $sortField === 'alias' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('material_details_count')">
-                            Jumlah Penggunaan
-                            {{ $sortDirection === 'asc' && $sortField === 'material_details_count' ? '↑' : '↓' }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($units as $unit)
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('name')">Nama
+                                Satuan
+                                {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('group')">
+                                Kelompok Satuan
+                                {{ $sortDirection === 'asc' && $sortField === 'group' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('alias')">
+                                Singkatan
+                                {{ $sortDirection === 'asc' && $sortField === 'alias' ? '↑' : '↓' }}
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                wire:click="sortBy('material_details_count')">
+                                Jumlah Penggunaan
+                                {{ $sortDirection === 'asc' && $sortField === 'material_details_count' ? '↑' : '↓' }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($units as $unit)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
                                 wire:click="edit('{{ $unit->id }}')">
@@ -128,13 +130,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if ($unit->group === 'Berat')
-                                    Berat / Massa
+                                Berat / Massa
                                 @elseif ($unit->group === 'Volume')
-                                    Volume
+                                Volume
                                 @elseif ($unit->group === 'Jumlah')
-                                    Jumlah
+                                Jumlah
                                 @else
-                                    -
+                                -
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $unit->alias }}
@@ -143,18 +145,19 @@
                                 {{ $unit->material_details_count }}
                             </td>
                         </tr>
-                    @empty
+                        @empty
                         <tr>
                             <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $units->links() }}
+            <!-- Pagination -->
+            <div class="p-4">
+                {{ $units->links() }}
+            </div>
         </div>
     </div>
 
@@ -170,7 +173,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -184,7 +187,7 @@
                         <option value="Jumlah">Jumlah</option>
                     </select>
                     @error('group')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -193,7 +196,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -219,7 +222,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -233,7 +236,7 @@
                         <option value="Jumlah">Jumlah</option>
                     </select>
                     @error('group')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -242,7 +245,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('alias')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -293,13 +296,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

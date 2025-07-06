@@ -7,7 +7,7 @@
         </a>
         <h1 class="text-2xl">Tambah Barang Persediaan</h1>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
+    <div class="flex items-center border bg-white shadow-lg rounded-lg p-4">
         <flux:icon icon="message-square-warning" class="size-16" />
         <div class="ml-3">
             <p class="mt-1 text-sm text-gray-500">
@@ -18,28 +18,30 @@
         </div>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Unggah Gambar Barang</flux:label>
-            <p class="text-sm text-gray-500">
-                Pilih gambar barang yang ingin diunggah dan sesuai dengan nama barang yang akan ditambahkan.
-            </p>
+    <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
+        <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
+            <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+                <flux:label>Unggah Gambar Barang</flux:label>
+                <p class="text-sm text-gray-500">
+                    Pilih gambar barang yang ingin diunggah dan sesuai dengan nama barang yang akan ditambahkan.
+                </p>
 
-            <div class="flex flex-col items-center w-full max-w-md mx-auto space-y-4">
-                <!-- Dropzone Area -->
-                <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
-                    wire:ignore
-                    ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
-                    ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');" ondrop="handleDrop(event)"
-                    id="dropzone-container">
+                <div class="flex flex-col items-center w-full max-w-md mx-auto space-y-4">
+                    <!-- Dropzone Area -->
+                    <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                        wire:ignore
+                        ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
+                        ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
+                        ondrop="handleDrop(event)" id="dropzone-container">
 
-                    <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
-                        <div id="preview-container" class="w-full h-full">
-                            @if ($previewImage)
+                        <label for="dropzone-file"
+                            class="w-full h-full cursor-pointer flex items-center justify-center">
+                            <div id="preview-container" class="w-full h-full">
+                                @if ($previewImage)
                                 <!-- Image Preview -->
                                 <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
                                     id="image-preview" />
-                            @else
+                                @else
                                 <!-- Default Content -->
                                 <div class="flex flex-col items-center justify-center p-4 text-center">
                                     <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
@@ -54,101 +56,105 @@
                                         <span class="font-semibold">PNG</span>
                                     </p>
                                 </div>
-                            @endif
-                        </div>
-                    </label>
-                </div>
+                                @endif
+                            </div>
+                        </label>
+                    </div>
 
-                <!-- Hidden File Input -->
-                <input id="dropzone-file" type="file" wire:model="image" class="hidden"
-                    accept="image/jpeg, image/png, image/jpg" onchange="previewImage(this)" />
+                    <!-- Hidden File Input -->
+                    <input id="dropzone-file" type="file" wire:model="image" class="hidden"
+                        accept="image/jpeg, image/png, image/jpg" onchange="previewImage(this)" />
 
-                <!-- Upload Button -->
-                <flux:button variant="primary" type="button" onclick="document.getElementById('dropzone-file').click()"
-                    class="w-full">
-                    Pilih Gambar
-                </flux:button>
+                    <!-- Upload Button -->
+                    <flux:button variant="primary" type="button"
+                        onclick="document.getElementById('dropzone-file').click()" class="w-full">
+                        Pilih Gambar
+                    </flux:button>
 
-                <!-- Error Message -->
-                @error('image')
+                    <!-- Error Message -->
+                    @error('image')
                     <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
                         {{ $message }}
                     </div>
-                @enderror
+                    @enderror
 
-                <!-- Loading Indicator -->
-                <div wire:loading wire:target="image" class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
-                    Mengupload gambar...
+                    <!-- Loading Indicator -->
+                    <div wire:loading wire:target="image"
+                        class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                        Mengupload gambar...
+                    </div>
                 </div>
             </div>
+
+
+            <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+                <flux:label>Nama Barang</flux:label>
+                <p class="text-sm text-gray-500">
+                    Masukkan nama barang yang ingin disimpan, seperti “Gula Pasir”, “Tepung Ketan”, Telur” atau “Air
+                    Mineral
+                    Gelas 240ml”
+                </p>
+                <flux:input placeholder="Ketik nama barang" wire:model.defer="name" />
+                <flux:error name="name" />
+                <flux:label>Deskripsi Barang</flux:label>
+                <p class="text-sm text-gray-500">
+                    Masukkan deskripsi barang yang ingin disimpan, seperti penjelasan apa saja ciri khas dan kegunaan
+                    dari
+                    produk.
+                </p>
+                <flux:input placeholder="Ketik deskripsi barang" wire:model.defer="description" />
+                <flux:error name="description" />
+            </div>
+
         </div>
 
-
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Nama Barang</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan nama barang yang ingin disimpan, seperti “Gula Pasir”, “Tepung Ketan”, Telur” atau “Air Mineral
-                Gelas 240ml”
+        <div class="w-full mt-8">
+            <flux:label>Kategori Barang</flux:label>
+            <p class="text-sm text-gray-500 mb-4">
+                Ketik nama kategori yang ingin dikaitkan dan sesuai dengan ciri-ciri produk seperti rasa, bentuk,
+                kegunaan,
+                dan lain sebagainya.
             </p>
-            <flux:input placeholder="Ketik nama barang" wire:model.defer="name" />
-            <flux:error name="name" />
-            <flux:label>Deskripsi Barang</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan deskripsi barang yang ingin disimpan, seperti penjelasan apa saja ciri khas dan kegunaan dari
-                produk.
-            </p>
-            <flux:input placeholder="Ketik deskripsi barang" wire:model.defer="description" />
-            <flux:error name="description" />
-        </div>
-
-    </div>
-
-    <div class="w-full mt-8">
-        <flux:label>Kategori Barang</flux:label>
-        <p class="text-sm text-gray-500 mb-4">
-            Ketik nama kategori yang ingin dikaitkan dan sesuai dengan ciri-ciri produk seperti rasa, bentuk, kegunaan,
-            dan lain sebagainya.
-        </p>
-        <select class="js-example-basic-multiple" wire:model.live="category_ids" multiple="multiple">
-            @foreach ($categories as $category)
+            <select class="js-example-basic-multiple" wire:model.live="category_ids" multiple="multiple">
+                @foreach ($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="w-full mt-8 flex items-center flex-col gap-4">
-        <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <flux:label>Satuan Ukur Utama</flux:label>
-        </div>
-        <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <p class="text-sm text-gray-500">
-                Pilih satuan ukur utama untuk menampilkan menu
-                <span class="font-semibold">Persediaan Barang, </span>
-                <span class="font-semibold">Modal Barang, </span>
-                <span class="font-semibold">Minimum Persediaan. </span>
-                Satuan dapat berupa kilogram (kg), liter (L), hingga pieces (pcs)
-            </p>
+                @endforeach
+            </select>
         </div>
 
-        @foreach ($material_details as $index => $detail)
+        <div class="w-full mt-8 flex items-center flex-col gap-4">
+            <div class="w-full flex items-center justify-start gap-4 flex-row">
+                <flux:label>Satuan Ukur Utama</flux:label>
+            </div>
+            <div class="w-full flex items-center justify-start gap-4 flex-row">
+                <p class="text-sm text-gray-500">
+                    Pilih satuan ukur utama untuk menampilkan menu
+                    <span class="font-semibold">Persediaan Barang, </span>
+                    <span class="font-semibold">Modal Barang, </span>
+                    <span class="font-semibold">Minimum Persediaan. </span>
+                    Satuan dapat berupa kilogram (kg), liter (L), hingga pieces (pcs)
+                </p>
+            </div>
+
+            @foreach ($material_details as $index => $detail)
             @if ($index === 0)
-                <div class="w-full flex items-center justify-start gap-4 flex-row">
-                    <flux:select placeholder="- Pilih Produk dari Persediaan -"
-                        wire:model="material_details.{{ $index }}.unit_id"
-                        wire:change="setUnit({{ $index }}, $event.target.value)">
-                        @foreach ($units as $unit)
-                            <flux:select.option value="{{ $unit->id }}" class="text-gray-700">{{ $unit->name }}
-                                ({{ $unit->alias }})
-                            </flux:select.option>
-                        @endforeach
-                    </flux:select>
-                </div>
+            <div class="w-full flex items-center justify-start gap-4 flex-row">
+                <flux:select placeholder="- Pilih Produk dari Persediaan -"
+                    wire:model="material_details.{{ $index }}.unit_id"
+                    wire:change="setUnit({{ $index }}, $event.target.value)">
+                    @foreach ($units as $unit)
+                    <flux:select.option value="{{ $unit->id }}" class="text-gray-700">{{ $unit->name }}
+                        ({{ $unit->alias }})
+                    </flux:select.option>
+                    @endforeach
+                </flux:select>
+            </div>
             @endif
-        @endforeach
+            @endforeach
 
-    </div>
+        </div>
 
-    @if ($material_details[0]['unit_id'] != null && $material_details[0]['unit_id'] != '')
+        @if ($material_details[0]['unit_id'] != null && $material_details[0]['unit_id'] != '')
         <div class="w-full mt-8 flex items-center flex-col gap-4">
             <div class="w-full flex items-center justify-start gap-4 flex-row">
                 <flux:label>Persediaan Barang</flux:label>
@@ -190,43 +196,43 @@
                             <td></td>
                         </tr>
                         @foreach ($material_details as $index => $detail)
-                            @if ($index === 0)
-                                @continue
-                            @endif
-                            <tr>
-                                <td class="px-6 py-3">
-                                    <select
-                                        class="border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
-                                        wire:model="material_details.{{ $index }}.unit_id"
-                                        wire:change="setUnit({{ $index }}, $event.target.value)">
-                                        <option value="" class="text-gray-700">- Pilih Satuan -</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}" class="text-gray-700">
-                                                {{ $unit->name }} ({{ $unit->alias }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td class="px-6 py-3 text-right">
-                                    1 {{ $detail['unit'] ?? '' }}
-                                </td>
-                                <td class="px-6 py-3 text-right">
-                                    <flux:input.group class="text-right">
-                                        <input type="number"
-                                            class="w-full text-right border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-l-md"
-                                            placeholder="0" min="0"
-                                            wire:model.number.live="material_details.{{ $index }}.quantity" />
-                                        @if ($main_unit_alias)
-                                            <flux:input.group.suffix>{{ $main_unit_alias }}</flux:input.group.suffix>
-                                        @endif
-                                    </flux:input.group>
-                                </td>
+                        @if ($index === 0)
+                        @continue
+                        @endif
+                        <tr>
+                            <td class="px-6 py-3">
+                                <select
+                                    class="border-0 border-b border-b-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded-none"
+                                    wire:model="material_details.{{ $index }}.unit_id"
+                                    wire:change="setUnit({{ $index }}, $event.target.value)">
+                                    <option value="" class="text-gray-700">- Pilih Satuan -</option>
+                                    @foreach ($units as $unit)
+                                    <option value="{{ $unit->id }}" class="text-gray-700">
+                                        {{ $unit->name }} ({{ $unit->alias }})
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                1 {{ $detail['unit'] ?? '' }}
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <flux:input.group class="text-right">
+                                    <input type="number"
+                                        class="w-full text-right border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-0 rounded-l-md"
+                                        placeholder="0" min="0"
+                                        wire:model.number.live="material_details.{{ $index }}.quantity" />
+                                    @if ($main_unit_alias)
+                                    <flux:input.group.suffix>{{ $main_unit_alias }}</flux:input.group.suffix>
+                                    @endif
+                                </flux:input.group>
+                            </td>
 
-                                <td class="px-6 py-3">
-                                    <flux:button icon="trash" type="button" variant="danger"
-                                        wire:click.prevent="removeUnit({{ $index }})" />
-                                </td>
-                            </tr>
+                            <td class="px-6 py-3">
+                                <flux:button icon="trash" type="button" variant="danger"
+                                    wire:click.prevent="removeUnit({{ $index }})" />
+                            </td>
+                        </tr>
                         @endforeach
 
                     </tbody>
@@ -272,7 +278,7 @@
                     <div class="w-full flex flex-col gap-4">
                         <flux:input.group class="w-full">
                             @if ($main_unit_alias)
-                                <flux:input.group.prefix>{{ $main_unit_alias }}</flux:input.group.prefix>
+                            <flux:input.group.prefix>{{ $main_unit_alias }}</flux:input.group.prefix>
                             @endif
                             <flux:input type="number" class="w-full" wire:model.number.defer="minimum" />
                         </flux:input.group>
@@ -312,36 +318,37 @@
                     </thead>
                     <tbody>
                         @foreach ($material_details as $index => $detail)
-                            <tr>
-                                <td class="px-6 py-3">
-                                    <span class="text-gray-700">
-                                        {{ $detail['unit_name'] ?? '-' }} ({{ $detail['unit'] ?? '' }})
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span class="text-gray-700">
+                        <tr>
+                            <td class="px-6 py-3">
+                                <span class="text-gray-700">
+                                    {{ $detail['unit_name'] ?? '-' }} ({{ $detail['unit'] ?? '' }})
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-gray-700">
 
-                                        1 {{ $detail['unit'] ?? '' }}
-                                        ({{ $detail['quantity'] ?? 0 }}
-                                        {{ $main_unit_alias ?? '' }})
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3 flex items-center flex-row relative">
-                                    <span class="text-gray-700">
-                                        Rp{{ number_format($detail['supply_price'], 0, ',', '.') ?? 0 }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span class="text-gray-700">
-                                        {{ $detail['supply_quantity'] }} {{ $detail['unit'] ?? '' }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span class="text-gray-700">
-                                        Rp{{ number_format(($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0), 0, ',', '.') }}
-                                    </span>
-                                </td>
-                            </tr>
+                                    1 {{ $detail['unit'] ?? '' }}
+                                    ({{ $detail['quantity'] ?? 0 }}
+                                    {{ $main_unit_alias ?? '' }})
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 flex items-center flex-row relative">
+                                <span class="text-gray-700">
+                                    Rp{{ number_format($detail['supply_price'], 0, ',', '.') ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-gray-700">
+                                    {{ $detail['supply_quantity'] }} {{ $detail['unit'] ?? '' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span class="text-gray-700">
+                                    Rp{{ number_format(($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ??
+                                    0), 0, ',', '.') }}
+                                </span>
+                            </td>
+                        </tr>
                         @endforeach
 
                     </tbody>
@@ -352,7 +359,8 @@
                             </td>
                             <td class="px-6 py-3">
                                 <span class="text-gray-700">
-                                    {{ $supply_price_total ? 'Rp' . number_format($supply_price_total, 0, ',', '.') : 'Rp0' }}
+                                    {{ $supply_price_total ? 'Rp' . number_format($supply_price_total, 0, ',', '.') :
+                                    'Rp0' }}
                                 </span>
                             </td>
                         </tr>
@@ -361,33 +369,34 @@
             </div>
         </div>
 
-    @endif
+        @endif
 
-
-
-    <div class="w-full flex flex-row gap-8 mt-8">
-        <div class="w-1/2 flex flex-col items-center gap-4">
-            <div class="w-full flex items-center justify-start gap-4 flex-row">
-                <flux:label>Jual Langsung dari Persediaan</flux:label>
-                <flux:switch wire:model.live="is_recipe" class="data-checked:bg-green-500"
-                    :checked="$is_recipe ? true : false" />
+        <div class="w-full flex flex-row gap-8 mt-8">
+            <div class="w-1/2 flex flex-col items-center gap-4">
+                <div class="w-full flex items-center justify-start gap-4 flex-row">
+                    <flux:label>Jual Langsung dari Persediaan</flux:label>
+                    <flux:switch wire:model.live="is_recipe" class="data-checked:bg-green-500"
+                        :checked="$is_recipe ? true : false" />
+                </div>
+                <p class="text-sm text-gray-500 mb-4">
+                    Aktifkan opsi ini jika barang tidak termasuk dalam daftar komponen resep atau akan dijual langsung
+                    dari
+                    persediaan.
+                </p>
             </div>
-            <p class="text-sm text-gray-500 mb-4">
-                Aktifkan opsi ini jika barang tidak termasuk dalam daftar komponen resep atau akan dijual langsung dari
-                persediaan.
-            </p>
-        </div>
-        <div class="w-1/2 flex flex-col items-center gap-4">
-            <div class="w-full flex items-center justify-start gap-4 flex-row">
-                <flux:label>Tampilkan Barang</flux:label>
-                <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500"
-                    :checked="$is_active ? true : false" />
+            <div class="w-1/2 flex flex-col items-center gap-4">
+                <div class="w-full flex items-center justify-start gap-4 flex-row">
+                    <flux:label>Tampilkan Barang</flux:label>
+                    <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500"
+                        :checked="$is_active ? true : false" />
+                </div>
+                <p class="text-sm text-gray-500 mb-4">
+                    Aktifkan opsi ini jika barang ingin ditampilkan serta digunakan sebagai aktivitas belanja
+                    persediaan,
+                    bahan
+                    baku, dan produk jualan.
+                </p>
             </div>
-            <p class="text-sm text-gray-500 mb-4">
-                Aktifkan opsi ini jika barang ingin ditampilkan serta digunakan sebagai aktivitas belanja persediaan,
-                bahan
-                baku, dan produk jualan.
-            </p>
         </div>
     </div>
 
@@ -402,8 +411,8 @@
     </div>
 
     @script
-        <script type="text/javascript">
-            document.addEventListener('livewire:initialized', function() {
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', function() {
                 function loadJavascript() {
                     $('.js-example-basic-multiple').select2({
                         placeholder: "Pilih kategori produk",
@@ -418,7 +427,7 @@
                     loadJavascript();
                 })
             });
-        </script>
+    </script>
     @endscript
 
     <script>

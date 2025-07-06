@@ -284,14 +284,38 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
+                        @foreach ($materials as $material)
+                        <tr class="hover:bg-gray-100 cursor-pointer"
+                            wire:click="redirectToMaterial('{{ $material->id }}')">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                Gula Pasir
+                                {{ $material->name }}
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">
-                                2 kg
+                                @php
+                                $quantity_main_total = 0;
+                                $batches = $material->batches;
+
+                                foreach ($batches as $b) {
+                                $detail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                ->where('unit_id', $b->unit_id)
+                                ->first();
+
+                                if ($detail) {
+                                $quantity_main = ($b->batch_quantity ?? 0) * ($detail->quantity ?? 0);
+                                $quantity_main_total += $quantity_main;
+                                }
+                                }
+
+                                // Ambil satu detail utama untuk unit (jika ada)
+                                $mainDetail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                ->where('is_main', true)
+                                ->first();
+                                @endphp
+                                {{ $batches->isNotEmpty() ? $quantity_main_total . ' ' . ($mainDetail->unit->alias
+                                ?? '') : 'Tidak Tersedia' }}
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -341,23 +365,46 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
+                        @foreach ($materialB as $material)
+                        @php
+                        $batches = $material->batches;
+
+                        $today = now();
+                        $nearFuture = now()->addMonth();
+
+                        // Ambil batch yang expired atau hampir expired (kurang dari 1 bulan dari sekarang)
+                        $filteredBatches = $batches->filter(function ($batch) use ($today, $nearFuture) {
+                        $date = \Carbon\Carbon::parse($batch->date);
+                        return $date->lessThanOrEqualTo($nearFuture);
+                        });
+                        @endphp
+
+                        @foreach ($filteredBatches as $batch)
+                        <tr class="hover:bg-gray-100 cursor-pointer"
+                            wire:click="redirectToMaterial('{{ $material->id }}')">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                Tepung Terigu
+                                {{ $material->name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                B-250213
+                                {{ $batch->batch_number ?? '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                1 Mei 2025
+                                {{ \Carbon\Carbon::parse($batch->date)->translatedFormat('j F Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                Expired
+                                @if(\Carbon\Carbon::parse($batch->date)->isPast())
+                                <span class="text-red-600 font-semibold">Expired</span>
+                                @else
+                                <span class="text-yellow-600 font-medium">Hampir Expired</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">
-                                2 kg
+                                {{ $batch->batch_quantity }} {{ $batch->unit->alias ?? '' }}
                             </td>
                         </tr>
+                        @endforeach
+                        @endforeach
+
                     </tbody>
                 </table>
             </div>

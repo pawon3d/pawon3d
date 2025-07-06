@@ -97,7 +97,7 @@ class RingkasanInventori extends Component
         $this->otherExpenses = Expense::whereDate('expense_date', '!=', $this->selectedDate)
             ->whereMonth('expense_date', Carbon::parse($this->currentMonth)->month)
             ->whereYear('expense_date', Carbon::parse($this->currentMonth)->year)
-            ->whereNotIn('status', ['Selesai', 'Gagal'])
+            // ->whereNotIn('status', ['Selesai', 'Gagal'])
             ->get();
     }
 
@@ -109,6 +109,10 @@ class RingkasanInventori extends Component
             $this->sortDirection = 'asc';
         }
         $this->sortField = $field;
+    }
+    public function redirectToMaterial($id)
+    {
+        return redirect()->route('bahan-baku.edit', ['id' => $id]);
     }
     public function render()
     {
@@ -125,8 +129,16 @@ class RingkasanInventori extends Component
         $expenses = $query->select('expenses.*')
             ->distinct()
             ->paginate(10);
+        $materials = \App\Models\Material::with(['material_details', 'batches'])
+            ->get();
+        $filteredMaterials = $materials->filter(function ($material) {
+            $total = $material->batches->sum('batch_quantity');
+            return ($total >= $material->minimum) && ($total <= $material->minimum * 2);
+        });
         return view('livewire.dashboard.ringkasan-inventori', [
             'expenses' => $expenses,
+            'materials' => $filteredMaterials,
+            'materialB' => $materials,
         ]);
     }
 }

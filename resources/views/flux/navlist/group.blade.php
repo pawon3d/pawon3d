@@ -14,11 +14,12 @@
     data-flux-navlist-group
     >
     <button type="button"
-        class="group/disclosure-button mb-[2px] flex h-10 w-full items-center text-zinc-500 hover:bg-zinc-800/5 hover:text-zinc-800 lg:h-8 dark:text-white/80 dark:hover:bg-white/[7%] dark:hover:text-white {{ $current ? 'bg-zinc-100 border-l-4 border-zinc-800 text-zinc-900 font-semibold' : '' }}">
+        class="redupkan group/disclosure-button flex py-3 w-full items-center hover:text-[#74512D] dark:text-white/80 dark:hover:bg-white/[7%] dark:hover:text-white {{ $current ? 'bg-[#74512d20] text-[#74512D] font-semibold' : 'text-zinc-800' }}">
         @if ($icon)
-        <div class="pl-3 pr-4 {{ $current ? '-ml-1' : '' }}">
-            <x-dynamic-component :component="'flux::icon.' . $icon" @class([ 'text-zinc-500'
-                , 'group-data-open/disclosure-button:text-zinc-800' , 'dark:text-white/80'
+        <div class="pl-3 pr-4">
+            <x-dynamic-component :component="'flux::icon.' . $icon" @class([ 'text-[#74512D]'=> $current == true
+                , 'group-data-open/disclosure-button:text-[#74512D]' ,
+                'dark:text-white/80'
                 , 'dark:group-data-open/disclosure-button:text-white' , 'size-4!'=> $sub === true,
                 'size-6!' => $sub !== true,
                 ])
@@ -41,7 +42,7 @@
         @endif
     </button>
 
-    <div class="relative hidden space-y-[2px] data-open:block" @if ($expanded===true) data-open @endif>
+    <div class="relative hidden data-open:block" @if ($expanded===true) data-open @endif>
         {{-- <div class="absolute inset-y-[3px] left-0 ml-4 w-px bg-zinc-200 dark:bg-white/30"></div> --}}
         {{ $slot }}
     </div>
@@ -64,5 +65,6 @@
 <div {{ $attributes->class('block space-y-[2px]') }}>
     {{ $slot }}
 </div>
+
 
 <?php endif; ?>
