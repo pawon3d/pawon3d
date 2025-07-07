@@ -9,25 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    $categories = \App\Models\Category::all();
-    $reviews = \App\Models\Review::with('product')->where('visible', true)->get();
-    $products = \App\Models\Product::with('category', 'reviews')
-        ->withCount('reviews')
-        ->where('reviews_count', '>', 0)
-        ->get()
-        ->sortByDesc(function ($product) {
-            return $product->reviews->avg('rating');
-        })
-        ->take(4);
-    $productReviews = \App\Models\Product::with('reviews')
-        ->withCount('reviews')
-        ->where('reviews_count', '>', 0)
-        ->get()
-        ->sortByDesc(fn($p) => $p->reviews->avg('rating'))->take(4);
+Route::get('/', App\Livewire\Landing\Index::class)->name('home');
+Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
+Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 
-    return view('landing.index', compact('categories', 'reviews', 'products', 'productReviews'));
-})->name('home');
 
 Route::get('/tes', function () {
     return view('tes');

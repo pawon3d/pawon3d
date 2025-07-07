@@ -46,6 +46,7 @@
 -   [x] hilangkan kembalian
 -   [x] ringkasan kasir
 -   [x] ringkasan produksi
+-   [x] ringkasan inventori
 
 ## BELUM SELESAI
 
@@ -54,7 +55,6 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
--   [ ] ringkasan inventori
 
 ### Medium Priority
 

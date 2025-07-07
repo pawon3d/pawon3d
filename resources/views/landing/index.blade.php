@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ ($storeSetting->store_name) ?? 'Pawon3D' }}</title>
+    <title>{{ ($storeProfile->name) ?? 'Pawon3D' }}</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|poppins:400,500,600,700"
@@ -16,8 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
     <!-- favicon -->
-    @if(!empty($storeSetting->logo))
-    <link rel="icon" href="{{ asset('storage/' . $storeSetting->logo) }}" type="image/x-icon" />
+    @if(!empty($storeProfile->logo))
+    <link rel="icon" href="{{ asset('storage/' . $storeProfile->logo) }}" type="image/x-icon" />
     @endif
 
 
@@ -49,7 +49,7 @@
     <header class="sticky top-0 bg-white backdrop-blur-sm z-50 shadow-sm">
         <nav class="container mx-auto px-4 py-3 flex items-center">
             <a href="/" class="lg:text-3xl text-lg font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                <span class="text-blue-400">{{ $storeSetting->store_name ?? 'Pawon3D' }}</span>
+                <span class="text-blue-400">{{ $storeProfile->name ?? 'Pawon3D' }}</span>
             </a>
 
             <flux:navbar class="hidden md:flex ml-4 flex-row gap-6">
@@ -88,7 +88,7 @@
 
             {{-- tombol auth --}}
             @auth
-            <a href="{{ url('/dashboard') }}" class="block px-4 py-2 bg-blue-600 text-white rounded-full text-center">
+            <a href="tes" class="block px-4 py-2 bg-blue-600 text-white rounded-full text-center">
                 Dashboard
             </a>
             @else
@@ -106,11 +106,11 @@
             <div class="flex flex-col lg:flex-row items-center gap-8">
                 <div class="lg:w-3/5 space-y-6">
                     <h3 class="text-xl font-semibold text-blue-600 animate-slideInLeft ml-2">
-                        {{ ($storeSetting->store_name) ?? 'Pawon3D' }}
+                        {{ ($storeProfile->name) ?? 'Pawon3D' }}
                     </h3>
                     @php
-                    // Ambil hero title dari storeSetting, jika tidak ada gunakan default
-                    $heroTitle = $storeSetting->hero_title ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu';
+                    // Ambil hero title dari storeProfile, jika tidak ada gunakan default
+                    $heroTitle = $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu';
 
                     // Pecah string menjadi array berdasarkan spasi
                     $words = explode(' ', $heroTitle);
@@ -133,7 +133,7 @@
                     </h1>
 
                     <div class="flex gap-4 lg:text-xl mt-16">
-                        <a href="https://wa.me/{{ $storeSetting->contact ?? '628123456789' }}" target="_blank"
+                        <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
                             class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
                             Pesan Sekarang
                         </a>
@@ -146,8 +146,8 @@
                 {{-- <div class="w-1/2 mt-12 lg:mt-0">
                     <div
                         class="overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500 rounded-full">
-                        @if (!empty($storeSetting->hero_image))
-                        <img src="{{ asset('storage/' . $storeSetting->hero_image) }}" alt="Hero Image"
+                        @if (!empty($storeProfile->hero_image))
+                        <img src="{{ asset('storage/' . $storeProfile->hero_image) }}" alt="Hero Image"
                             class="w-full h-full object-cover rounded-full">
                         @else
                         <img src="/assets/images/homepage/hero.jpeg" alt="Kue dan camilan Pawon3D"
@@ -204,7 +204,7 @@
                         </div>
                     </div>
                     @empty
-                    <p class="text-gray-600 mb-4">Tidak ada produk unggulan saat ini.</p>
+                    <p class="text-gray-600 mb-4 text-center">Tidak ada produk unggulan saat ini.</p>
                     @endforelse
                 </div>
             </div>
@@ -213,11 +213,17 @@
         <section class="bg-blue-50 pt-8 pb-8">
             <div class="flex flex-col items-center justify-center text-center px-4">
                 <h1 class="text-5xl lg:w-4xl pacifico-regular font-bold space-y-4 mb-8">
-                    Beli Kue Favoritmu, Beri Ulasan dan Dapatkan Kode Hadiah!
+                    Jadi Pelanggan dan Kumpulkan Poin!
                 </h1>
                 <p class="text-sm text-gray-500 m-auto montserrat-regular mb-8 lg:w-80">
-                    Tukarkan untuk kue gratis di transaksi berikutnya.
-                    Jangan sampai ketinggalan!
+                    Dapatkan
+                    <span class="font-semibold">1 Poin</span>
+                    dengan belanja kelipatan
+                    <span class="font-semibold">Rp10.000.</span>
+                    Poin juga dapat dikumpulkan melalui review di
+                    <span class="font-semibold">story media sosial</span>
+                    dan review toko di
+                    <span class="font-semibold">Google Maps.</span>
                 </p>
 
                 <a href="#" class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
@@ -296,109 +302,6 @@
             </div>
         </section>
 
-        <!-- Review Section Carousel -->
-        {{-- <section class="container mx-auto px-4 py-16" id="reviews">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-poppins font-bold mb-4">Apa Kata Mereka?</h2>
-            </div>
-            @if ($reviews->isEmpty())
-            <div class="text-center text-gray-500">
-                Belum ada ulasan untuk ditampilkan.
-            </div>
-            @elseif ($reviews->count() > 1)
-            <div id="review-carousel" class="relative" data-carousel="slide">
-                <!-- Carousel wrapper -->
-                <div class="overflow-hidden relative h-64 rounded-lg">
-                    @foreach($reviews as $index => $review)
-                    <div class="hidden duration-700 ease-in-out" data-carousel-item {{ $index===0
-                        ? 'data-carousel-active' : '' }}>
-                        <div class="flex flex-col items-center justify-center h-full bg-white p-6 rounded-lg shadow-lg">
-                            <h2 class="text-2xl font-semibold mb-4">{{ $review->product->name }}</h2>
-                            @if ($review->product->product_image)
-                            <img src="{{ asset('storage/'.$review->product->product_image) }}"
-                                alt="{{ $review->product->name }}" class="w-24 h-24 rounded-md mb-4">
-                            @endif
-                            <h3 class="text-xl font-semibold mb-2">{{ $review->user_name }}</h3>
-                            <div class="flex mb-4">
-                                @for($i = 1; $i <= 5; $i++) <svg
-                                    class="w-5 h-5 {{ $review->rating >= $i ? 'text-yellow-500' : 'text-gray-300' }}"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.176 0l-3.39 2.46c-.785.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.045 9.393c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.966z" />
-                                    </svg>
-                                    @endfor
-                            </div>
-                            <p class="text-gray-600 text-center">{{ $review->comment }}</p>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                <!-- Slider indicators -->
-                <div class="flex absolute bottom-5 left-1/2 z-30 space-x-3 -translate-x-1/2">
-                    @foreach($reviews as $index => $review)
-                    <button type="button"
-                        class="w-3 h-3 rounded-full {{ $index === 0 ? 'bg-blue-600' : 'bg-gray-300' }}"
-                        aria-current="{{ $index === 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"
-                        data-carousel-slide-to="{{ $index }}"></button>
-                    @endforeach
-                </div>
-
-                <!-- Slider controls -->
-                <button type="button"
-                    class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-prev>
-                    <span
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
-                        <svg aria-hidden="true" class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                            </path>
-                        </svg>
-                        <span class="sr-only">Previous</span>
-                    </span>
-                </button>
-                <button type="button"
-                    class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                    data-carousel-next>
-                    <span
-                        class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
-                        <svg aria-hidden="true" class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                        <span class="sr-only">Next</span>
-                    </span>
-                </button>
-            </div>
-
-            @else
-            <div class="overflow-hidden relative h-64 rounded-lg">
-                @foreach($reviews as $index => $review)
-                <div class="flex flex-col items-center justify-center h-full bg-white p-6 rounded-lg shadow-lg">
-                    <h2 class="text-2xl font-semibold mb-4">{{ $review->product->name }}</h2>
-                    @if ($review->product->product_image)
-                    <img src="{{ asset('storage/'.$review->product->product_image) }}"
-                        alt="{{ $review->product->name }}" class="w-24 h-24 rounded-md mb-4">
-                    @endif
-                    <h3 class="text-xl font-semibold mb-2">{{ $review->user_name }}</h3>
-                    <div class="flex mb-4">
-                        @for($i = 1; $i <= 5; $i++) <svg
-                            class="w-5 h-5 {{ $review->rating >= $i ? 'text-yellow-500' : 'text-gray-300' }}"
-                            fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.176 0l-3.39 2.46c-.785.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.045 9.393c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.966z" />
-                            </svg>
-                            @endfor
-                    </div>
-                    <p class="text-gray-600 text-center">{{ $review->comment }}</p>
-                </div>
-
-                @endforeach
-            </div>
-            @endif
-        </section> --}}
-
 
 
         <!-- Contact Section -->
@@ -414,7 +317,7 @@
                             class="w-full md:w-1/2 h-[350px]" style="border: 0" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                         <div class="w-full md:w-1/2 flex flex-col items-center justify-center">
-                            <a href="https://wa.me/{{ $storeSetting->contact ?? '628123456789' }}" target="_blank"
+                            <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
                                 class="px-8 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-all flex items-center gap-2">
                                 <i class="bi bi-whatsapp"></i>
                                 Hubungi Kami
@@ -430,7 +333,7 @@
             </div>
         </section>
 
-        <section class="py-12">
+        {{-- <section class="py-12">
             <div class="container mx-auto px-4">
                 <!-- Judul -->
                 <h2 class="text-3xl pacifico-regular font-semibold text-center mb-8">Ulasan Produk</h2>
@@ -458,7 +361,7 @@
                             @endphp
 
                             <div class="min-w-[200px] bg-white rounded-2xl shadow p-4 flex-shrink-0">
-                                {{-- Gambar produk --}}
+
                                 @if($product->product_image)
                                 <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
                                     class="w-full h-32 object-cover rounded-md mb-3">
@@ -467,12 +370,10 @@
                                     class="w-full h-32 object-cover rounded-md mb-3">
                                 @endif
 
-                                {{-- Nama & Dimensi (jika ada) --}}
                                 <h3 class="font-medium mb-1">
                                     {{ $product->name }}
                                 </h3>
 
-                                {{-- Rating --}}
                                 <div class="flex items-center mb-2">
                                     <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.18c.969
@@ -483,8 +384,6 @@
                                     </svg>
                                     <span class="text-gray-700 font-semibold">{{ $avgRating }}</span>
                                 </div>
-
-                                {{-- Cuplikan review --}}
                                 <p class="text-gray-500 text-sm">
                                     {{ Str::limit($latestReview->comment ?? 'Belum ada komentar', 60) }}
                                 </p>
@@ -502,7 +401,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
     </main>
 
@@ -536,9 +435,8 @@
                 <ul class="space-y-2">
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Home</a></li>
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Produk</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Cara Pernesanan</a>
+                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Cara Pesan</a>
                     </li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Ulasan</a></li>
                 </ul>
             </div>
 
@@ -548,7 +446,7 @@
                 <ul class="space-y-2">
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Tentang Kami</a></li>
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Kontak Kami</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Wilayah Pernesanan</a>
+                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Wilayah Pemesanan</a>
                     </li>
                 </ul>
             </div>
@@ -562,8 +460,7 @@
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Metode Pembayaran</a>
                     </li>
                     <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">FAQ</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Kebijakan Privasi</a>
-                    </li>
+
                 </ul>
             </div>
             <div class="min-w-[250px] flex-1">
@@ -576,7 +473,7 @@
 
         <div class="max-w-6xl mx-auto mt-12 pt-8 border-gray-600">
             <div class="border-gray-700 mt-8 pt-8 text-center text-gray-400 py-4">
-                <p>&copy; {{ date('Y') }} {{ $storeSetting->store_name ?? 'Pawon3D' }}. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $storeProfile->name ?? 'Pawon3D' }}. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -631,7 +528,6 @@
                 duration: 0.8
             });
         });
-
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
     <script>
