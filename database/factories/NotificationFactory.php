@@ -17,10 +17,12 @@ class NotificationFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(1),
-            'body' => $this->faker->sentence(2),
+            'title' => $this->faker->word(),
+            'body' => $this->faker->sentence(1),
             'is_read' => false,
-            'user_id' => "1ad812c0-d868-476c-b69f-f259595b1582",
+            'user_id' => "a051b98b-1066-485d-887c-0c4cf2e3c321",
+            'status' => rand(0, 2),
+            'created_at' => now(),
         ];
     }
 }

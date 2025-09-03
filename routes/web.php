@@ -22,17 +22,26 @@ Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
 Route::get('/ringkasan-kasir', App\Livewire\Dashboard\RingkasanKasir::class)
-    ->middleware(['auth'])
+    ->middleware(['auth', 'permission:Kasir'])
     ->name('ringkasan-kasir');
 Route::get('/ringkasan-produksi', App\Livewire\Dashboard\RingkasanProduksi::class)
-    ->middleware(['auth'])
+    ->middleware(['auth', 'permission:Produksi'])
     ->name('ringkasan-produksi');
 Route::get('/ringkasan-inventori', App\Livewire\Dashboard\RingkasanInventori::class)
-    ->middleware(['auth'])
+    ->middleware(['auth', 'permission:Inventori'])
     ->name('ringkasan-inventori');
 Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
     ->middleware('auth')
     ->name('ringkasan-umum');
+Route::get('/laporan-kasir', App\Livewire\Dashboard\LaporanKasir::class)
+    ->middleware(['auth', 'permission:Kasir'])
+    ->name('laporan-kasir');
+Route::get('/laporan-produksi', App\Livewire\Dashboard\LaporanProduksi::class)
+    ->middleware(['auth', 'permission:Produksi'])
+    ->name('laporan-produksi');
+Route::get('/laporan-inventori', App\Livewire\Dashboard\LaporanInventori::class)
+    ->middleware(['auth', 'permission:Inventori'])
+    ->name('laporan-inventori');
 
 Route::get('/ulasan/{transaction_id}', ReviewForm::class)
     ->name('ulasan');
@@ -62,8 +71,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/read-notification/{id}', function ($id) {
         $notification = \App\Models\Notification::find($id);
         $notification->update(['is_read' => true]);
-        return response()->json(['message' => 'Notification has been read']);
+        return response()->json(['message' => 'Notifikasi telah dibaca']);
     })->name('read-notification');
+
+    Route::post('/read-all-notification', function () {
+        $user = Auth::user();
+        \App\Models\Notification::where('user_id', $user->id)->update(['is_read' => true]);
+        return response()->json(['message' => 'Semua notifikasi telah dibaca']);
+    })->name('read-all-notification');
+
+    Route::get('/notifikasi', App\Livewire\Notification\Index::class)->name('notifikasi');
 
 
     Route::group(['middleware' => ['permission:Inventori']], function () {

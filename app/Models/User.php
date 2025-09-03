@@ -78,6 +78,16 @@ class User extends Authenticatable
         return $this->hasMany(ProductionWorker::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(Notification::class)->where('is_read', false);
+    }
+
     public static function boot()
     {
         parent::boot();
