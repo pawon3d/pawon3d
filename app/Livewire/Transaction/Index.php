@@ -35,6 +35,7 @@ class Index extends Component
     public $initialCash = 0;
     public $finalCash = 0;
     public $receivedCash = 0;
+    public $receivedNonCash = 0;
     public $discountToday = 0;
     public $expectedCash = 0;
     public $refundTotal = 0;
@@ -48,6 +49,9 @@ class Index extends Component
     public $showDetailHistoryShiftModal = false;
     public $selectedShiftId = null;
     public $selectedShift;
+
+    public $showNonCashDetailsModal = false;
+    public $nonCashDetails = [];
 
     protected $queryString = ['method'];
 
@@ -72,7 +76,24 @@ class Index extends Component
                 ->whereHas('payments', function ($query) {
                     $query->where('payment_method', 'tunai');
                 })
-                ->sum('total_amount');
+                ->with(['payments' => function ($query) {
+                    $query->where('payment_method', 'tunai');
+                }])
+                ->get()
+                ->sum(function ($transaction) {
+                    return $transaction->payments->sum('paid_amount');
+                });
+            $nonCash = \App\Models\Transaction::where('created_by_shift', $todayShift ? $todayShift->id : null)
+                ->whereHas('payments', function ($query) {
+                    $query->where('payment_method', '!=', 'tunai');
+                })
+                ->with(['payments' => function ($query) {
+                    $query->where('payment_method', '!=', 'tunai');
+                }])
+                ->get()
+                ->sum(function ($transaction) {
+                    return $transaction->payments->sum('paid_amount');
+                });
             $transactionShift = \App\Models\Transaction::where('refund_by_shift', $todayShift->id)->sum('total_refund');
             $this->todayShiftId = $todayShift->id;
             $this->todayShiftNumber = $todayShift->shift_number;
@@ -82,6 +103,7 @@ class Index extends Component
             $this->initialCash = $todayShift->initial_cash;
             $this->finalCash = $todayShift->final_cash;
             $this->receivedCash = $transaction ?? 0;
+            $this->receivedNonCash = $nonCash ?? 0;
             $this->discountToday = 0;
             $this->refundTotal = $transactionShift;
             $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday - $this->refundTotal;
@@ -116,6 +138,7 @@ class Index extends Component
         $this->initialCash = $shift->initial_cash;
         $this->finalCash = 0;
         $this->receivedCash = 0;
+        $this->receivedNonCash = 0;
         $this->discountToday = 0;
         $this->expectedCash = $this->initialCash + $this->receivedCash - $this->discountToday;
         $this->openShiftModal = false;
@@ -192,6 +215,15 @@ class Index extends Component
         $shift = Shift::findOrFail($this->selectedShiftId);
         $this->selectedShift = $shift;
         $this->showDetailHistoryShiftModal = true;
+    }
+
+    public function showNonCashDetails($id)
+    {
+        $transactions = Transaction::where('created_by_shift', $id)->with(['payments' => function ($query) {
+            $query->where('payment_method', '!=', 'tunai');
+        }])->get();
+        $this->nonCashDetails = $transactions->pluck('payments')->flatten();
+        $this->showNonCashDetailsModal = true;
     }
 
     public function riwayatPembaruan()

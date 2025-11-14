@@ -6,8 +6,9 @@
 </head>
 
 @php
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Route;
+
 @endphp
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
@@ -16,75 +17,89 @@ use Illuminate\Support\Facades\Route;
 
         <flux:navlist variant="outline" class="my-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
 
-            <flux:navlist.group expandable :expanded="false"
-                current="{{ Str::startsWith(Route::currentRouteName(), 'ringkasan') }}" heading="Dashboard"
-                icon="align-end-horizontal">
+            <flux:navlist.group onclick="openSidebar()" expandable :expanded="false"
+                current="{{ Str::startsWith(Route::currentRouteName(), 'ringkasan') || Str::startsWith(Route::currentRouteName(), 'laporan-') }}"
+                heading="Dashboard" icon="align-end-horizontal">
                 <flux:navlist.item :href="route('ringkasan-umum')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'ringkasan')" wire:navigate>
+                    :current="Str::startsWith(Route::currentRouteName(), 'ringkasan')">
                     {{ __('Ringkasan Umum') }}</flux:navlist.item>
+                @can('Kasir')
+                    <flux:navlist.item :href="route('laporan-kasir')" :current="request()->routeIs('laporan-kasir')">
+                        {{ __('Laporan Kasir') }}</flux:navlist.item>
+                @endcan
+                @can('Produksi')
+                    <flux:navlist.item :href="route('laporan-produksi')" :current="request()->routeIs('laporan-produksi')">
+                        {{ __('Laporan Produksi') }}</flux:navlist.item>
+                @endcan
+                @can('Inventori')
+                    <flux:navlist.item :href="route('laporan-inventori')"
+                        :current="request()->routeIs('laporan-inventori')">
+                        {{ __('Laporan Inventori') }}</flux:navlist.item>
+                @endcan
             </flux:navlist.group>
 
             @can('Kasir')
-            <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
-                :current="request()->routeIs('transaksi')" wire:navigate>
-                {{ __('Transaksi') }}
-            </flux:navlist.item>
+                <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
+                    :current="request()->routeIs('transaksi')" wire:navigate>
+                    {{ __('Transaksi') }}
+                </flux:navlist.item>
             @endcan
 
             @can('Produksi')
-            <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
-                icon="chef-hat" wire:navigate>
-                {{ __('Produksi') }}
-            </flux:navlist.item>
+                <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
+                    icon="chef-hat" wire:navigate>
+                    {{ __('Produksi') }}
+                </flux:navlist.item>
             @endcan
 
             @can('Inventori')
-            <flux:navlist.group heading="Inventori"
-                current="{{ Str::startsWith(Route::currentRouteName(), 'bahan-baku') || Str::startsWith(Route::currentRouteName(), 'supplier') || Str::startsWith(Route::currentRouteName(), 'belanja') || Str::startsWith(Route::currentRouteName(), 'hitung') || Str::startsWith(Route::currentRouteName(), 'kategori') || Str::startsWith(Route::currentRouteName(), 'produk') || Str::startsWith(Route::currentRouteName(), 'satuan-ukur') }}"
-                expandable icon="warehouse" :expanded="false">
-                <flux:navlist.item :href="route('bahan-baku')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
-                    {{ __('Bahan
-                    Baku') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('supplier')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
-                    {{ __('Toko Persediaan') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('belanja')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{ __('Belanja') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('hitung')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>
-                    {{ __('Hitung dan Catat') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>
-                    {{ __('Produk') }}
-                </flux:navlist.item>
-            </flux:navlist.group>
+                <flux:navlist.group onclick="openSidebar()" heading="Inventori"
+                    current="{{ Str::startsWith(Route::currentRouteName(), 'bahan-baku') || Str::startsWith(Route::currentRouteName(), 'supplier') || Str::startsWith(Route::currentRouteName(), 'belanja') || Str::startsWith(Route::currentRouteName(), 'hitung') || Str::startsWith(Route::currentRouteName(), 'kategori') || request()->routeIs('produk') || request()->routeIs('produk.tambah') || request()->routeIs('produk.edit') || Str::startsWith(Route::currentRouteName(), 'satuan-ukur') }}"
+                    expandable icon="warehouse" :expanded="false">
+                    <flux:navlist.item :href="route('bahan-baku')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
+                        {{ __('Bahan Baku') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('supplier')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
+                        {{ __('Toko Persediaan') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('belanja')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{ __('Belanja') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('hitung')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>
+                        {{ __('Hitung dan Catat') }}</flux:navlist.item>
+                    <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>
+                        {{ __('Produk') }}
+                    </flux:navlist.item>
+                </flux:navlist.group>
             @endcan
 
-            @canany(['Manajemen Sistem', 'Kasir'])
+            {{-- @canany(['Manajemen Sistem', 'Kasir'])
             <flux:navlist.group heading="Penilaian" expandable :expanded="false" icon="star" iconVariant="solid">
                 <flux:navlist.item :href="route('hadiah')" :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs(
                         'hadiah.ditukar')" wire:navigate>
                     {{ __('Hadiah') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
-                    {{ __('Penilaian') }}</flux:navlist.item>
+            </flux:navlist.item>
+            <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
+                {{ __('Penilaian') }}</flux:navlist.item>
             </flux:navlist.group>
-            @endcanany
+            @endcanany --}}
 
             @can('Manajemen Sistem')
-            <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer')"
-                icon="user-group" wire:navigate>
-                {{ __('Pelanggan') }}
-            </flux:navlist.item>
-            <flux:navlist.group heading="Karyawan" expandable icon="id-card" :expanded="false">
-                <flux:navlist.item :href="route('user')" :current="Str::startsWith(Route::currentRouteName(), 'user')"
-                    wire:navigate>{{ __('Pekerja') }}
+                <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer')"
+                    icon="user-group" wire:navigate>
+                    {{ __('Pelanggan') }}
                 </flux:navlist.item>
-                <flux:navlist.item :href="route('role')" :current="Str::startsWith(Route::currentRouteName(), 'role')"
-                    wire:navigate>{{ __('Peran') }}
-                </flux:navlist.item>
-            </flux:navlist.group>
+                <flux:navlist.group onclick="openSidebar()" heading="Karyawan" expandable icon="id-card"
+                    :expanded="false">
+                    <flux:navlist.item :href="route('user')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('role')"
+                        :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
+                    </flux:navlist.item>
+                </flux:navlist.group>
             @endcan
             <flux:navlist.item solo="true" :href="route('pengaturan')" icon="cog-6-tooth"
                 :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan') }}
@@ -94,119 +109,6 @@ use Illuminate\Support\Facades\Route;
         <flux:spacer />
     </div>
 
-    <!-- Mobile User Menu -->
-    {{-- <flux:header
-        class="block! bg-white lg:bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-
-        <div class="flex items-center justify-between w-full">
-            <flux:navbar class="hidden lg:flex w-full">
-                @if (!empty($mainTitle))
-                <div class="flex flex-row flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
-                    <div class="ml-1 grid flex-1 text-left text-lg">
-                        <span class="mb-0.5 truncate leading-none">{{ $mainTitle }}</span>
-                    </div>
-                </div>
-                @else
-                <flux:navbar.item href="{{ route('dashboard') }}">
-                    <x-app-logo />
-                </flux:navbar.item>
-                @endif
-            </flux:navbar>
-            <flux:navbar class="w-full">
-                <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
-                <flux:spacer />
-                <flux:dropdown class="ml-auto" align="start" position="top">
-                    <flux:button class="mr-4" variant="ghost">
-                        <flux:icon.bell variant="outline" class="text-green-500" />
-                    </flux:button>
-
-                    <flux:menu>
-                        @php
-                        $notifications = App\Models\Notification::where('user_id',
-                        auth()->user()->id)->orderBy('created_at',
-                        'desc')->take(5)->get();
-                        @endphp
-                        @forelse ( $notifications as $notification)
-                        <flux:menu.radio.group>
-                            <div class="p-0 text-sm font-normal">
-                                <div class="flex justify-between gap-2 items-center">
-                                    <div class="gap-2 px-1 py-1.5 text-left text-sm">
-                                        <span class="text-sm block">{{ $notification->title }}</span>
-                                        <span class="text-sm block">{{ $notification->body }}</span>
-                                        <span class="text-xs block">{{ $notification->created_at->diffForHumans()
-                                            }}</span>
-                                    </div>
-                                    @if (!$notification->is_read)
-                                    <flux:button class="mr-4" variant="ghost" tooltip="Tandai Sudah Dibaca"
-                                        iconVariant="micro" onclick="markAsRead('{{ $notification->id }}');">
-                                        <flux:icon.check variant="micro" class="text-green-500" />
-                                    </flux:button>
-                                    @endif
-                                </div>
-                            </div>
-                        </flux:menu.radio.group>
-
-                        <flux:menu.separator />
-                        @empty
-                        <flux:menu.radio.group>
-
-                            <div class=" p-0 text-sm font-normal">
-                                <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <span>
-                                        Tidak ada notifikasi
-                                    </span>
-                                </div>
-                            </div>
-                        </flux:menu.radio.group>
-                        @endforelse
-
-                    </flux:menu>
-
-                </flux:dropdown>
-                <flux:dropdown position="top" align="start">
-                    <flux:profile :initials="auth()->user()->initials()" name="{{ auth()->user()->name }}"
-                        icon-trailing="chevron-down" />
-
-                    <flux:menu>
-                        <flux:menu.radio.group>
-                            <div class="p-0 text-sm font-normal">
-                                <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                        <span
-                                            class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {{ auth()->user()->initials() }}
-                                        </span>
-                                    </span>
-
-                                    <div class="grid flex-1 text-left text-sm leading-tight">
-                                        <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                        <span class="truncate text-xs">{{ auth()->user()->role }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </flux:menu.radio.group>
-
-                        <flux:menu.separator />
-
-                        <flux:menu.radio.group>
-                            <flux:menu.item href="/settings/profile" icon="cog" wire:navigate>Settings</flux:menu.item>
-                        </flux:menu.radio.group>
-
-                        <flux:menu.separator />
-
-                        <form method="POST" action="{{ route('logout') }}" class="w-full">
-                            @csrf
-                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
-                                class="w-full">
-                                {{ __('Log Out') }}
-                            </flux:menu.item>
-                        </form>
-                    </flux:menu>
-                </flux:dropdown>
-            </flux:navbar>
-        </div>
-    </flux:header> --}}
-
     <div class="fixed inset-x-0 top-0 z-50 bg-[#74512D] border-b border-zinc-200 shadow-sm">
         <div class="flex items-center justify-between h-16 pr-4">
             <!-- Tombol toggle -->
@@ -215,66 +117,134 @@ use Illuminate\Support\Facades\Route;
                     <flux:icon.bars-3 variant="outline" class="text-gray-100" />
                 </flux:button>
                 @if (!empty($mainTitle))
-                <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
-                    <div class="ml-1 flex flex-row gap-3 items-center flex-1 text-left text-lg">
-                        @if (!empty($storeProfile?->logo))
-                        <img src="{{ asset('storage/' . $storeProfile->logo) }}" alt="Logo"
-                            class="w-14 h-14 object-cover rounded-full">
-                        @endif
+                    <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
+                        <div class="ml-1 flex flex-row gap-3 items-center flex-1 text-left text-lg">
+                            @if (!empty($storeProfile?->logo))
+                                <img src="{{ asset('storage/' . $storeProfile->logo) }}" alt="Logo"
+                                    class="w-14 h-14 object-cover rounded-full">
+                            @endif
 
-                        <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
+                            <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
+                        </div>
                     </div>
-                </div>
                 @else
-                <flux:navbar.item href="{{ route('dashboard') }}" class="md:flex hidden">
-                    <x-app-logo />
-                </flux:navbar.item>
+                    <flux:navbar.item href="{{ route('dashboard') }}" class="md:flex hidden">
+                        <x-app-logo />
+                    </flux:navbar.item>
                 @endif
             </div>
-            <flux:dropdown position="top" align="start">
-                <flux:button variant="ghost">
-                    <div class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                        @if (auth()->user()->image)
-                        <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"
-                            class="h-full w-full object-cover rounded-full">
-                        @else
-                        <span
-                            class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                            {{ auth()->user()->initials() }}
-                        </span>
-                        @endif
-                    </div>
-                    <span class="font-semibold text-gray-100">{{ auth()->user()->name }} ({{
-                        auth()->user()->getRoleNames()->first() }})</span>
-                    <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
-                </flux:button>
+            <div class="flex items-center gap-4 flex-row">
 
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
-                                <div class="grid flex-1 gap-3 text-left text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }} ({{
-                                        auth()->user()->getRoleNames()->first() }})</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                    <a class="text-xs text-gray-500 flex items-center gap-2 underline"
-                                        href="{{ route('profil-saya', auth()->user()->id) }}" wire:navigate>
-                                        Lihat Profil
-                                    </a>
-                                    <div class="flex justify-end">
-                                        <flux:modal.trigger name="logoutModal">
-                                            <flux:button type="button" icon="arrow-left-end-on-rectangle"
-                                                variant="primary">
-                                                Keluar
-                                            </flux:button>
-                                        </flux:modal.trigger>
+                <flux:dropdown position="top" align="start">
+                    <flux:button variant="ghost">
+                        <div class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                            @if (auth()->user()->image)
+                                <img src="{{ asset('storage/' . auth()->user()->image) }}"
+                                    alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-full">
+                            @else
+                                <span
+                                    class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                    {{ auth()->user()->initials() }}
+                                </span>
+                            @endif
+                        </div>
+                        <span class="font-semibold text-gray-100">{{ auth()->user()->name }}
+                            ({{ auth()->user()->getRoleNames()->first() }})</span>
+                        <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
+                    </flux:button>
+
+                    <flux:menu>
+                        <flux:menu.radio.group>
+                            <div class="p-0 text-sm font-normal">
+                                <div class="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
+                                    <div class="grid flex-1 gap-3 text-left text-sm leading-tight">
+                                        <span class="truncate font-semibold">{{ auth()->user()->name }}
+                                            ({{ auth()->user()->getRoleNames()->first() }})</span>
+                                        <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                        <a class="text-xs text-gray-500 flex items-center gap-2 underline"
+                                            href="{{ route('profil-saya', auth()->user()->id) }}" wire:navigate>
+                                            Lihat Profil
+                                        </a>
+                                        <div class="flex justify-end">
+                                            <flux:modal.trigger name="logoutModal">
+                                                <flux:button type="button" icon="arrow-left-end-on-rectangle"
+                                                    variant="primary">
+                                                    Keluar
+                                                </flux:button>
+                                            </flux:modal.trigger>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </flux:menu.radio.group>
-                </flux:menu>
-            </flux:dropdown>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+
+                <flux:dropdown position="bottom" align="start">
+                    <flux:button type="button" variant="ghost" class="cursor-pointer">
+                        <flux:icon.bell
+                            variant="{{ auth()->user()->unreadNotifications->count() > 0 ? 'solid' : 'outline' }}"
+                            class="text-gray-100 size-5" />
+                        @if (auth()->user()->unreadNotifications->count() > 0)
+                            <span
+                                class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                                {{ auth()->user()->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </flux:button>
+                    <flux:menu>
+                        <flux:menu.radio.group>
+                            <div class="p-0 text-sm font-normal flex flex-row justify-between items-center">
+                                <div class="flex items-center gap-3 px-1 py-1.5 text-left text-sm">
+                                    <span class="truncate">Semua Notifikasi</span>
+                                </div>
+                                <div class="flex justify-end px-2 py-1.5">
+                                    <button onclick="markAllAsRead()"
+                                        class="text-end text-xs text-blue-600 hover:bg-gray-200 cursor-pointer">
+                                        Tandai Semua Dibaca
+                                    </button>
+                                </div>
+                            </div>
+                        </flux:menu.radio.group>
+                        <flux:menu.separator />
+                        <flux:menu.radio.group>
+                            @forelse (auth()->user()->notifications->take(5) as $notification)
+                                <flux:menu.item
+                                    class="flex flex-col justify-start items-start gap-1 {{ $notification->is_read ? 'bg-white' : 'bg-gray-100 font-semibold' }} hover:bg-gray-200 max-w-72 cursor-pointer"
+                                    onclick="markAsRead('{{ $notification->id }}')">
+                                    <p class="text-xs text-left line-clamp-2 break-words w-full">
+                                        {{ $notification->title }}
+                                        <span @class([
+                                            'text-red-500' => $notification->status == 0,
+                                            'text-yellow-500' => $notification->status == 1,
+                                            'text-green-500' => $notification->status == 2,
+                                        ])>
+                                            {{ $notification->body }}
+                                        </span>
+                                    </p>
+                                    <span class="text-xs text-right text-gray-500">
+                                        {{ \Carbon\Carbon::parse($notification->created_at)->locale('id')->diffForHumans() }}
+                                    </span>
+                                </flux:menu.item>
+                            @empty
+                                <flux:menu.item class="text-center text-xs text-gray-500">
+                                    Tidak ada notifikasi
+                                </flux:menu.item>
+                            @endforelse
+                        </flux:menu.radio.group>
+                        <flux:menu.separator />
+                        <flux:menu.radio.group>
+                            <div class="flex justify-end px-2 py-1.5">
+                                <a href="{{ route('notifikasi') }}" wire:navigate
+                                    class="text-end text-xs text-blue-600 hover:bg-gray-200">
+                                    Lihat Semua Notifikasi
+                                </a>
+                            </div>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
+
         </div>
     </div>
 
@@ -317,7 +287,40 @@ use Illuminate\Support\Facades\Route;
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1000,
+                        toast: true,
+                        position: 'top-end',
+                        timerProgressBar: true,
+                    }).then(() => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        function markAllAsRead() {
+            $.ajax({
+                url: `/read-all-notification`,
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        showConfirmButton: false,
+                        timer: 1000,
+                        toast: true,
+                        position: 'top-end',
+                        timerProgressBar: true,
+                    }).then(() => {
+                        location.reload();
+                    });
                 }
             });
         }
@@ -333,6 +336,20 @@ use Illuminate\Support\Facades\Route;
             });
         });
     </script>
+    @if (session('notification'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                text: '{{ session('notification') }}',
+                showConfirmButton: false,
+                timer: 1000,
+                toast: true,
+                position: 'top-end',
+                timerProgressBar: true,
+            });
+        </script>
+    @endif
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -351,6 +368,20 @@ use Illuminate\Support\Facades\Route;
             // Geser konten utama
             content.classList.toggle('lg:ml-56');
             content.classList.toggle('lg:ml-12');
+
+        }
+
+        function openSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('main-content');
+
+            // Set lebar sidebar ke 56
+            sidebar.classList.add('w-56');
+            sidebar.classList.remove('w-12');
+
+            // Geser konten utama
+            content.classList.add('lg:ml-56');
+            content.classList.remove('lg:ml-12');
         }
     </script>
     @yield('scripts')

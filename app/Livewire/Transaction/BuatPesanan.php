@@ -92,7 +92,6 @@ class BuatPesanan extends Component
             $this->name = $customer->name;
         } else {
             $this->customer = null;
-            $this->name = null;
         }
     }
 

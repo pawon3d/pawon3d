@@ -29,11 +29,6 @@ class ProductComposition extends Model
         return $this->belongsTo(Material::class);
     }
 
-    public function processed_material()
-    {
-        return $this->belongsTo(ProcessedMaterial::class);
-    }
-
     public static function boot()
     {
         parent::boot();

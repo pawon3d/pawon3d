@@ -25,9 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $storeSetting = StoreSetting::first();
         View::share('storeSetting', $storeSetting);
-        View::composer('*', function ($view) {
-            $view->with('storeProfile', \App\Models\StoreProfile::first());
-        });
+        View::share('storeProfile', StoreProfile::first());
 
         Livewire::component('livewire-alert', \Jantinnerezo\LivewireAlert\LivewireAlert::class);
     }

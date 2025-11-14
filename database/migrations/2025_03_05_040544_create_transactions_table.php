@@ -30,7 +30,6 @@ return new class extends Migration
 
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('phone')->references('phone')->on('customers')->onDelete('set null');
         });
     }
 

@@ -55,6 +55,10 @@
 -   [ ] Rincian produk: tambahkan review
 -   [ ] Detail produk di bagian pesanan(layout untuk review)
 -   [ ] pdf pdf yang belum
+-   [ ] perbaikan landing page
+-   [ ] laporan kasir
+-   [ ] laporan produksi
+-   [ ] laporan inventori
 
 ### Medium Priority
 
