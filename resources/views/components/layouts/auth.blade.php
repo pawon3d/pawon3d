@@ -1,3 +1,3 @@
-<x-layouts.auth.card>
+<x-layouts.auth.simple>
     {{ $slot }}
-</x-layouts.auth.card>
+</x-layouts.auth.simple>

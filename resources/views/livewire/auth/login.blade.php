@@ -45,7 +45,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-            $this->redirectIntended(default: route('ringkasan-umum', absolute: false), navigate: false);
+        $this->redirectIntended(default: route('ringkasan-umum', absolute: false), navigate: false);
         // $user = Auth::user();
 
         // $permissionRoutes = [
@@ -63,8 +63,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
         // }
 
         // $this->redirect(route('home'), navigate: false);
-
-        
     }
 
     /**
@@ -105,29 +103,46 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- email -->
-        <flux:input wire:model="email" :label="__('Email')" type="email" name="email" required autofocus
-            autocomplete="email" placeholder="Email" />
+        <flux:input wire:model="email" type="email" name="email" required autofocus autocomplete="email"
+            placeholder="Email" />
 
         <!-- password -->
         <div class="relative">
-            <flux:input wire:model="password" :label="__('Password')" type="password" name="password" required
-                autocomplete="current-password" placeholder="Password" viewable />
+            <flux:input wire:model="password" type="password" name="password" required autocomplete="current-password"
+                placeholder="Password" viewable />
         </div>
 
-        <!-- Remember Me -->
-        <label for="remember">
-            <input type="checkbox" id="remember" name="remember" wire:model="remember"
-                class="form-checkbox h-4 w-4 text-black border-gray-500 rounded-full focus:ring-0 focus:ring-offset-0 not-checked:bg-white" />
-            <span class="text-sm ml-4 font-medium select-none text-zinc-800">
-                Ingat Saya
-            </span>
-        </label>
+        <div class="flex justify-between flex-row items-center">
+            <!-- Remember Me -->
+            <div class="mr-2">
+                <label for="remember">
+                    <input type="checkbox" id="remember" name="remember" wire:model="remember"
+                        class="form-checkbox h-4 w-4 text-black border-gray-500 rounded-full focus:ring-0 focus:ring-offset-0 not-checked:bg-white" />
+                    <span class="text-sm ml-4 font-medium select-none text-zinc-800">
+                        Ingat Saya
+                    </span>
+                </label>
+            </div>
+            <div>
+                <flux:link :href="route('password.request')" class="text-sm font-medium text-primary-600"
+                    variant="subtle" wire:navigate>
+                    Lupa Kata Sandi?
+                </flux:link>
+            </div>
+        </div>
 
         <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Masuk') }}</flux:button>
+            <button type="submit"
+                class="w-full rounded-2xl py-2 border-black border-2 hover:bg-black hover:text-white bg-white text-black cursor-pointer">{{ __('Masuk') }}</button>
         </div>
     </form>
 
+    <div class="mt-6 flex justify-center">
+        <flux:text>Belum punya akun? <flux:link wire:navigate href="#" class="text-primary-600 font-semibold"
+                variant="ghost"> Hubungi
+                Pemilik Usaha</flux:link>
+        </flux:text>
+    </div>
     {{-- @if (Route::has('register'))
     <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
         Don't have an account?
