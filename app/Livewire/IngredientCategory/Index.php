@@ -24,6 +24,9 @@ class Index extends Component
     public $showModal = false;
     public $showEditModal = false;
     public $sortByCategory = false;
+    public $usageSearch = '';
+    public $usagePage = 1;
+    public $jumlahPenggunaan = false;
     protected $listeners = [
         'delete',
         'cancelled',
@@ -76,7 +79,10 @@ class Index extends Component
             })->with('details')->withCount('details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-        return view('livewire.ingredient-category.index', compact('categories'));
+        return view('livewire.ingredient-category.index', [
+            'categories' => $categories,
+            'usageMaterials' => $this->usageMaterials,
+        ]);
     }
 
     public function showAddModal()
@@ -158,6 +164,78 @@ class Index extends Component
         }
     }
 
+    public function showUsageModal()
+    {
+        $this->usagePage = 1;
+        $this->usageSearch = '';
+        Flux::modal('jumlah-penggunaan')->show();
+    }
+
+    public function getUsageMaterialsProperty()
+    {
+        $category = \App\Models\IngredientCategory::with('details.material')->find($this->category_id);
+
+        if ($category) {
+            $materialIds = $category->details->pluck('material.id')->unique()->filter()->values()->all();
+
+            $query = \App\Models\Material::whereIn('id', $materialIds);
+
+            // Apply search filter
+            if ($this->usageSearch) {
+                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+            }
+
+            return $query->paginate(2, ['*'], 'usagePage', $this->usagePage);
+        }
+
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            [],
+            0,
+            2,
+            $this->usagePage,
+            ['path' => request()->url(), 'pageName' => 'usagePage']
+        );
+    }
+
+    public function updatedUsageSearch()
+    {
+        $this->usagePage = 1;
+    }
+
+    public function previousUsagePage()
+    {
+        if ($this->usagePage > 1) {
+            $this->usagePage--;
+        }
+    }
+
+    public function nextUsagePage()
+    {
+        if ($this->usageMaterials && $this->usageMaterials->hasMorePages()) {
+            $this->usagePage++;
+        }
+    }
+
+    public function removeFromCategory($materialId)
+    {
+        // Find the detail entry and delete it
+        $detail = \App\Models\IngredientCategoryDetail::where('category_id', $this->category_id)
+            ->where('material_id', $materialId)
+            ->first();
+
+        if ($detail) {
+            $detail->delete();
+            $this->alert('success', 'Persediaan berhasil dihapus dari kategori');
+
+            // Update count
+            $this->products = \App\Models\IngredientCategory::where('id', $this->category_id)->withCount('details')->first()->details_count;
+
+            // Check if current page is now empty and go to previous page if needed
+            if ($this->usageMaterials->isEmpty() && $this->usagePage > 1) {
+                $this->usagePage--;
+            }
+        }
+    }
 
     public function resetForm()
     {

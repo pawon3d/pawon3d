@@ -94,8 +94,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/satuan-ukur/cetak', [PdfController::class, 'generateUnitPDF'])
             ->name('satuan-ukur.pdf');
         Route::get('/kategori-persediaan', App\Livewire\IngredientCategory\Index::class)->name('kategori-persediaan');
-        Route::get('/kategori-persediaan/tambah', App\Livewire\IngredientCategory\Tambah::class)->name('kategori-persediaan.tambah');
-        Route::get('/kategori-persediaan/{id}/rincian', App\Livewire\IngredientCategory\Rincian::class)->name('kategori-persediaan.edit');
+        // Route::get('/kategori-persediaan/tambah', App\Livewire\IngredientCategory\Tambah::class)->name('kategori-persediaan.tambah');
+        // Route::get('/kategori-persediaan/{id}/rincian', App\Livewire\IngredientCategory\Rincian::class)->name('kategori-persediaan.edit');
         Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
             ->name('kategori-persediaan.pdf');
         Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
@@ -115,6 +115,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/bahan-baku/cetak', [PdfController::class, 'generateMaterialPDF'])
             ->name('bahan-baku.pdf');
         Route::get('/belanja', App\Livewire\Expense\Index::class)->name('belanja');
+        Route::get('/belanja/rencana', App\Livewire\Expense\Rencana::class)->name('belanja.rencana');
         Route::get('/belanja/tambah', App\Livewire\Expense\Tambah::class)->name('belanja.tambah');
         Route::get('/belanja/{id}/edit', App\Livewire\Expense\Edit::class)->name('belanja.edit');
         Route::get('/belanja/{id}/rincian', App\Livewire\Expense\Rincian::class)->name('belanja.rincian');

@@ -1,305 +1,311 @@
 <div>
-    <!-- Hero Section with Animation -->
-    <section class="px-4 py-20 mb-4 bg-blue-50">
-        <div class="flex flex-col lg:flex-row items-center gap-8">
-            <div class="lg:w-3/5 space-y-6">
-                <h3 class="text-xl font-semibold text-blue-600 animate-slideInLeft ml-2">
-                    {{ ($storeProfile->name) ?? 'Pawon3D' }}
-                </h3>
-                @php
-                // Ambil hero title dari storeProfile, jika tidak ada gunakan default
-                $heroTitle = $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu';
+    <!-- Hero Section -->
+    <section class="relative w-full h-[800px] bg-[#333333] overflow-hidden">
+        <!-- Background overlay -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 z-10"
+            style="background-image: url('/img/apem.png');">
+        </div>
 
-                // Pecah string menjadi array berdasarkan spasi
-                $words = explode(' ', $heroTitle);
-                $wordCount = count($words);
+        <!-- Hero Content -->
+        <div class="relative z-20 h-full flex items-center px-4 md:px-20">
+            <div class="max-w-[610px]">
+                <p class="text-[24px] font-bold montserrat-regular text-[#74512d] text-shadow-2xs mb-6"
+                    style="-webkit-text-stroke: 1px {{ $storeProfile->stroke_color ?? '#fff' }}; text-stroke: 1px {{ $storeProfile->stroke_color ?? '#fff' }}; text-shadow: 1px 1px 0 {{ $storeProfile->stroke_color ?? '#fff' }}, -1px -1px 0 {{ $storeProfile->stroke_color ?? '#fff' }}, 1px -1px 0 {{ $storeProfile->stroke_color ?? '#fff' }}, -1px 1px 0 {{ $storeProfile->stroke_color ?? '#fff' }};">
+                    {{ $storeProfile->name ?? 'Pawon3D' }}
+                </p>
 
-                // Jika jumlah kata lebih dari 2, pisahkan menjadi dua bagian
-                if ($wordCount > 2) {
-                $before = implode(' ', array_slice($words, 0, -2)); // Semua kata kecuali 2 kata terakhir
-                $lastTwo = implode(' ', array_slice($words, -2)); // 2 kata terakhir
-                } else {
-                // Jika hanya ada 2 kata atau kurang, tampilkan seluruhnya di dalam span
-                $before = '';
-                $lastTwo = $heroTitle;
-                }
-                @endphp
-
-                <h1 class="text-5xl lg:text-6xl leading-tight animate-slideInLeft pacifico-regular">
-                    {{ $before }}
-                    <span class="text-blue-600">{{ $lastTwo }}</span>
+                <h1 class="text-[64px] leading-[85px] pacifico-regular text-white mb-12">
+                    {{ $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu' }}
                 </h1>
 
-                <div class="flex gap-4 lg:text-xl mt-16">
+                <div class="flex flex-col md:flex-row gap-6 items-start">
                     <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
-                        class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
+                        class="px-9 py-6 bg-[#e9bd8c] rounded-[15px] montserrat-bold text-[20px] text-[#74512d] hover:bg-[#d4a876] transition-all inline-block">
                         Pesan Sekarang
                     </a>
-                    <a href="#menu" class="px-8 py-4 transition-all">
-                        Pelajari Selengkapnya
-                        <i class="bi bi-arrow-right ml-4"></i>
+                    <a href="#carapesan"
+                        class="montserrat-semibold text-[20px] text-white flex flex-col items-start py-3">
+                        <span>Lihat</span>
+                        <span class="flex items-center gap-2">
+                            Cara Pesan
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </span>
                     </a>
                 </div>
             </div>
-            {{-- <div class="w-1/2 mt-12 lg:mt-0">
-                <div
-                    class="overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-500 rounded-full">
-                    @if (!empty($storeProfile->hero_image))
-                    <img src="{{ asset('storage/' . $storeProfile->hero_image) }}" alt="Hero Image"
-                        class="w-full h-full object-cover rounded-full">
-                    @else
-                    <img src="/assets/images/homepage/hero.jpeg" alt="Kue dan camilan Pawon3D"
-                        class="w-full h-auto rounded-full object-cover">
-                    @endif
-                </div>
-            </div> --}}
         </div>
     </section>
 
     <!-- Featured Section -->
-    <section class="pt-8 pb-8">
-        <div class="mx-auto px-4">
-            <h1 class="text-4xl pacifico-regular font-bold text-center space-y-4 mb-8">
-                Produk Unggulan Kami
-            </h1>
-            <p class="text-lg text-gray-600 m-auto text-center mb-8 lg:w-3/5">
-                Pilihan kue yang paling disukai pembeli! Dibuat dari bahan berkualitas dan rasa yang bikin nagih,
-                siap menemani hari-harimu.
-            </p>
+    <section class="bg-[#fafafa] py-20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-14 max-w-[872px] mx-auto">
+                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] mb-9">
+                    Produk Unggulan Kami
+                </h2>
+                <p class="text-[16px] montserrat-medium text-[#525252] leading-normal">
+                    Pilihan kue yang paling disukai pembeli!<br>
+                    Dibuat dari bahan berkualitas dan rasa yang bikin nagih, siap menemani hari-harimu.
+                </p>
+            </div>
 
-            @php
-            $colCount = $products->count();
-            @endphp
-            <div class="grid md:grid-cols-{{ $colCount > 4 ? 4 : $colCount }} gap-4 overflow-x-auto">
+            <div class="flex gap-5 items-center justify-center overflow-x-auto pb-4">
                 @forelse ($products as $product)
-                <div class="bg-transparent p-8">
-                    <div class="flex justify-center mb-4">
-                        @if($product->product_image)
-                        <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
-                            class="w-40 h-40 rounded-md object-fill">
-                        @else
-                        <img src="{{ asset('/img/no-img.jpg')}}" alt="{{ $product->name }}"
-                            class="w-40 h-40 rounded-md object-fill">
-                        @endif
+                    <div class="flex flex-col gap-4 pb-6 min-w-[234px]">
+                        <div class="w-[234px] h-[155px] rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
+                            @if ($product->product_image)
+                                <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
+                                    class="w-full h-full object-cover">
+                            @else
+                                <img src="{{ asset('/img/no-img.jpg') }}" alt="{{ $product->name }}"
+                                    class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        <div class="text-center px-4">
+                            <h3 class="text-[16px] montserrat-medium text-[#666666] mb-5 line-clamp-2 min-h-[48px]">
+                                {{ $product->name }}</h3>
+                            <p class="text-[18px] montserrat-semibold text-[#666666]">Rp
+                                {{ number_format($product->price, 0, ',', '.') }}</p>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
-                        <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp {{
-                            number_format($product->price, 0, ',', '.') }}</p>
-                    </div>
-                </div>
                 @empty
-                <p class="text-gray-600 mb-4 text-center">Tidak ada produk unggulan saat ini.</p>
+                    <p class="text-[#666666] text-center">Tidak ada produk unggulan saat ini.</p>
                 @endforelse
             </div>
         </div>
     </section>
 
-    <section class="bg-blue-50 pt-8 pb-8">
-        <div class="flex flex-col items-center justify-center text-center px-4">
-            <h1 class="text-5xl lg:w-4xl pacifico-regular font-bold space-y-4 mb-8">
-                Jadi Pelanggan dan Kumpulkan Poin!
-            </h1>
-            <p class="text-sm text-gray-500 m-auto montserrat-regular mb-8 lg:w-80">
-                Dapatkan
-                <span class="font-semibold">1 Poin</span>
-                dengan belanja kelipatan
-                <span class="font-semibold">Rp10.000.</span>
-                Poin juga dapat dikumpulkan melalui review di
-                <span class="font-semibold">story media sosial</span>
-                dan review toko di
-                <span class="font-semibold">Google Maps.</span>
-            </p>
-
-            <a href="#" class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
-                Selengkapnya
+    <!-- Points Section -->
+    <section class="relative py-20 bg-[#fafafa] overflow-hidden bg-cover bg-center"
+        style="background-image: url('{{ asset('img/unggulan/kertas.jpg') }}');">
+        <div class="max-w-[572px] mx-auto px-4 text-center relative z-10">
+            <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#933c24] mb-6">
+                Jadi Pelanggan dan<br>Kumpulkan Poin!
+            </h2>
+            <div class="text-[16px] montserrat-medium text-[#333333] mb-9 leading-normal">
+                <p class="mb-2">Dapatkan <span class="montserrat-bold">1 poin</span> dengan belanja kelipatan <span
+                        class="montserrat-bold">Rp10.000</span>.</p>
+                <p class="mb-2">Poin juga dapat dikumpulkan melalui review di <span
+                        class="montserrat-bold">Story</span>,
+                    <span class="montserrat-bold">Media Sosial</span>, dan review di <span
+                        class="montserrat-bold">Google
+                        Maps</span>.
+                </p>
+            </div>
+            <a href="#poin"
+                class="inline-block px-9 py-6 bg-[#74512d] rounded-[15px] montserrat-semibold text-[20px] text-white hover:bg-[#5d3f23] transition-all">
+                Lihat Cara Dapat dan Tukar Poin!
             </a>
         </div>
+
+        <!-- Decorative images (purely visual) -->
+        <div
+            class="absolute -bottom-1/4 inset-x-0 flex justify-between items-end pointer-events-none z-0 overflow-hidden">
+            <img src="{{ asset('img/unggulan/kiri.png') }}" alt="" aria-hidden="true" class="max-h-[300px]">
+            <img src="{{ asset('img/unggulan/kanan.png') }}" alt="" aria-hidden="true" class="max-h-[300px]">
+        </div>
     </section>
 
-    <!-- Menu Section with Grid -->
-    <section class="mx-auto px-4 py-4 w-full" id="menu">
-        <div class="text-center mb-4">
-            <h2 class="text-4xl pacifico-regular font-bold mb-4 ">Jelajahi Produk</h2>
-        </div>
-        <div class="flex justify-center py-8 w-full">
-            <div class="relative w-lg">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                </div>
-                <input type="text" wire:model.live="search"
-                    class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Cari kue...">
-            </div>
-            <flux:button :loading="false" class="ml-2" variant="ghost">
-                <flux:icon.funnel variant="mini" />
-                <span>Filter</span>
-            </flux:button>
-        </div>
-        <div class="flex items-center justify-between mt-4 mb-4 flex-row mx-8 bg-white rounded-lg shadow-xl">
-            <div
-                class="relative w-full py-8 {{ $method === 'pesanan-reguler' ? 'bg-[#222222] text-[#F8F4E1] border-b-4 border-b-[#E9BD8C]' : 'text-gray-800' }} hover:bg-[#222222] hover:text-[#F8F4E1] hover:border-b-4 hover:border-b-[#E9BD8C] transition-colors rounded-lg">
-                <input type="radio" name="method" id="pesanan-reguler" value="pesanan-reguler" wire:model.live="method"
-                    class="absolute opacity-0 w-0 h-0">
-                <label for="pesanan-reguler" class="cursor-pointer">
-                    <div class="w-full flex flex-col items-center">
-                        <flux:icon icon="cake" class=" size-8" />
-                        <span class="text-center hidden md:block">Pesanan Kue Reguler</span>
-                    </div>
-                </label>
-            </div>
-            <div
-                class="relative w-full py-8 {{ $method === 'pesanan-kotak' ? 'bg-[#222222] text-[#F8F4E1] border-b-4 border-b-[#E9BD8C]' : 'text-gray-800' }} hover:bg-[#222222] hover:text-[#F8F4E1] hover:border-b-4 hover:border-b-[#E9BD8C] transition-colors rounded-lg">
-                <input type="radio" name="method" id="pesanan-kotak" value="pesanan-kotak" wire:model.live="method"
-                    class="absolute opacity-0 w-0 h-0">
-                <label for="pesanan-kotak" class="cursor-pointer">
-                    <div class="w-full flex flex-col items-center">
-                        <flux:icon icon="package-open" class="size-8" />
-                        <span class="text-center hidden md:block">Pesanan Kue Kotak</span>
-                    </div>
-                </label>
+    <!-- Menu/Daftar Menu Section -->
+    <section class="py-20 w-full bg-[#fafafa]" id="menu">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-15">
+                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] mb-12">Daftar Menu</h2>
             </div>
 
-            <div
-                class="relative w-full py-8 {{ $method === 'siap-beli' ? 'bg-[#222222] text-[#F8F4E1] border-b-4 border-b-[#E9BD8C]' : 'text-gray-800' }} hover:bg-[#222222] hover:text-[#F8F4E1] hover:border-b-4 hover:border-b-[#E9BD8C] transition-colors rounded-lg">
-                <input type="radio" name="method" id="siap-beli" value="siap-beli" wire:model.live="method"
-                    class="absolute opacity-0 w-0 h-0">
-                <label for="siap-beli" class="cursor-pointer">
-                    <div class=" w-full flex flex-col items-center">
-                        <flux:icon icon="dessert" class="size-8" />
-                        <span class="text-center hidden md:block">Siap Saji</span>
-                    </div>
-                </label>
-            </div>
-        </div>
-        <!-- Menu Items -->
-        <div class="mb-4 mt-8">
-            <ul class="flex flex-nowrap gap-4 overflow-x-auto scroll-hide pb-3 px-8">
-                <!-- Tambahkan opsi 'Semua' di awal -->
-                <li class="flex-shrink-0 ml-4">
-                    <button
-                        class="inline-block px-2 py-2 md:px-4 text-xs md:text-sm border border-gray-800 {{ $categorySelected == 'semua' ? 'bg-gray-600 text-white' : 'bg-gray-200' }} rounded-full hover:text-white hover:border-gray-800 hover:bg-gray-600 cursor-pointer transition-colors whitespace-nowrap"
-                        wire:click="$set('categorySelected', 'semua')">
-                        Semua
+            <!-- Method Selector -->
+            <div class="max-w-[1150px] mx-auto mb-8">
+                <div class="flex items-center bg-[#fafafa] rounded-[15px] shadow-sm h-[120px]">
+                    <button wire:click="$set('method', 'pesanan-reguler')"
+                        class="flex-1 h-full flex flex-col items-center justify-center gap-1 rounded-l-[15px] {{ $method === 'pesanan-reguler' ? 'bg-[#fafafa] border-b-4 border-[#74512d]' : 'bg-[#fafafa]' }}">
+                        <flux:icon icon="cake"
+                            class=" size-8 {{ $method === 'pesanan-reguler' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}" />
+
+                        <span
+                            class="text-[16px] montserrat-{{ $method === 'pesanan-reguler' ? 'bold' : 'medium' }} {{ $method === 'pesanan-reguler' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}">Pesanan
+                            Reguler</span>
                     </button>
-                </li>
 
-                @foreach ($categories as $category)
-                <li class="flex-shrink-0 {{ $loop->last ? 'mr-4' : '' }}">
-                    <button
-                        class="inline-block px-2 py-2 md:px-4 text-xs md:text-sm border border-gray-800 {{ $categorySelected == $category->name ? 'bg-gray-600 text-white' : 'bg-gray-200' }} rounded-full hover:text-white hover:border-gray-800 hover:bg-gray-600 cursor-pointer transition-colors whitespace-nowrap"
-                        wire:click="$set('categorySelected', '{{ $category->name }}')">
-                        {{ $category->name }}
+                    <button wire:click="$set('method', 'pesanan-kotak')"
+                        class="flex-1 h-full flex flex-col items-center justify-center gap-1 {{ $method === 'pesanan-kotak' ? 'bg-[#fafafa] border-b-4 border-[#74512d]' : 'bg-[#fafafa]' }}">
+                        <flux:icon icon="package-open"
+                            class=" size-8 {{ $method === 'pesanan-kotak' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}" />
+                        <span
+                            class="text-[16px] montserrat-{{ $method === 'pesanan-kotak' ? 'bold' : 'medium' }} {{ $method === 'pesanan-kotak' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}">Pesanan
+                            Kotak</span>
                     </button>
-                </li>
-                @endforeach
-            </ul>
-        </div>
 
-        <div id="menu-content" class="max-h-96 overflow-y-auto">
-            <div id="products-container"
-                class="grid lg:grid-cols-5 grid-cols-3 gap-2 p-4 rounded-lg bg-white shadow-sm transition-all">
-                @forelse ($exploreProducts as $product)
-                <div class="mb-6">
-                    <div class="flex justify-center">
-                        @if($product->product_image)
-                        <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
-                            class="w-full h-40 rounded-lg border-gray-400 border object-fill">
-                        @else
-                        <img src="{{ asset('/img/no-img.jpg')}}" alt="{{ $product->name }}"
-                            class="w-full h-40 rounded-lg border-gray-400 border object-fill">
-
-                        @endif
-                    </div>
-                    <div class="p-4 bg-white text-center">
-                        <h3 class="text-xs md:text-lg font-semibold text-gray-800 mb-2">{{ $product->name }}
-                        </h3>
-                        <div class="flex justify-center items-center">
-                            <p class="text-blue-600 font-medium text-xs md:text-md">
-                                Rp {{ number_format($product->price, 0, ',', '.') }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-span-full text-center py-8 text-gray-500">
-                    Tidak ada produk tersedia di kategori atau metode ini
-                </div>
-                @endforelse
-
-                <!-- Pagination -->
-                <div class="pagination col-span-full mt-4">
-                    {{ $exploreProducts->links(data: ['scrollTo' => false]) }}
+                    <button wire:click="$set('method', 'siap-beli')"
+                        class="flex-1 h-full flex flex-col items-center justify-center gap-1 rounded-r-[15px] {{ $method === 'siap-beli' ? 'bg-[#fafafa] border-b-4 border-[#74512d]' : 'bg-[#fafafa]' }}">
+                        <flux:icon icon="dessert"
+                            class=" size-8 {{ $method === 'siap-beli' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}" />
+                        <span
+                            class="text-[16px] montserrat-{{ $method === 'siap-beli' ? 'bold' : 'medium' }} {{ $method === 'siap-beli' ? 'text-[#74512d]' : 'text-[#6c7068] opacity-90' }}">Siap
+                            Saji</span>
+                    </button>
                 </div>
             </div>
 
-        </div>
-
-        <a href="/landing-produk" class="flex justify-center items-center">
-            <button
-                class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2">
-                Selengkapnya
-            </button>
-        </a>
-    </section>
 
 
+            <!-- Products Container -->
+            <div class="max-w-[1150px] mx-auto">
+                {{-- <!-- Category Pills -->
+                <div class="mb-10">
+                    <ul class="flex flex-nowrap gap-4 overflow-x-auto scroll-hide pb-3">
+                        <li class="flex-shrink-0">
+                            <button wire:click="$set('categorySelected', 'semua')"
+                                class="px-4 py-2 text-[16px] montserrat-medium border-[0.5px] border-[#666666] {{ $categorySelected == 'semua' ? 'bg-[#666666] text-white' : 'bg-[#fafafa] text-[#666666]' }} rounded-full hover:bg-[#666666] hover:text-white transition-colors whitespace-nowrap">
+                                Semua
+                            </button>
+                        </li>
 
-    <!-- Contact Section -->
-    <section class="bg-blue-50 py-20">
-        <div class="mx-auto px-4">
-            <div class="max-w-4xl mx-auto bg-transparent p-8">
-                <div class="text-center mb-8">
-                    <h2 class="text-4xl pacifico-regular font-bold mb-2">Lokasi Toko dan Wilayah Pemesanan</h2>
+                        @foreach ($categories as $category)
+                            <li class="flex-shrink-0">
+                                <button wire:click="$set('categorySelected', '{{ $category->name }}')"
+                                    class="px-4 py-2 text-[16px] montserrat-medium border-[0.5px] border-[#666666] {{ $categorySelected == $category->name ? 'bg-[#666666] text-white' : 'bg-[#fafafa] text-[#666666]' }} rounded-full hover:bg-[#666666] hover:text-white transition-colors whitespace-nowrap">
+                                    {{ $category->name }}
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div> --}}
+
+                <!-- Products Grid -->
+                <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-8 mb-10">
+                    <!-- Search and Filter -->
+                    <div class="flex items-center gap-4 mb-8 w-full mx-auto">
+                        <div class="relative flex-1 max-w-full">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                <svg class="w-4 h-4 text-[#666666]" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input type="text" wire:model.live="search"
+                                class="w-full py-2.5 pl-10 pr-4 text-[16px] montserrat-medium text-[#959595] border-[0.5px] border-[#666666] rounded-[20px] bg-white focus:ring-0 focus:border-[#666666]"
+                                placeholder="Cari Produk">
+                        </div>
+                        <button class="flex items-center gap-2 px-2 py-2.5">
+                            <svg class="w-6 h-6 text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" />
+                            </svg>
+                            <span class="text-[16px] montserrat-medium text-[#666666]">Filter</span>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        @forelse ($exploreProducts as $product)
+                            <div class="flex flex-col gap-4 pb-6">
+                                <div
+                                    class="w-full aspect-square rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
+                                    @if ($product->product_image)
+                                        <img src="{{ asset('storage/' . $product->product_image) }}"
+                                            alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="{{ asset('/img/no-img.jpg') }}" alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover">
+                                    @endif
+                                </div>
+                                <div class="text-center px-2">
+                                    <h3
+                                        class="text-[16px] montserrat-medium text-[#666666] mb-3 line-clamp-2 min-h-[40px]">
+                                        {{ $product->name }}</h3>
+                                    <p class="text-[18px] montserrat-semibold text-[#666666]">Rp
+                                        {{ number_format($product->price, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full text-center py-8 text-[#666666]">
+                                Tidak ada produk tersedia
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        {{ $exploreProducts->links(data: ['scrollTo' => false]) }}
+                    </div>
                 </div>
-                <div class="flex flex-col gap-6">
-                    <div class="w-full flex flex-row gap-4 items-center justify-center">
-                        <div class="flex flex-col items-start mb-4 md:mb-0">
-                            <h3 class="text-lg font-semibold mb-2">Metode Pengambilan (Saat Ini)</h3>
-                            <p class="text-gray-600 text-sm">
-                                Ambil Sendiri, belum ada sistem pengantaran.
-                            </p>
-                        </div>
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!4v1742133851135!6m8!1m7!1sKwaGqQ5eD1Pjwm1wY_m6ng!2m2!1d-1.729048731821646!2d103.2726813742673!3f215.95130838744583!4f1.839142862723449!5f0.7820865974627469"
-                            class="w-full h-[350px]" style="border: 0; border-radius: 10px;" allowfullscreen=""
-                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        <div class="flex flex-col items-end text-end mb-4 md:mb-0 ">
-                            <h3 class="text-lg font-semibold mb-2">Wilayah Pemesanan (Saat Ini)</h3>
-                            <p class="text-gray-600 text-sm">
-                                Muara Bulian, Muara Tembesi, Muara Jambi, dan Kota Jambi.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="w-full flex flex-col items-center justify-center">
-                        <h3 class="text-lg font-semibold mb-2">Rincian Lokasi Toko</h3>
-                        <div class="mb-4">
-                            <p class="text-sm">Jl. Jenderal Sudirman Km.3, Muara Bulian, Batang Hari, Jambi.
-                                Sebelah Puskesmas Muara Bulian</p>
-                        </div>
-                    </div>
+
+                <!-- Selengkapnya Button -->
+                <div class="flex justify-center">
+                    <a href="/landing-produk"
+                        class="px-9 py-6 bg-[#74512d] rounded-[15px] montserrat-semibold text-[20px] text-white hover:bg-[#5d3f23] transition-all inline-block">
+                        Selengkapnya
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="mx-auto px-4 py-4 w-full">
-        <div class="max-w-5xl mx-auto py-12 px-4 text-center">
-            <h2 class="text-3xl font-bold font-[cursive] mb-6">Cara Pesan</h2>
+    <!-- Contact/Location Section -->
+    <section class="relative py-20 bg-[#252324]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-[38px] leading-[60px] pacifico-regular text-white">Lokasi Toko dan Wilayah Pemesanan
+                </h2>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 items-center justify-center mb-8">
+                <div class="flex flex-col items-start text-white max-w-[225px]">
+                    <h3 class="text-[18px] montserrat-bold mb-4">Wilayah Pemesanan</h3>
+                    <ul class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2">
+                        <li>• Muara Bulian</li>
+                        <li>• Muara Tembesi</li>
+                        <li>• Muara Jambi</li>
+                        <li>• Kota Jambi</li>
+                    </ul>
+                    <p class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2 mt-4">
+                        Senin - Sabtu <br>
+                        08:00 - 17:00
+                    </p>
+                </div>
+
+                <div class="w-full md:w-[585px] h-[346px] rounded-[10px] overflow-hidden">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!4v1742133851135!6m8!1m7!1sKwaGqQ5eD1Pjwm1wY_m6ng!2m2!1d-1.729048731821646!2d103.2726813742673!3f215.95130838744583!4f1.839142862723449!5f0.7820865974627469"
+                        class="w-full h-full" style="border: 0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+
+                <div class="flex flex-col items-end text-end text-white max-w-[225px]">
+                    <h3 class="text-[18px] montserrat-bold mb-4">Metode Pengambilan Pesanan</h3>
+                    <ul class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2">
+                        <li>• Pengambilan di Toko</li>
+                        <li>• Pengiriman langsung (terbatas jarak 2 km)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h3 class="text-[18px] montserrat-bold text-white mb-4">Lokasi Toko</h3>
+                <p class="text-[16px] montserrat-medium text-[#c4c4c4] max-w-[560px] mx-auto">
+                    Jl. Jenderal Sudirman Km.3, Muara Bulian, Batang Hari, Jambi. sebelah Puskesmas Muara Bulian
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cara Pesan Section -->
+    <section class="mx-auto px-4 py-16 w-full bg-[#fafafa]" id="carapesan">
+        <div class="max-w-7xl mx-auto flex flex-col gap-12 items-center">
+            <!-- Title -->
+            <h2 class="text-[38px] pacifico-regular leading-[60px] text-[#333333] text-center">Cara Pesan</h2>
 
             <!-- Tabs -->
-            <div class="inline-flex bg-gray-200 rounded-full p-1 mb-10">
+            <div class="flex gap-4 items-center">
                 <button
-                    class="px-6 py-2 {{ $caraPesan === 'whatsapp' ? 'bg-black text-white' : 'text-black' }} rounded-full focus:outline-none"
+                    class="px-6 py-2.5 {{ $caraPesan === 'whatsapp' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] font-semibold text-base transition-colors montserrat-regular"
                     wire:click="$set('caraPesan', 'whatsapp')">
                     WhatsApp
                 </button>
                 <button
-                    class="px-6 py-2 {{ $caraPesan === 'toko' ? 'bg-black text-white' : 'text-black' }} rounded-full focus:outline-none"
+                    class="px-6 py-2.5 {{ $caraPesan === 'toko' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] font-medium text-base transition-colors montserrat-regular"
                     wire:click="$set('caraPesan', 'toko')">
                     Langsung di Toko
                 </button>
@@ -307,54 +313,194 @@
 
             <!-- Konten Cara Pesan -->
             @if ($caraPesan === 'whatsapp')
-            <div class="space-y-6 text-white font-medium">
+                <div class="flex flex-col md:flex-row gap-6 items-start justify-center w-full max-w-[1053px]">
+                    <!-- Left Column -->
+                    <div class="flex flex-col gap-8 flex-1 w-full md:w-auto">
+                        <!-- Step 1 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Pilih menu <span class="font-bold">Pesanan Reguler</span> atau <span
+                                        class="font-bold">Pesanan Kotak</span> dan lihat <span
+                                        class="font-bold">daftar menu</span></li>
+                            </ol>
+                        </div>
 
-                <div class="flex flex-col md:flex-row justify-center gap-6">
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-80 text-left">
-                        <p class="text-sm">1. Pilih menu <strong>Pesanan Reguler</strong> atau <strong>Pesanan
-                                Kotak</strong> di website
-                        </p>
+                        <!-- Step 2 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol start="2"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Pilih satu atau lebih <span class="font-bold">produk</span> yang diinginkan, lalu
+                                    <span class="font-bold">screenshot</span>.
+                                </li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol start="3"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Tekan <span class="font-bold">Pesan Sekarang</span> untuk beralih ke <span
+                                        class="font-bold">WhatsApp</span> dan kirimkan hasil <span
+                                        class="font-bold">screenshot</span> untuk melakukan <span
+                                        class="font-bold">konfirmasi pesanan.</span></li>
+                            </ol>
+                        </div>
                     </div>
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-1/2 text-left">
-                        <p class="text-sm">4. Lakukan <strong>konfirmasi pesanan</strong> dan
-                            <strong>pembayaran</strong>, maka pesanan
-                            akan dicatat (Pastikan pesanan berada di dalam <strong>wilayah pemesanan</strong>)
-                        </p>
+
+                    <!-- Right Column -->
+                    <div class="flex flex-col gap-8 flex-1 w-full md:w-auto">
+                        <!-- Step 4 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol start="4"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Lakukan <span class="font-bold">konfirmasi pesanan</span> dan <span
+                                        class="font-bold">pembayaran,</span> maka pesanan akan dicatat (pastikan
+                                    pesanan berada di dalam <span class="font-bold">wilayah pemesanan</span>)</li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol start="5"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Terima <span class="font-bold">invoice</span> dan ambil pesanan <span
+                                        class="font-bold">sesuai kesepakatan</span> atau <span
+                                        class="font-bold">tunggu kabar dari penjual.</span></li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                            <ol start="6"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
+                                <li>Datang ke <span class="font-bold">toko</span> atau <span class="font-bold">tunggu
+                                        pengiriman</span> untuk menerima pesanan, jika pesanan belum lunas maka lakukan
+                                    pelunasan.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="text-center text-gray-600">
+                    <p class="montserrat-regular text-lg">Konten untuk pemesanan langsung di toko akan ditampilkan di
+                        sini.</p>
+                </div>
+            @endif
+        </div>
+    </section>
+
+    <!-- Cara Dapat dan Tukar Poin Section -->
+    <section class="relative py-20 bg-[#fafafa] overflow-hidden bg-cover bg-center"
+        style="background-image: url('{{ asset('img/unggulan/kertas.jpg') }}');" id="poin">
+        <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#933c24] mb-12">
+                Cara Dapat dan Tukar Poin
+            </h2>
+
+            <div class="flex flex-col gap-[42px] items-center w-full max-w-[1117px] mx-auto">
+                <div class="bg-[#933c24] rounded-[15px] shadow-sm px-[30px] py-[25px] w-full overflow-hidden">
+                    <div class="text-[18px] text-white text-center">
+                        <p class="mb-0 montserrat-bold">Daftarkan diri sebagai pelanggan di kasir</p>
+                        <p class="montserrat-medium">(Hanya pelanggan yang akan mendapatkan poin)</p>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row justify-center gap-6">
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-80 text-left">
-                        <p class="text-sm">2. Pilih <strong>satu</strong> atau lebih Produk yang diinginkan</p>
+                <div class="flex flex-wrap gap-[36px] items-center justify-center w-full">
+                    <div class="bg-[#74512d] rounded-[15px] shadow-sm px-[30px] py-[25px]">
+                        <div class="text-[18px] text-white text-center">
+                            <p class="mb-0 montserrat-bold">Unggah story media sosial</p>
+                            <p class="montserrat-medium">(5 Poin untuk setiap postingan)</p>
+                        </div>
                     </div>
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-96 text-left">
-                        <p class="text-sm">5. Tunggu <strong>waktu pengambilan yang ditetapkan</strong> atau tunggu
-                            <strong>kabar dari
-                                penjual</strong>.
-                        </p>
+
+                    <div class="bg-[#933c24] rounded-[15px] shadow-sm px-[30px] py-[25px]">
+                        <div class="text-[18px] text-white text-center">
+                            <p class="mb-0 montserrat-bold">Belanja dan Dapatkan Poin!</p>
+                            <p class="montserrat-medium">(1 Poin untuk kelipatan Rp10.000)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#74512d] rounded-[15px] shadow-sm px-[30px] py-[25px] w-[331px]">
+                        <div class="text-[18px] text-white text-center">
+                            <p class="mb-0 montserrat-bold">Beri ulasan di Google Maps</p>
+                            <p class="montserrat-medium">(10 Poin untuk setiap ulasan)</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row justify-center gap-6">
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-96 text-left">
-                        <p class="text-sm">3. Tekan <strong>Checkout</strong> untuk beralih ke
-                            <strong>WhatsApp</strong><br>
-                            <span class="text-sm font-normal block mt-1">(Anda dapat melakukan konsultasi pembelian di
-                                WhatsApp)</span>
-                        </p>
+                <div class="bg-[#933c24] rounded-[15px] shadow-sm px-[30px] py-[25px] w-[507px]">
+                    <div class="text-[18px] text-white text-center">
+                        <p class="mb-0 montserrat-bold">Tukar poin untuk potongan harga</p>
+                        <p class="montserrat-medium">(Hanya dapat dilakukan di kasir dan kadaluarsa jika tidak
+                            digunakan dalam 1 tahun)</p>
                     </div>
-                    <div class="bg-gray-800 rounded-lg px-6 py-4 md:w-96 text-left">
-                        <p class="text-sm">6. Datang ke toko untuk <strong>mengambil pesanan</strong>, jika pesanan
-                            belum lunas maka
-                            lakukan pelunasan dan pesanan dapat diambil oleh pelanggan.</p>
+                </div>
+
+                <div class="bg-[#933c24] rounded-[15px] shadow-sm px-[30px] py-[25px] w-[487px]">
+                    <p class="text-[18px] text-white text-center montserrat-medium mb-0">
+                        <span class="montserrat-bold">Poin akan aktif setelah pembayaran berhasil</span> (Jika
+                        pesanan batal, poin yang sudah digunakan akan hangus)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative images -->
+        <div
+            class="absolute -bottom-1/4 inset-x-0 flex justify-between items-end pointer-events-none z-0 overflow-hidden">
+            <img src="{{ asset('img/unggulan/kiri.png') }}" alt="" aria-hidden="true"
+                class="max-h-[300px]">
+            <img src="{{ asset('img/unggulan/kanan.png') }}" alt="" aria-hidden="true"
+                class="max-h-[300px]">
+        </div>
+    </section>
+
+    <!-- Tentang Kami Section -->
+    <section class="py-20 bg-[#fafafa]">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] text-center mb-[60px]">
+                Tentang Kami
+            </h2>
+
+            <div class="flex gap-[40px] items-start justify-center">
+                <div class="flex flex-col gap-[40px] w-[275px]">
+                    <div class="h-[239px] w-[276px] rounded-[10px] overflow-hidden">
+                        <img src="{{ asset('img/lokasi.png') }}" alt="Toko Pawon3D"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <div class="h-[183px] w-[275px] rounded-[10px] overflow-hidden">
+                        <img src="{{ asset('img/about.png') }}" alt="Produk Pawon3D"
+                            class="w-full h-full object-cover">
+                    </div>
+                </div>
+
+                <div class="bg-[#333333] rounded-[20px] px-[20px] py-[30px] w-[644px] text-white text-center">
+                    <div class="mb-[30px]">
+                        <p class="text-[30px] montserrat-semibold mb-[10px]">Pawon3D</p>
+                        <p class="text-[16px] montserrat-medium leading-[30px]">(NIB: 2701230008955)</p>
+                    </div>
+
+                    <div class="text-[16px] montserrat-medium leading-[30px]">
+                        <p class="mb-4">
+                            <span class="montserrat-bold">Pawon3D</span> adalah toko kue yang menghadirkan cita rasa
+                            manis dan kehangatan keluarga dari rumah sejak tahun 2001. Pemilik yang beragama <span
+                                class="montserrat-bold">Islam</span> memastikan setiap produk yang dibuat berasal dari
+                            bahan yang <span class="montserrat-bold">halal, segar, dan aman dikonsumsi</span>, <span
+                                class="montserrat-bold">tanpa pengawet maupun pewarna berbahaya</span>.
+                        </p>
+
+                        <p>
+                            <span class="montserrat-bold">Kue tradisional</span> adalah produk unggulan kami, Pawon3D
+                            percaya diri bahwa kue tradisional yang dibuat termasuk yang <span
+                                class="montserrat-bold">terbaik</span> di kelasnya. Kami percaya, kebahagiaan sejati
+                            dimulai dari kue yang dibuat dengan <span class="montserrat-bold">cinta, kebersihan, dan
+                                kejujuran</span>.
+                        </p>
                     </div>
                 </div>
             </div>
-            @else
-            @endif
         </div>
-
     </section>
-
 
 </div>

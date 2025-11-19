@@ -58,14 +58,24 @@ class Tambah extends Component
                 } else {
                     $satuan = $persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
                 }
-                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
-                $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
+
+                $batchItem = $persediaan->where('unit_id', $unit->id)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                $batchQty = $batchItem?->batch_quantity ?? 0;
+                $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
+                $alias = $satuan?->unit?->alias ?? $aliasFallback;
+
+                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+
+                $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;
                     $this->prevPrice[$index] = $price;
                 }
             } else {
-                $this->expense_details[$index]['material_quantity'] = ($persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($material->material_details->where('is_main', true)->first()->unit->alias ?? '-') . ')';
+                $batchItem = $persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                $batchQty = $batchItem?->batch_quantity ?? 0;
+                $alias = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
+                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
             $this->expense_details[$index]['price_expect'] = 0;
@@ -94,8 +104,15 @@ class Tambah extends Component
                 } else {
                     $satuan = $persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
                 }
-                $this->expense_details[$index]['material_quantity'] = ($persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first()->batch_quantity ?? 0) . ' (' . ($satuan->unit->alias ?? '-') . ')';
-                $price = $material->material_details->where('unit_id', $unit->id)->first()->supply_price ?? 0;
+
+                $batchItem = $persediaan->where('unit_id', $unitId)->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
+                $batchQty = $batchItem?->batch_quantity ?? 0;
+                $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
+                $alias = $unit?->alias ?? $aliasFallback;
+
+                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+
+                $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
                     $this->prevInputs[$index] = true;
                     $this->prevPrice[$index] = $price;
@@ -127,7 +144,7 @@ class Tambah extends Component
     {
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
-            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d M Y' : 'nullable',
             'note' => 'nullable|string|max:255',
             'grand_total_expect' => 'required|numeric|min:0',
             'expense_details.*.material_id' => 'required|exists:materials,id',
@@ -138,7 +155,7 @@ class Tambah extends Component
 
         $expense = \App\Models\Expense::create([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d') : null,
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d F Y', $this->expense_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
         ]);
@@ -162,14 +179,14 @@ class Tambah extends Component
             }
         }
 
-        return redirect()->route('belanja')->with('success', 'Daftar belanja berhasil ditambahkan.');
+        return redirect()->route('belanja.rencana')->with('success', 'Daftar belanja berhasil ditambahkan.');
     }
 
     public function start()
     {
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
-            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d/m/Y' : 'nullable',
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d M Y' : 'nullable',
             'note' => 'nullable|string|max:255',
             'grand_total_expect' => 'required|numeric|min:0',
             'expense_details.*.material_id' => 'required|exists:materials,id',
@@ -180,7 +197,7 @@ class Tambah extends Component
 
         $expense = \App\Models\Expense::create([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d/m/Y', $this->expense_date)->format('Y-m-d') : null,
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d F Y', $this->expense_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
             'status' => 'Dimulai',

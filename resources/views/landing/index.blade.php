@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ ($storeProfile->name) ?? 'Pawon3D' }}</title>
+    <title>{{ $storeProfile->name ?? 'Pawon3D' }}</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600|poppins:400,500,600,700"
@@ -16,8 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
     <!-- favicon -->
-    @if(!empty($storeProfile->logo))
-    <link rel="icon" href="{{ asset('storage/' . $storeProfile->logo) }}" type="image/x-icon" />
+    @if (!empty($storeProfile->logo))
+        <link rel="icon" href="{{ asset('storage/' . $storeProfile->logo) }}" type="image/x-icon" />
     @endif
 
 
@@ -45,58 +45,92 @@
 </head>
 
 <body class="bg-[#FDFDFC] text-[#1b1b18] montserrat-regular">
-    <!-- Enhanced Header -->
-    <header class="sticky top-0 bg-white backdrop-blur-sm z-50 shadow-sm">
-        <nav class="container mx-auto px-4 py-3 flex items-center">
-            <a href="/" class="lg:text-3xl text-lg font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                <span class="text-blue-400">{{ $storeProfile->name ?? 'Pawon3D' }}</span>
+    <!-- Header -->
+    <header class="sticky top-0 bg-[#74512d] z-50 shadow-sm">
+        <nav class="max-w-[1280px] mx-auto px-[50px] py-0 h-[100px] flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-[40px]">
+                <div class="w-[64px] h-[64px]">
+                    @if (!empty($storeProfile->logo))
+                        <img src="{{ asset('storage/' . $storeProfile->logo) }}"
+                            alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
+                    @else
+                        <img src="{{ asset('img/logo.png') }}" alt="{{ $storeProfile->name ?? 'Pawon3D' }}"
+                            class="w-full h-full object-contain">
+                    @endif
+                </div>
+
+                <!-- Navigation -->
+                <div class="hidden md:flex items-center gap-[5px]">
+                    <a href="/landing-produk"
+                        class="px-[20px] py-[10px] text-[18px] montserrat-medium text-white hover:border-b-2 hover:border-white transition-all {{ request()->routeIs('landing-produk*') ? 'border-b-2 border-white' : '' }}">
+                        Produk
+                    </a>
+                    <a href="#wilayah"
+                        class="px-[20px] py-[10px] text-[18px] montserrat-medium text-white hover:border-b-2 hover:border-white transition-all">
+                        Wilayah Pesan
+                    </a>
+                    <a href="#carapesan"
+                        class="px-[20px] py-[10px] text-[18px] montserrat-medium text-white hover:border-b-2 hover:border-white transition-all">
+                        Cara Pesan
+                    </a>
+                    <a href="#poin"
+                        class="px-[20px] py-[10px] text-[18px] montserrat-medium text-white hover:border-b-2 hover:border-white transition-all">
+                        Dapatkan Poin
+                    </a>
+                    <a href="#tentang"
+                        class="px-[20px] py-[10px] text-[18px] montserrat-medium text-white hover:border-b-2 hover:border-white transition-all">
+                        Tentang
+                    </a>
+                </div>
+            </div>
+
+            <!-- WhatsApp Button -->
+            <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
+                class="hidden md:flex items-center gap-[10px] px-[20px] py-[10px] text-[20px] montserrat-medium text-white hover:bg-[#5d3f23] transition-all rounded-md">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                </svg>
+                Pesan Sekarang
             </a>
 
-            <flux:navbar class="hidden md:flex ml-4 flex-row gap-6">
-                <flux:navbar.item href="/" :current="request()->routeIs('home')">Home</flux:navbar.item>
-                <flux:navbar.item href="/landing-produk" :current="request()->routeIs('landing-produk*')">Produk
-                </flux:navbar.item>
-                <flux:navbar.item href="/landing-cara-pesan" :current="request()->routeIs('landing-cara-pesan')">Cara
-                    Pesan</flux:navbar.item>
-                <flux:navbar.item href="/landing-ulasan" :current="request()->routeIs('landing-ulasan')">Ulasan
-                </flux:navbar.item>
-            </flux:navbar>
-            <div class="hidden md:flex ml-auto">
-                @auth
-                <a href="{{ url('/dashboard') }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-full text-center">Dashboard</a>
-                @else
-                <a href="{{ route('login') }}"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-full text-center">Login</a>
-                @endauth
-            </div>
-            <flux:button id="nav-toggle" variant="ghost" class="md:hidden ml-auto">
-                <flux:icon.bars-2 />
-            </flux:button>
+            <!-- Mobile Menu Toggle -->
+            <button id="nav-toggle" class="md:hidden text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
         </nav>
 
-        {{-- mobile menu --}}
-        <flux:navbar id="nav-menu"
-            class="hidden absolute top-full left-0 w-full bg-white flex-col gap-4 px-4 py-3 shadow-md md:hidden">
-            <flux:navbar.item href="/" :current="request()->routeIs('home')">Home</flux:navbar.item>
-            <flux:navbar.item href="/landing-produk" :current="request()->routeIs('landing-produk*')">Produk
-            </flux:navbar.item>
-            <flux:navbar.item href="/landing-cara-pesan" :current="request()->routeIs('landing-cara-pesan')">Cara Pesan
-            </flux:navbar.item>
-            <flux:navbar.item href="/landing-ulasan" :current="request()->routeIs('landing-ulasan')">Ulasan
-            </flux:navbar.item>
-
-            {{-- tombol auth --}}
-            @auth
-            <a href="tes" class="block px-4 py-2 bg-blue-600 text-white rounded-full text-center">
-                Dashboard
-            </a>
-            @else
-            <a href="{{ route('login') }}" class="block px-4 py-2 bg-blue-600 text-white rounded-full text-center">
-                Login
-            </a>
-            @endauth
-        </flux:navbar>
+        <!-- Mobile Menu -->
+        <div id="nav-menu" class="hidden md:hidden bg-[#74512d] border-t border-[#5d3f23]">
+            <div class="px-4 py-3 flex flex-col gap-2">
+                <a href="/landing-produk" class="px-4 py-2 text-white montserrat-medium hover:bg-[#5d3f23] rounded">
+                    Produk
+                </a>
+                <a href="#wilayah" class="px-4 py-2 text-white montserrat-medium hover:bg-[#5d3f23] rounded">
+                    Wilayah Pesan
+                </a>
+                <a href="#carapesan" class="px-4 py-2 text-white montserrat-medium hover:bg-[#5d3f23] rounded">
+                    Cara Pesan
+                </a>
+                <a href="#poin" class="px-4 py-2 text-white montserrat-medium hover:bg-[#5d3f23] rounded">
+                    Dapatkan Poin
+                </a>
+                <a href="#tentang" class="px-4 py-2 text-white montserrat-medium hover:bg-[#5d3f23] rounded">
+                    Tentang
+                </a>
+                <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
+                    class="px-4 py-2 text-white montserrat-medium bg-green-600 hover:bg-green-700 rounded flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                    Pesan Sekarang
+                </a>
+            </div>
+        </div>
     </header>
 
 
@@ -106,25 +140,25 @@
             <div class="flex flex-col lg:flex-row items-center gap-8">
                 <div class="lg:w-3/5 space-y-6">
                     <h3 class="text-xl font-semibold text-blue-600 animate-slideInLeft ml-2">
-                        {{ ($storeProfile->name) ?? 'Pawon3D' }}
+                        {{ $storeProfile->name ?? 'Pawon3D' }}
                     </h3>
                     @php
-                    // Ambil hero title dari storeProfile, jika tidak ada gunakan default
-                    $heroTitle = $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu';
+                        // Ambil hero title dari storeProfile, jika tidak ada gunakan default
+                        $heroTitle = $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu';
 
-                    // Pecah string menjadi array berdasarkan spasi
-                    $words = explode(' ', $heroTitle);
-                    $wordCount = count($words);
+                        // Pecah string menjadi array berdasarkan spasi
+                        $words = explode(' ', $heroTitle);
+                        $wordCount = count($words);
 
-                    // Jika jumlah kata lebih dari 2, pisahkan menjadi dua bagian
-                    if ($wordCount > 2) {
-                    $before = implode(' ', array_slice($words, 0, -2)); // Semua kata kecuali 2 kata terakhir
-                    $lastTwo = implode(' ', array_slice($words, -2)); // 2 kata terakhir
-                    } else {
-                    // Jika hanya ada 2 kata atau kurang, tampilkan seluruhnya di dalam span
-                    $before = '';
-                    $lastTwo = $heroTitle;
-                    }
+                        // Jika jumlah kata lebih dari 2, pisahkan menjadi dua bagian
+                        if ($wordCount > 2) {
+                            $before = implode(' ', array_slice($words, 0, -2)); // Semua kata kecuali 2 kata terakhir
+                            $lastTwo = implode(' ', array_slice($words, -2)); // 2 kata terakhir
+                        } else {
+                            // Jika hanya ada 2 kata atau kurang, tampilkan seluruhnya di dalam span
+                            $before = '';
+                            $lastTwo = $heroTitle;
+                        }
                     @endphp
 
                     <h1 class="text-5xl lg:text-6xl leading-tight animate-slideInLeft pacifico-regular">
@@ -170,41 +204,41 @@
                 </p>
 
                 @php
-                $colCount = $products->count();
+                    $colCount = $products->count();
                 @endphp
                 <div class="grid md:grid-cols-{{ $colCount > 4 ? 4 : $colCount }} gap-4 overflow-x-auto">
                     @forelse ($products as $product)
-                    <div class="bg-transparent p-8">
-                        <div class="flex justify-center mb-4">
-                            @if($product->product_image)
-                            <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
-                                class="w-40 h-40 rounded-md object-fill">
-                            @else
-                            <img src="{{ asset('/img/no-img.jpg')}}" alt="{{ $product->name }}"
-                                class="w-40 h-40 rounded-md object-fill">
-                            @endif
-                        </div>
-                        <div class="text-center">
-                            <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
-                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                                @if ($product->reviews->count() > 0)
-                                {{ number_format($product->reviews->avg('rating'), 1) }}
-                                <i class="bi bi-star-fill text-yellow-500"></i>
+                        <div class="bg-transparent p-8">
+                            <div class="flex justify-center mb-4">
+                                @if ($product->product_image)
+                                    <img src="{{ asset('storage/' . $product->product_image) }}"
+                                        alt="{{ $product->name }}" class="w-40 h-40 rounded-md object-fill">
                                 @else
-                                Belum ada penilaian
+                                    <img src="{{ asset('/img/no-img.jpg') }}" alt="{{ $product->name }}"
+                                        class="w-40 h-40 rounded-md object-fill">
                                 @endif
-                                @if ($product->reviews->count() > 10)
-                                ({{ $product->reviews->count() }}+ Penilai)
-                                @else
-                                ({{ $product->reviews->count() }} Penilai)
-                                @endif
-                            </p>
-                            <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp {{
-                                number_format($product->price, 0, ',', '.') }}</p>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
+                                <p class="text-gray-600 mb-4 text-sm montserrat-regular">
+                                    @if ($product->reviews->count() > 0)
+                                        {{ number_format($product->reviews->avg('rating'), 1) }}
+                                        <i class="bi bi-star-fill text-yellow-500"></i>
+                                    @else
+                                        Belum ada penilaian
+                                    @endif
+                                    @if ($product->reviews->count() > 10)
+                                        ({{ $product->reviews->count() }}+ Penilai)
+                                    @else
+                                        ({{ $product->reviews->count() }} Penilai)
+                                    @endif
+                                </p>
+                                <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp
+                                    {{ number_format($product->price, 0, ',', '.') }}</p>
+                            </div>
                         </div>
-                    </div>
                     @empty
-                    <p class="text-gray-600 mb-4 text-center">Tidak ada produk unggulan saat ini.</p>
+                        <p class="text-gray-600 mb-4 text-center">Tidak ada produk unggulan saat ini.</p>
                     @endforelse
                 </div>
             </div>
@@ -226,7 +260,8 @@
                     <span class="font-semibold">Google Maps.</span>
                 </p>
 
-                <a href="#" class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
+                <a href="#"
+                    class="px-8 py-4 border-2 border-gray-400 rounded-md hover:bg-gray-200 transition-all">
                     Selengkapnya
                 </a>
             </div>
@@ -239,65 +274,68 @@
             </div>
             <!-- Menu Items -->
             <div class="mb-4 border-b border-gray-200">
-                <ul class="flex flex-wrap justify-center -mb-px font-medium text-center" id="menu-tabs" role="tablist">
+                <ul class="flex flex-wrap justify-center -mb-px font-medium text-center" id="menu-tabs"
+                    role="tablist">
                     @foreach ($categories as $index => $category)
-                    <li class="me-2" role="presentation">
-                        <button class="inline-block p-2 md:p-4 text-xs md:text-sm border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 transition-colors
+                        <li class="me-2" role="presentation">
+                            <button
+                                class="inline-block p-2 md:p-4 text-xs md:text-sm border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 transition-colors
                     {{ $index === 0 ? 'text-blue-600 border-blue-600' : 'text-gray-500 border-transparent' }}"
-                            id="tab-{{ $category->id }}" data-tabs-target="#panel-{{ $category->id }}" type="button"
-                            role="tab" aria-controls="panel-{{ $category->id }}"
-                            aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                            {{ $category->name }}
-                        </button>
-                    </li>
+                                id="tab-{{ $category->id }}" data-tabs-target="#panel-{{ $category->id }}"
+                                type="button" role="tab" aria-controls="panel-{{ $category->id }}"
+                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                {{ $category->name }}
+                            </button>
+                        </li>
                     @endforeach
                 </ul>
             </div>
 
             <div id="menu-content">
                 @foreach ($categories as $index => $category)
-                <div class="{{ $index === 0 ? 'block' : 'hidden' }}" id="panel-{{ $category->id }}" role="tabpanel"
-                    aria-labelledby="tab-{{ $category->id }}">
-                    @php
-                    $products = \App\Models\Product::latest()->paginate(3);
-                    @endphp
-                    <div id="products-container"
-                        class="grid grid-cols-3 gap-6 p-4 rounded-lg bg-white shadow-sm transition-all">
-                        @forelse ($products as $product)
-                        <div
-                            class="group relative mb-6 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                            <div class="aspect-square overflow-hidden">
-                                @if($product->product_image)
-                                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105">
-                                @else
-                                <img src="{{ asset('/img/no-img.jpg')}}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105">
-
-                                @endif
-                            </div>
-                            <div class="p-4 bg-white">
-                                <h3 class="text-xs md:text-lg font-semibold text-gray-800 mb-2">{{ $product->name }}
-                                </h3>
-                                <div class="flex justify-between items-center">
-                                    <p class="text-blue-600 font-medium text-xs md:text-md">
-                                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                                    </p>
+                    <div class="{{ $index === 0 ? 'block' : 'hidden' }}" id="panel-{{ $category->id }}"
+                        role="tabpanel" aria-labelledby="tab-{{ $category->id }}">
+                        @php
+                            $products = \App\Models\Product::latest()->paginate(3);
+                        @endphp
+                        <div id="products-container"
+                            class="grid grid-cols-3 gap-6 p-4 rounded-lg bg-white shadow-sm transition-all">
+                            @forelse ($products as $product)
+                                <div
+                                    class="group relative mb-6 overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                                    <div class="aspect-square overflow-hidden">
+                                        @if ($product->product_image)
+                                            <img src="{{ asset('storage/' . $product->product_image) }}"
+                                                alt="{{ $product->name }}"
+                                                class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105">
+                                        @else
+                                            <img src="{{ asset('/img/no-img.jpg') }}" alt="{{ $product->name }}"
+                                                class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105">
+                                        @endif
+                                    </div>
+                                    <div class="p-4 bg-white">
+                                        <h3 class="text-xs md:text-lg font-semibold text-gray-800 mb-2">
+                                            {{ $product->name }}
+                                        </h3>
+                                        <div class="flex justify-between items-center">
+                                            <p class="text-blue-600 font-medium text-xs md:text-md">
+                                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="col-span-full text-center py-8 text-gray-500">
-                            Tidak ada produk tersedia di kategori ini
-                        </div>
-                        @endforelse
+                            @empty
+                                <div class="col-span-full text-center py-8 text-gray-500">
+                                    Tidak ada produk tersedia di kategori ini
+                                </div>
+                            @endforelse
 
-                        <!-- Pagination -->
-                        <div class="pagination col-span-full mt-4">
-                            {{ $products->links('pagination::tailwind') }}
+                            <!-- Pagination -->
+                            <div class="pagination col-span-full mt-4">
+                                {{ $products->links('pagination::tailwind') }}
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </section>
@@ -354,7 +392,7 @@
                     <!-- Carousel Ulasan Kecil -->
                     <div class="relative flex-1">
                         <div id="reviews" class="flex gap-6 overflow-x-auto no-scrollbar pb-2">
-                            @foreach($productReviews as $product)
+                            @foreach ($productReviews as $product)
                             @php
                             $avgRating = number_format($product->reviews->avg('rating'), 1);
                             $latestReview = $product->reviews->sortByDesc('created_at')->first();
@@ -362,7 +400,7 @@
 
                             <div class="min-w-[200px] bg-white rounded-2xl shadow p-4 flex-shrink-0">
 
-                                @if($product->product_image)
+                                @if ($product->product_image)
                                 <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}"
                                     class="w-full h-32 object-cover rounded-md mb-3">
                                 @else
@@ -407,73 +445,122 @@
 
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-10 px-5">
-        <div
-            class="max-w-6xl mx-auto text-center pb-8 mb-8 border-b-2 border-gray-100 flex flex-row items-center justify-between">
-            <h1 class="text-4xl font-poppins font-bold mb-4">Pawon3D</h1>
-            <h2 class="text-xl font-semibold mb-4">
-                <a href="https://www.instagram.com/pawon3d/" target="_blank">
-                    Ikuti Kami <i class="bi bi-instagram"></i>
-                </a>
-            </h2>
-        </div>
-        <div class="max-w-6xl mx-auto flex flex-wrap gap-8 justify-between">
-            <!-- Kontak Kami -->
-            <div class="min-w-[250px] flex-1">
-                <h3 class="text-xl font-semibold mb-4 pb-2">Kontak Kami</h3>
-                <ul class="space-y-2">
-                    <li><a href="tel:081234567891"
-                            class="text-gray-300 hover:text-blue-500 transition-colors">0812-3456-7891</a></li>
-                    <li><a href="mailto:pawon3d@gmail.com"
-                            class="text-gray-300 hover:text-blue-500 transition-colors">pawon3d@gmail.com</a></li>
-                </ul>
-            </div>
+    <footer class="bg-[#252324] text-white py-10">
+        <div class="max-w-[1280px] mx-auto px-4">
+            <!-- Logo and Social Media -->
+            <div class="flex items-center justify-between pb-8 mb-8 border-b-2 border-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-[100px] h-[100px]">
+                        @if (!empty($storeProfile->logo))
+                            <img src="{{ asset('storage/' . $storeProfile->logo) }}"
+                                alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
+                        @else
+                            <img src="{{ asset('img/logo.png') }}" alt="{{ $storeProfile->name ?? 'Pawon3D' }}"
+                                class="w-full h-full object-contain">
+                        @endif
+                    </div>
+                </div>
 
-            <!-- Jelajahi -->
-            <div class="min-w-[250px] flex-1">
-                <h3 class="text-xl font-semibold mb-4 pb-2">Jelajahi</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Home</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Produk</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Cara Pesan</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Informasi -->
-            <div class="min-w-[250px] flex-1">
-                <h3 class="text-xl font-semibold mb-4 pb-2">Informasi</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Tentang Kami</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Kontak Kami</a></li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Wilayah Pemesanan</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Bantuan -->
-            <div class="min-w-[250px] flex-1">
-                <h3 class="text-xl font-semibold mb-4 pb-2">Bantuan</h3>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Cara Pernesanan</a>
-                    </li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">Metode Pembayaran</a>
-                    </li>
-                    <li><a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">FAQ</a></li>
-
-                </ul>
-            </div>
-            <div class="min-w-[250px] flex-1">
-                <h3 class="text-xl font-semibold mb-4 pb-2">Alamat dan Lokasi</h3>
-                <div class="mb-4">
-                    <p class="text-gray-300">Jl. Jenderal Sudirman Km.3<br>Jambi, Indonesia</p>
+                <div class="flex items-center gap-4">
+                    <h3 class="text-[20px] montserrat-bold">Ikuti Kami</h3>
+                    <a href="https://www.instagram.com/pawon3d/" target="_blank"
+                        class="w-[40px] h-[40px] flex items-center justify-center hover:bg-[#74512d] rounded-full transition-all">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                        </svg>
+                    </a>
+                    <div class="w-[68px] h-[68px]">
+                        <img src="{{ asset('img/halal.png') }}" alt="Halal" class="w-full h-full object-contain">
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="max-w-6xl mx-auto mt-12 pt-8 border-gray-600">
-            <div class="border-gray-700 mt-8 pt-8 text-center text-gray-400 py-4">
-                <p>&copy; {{ date('Y') }} {{ $storeProfile->name ?? 'Pawon3D' }}. All rights reserved.</p>
+            <!-- Footer Content Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
+                <!-- Kontak Kami -->
+                <div>
+                    <h3 class="text-[20px] montserrat-bold mb-4">Kontak Kami</h3>
+                    <div class="flex flex-col gap-4">
+                        <a href="tel:{{ $storeProfile->contact ?? '081234567891' }}"
+                            class="flex items-center gap-2 text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+                            </svg>
+                            {{ $storeProfile->contact ?? '0812-3456-7891' }}
+                        </a>
+                        <a href="mailto:{{ $storeProfile->email ?? 'pawon3d@gmail.com' }}"
+                            class="flex items-center gap-2 text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
+                            {{ $storeProfile->email ?? 'pawon3d@gmail.com' }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Jelajahi -->
+                <div>
+                    <h3 class="text-[20px] montserrat-bold mb-4">Jelajahi</h3>
+                    <ul class="flex flex-col gap-4">
+                        <li><a href="/landing-produk"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Produk</a>
+                        </li>
+                        <li><a href="#wilayah"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Wilayah
+                                Pesan</a></li>
+                        <li><a href="#carapesan"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Cara
+                                Pesan</a></li>
+                        <li><a href="#poin"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Dapatkan
+                                Poin</a></li>
+                    </ul>
+                </div>
+
+                <!-- Informasi -->
+                <div>
+                    <h3 class="text-[20px] montserrat-bold mb-4">Informasi</h3>
+                    <ul class="flex flex-col gap-4">
+                        <li><a href="#tentang"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Tentang
+                                Kami</a></li>
+                        <li><a href="#wilayah"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Lokasi
+                                Kami</a></li>
+                        <li><a href="#carapesan"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">Kontak
+                                Kami</a></li>
+                    </ul>
+                </div>
+
+                <!-- Bantuan -->
+                <div>
+                    <h3 class="text-[20px] montserrat-bold mb-4">Bantuan</h3>
+                    <ul class="flex flex-col gap-4">
+                        <li><a href="#"
+                                class="text-[#c4c4c4] montserrat-regular text-[18px] hover:text-white transition-colors">FAQ</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Alamat dan Lokasi -->
+                <div>
+                    <h3 class="text-[20px] montserrat-bold mb-4">Alamat dan Lokasi</h3>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-[#c4c4c4] montserrat-regular text-[18px]">Jl. Jenderal Sudirman Km.3</p>
+                        <p class="text-[#c4c4c4] montserrat-regular text-[18px]">Jambi, Indonesia</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="text-center pt-8">
+                <p class="text-[20px] montserrat-medium text-white">
+                    © {{ date('Y') }} {{ $storeProfile->name ?? 'Pawon3D' }}. All rights reserved
+                </p>
             </div>
         </div>
     </footer>
@@ -485,24 +572,23 @@
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault(); // Mencegah perilaku default link
             var url = $(this).attr('href');
-            
+
 
             $.ajax({
-                url: url, 
-                dataType: 'html', 
+                url: url,
+                dataType: 'html',
                 success: function(data) {
                     // Cari konten baru di dalam response dan update container
                     var newContent = $(data).find('#products-container').html();
                     $('#products-container').html(newContent);
                     // Jika ingin mengubah URL tanpa reload halaman
                     history.pushState(null, '', url);
-                }, 
+                },
                 error: function() {
                     alert('Terjadi kesalahan saat mengambil data.');
                 }
             });
         });
-
     </script>
 
     <!-- Animations -->
@@ -511,20 +597,20 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         gsap.from(".animate-slideInLeft", {
-            duration: 5
-            , x: -100
-            , opacity: 0
-            , ease: "power4.out"
+            duration: 5,
+            x: -100,
+            opacity: 0,
+            ease: "power4.out"
         });
 
         gsap.utils.toArray(".menu-item").forEach(item => {
             gsap.from(item, {
                 scrollTrigger: {
-                    trigger: item, 
+                    trigger: item,
                     start: "top center+=100"
-                }, 
-                opacity: 0, 
-                y: 50, 
+                },
+                opacity: 0,
+                y: 50,
                 duration: 0.8
             });
         });
@@ -573,25 +659,27 @@
                 activateTab(tabButtons[0].id);
             }
         });
-
     </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-      const btn  = document.getElementById('nav-toggle');
-      const menu = document.getElementById('nav-menu');
-  
-      btn.addEventListener('click', () => {
-        menu.classList.toggle('hidden');
-      });
-    });
+            const btn = document.getElementById('nav-toggle');
+            const menu = document.getElementById('nav-menu');
+
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+        });
     </script>
 
     <script>
         document.getElementById('loadMore').addEventListener('click', () => {
-      const container = document.getElementById('reviews');
-      container.scrollBy({ left: 300, behavior: 'smooth' });
-    });
+            const container = document.getElementById('reviews');
+            container.scrollBy({
+                left: 300,
+                behavior: 'smooth'
+            });
+        });
     </script>
 </body>
 

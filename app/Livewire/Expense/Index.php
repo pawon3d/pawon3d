@@ -61,7 +61,7 @@ class Index extends Component
     }
     public function render()
     {
-        $query = \App\Models\Expense::with(['expenseDetails', 'supplier'])->where('expenses.expense_number', 'like', '%' . $this->search . '%');
+        $query = \App\Models\Expense::with(['expenseDetails', 'supplier'])->where('expenses.expense_number', 'like', '%' . $this->search . '%')->where('status', '=', 'Dimulai')->orWhere('status', '=', 'Lengkap')->orWhere('status', '=', 'Hampir Lengkap')->orWhere('status', '=', 'Separuh')->orWhere('status', '=', 'Sedikit')->orWhere('status', '=', 'Lengkap');
 
         if ($this->sortField === 'supplier_name') {
             $query

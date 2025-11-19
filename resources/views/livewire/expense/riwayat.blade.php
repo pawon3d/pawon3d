@@ -1,174 +1,219 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-4">
+    <div class="flex gap-8 items-center h-10 mb-[30px]">
+        <div class="flex gap-[15px] items-center">
             <a href="{{ route('belanja') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                class="inline-flex items-center gap-1.5 justify-center px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] bg-[#313131] text-[#f6f6f6] text-[16px] font-semibold hover:bg-[#252324] transition ease-in-out duration-150"
                 wire:navigate>
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
+                <flux:icon.arrow-left class="size-5" />
                 Kembali
             </a>
-            <h1 class="text-2xl hidden md:block">Riwayat Belanja Persediaan</h1>
-        </div>
-        <div class="flex gap-2 items-center justify-end-safe">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
+            <h1 class="text-[20px] font-semibold text-[#666666]">Riwayat Belanja Persediaan</h1>
         </div>
     </div>
 
-    <div class="flex justify-between items-center mb-7 w-full">
-        <!-- Search Input -->
-        <div class="p-4 flex w-full">
-            <input wire:model.live="search" placeholder="Cari..."
-                class="w-full px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <flux:button :loading="false" class="ml-2" variant="ghost">
-                <flux:icon.funnel variant="mini" />
-                <span>Filter</span>
-            </flux:button>
+    <div class="bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] rounded-[15px] px-[30px] py-[25px]">
+        <div class="flex items-center mb-5">
+            <div class="flex gap-[15px] items-center flex-1">
+                <div class="flex items-center bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex-1">
+                    <flux:icon.magnifying-glass class="size-[16px] text-[#666666]" />
+                    <input wire:model.live="search" placeholder="Cari Belanja"
+                        class="px-2.5 py-2.5 border-0 focus:outline-none focus:ring-0 text-[16px] font-medium text-[#959595] bg-transparent flex-1" />
+                </div>
+                <div class="flex items-center cursor-pointer">
+                    <flux:icon.funnel class="size-[25px] text-[#666666]" />
+                    <p class="text-[16px] font-medium text-[#666666] px-1.5 py-2.5">Filter</p>
+                </div>
+            </div>
         </div>
 
-    </div>
-    <div class="flex justify-between items-center mb-7">
-        <div class="p-4 flex">
-            <flux:dropdown>
-                <flux:button variant="ghost">
-                    @if ($filterStatus)
-                    {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                    @else
-                    Semua Toko
-                    @endif
-                    ({{ $expenses->total() }})
-                    <flux:icon.chevron-down variant="mini" />
-                </flux:button>
-                <flux:menu>
-                    <flux:menu.radio.group wire:model.live="filterStatus">
-                        <flux:menu.radio value="">Semua Toko</flux:menu.radio>
-                        <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                        <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                    </flux:menu.radio.group>
-                </flux:menu>
-            </flux:dropdown>
-        </div>
-        <div class="flex gap-2 items-center">
-            <flux:dropdown>
-                <flux:button variant="ghost">
-                    Urutkan Kategori
-                    <flux:icon.chevron-down variant="mini" />
-
-                </flux:button>
-
-                <flux:menu>
-                    <flux:menu.radio.group wire:model="sortByCategory">
-                        <flux:menu.radio value="name">Nama</flux:menu.radio>
-                        <flux:menu.radio value="status">Status</flux:menu.radio>
-                        <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                    </flux:menu.radio.group>
-                </flux:menu>
-            </flux:dropdown>
-        </div>
-    </div>
-
-    @if ($expenses->isEmpty())
-    <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum Ada Riwayat Belanja.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah belanja” di halaman utama untuk menambahkan belanja.</p>
-    </div>
-    @else
-    <div class="bg-white rounded-xl border">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('expense_number')">
-                            Nomor Belanja
-                            {{ $sortDirection === 'asc' && $sortField === 'expense_number' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('expense_date')">
-                            Tanggal Belanja
-                            {{ $sortDirection === 'asc' && $sortField === 'expense_date' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('supplier_name')">
-                            Toko Persediaan
-                            {{ $sortDirection === 'asc' && $sortField === 'supplier_name' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('status')">
-                            Status
-                            {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Barang Didapatkan
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('grand_total_expect')">
-                            Total Harga (Perkiraan)
-                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_expect' ? '↑' : '↓' }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('grand_total_actual')">
-                            Total Harga (Sebenarnya)
-                            {{ $sortDirection === 'asc' && $sortField === 'grand_total_actual' ? '↑' : '↓' }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($expenses as $expense)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('belanja.rincian', $expense->id) }}"
-                                class="hover:bg-gray-50 cursor-pointer">
-                                {{ $expense->expense_number }}
-                            </a>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d-m-Y') :
-                            '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $expense->supplier->name ?? '-' }}
-                        </td>
-                        @php
-                        $total_expect = $expense->expenseDetails->sum('quantity_expect');
-                        $total_get = $expense->expenseDetails->sum('quantity_get');
-                        $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
-                        @endphp
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            {{ $total_get > 0 ? 'Selesai' : 'Gagal' }}
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            <div class="flex items-center space-x-2 flex-col">
-                                <div class="w-full h-4 mb-4 bg-gray-200 rounded-full dark:bg-gray-700">
-                                    <div class="h-4 bg-blue-600 rounded-full dark:bg-blue-500"
-                                        style="width: {{ number_format($percentage, 0) }}%">
+        @if ($expenses->isEmpty())
+            <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
+                <p class="text-gray-700 font-semibold">Belum Ada Riwayat Belanja.</p>
+                <p class="text-gray-700">Tekan tombol “Tambah belanja” di halaman utama untuk menambahkan belanja.</p>
+            </div>
+        @else
+            <div class="overflow-hidden rounded-t-[15px]">
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-[#3f4e4f]">
+                            <tr>
+                                <th class="px-6 py-[21px] text-left text-[14px] font-bold text-[#f8f4e1] cursor-pointer min-w-[170px]"
+                                    wire:click="sortBy('expense_number')">
+                                    <div class="flex gap-1.5 items-center">
+                                        <div class="flex flex-col leading-normal">
+                                            <span>ID</span>
+                                            <span>Belanja</span>
+                                        </div>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
                                     </div>
-                                </div>
-                                <span class="text-xs text-gray-500">
-                                    {{ number_format($percentage, 0) }}%
-                                </span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-left whitespace-nowrap">
-                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
-                        </td>
-                        <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-left text-[14px] font-bold text-[#f8f4e1] cursor-pointer max-w-[150px]"
+                                    wire:click="sortBy('expense_date')">
+                                    <div class="flex gap-1.5 items-center">
+                                        <div class="flex flex-col leading-normal">
+                                            <span>Tanggal</span>
+                                            <span>Selesai</span>
+                                        </div>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                    </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-left text-[14px] font-bold text-[#f8f4e1] cursor-pointer w-[192px]"
+                                    wire:click="sortBy('supplier_name')">
+                                    <div class="flex gap-1.5 items-center">
+                                        <span class="leading-normal">Toko Persediaan</span>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                    </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-right text-[14px] font-bold text-[#f8f4e1] cursor-pointer max-w-[160px]"
+                                    wire:click="sortBy('grand_total_expect')">
+                                    <div class="flex gap-1.5 items-center justify-end">
+                                        <span class="leading-normal">Total Harga</span>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                    </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-right text-[14px] font-bold text-[#f8f4e1] cursor-pointer max-w-[160px]"
+                                    wire:click="sortBy('grand_total_actual')">
+                                    <div class="flex gap-1.5 items-center justify-end">
+                                        <div class="flex flex-col leading-normal text-right">
+                                            <span>Total Harga</span>
+                                            <span>(Bayar)</span>
+                                        </div>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                    </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-left text-[14px] font-bold text-[#f8f4e1] cursor-pointer max-w-[120px]"
+                                    wire:click="sortBy('status')">
+                                    <div class="flex gap-1.5 items-center">
+                                        <span class="leading-normal">Status</span>
+                                        <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                    </div>
+                                </th>
+                                <th class="px-6 py-[21px] text-left text-[14px] font-bold text-[#f8f4e1] min-w-[100px]">
+                                    <div class="flex flex-col leading-normal">
+                                        <span>Kemajuan</span>
+                                        <span>Persediaan</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-[#fafafa] divide-y divide-[#d4d4d4]">
+                            @foreach ($expenses as $expense)
+                                @php
+                                    $total_expect = $expense->expenseDetails->sum('quantity_expect');
+                                    $total_get = $expense->expenseDetails->sum('quantity_get');
+                                    $percentage = $total_expect > 0 ? ($total_get / $total_expect) * 100 : 0;
+                                    $status = $percentage >= 100 ? 'Selesai' : ($percentage > 0 ? 'Selesai' : 'Batal');
+                                @endphp
+                                <tr class="h-[60px]">
+                                    <td class="px-6 py-0">
+                                        <a href="{{ route('belanja.rincian', $expense->id) }}"
+                                            class="text-[14px] font-medium text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block">
+                                            {{ $expense->expense_number }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-0">
+                                        <span
+                                            class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
+                                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') : '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-0">
+                                        <span
+                                            class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
+                                            {{ $expense->supplier->name ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-0 text-right">
+                                        <span
+                                            class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
+                                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-0 text-right">
+                                        <span
+                                            class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
+                                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-0">
+                                        @if ($status === 'Selesai')
+                                            <div
+                                                class="inline-flex items-center justify-center px-[15px] py-1.5 bg-[#56c568] rounded-[15px] min-h-[40px] min-w-[90px]">
+                                                <span
+                                                    class="text-[12px] font-bold text-[#fafafa] leading-normal">Selesai</span>
+                                            </div>
+                                        @else
+                                            <div
+                                                class="inline-flex items-center justify-center px-[15px] py-1.5 bg-[#eb5757] rounded-[15px] min-h-[40px] min-w-[90px]">
+                                                <span
+                                                    class="text-[12px] font-bold text-[#fafafa] leading-normal">Batal</span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-0">
+                                        <div class="flex flex-col gap-1.5 w-full">
+                                            <div
+                                                class="w-full h-[18px] bg-[#d4d4d4] rounded-[5px] relative overflow-hidden">
+                                                <div class="h-full bg-[rgba(86,197,104,0.8)] rounded-[5px] absolute top-0 left-0"
+                                                    style="width: {{ number_format($percentage, 0) }}%">
+                                                </div>
+                                            </div>
+                                            <span class="text-[12px] font-medium text-[#525252] text-center">
+                                                {{ number_format($percentage, 0) }}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $expenses->links() }}
-        </div>
+            <!-- Pagination -->
+            <div class="flex justify-between items-center mt-5">
+                <div class="flex gap-1.5 text-[14px] font-medium text-[#666666] opacity-70">
+                    <span>Menampilkan</span>
+                    <span>{{ $expenses->firstItem() ?? 0 }}</span>
+                    <span>hingga</span>
+                    <span>{{ $expenses->lastItem() ?? 0 }}</span>
+                    <span>dari</span>
+                    <span>{{ $expenses->total() }}</span>
+                    <span>baris data</span>
+                </div>
+                <div class="flex gap-2.5 items-center">
+                    @if ($expenses->onFirstPage())
+                        <button disabled
+                            class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-[5px] cursor-not-allowed opacity-50">
+                            <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
+                        </button>
+                    @else
+                        <button wire:click="previousPage"
+                            class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-[5px] hover:bg-gray-100 cursor-pointer">
+                            <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
+                        </button>
+                    @endif
+
+                    <div class="min-w-[30px] px-2.5 py-1.5 bg-[#666666] rounded-[5px]">
+                        <p class="text-[14px] font-medium text-[#fafafa] text-center">{{ $expenses->currentPage() }}
+                        </p>
+                    </div>
+
+                    @if ($expenses->hasMorePages())
+                        <button wire:click="nextPage"
+                            class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-[5px] hover:bg-gray-100 cursor-pointer">
+                            <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
+                        </button>
+                    @else
+                        <button disabled
+                            class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-[5px] cursor-not-allowed opacity-50">
+                            <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
+                        </button>
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
-    @endif
 
 </div>

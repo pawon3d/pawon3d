@@ -24,18 +24,26 @@ class Index extends Component
     public $showModal = false;
     public $showEditModal = false;
     public $sortByCategory = false;
+    public $usageSearch = '';
+    public $usageMaterials = null;
+
     protected $listeners = [
         'delete',
         'cancelled',
     ];
     protected $rules = [
-        'name' => 'required|min:3|unique:categories,name',
+        'name' => 'required|min:3|unique:units,name',
+        'alias' => 'required|min:1',
+        'group' => 'required',
     ];
 
     protected $messages = [
-        'name.required' => 'Nama kategori tidak boleh kosong',
-        'name.min' => 'Nama kategori minimal 3 karakter',
-        'name.unique' => 'Nama kategori sudah ada',
+        'name.required' => 'Nama satuan tidak boleh kosong',
+        'name.min' => 'Nama satuan minimal 3 karakter',
+        'name.unique' => 'Nama satuan sudah ada',
+        'alias.required' => 'Singkatan tidak boleh kosong',
+        'alias.min' => 'Singkatan minimal 1 karakter',
+        'group.required' => 'Kelompok satuan harus dipilih',
     ];
 
     protected $queryString = ['search', 'filterStatus',  'sortField', 'sortDirection'];
@@ -84,7 +92,11 @@ class Index extends Component
 
     public function store()
     {
-        $this->validate();
+        $this->validate([
+            'name' => 'required|min:3|unique:units,name',
+            'alias' => 'required|min:1',
+            'group' => 'required',
+        ]);
 
         Unit::create([
             'name' => $this->name,
@@ -100,11 +112,40 @@ class Index extends Component
     public function edit($id)
     {
         $this->unit_id = $id;
-        $this->materials = \App\Models\Unit::where('id', $this->unit_id)->withCount('material_details')->first()->material_details_count;
-        $this->name = \App\Models\Unit::find($this->unit_id)->name;
-        $this->alias = \App\Models\Unit::find($this->unit_id)->alias;
-        $this->group = \App\Models\Unit::find($this->unit_id)->group;
+        $unit = \App\Models\Unit::where('id', $this->unit_id)->withCount('material_details')->first();
+        $this->materials = $unit->material_details_count;
+        $this->name = $unit->name;
+        $this->alias = $unit->alias;
+        $this->group = $unit->group;
+
+        // Load materials that use this unit
+        $this->loadUsageMaterials();
+
         $this->showEditModal = true;
+    }
+
+    public function showUsageModal()
+    {
+        $this->loadUsageMaterials();
+        Flux::modal('usage-modal')->show();
+    }
+
+    protected function loadUsageMaterials()
+    {
+        if ($this->unit_id) {
+            $this->usageMaterials = \App\Models\Material::when($this->usageSearch, function ($query) {
+                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+            })->whereHas('material_details', function ($query) {
+                $query->where('unit_id', $this->unit_id);
+            })->with(['material_details' => function ($query) {
+                $query->where('unit_id', $this->unit_id)->with('unit');
+            }])->get();
+        }
+    }
+
+    public function updatedUsageSearch()
+    {
+        $this->loadUsageMaterials();
     }
 
     public function update()
@@ -130,7 +171,7 @@ class Index extends Component
     public function confirmDelete()
     {
         // Konfirmasi menggunakan Livewire Alert
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus kategori ini?', [
+        $this->alert('warning', 'Apakah Anda yakin ingin menghapus satuan ini?', [
             'showConfirmButton' => true,
             'showCancelButton' => true,
             'confirmButtonText' => 'Ya, hapus',
@@ -145,16 +186,21 @@ class Index extends Component
 
     public function delete()
     {
-
         $unit = Unit::find($this->unit_id);
 
         if ($unit) {
+            // Check if unit is being used
+            if ($unit->material_details()->count() > 0) {
+                $this->alert('error', 'Satuan tidak dapat dihapus karena masih digunakan!');
+                return;
+            }
+
             $unit->delete();
-            $this->alert('success', 'Kategori berhasil dihapus!');
+            $this->alert('success', 'Satuan berhasil dihapus!');
             $this->reset('unit_id');
-            Flux::modals()->close();
+            $this->showEditModal = false;
         } else {
-            $this->alert('error', 'Kategori tidak ditemukan!');
+            $this->alert('error', 'Satuan tidak ditemukan!');
         }
     }
 
@@ -165,12 +211,8 @@ class Index extends Component
         $this->alias = '';
         $this->group = '';
         $this->unit_id = null;
-    }
-
-    public function cetakInformasi()
-    {
-        return redirect()->route('satuan-ukur.pdf', [
-            'search' => $this->search,
-        ]);
+        $this->materials = null;
+        $this->usageMaterials = null;
+        $this->usageSearch = '';
     }
 }

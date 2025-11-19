@@ -1,97 +1,127 @@
-<div>
-    <div class="mb-4 flex justify-between items-center">
-        <div class="flex gap-2 items-center">
-            <a href="{{ route('belanja.rincian', $expense->id) }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
-                Kembali
-            </a>
-            <h1 class="text-2xl">Dapatkan Belanja</h1>
+<div class="space-y-[30px]">
+    <div class="flex flex-col gap-[15px]">
+        <div class="flex items-center justify-between gap-[15px] flex-wrap">
+            <div class="flex items-center gap-[15px]">
+                <a href="{{ route('belanja.rincian', $expense->id) }}" wire:navigate
+                    class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    <flux:icon.arrow-left class="size-5 text-[#f6f6f6]" />
+                    <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Kembali</span>
+                </a>
+                <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Dapatkan Belanja</h1>
+            </div>
+            <div class="flex items-center gap-[10px] flex-wrap">
+                <button type="button" wire:click="cetakInformasi"
+                    class="px-[20px] py-[10px] rounded-[15px] border border-[#74512d] text-[#74512d] font-['Montserrat'] font-semibold text-[14px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    Cetak Informasi
+                </button>
+                <button type="button" wire:click="riwayatPembaruan"
+                    class="px-[20px] py-[10px] rounded-[15px] border border-[#74512d] text-[#74512d] font-['Montserrat'] font-semibold text-[14px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    Riwayat Pembaruan
+                </button>
+            </div>
         </div>
-        <div class="flex gap-2 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
-        </div>
+        <x-alert.info>
+            <p class="font-['Montserrat'] font-semibold text-[14px] text-[#dcd7c9] mb-1">Dapatkan Belanja. Masukkan
+                jumlah
+                belanja yang selesai secara bertahap.</p>
+            <ul class="list-disc ms-[18px] font-['Montserrat'] text-[14px] text-[#dcd7c9] space-y-[6px]">
+                <li>Jika terjadi kesalahan dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus (-)
+                </li>
+                <li>Sertakan juga tanggal expired untuk melengkapi informasi persediaan.</li>
+            </ul>
+        </x-alert.info>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Sed pharetra netus gravida non curabitur fermentum etiam. Lorem
-                orci auctor adipiscing vel blandit. In in integer viverra proin risus eu eleifend.
-            </p>
-        </div>
-    </div>
 
-
-    <div class="w-full mt-8 flex items-center flex-col gap-4">
-        <div class="w-full flex items-center justify-between gap-4 flex-row">
-            <h2 class="text-lg font-semibold">Daftar Belanja Persediaan</h2>
-            <flux:button type="button" variant="primary" wire:click="markAllReceived">Tandai Didapatkan Semua
-            </flux:button>
+    <div
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] space-y-[20px]">
+        <div class="flex items-center justify-between gap-[15px] flex-wrap">
+            <h2 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</h2>
+            <button type="button" wire:click="markAllReceived"
+                class="px-[25px] py-[10px] rounded-[15px] bg-[#74512d] font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                Tandai Didapatkan Semua
+            </button>
         </div>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th class="text-left px-6 py-3 text-nowrap">Barang Persediaan</th>
-                        <th class="text-left px-6 py-3">Rencana Belanja</th>
-                        <th class="text-left px-6 py-3">Selisih Jumlah</th>
-                        <th class="text-left px-6 py-3">Jumlah Didapatkan</th>
-                        <th class="text-left px-6 py-3">Satuan Ukur Belanja</th>
-                        <th class="text-left px-6 py-3">Belanja Didapatkan</th>
-                        <th class="text-left px-6 py-3">Tanggal Kadaluarsa</th>
+
+        <div class="w-full overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-[#3f4e4f]">
+                        <th
+                            class="text-left px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[200px]">
+                            Barang Persediaan
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[120px]">
+                            <div>Rencana</div>
+                            <div>Belanja</div>
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[120px]">
+                            <div>Selisih</div>
+                            <div>Didapatkan</div>
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[120px]">
+                            <div>Jumlah</div>
+                            <div>Didapatkan</div>
+                        </th>
+                        <th
+                            class="text-left px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[160px]">
+                            <div>Satuan Ukur</div>
+                            <div>Belanja</div>
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[150px]">
+                            Belanja Didapatkan
+                        </th>
+                        <th
+                            class="text-left px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[200px]">
+                            Tanggal Expired
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($expenseDetails as $index => $detail)
-                        <tr>
-                            <td class="px-6 py-3 text-nowrap">
-                                <span class="text-sm">
+                        <tr class="border-b border-[#d4d4d4] bg-[#fafafa]">
+                            <td class="px-[25px] py-[18px] align-top">
+                                <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
                                     {{ $detail['material_name'] ?? 'Barang Tidak Ditemukan' }}
-                                </span>
+                                </p>
                             </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
+                            <td class="px-[25px] py-[18px] text-right align-top">
+                                <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
                                     {{ $detail['quantity_expect'] }}
-                                </span>
+                                </p>
                             </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail['quantity_get'] - $detail['quantity_expect'] }}
-                                </span>
+                            <td class="px-[25px] py-[18px] text-right align-top">
+                                <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
+                                    {{ ($detail['quantity_get'] ?? 0) - $detail['quantity_expect'] }}
+                                </p>
                             </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail['quantity_get'] ? $detail['quantity_get'] : 0 }}
-                                </span>
+                            <td class="px-[25px] py-[18px] text-right align-top">
+                                <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
+                                    {{ $detail['quantity_get'] ?? 0 }}
+                                </p>
                             </td>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
+                            <td class="px-[25px] py-[18px] align-top">
+                                <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
                                     {{ $detail['unit'] }}
-                                </span>
+                                </p>
                             </td>
-                            <td class="px-6 py-3">
-                                <input type="number" placeholder="0"
-                                    wire:model.number.live="expenseDetails.{{ $index }}.quantity"
-                                    class="
-                                {{ isset($errorInputs[$index]) ? 'border-red-500' : 'border-gray-300' }}
-                                focus:outline-none focus:ring-0 rounded text-right" />
-                                @if (isset($errorInputs[$index]))
-                                    <span class="text-xs text-red-500 block">Nilai melebihi jumlah yang
-                                        diharapkan</span>
-                                @endif
+                            <td class="px-[25px] py-[18px] align-top">
+                                <div class="space-y-1">
+                                    <input type="number" placeholder="0" min="0"
+                                        wire:model.number.live="expenseDetails.{{ $index }}.quantity"
+                                        class="w-full bg-[#fafafa] border {{ isset($errorInputs[$index]) ? 'border-red-500' : 'border-[#adadad]' }} rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
+                                    @if (isset($errorInputs[$index]))
+                                        <span class="text-xs text-red-500 font-['Montserrat']">Nilai melebihi jumlah
+                                            yang
+                                            diharapkan</span>
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-6 py-3">
-                                <div x-init="picker = new Pikaday({
+                            <td class="px-[25px] py-[18px] align-top">
+                                <div x-data x-init="picker = new Pikaday({
                                     field: $refs['datepicker{{ $index }}'],
                                     format: 'DD/MM/YYYY',
                                     toString(date, format) {
@@ -104,49 +134,34 @@
                                         @this.set('expenseDetails.{{ $index }}.expiry_date', moment(this.getDate()).format('DD/MM/YYYY'));
                                     }
                                 })" class="relative w-full">
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <flux:icon icon="calendar-date-range" />
-                                    </div>
-
-                                    <input type="text"
-                                        class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full cursor-pointer"
-                                        x-ref="datepicker{{ $index }}" id="datepicker{{ $index }}"
+                                    <input type="text" x-ref="datepicker{{ $index }}"
+                                        id="datepicker{{ $index }}"
                                         wire:model.defer="expenseDetails.{{ $index }}.expiry_date"
-                                        placeholder="dd/mm/yyyy" readonly />
+                                        placeholder="dd/mm/yyyy" readonly
+                                        class="w-full bg-[#fafafa] border border-[#d4d4d4] rounded-[5px] px-[15px] py-[7px] font-['Montserrat'] text-[14px] text-[#666666] placeholder-[#959595] focus:outline-none focus:ring-0 cursor-pointer" />
+                                    <flux:icon icon="calendar-date-range"
+                                        class="absolute right-[15px] top-1/2 -translate-y-1/2 text-[#666666] size-4" />
                                 </div>
-
                             </td>
-
                         </tr>
                     @endforeach
-
                 </tbody>
-
             </table>
         </div>
-
-        <div class="w-full flex items-start text-start space-x-2 gap-3 flex-col mt-4">
-            <flux:heading class="text-lg font-semibold">Catatan Belanja</flux:heading>
-            <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $expense->note }}</flux:textarea>
-        </div>
-
     </div>
 
-
-
-    <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('belanja.rincian', $expense_id) }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
-            <flux:icon.x-mark class="w-4 h-4 mr-2" />
+    <div class="flex justify-end gap-[15px] flex-wrap">
+        <a href="{{ route('belanja.rincian', $expense_id) }}" wire:navigate
+            class="px-[25px] py-[10px] rounded-[15px] bg-[#c4c4c4] flex items-center gap-[5px] font-['Montserrat'] font-semibold text-[16px] text-[#333333] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+            <flux:icon.x-mark class="size-5" />
             Batal
         </a>
-        <flux:button icon="save" type="button" variant="primary" wire:click="save">
+        <button type="button" wire:click="save"
+            class="px-[25px] py-[10px] rounded-[15px] bg-[#3f4e4f] flex items-center gap-[5px] font-['Montserrat'] font-semibold text-[16px] text-[#f8f4e1] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+            <flux:icon icon="save" class="size-5" />
             Simpan
-        </flux:button>
+        </button>
     </div>
-
-
-
 
     <!-- Modal Riwayat Pembaruan -->
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">

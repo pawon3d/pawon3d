@@ -1,171 +1,210 @@
 <div>
-    <div class="mb-4 flex items-center">
-        <a href="{{ route('belanja') }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
-            Kembali
+    <div class="mb-[30px] flex items-center gap-[15px]">
+        <a href="{{ route('belanja.rencana') }}"
+            class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]"
+            wire:navigate>
+            <flux:icon.arrow-left class="size-5 text-[#f6f6f6]" />
+            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Kembali</span>
         </a>
-        <h1 class="text-2xl">Tambah Daftar Belanja</h1>
+        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Tambah Daftar Belanja</h1>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Form ini digunakan untuk menambahkan belanja persediaan. Lengkapi informasi yang diminta, pastikan
-                informasi yang dimasukan benar dan tepat. Informasi akan digunakan untuk menentukan harga barang baik
-                sebagai bahan baku atau produk jual.
+    <x-alert.info>
+        Tambah belanja persediaan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat.
+        Informasi akan digunakan untuk belanja persediaan sehingga dapat memperbarui harga produk produksi yang akan
+        dijual.
+    </x-alert.info>
+
+    <div
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] mt-[30px] flex gap-[130px]">
+        <div class="flex-1 flex flex-col gap-[30px]">
+            <div class="flex flex-col gap-[15px]">
+                <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Pilih Toko Persediaan</h3>
+                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify">
+                    Pilih nama toko persediaan, seperti "Toko Mawar", "Toko Sarini", atau "Minimarket Emly".
+                </p>
+                <div class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px]">
+                    <select wire:model="supplier_id"
+                        class="w-full bg-transparent border-0 font-['Montserrat'] font-normal text-[16px] text-[#666666] focus:outline-none focus:ring-0">
+                        <option value="">- Pilih Toko Persediaan -</option>
+                        @foreach ($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <flux:error name="supplier_id" />
+            </div>
+            <div class="flex flex-col gap-[15px]">
+                <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Tanggal Belanja</h3>
+                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify">
+                    Masukkan tanggal belanja persediaan.
+                </p>
+                <div
+                    class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] flex items-center justify-between">
+                    <input type="text"
+                        class="bg-transparent border-0 font-['Montserrat'] font-normal text-[16px] text-[#666666] focus:outline-none focus:ring-0 w-full"
+                        x-ref="datepicker" x-init="picker = new Pikaday({
+                            field: $refs.datepicker,
+                            format: 'DD MMM YYYY',
+                            toString(date, format) {
+                                const day = String(date.getDate()).padStart(2, 0);
+                                const month = String(date.getMonth() + 1).padStart(2, 0);
+                                const year = date.getFullYear();
+                                return `${day}/${month}/${year}`;
+                            },
+                            onSelect: function() {
+                                @this.set('expense_date', moment(this.getDate()).format('DD MMM YYYY'));
+                            }
+                        });" wire:model.defer="expense_date" id="datepicker"
+                        readonly placeholder="01 Jun 2025" />
+                    <flux:icon.calendar class="size-5 text-[#666666]" />
+                </div>
+                <flux:error name="expense_date" />
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-[15px]">
+            <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Catatan Rencana Belanja</h3>
+            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify">
+                Masukkan catatan rencana belanja apabila ada pesan atau sesuatu yang penting untuk diberitahu.
             </p>
+            <textarea wire:model.defer="note" rows="5" placeholder="Masukkan catatan"
+                class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px] font-['Montserrat'] font-normal text-[16px] text-[#666666] placeholder-[#959595] focus:outline-none focus:ring-0 resize-none"></textarea>
         </div>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4">
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Pilih Toko Persediaan</flux:label>
-            <p class="text-sm text-gray-500">
-                Pilih nama toko persediaan, seperti “Toko Mawar”, “Toko Sarini”, atau “Minimarket Emly”.
-            </p>
-            <flux:select placeholder="- Pilih Toko Persediaan -" wire:model="supplier_id">
-                @foreach ($suppliers as $supplier)
-                    <flux:select.option value="{{ $supplier->id }}" class="text-gray-700">{{ $supplier->name }}
-                    </flux:select.option>
-                @endforeach
-            </flux:select>
-            <flux:error name="supplier_id" />
-            <flux:label>Tanggal Belanja</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan tanggal belanja barang persediaan.
-            </p>
-            <input type="text"
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] pl-3 pr-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5"
-                x-ref="datepicker" x-init="picker = new Pikaday({
-                    field: $refs.datepicker,
-                    format: 'DD/MM/YYYY',
-                    toString(date, format) {
-                        const day = String(date.getDate()).padStart(2, 0);
-                        const month = String(date.getMonth() + 1).padStart(2, 0);
-                        const year = date.getFullYear();
-                        return `${day}/${month}/${year}`;
-                    },
-                    onSelect: function() {
-                        @this.set('expense_date', moment(this.getDate()).format('DD/MM/YYYY'));
-                    }
-                });" wire:model.defer="expense_date" id="datepicker" readonly />
-            <flux:error name="expense_date" />
-        </div>
 
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Catatan Belanja</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan catatan belanja apabila ada pesan atau sesuatu yang penting untuk diberitahu.
-            </p>
-            <flux:textarea wire:model.defer="note" rows="7" placeholder="Ketik Catatan Belanja...." />
-        </div>
-    </div>
-
-
-    <div class="w-full mt-8 flex items-center flex-col gap-4">
-        <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <flux:label>Daftar Belanja Persediaan</flux:label>
-        </div>
-        <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <p class="text-sm text-gray-500">
-                Tambah satuan lainya untuk mengubah satuan utama menjadi satuan lain yang lebih kecil ataupun lebih
-                besar. Satuan lain digunakan untuk menentukan jumlah rinci saat menambahkan bahan ke dalam resep kue.
-            </p>
-            <flux:button icon="plus" type="button" variant="primary" wire:click="addDetail">Tambah Belanja
-            </flux:button>
+    <div
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] mt-[30px] flex flex-col gap-[15px]">
+        <div class="flex flex-col gap-[15px]">
+            <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</h3>
+            <div class="flex items-center justify-between gap-[15px]">
+                <p class="flex-1 font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify">
+                    Tambahkan barang sesuai dengan kebutuhan operasional. Satuan belanja akan dikonversi menjadi satuan
+                    persediaan terkini (satuan utama). Pastikan harga sesuai dengan harga beli. Harga akan manjadi acuan
+                    modal dalam produksi.
+                </p>
+                <button type="button" wire:click="addDetail"
+                    class="bg-[#74512d] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                    <flux:icon.plus class="size-5 text-[#f6f6f6]" />
+                    <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Tambah Belanja</span>
+                </button>
+            </div>
         </div>
 
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th class="text-left px-6 py-3">Barang Persediaan</th>
-                        <th class="text-left px-6 py-3">Total Persediaan</th>
-                        <th class="text-left px-6 py-3">Jumlah Belanja</th>
-                        <th class="text-left px-6 py-3">Satuan Ukur Belanja</th>
-                        <th class="text-left px-6 py-3">Harga / Satuan</th>
-                        <th class="text-left px-6 py-3">Total Harga</th>
-                        <th class="text-left px-6 py-3"></th>
+        <div class="w-full overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-[#3f4e4f]">
+                        <th
+                            class="text-left px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[255px]">
+                            Barang Persediaan</th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] max-w-[120px]">
+                            <div>Jumlah</div>
+                            <div>Diharapkan</div>
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] w-[130px]">
+                            <div>Jumlah</div>
+                            <div>Belanja</div>
+                        </th>
+                        <th
+                            class="text-left px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] w-[210px]">
+                            <div>Satuan Ukur</div>
+                            <div>Belanja</div>
+                        </th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1]">
+                            Harga Satuan</th>
+                        <th
+                            class="text-right px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1]">
+                            Total Harga</th>
+                        <th class="text-right px-[25px] py-[21px] w-[72px]"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($expense_details as $index => $detail)
-                        <tr>
-                            <td class="px-6 py-3">
-                                <select
-                                    class="w-full border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded"
-                                    wire:model="expense_details.{{ $index }}.material_id"
-                                    wire:change="setMaterial({{ $index }}, $event.target.value)">
-                                    <option value="" class="text-gray-700">- Pilih Bahan Baku -</option>
-                                    @foreach ($materials as $material)
-                                        <option value="{{ $material->id }}" class="text-gray-700">{{ $material->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <tr class="bg-[#fafafa] border-b border-[#d4d4d4]">
+                            <td class="px-[25px] py-0 h-[60px]">
+                                <div class="flex items-center gap-[10px]">
+                                    <select
+                                        class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                        wire:model="expense_details.{{ $index }}.material_id"
+                                        wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                        <option value="">- Pilih Bahan Baku -</option>
+                                        @foreach ($materials as $material)
+                                            <option value="{{ $material->id }}">{{ $material->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td
+                                class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] max-w-[120px]">
                                 {{ $detail['material_quantity'] }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-[25px] py-0 h-[60px] w-[130px]">
                                 <input type="number" placeholder="0" min="0"
                                     wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
-                                    class="w-full border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded text-right" />
+                                    class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
                             </td>
-                            <td class="px-6 py-3">
-                                <select
-                                    class="border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded"
-                                    wire:model="expense_details.{{ $index }}.unit_id"
-                                    wire:change="setUnit({{ $index }}, $event.target.value)">
-                                    @php
-                                        $material = $materials->firstWhere('id', $detail['material_id']);
-                                        $units = $material?->material_details
-                                            ->map(function ($detail) {
-                                                return $detail->unit; // pastikan ada relasi unit() di MaterialDetail
-                                            })
-                                            ->filter(); // filter() untuk menghindari null jika unit tidak ditemukan
-                                    @endphp
-                                    <option value="" class="text-gray-700">- Pilih Satuan Ukur -</option>
-                                    @foreach ($units ?? [] as $unit)
-                                        <option value="{{ $unit->id }}" class="text-gray-700">
-                                            {{ $unit->name }} ({{ $unit->alias }})
-                                        </option>
-                                    @endforeach
-
-                                </select>
+                            <td class="px-[25px] py-0 h-[60px] w-[210px]">
+                                <div class="flex items-center gap-[10px]">
+                                    <select
+                                        class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                        wire:model="expense_details.{{ $index }}.unit_id"
+                                        wire:change="setUnit({{ $index }}, $event.target.value)">
+                                        @php
+                                            $material = $materials->firstWhere('id', $detail['material_id']);
+                                            $units = $material?->material_details
+                                                ->map(function ($detail) {
+                                                    return $detail->unit;
+                                                })
+                                                ->filter();
+                                        @endphp
+                                        <option value="">- Pilih Satuan Ukur -</option>
+                                        @foreach ($units ?? [] as $unit)
+                                            <option value="{{ $unit->id }}">
+                                                {{ $unit->name }} ({{ $unit->alias }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-[25px] py-1 h-[60px]">
                                 <input type="number" placeholder="0" min="0"
                                     wire:model.number.live="expense_details.{{ $index }}.price_expect"
-                                    class="border-gray-300 focus:border-b-blue-500 focus:outline-none focus:ring-0 rounded text-right" />
+                                    class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
                                 @if (isset($prevInputs[$index]))
-                                    <span class="text-xs text-blue-500 block">Harga Sebelumnya:
-                                        Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</span>
+                                    <div class="text-xs text-blue-500 mt-1">Harga Sebelumnya:
+                                        Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</div>
                                 @endif
                             </td>
-                            <td class="px-6 py-3">
+                            <td
+                                class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666]">
                                 Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
                             </td>
-                            <td class="flex items-center justify-start gap-4 px-6 py-3">
-                                <flux:button icon="trash" type="button" variant="danger"
-                                    wire:click.prevent="removeDetail({{ $index }})" />
+                            <td class="px-[25px] py-0 h-[60px] text-center w-[72px]">
+                                <button type="button" wire:click.prevent="removeDetail({{ $index }})"
+                                    class="inline-flex items-center justify-center">
+                                    <flux:icon.trash class="size-[22px] text-[#666666]" />
+                                </button>
                             </td>
                         </tr>
                     @endforeach
 
                 </tbody>
-                <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <td class="px-6 py-3" colspan="5">
-                            <span class="text-gray-700">Total Harga Keseluruhan</span>
+                <tfoot>
+                    <tr class="bg-[#eaeaea] border-b border-[#d4d4d4]">
+                        <td class="px-[25px] py-0 h-[60px] font-['Montserrat'] font-bold text-[14px] text-[#666666] rounded-bl-[15px]"
+                            colspan="5">
+                            Total
                         </td>
-                        <td class="px-6 py-3">
-                            <span class="text-gray-700">
-                                Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
-                            </span>
+                        <td
+                            class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-bold text-[14px] text-[#666666]">
+                            Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
                         </td>
-                        <td></td>
+                        <td class="px-[25px] py-0 h-[60px] rounded-br-[15px]"></td>
                     </tr>
                 </tfoot>
             </table>
@@ -174,17 +213,18 @@
 
 
 
-    <div class="flex justify-end mt-16 gap-4">
+    <div class="flex justify-end items-center gap-[30px] mt-[50px]">
         <a href="{{ route('belanja') }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
-            <flux:icon.x-mark class="w-4 h-4 mr-2" />
-            Batal
+            class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]"
+            wire:navigate>
+            <flux:icon.x-mark class="size-5 text-[#333333]" />
+            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#333333]">Batal</span>
         </a>
-        <flux:button icon="pencil-square" type="button" variant="primary" wire:click.prevent="store">Simpan Sebagai
-            Draft
-        </flux:button>
-        <flux:button icon="shopping-cart" type="button" variant="primary" wire:click.prevent="start">Mulai Belanja
-        </flux:button>
+        <button type="button" wire:click.prevent="store" wire:loading.attr="disabled"
+            class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px] cursor-pointer">
+            <flux:icon.archive-box class="size-5 text-[#f8f4e1]" />
+            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f8f4e1]">Buat Rencana Belanja</span>
+        </button>
     </div>
 
 </div>

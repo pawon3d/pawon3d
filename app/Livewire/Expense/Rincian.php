@@ -14,6 +14,8 @@ class Rincian extends Component
     public $expense;
     public $expenseDetails;
     public $showHistoryModal = false;
+    public $showNoteModal = false;
+    public $noteInput = '';
     public $activityLogs = [];
     public $total_quantity_expect, $total_quantity_get, $percentage;
     public $is_start = false, $is_finish = false, $status, $end_date;
@@ -36,6 +38,7 @@ class Rincian extends Component
         $this->percentage = $this->total_quantity_expect > 0 ? ($this->total_quantity_get / $this->total_quantity_expect) * 100 : 0;
         $this->percentage = floor($this->percentage);
         $this->expenseDetails = $this->expense->expenseDetails;
+        $this->noteInput = $this->expense->note ?? '';
         View::share('title', 'Rincian Belanja Persediaan');
         View::share('mainTitle', 'Inventori');
 
@@ -52,6 +55,39 @@ class Rincian extends Component
             ->get();
 
         $this->showHistoryModal = true;
+    }
+
+    public function editRencanaBelanja()
+    {
+        if ($this->is_start) {
+            return;
+        }
+
+        $this->noteInput = $this->expense->note ?? '';
+        $this->showNoteModal = true;
+    }
+
+    public function saveNote()
+    {
+        if ($this->is_start) {
+            return;
+        }
+
+        $this->validate([
+            'noteInput' => 'nullable|string|max:255',
+        ]);
+
+        $noteValue = trim($this->noteInput ?? '');
+
+        $expense = \App\Models\Expense::findOrFail($this->expense_id);
+        $expense->update([
+            'note' => $noteValue === '' ? null : $noteValue,
+        ]);
+
+        $this->expense->note = $noteValue === '' ? null : $noteValue;
+        $this->noteInput = $this->expense->note ?? '';
+        $this->showNoteModal = false;
+        $this->alert('success', 'Catatan belanja berhasil diperbarui.');
     }
 
     public function cetakInformasi()
