@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('other_costs', function (Blueprint $table) {
+        Schema::create('type_costs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('product_id')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
+            $table->string('name')->nullable();
             $table->timestamps();
-
-            $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
         });
     }
 
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('other_costs');
+        Schema::dropIfExists('type_costs');
     }
 };

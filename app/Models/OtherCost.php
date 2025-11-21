@@ -20,6 +20,11 @@ class OtherCost extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function typeCost()
+    {
+        return $this->belongsTo(TypeCost::class, 'type_cost_id', 'id');
+    }
+
     public static function boot()
     {
         parent::boot();

@@ -1,234 +1,325 @@
-<div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center">
+<div class="space-y-6">
+    <div class="mb-2 flex items-center justify-between">
+        <div class="flex items-center gap-4">
             <a href="{{ route('produk') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
+                class="bg-[#313131] hover:bg-[#252324] text-white px-5 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors">
+                <flux:icon.arrow-left variant="mini" class="size-4" />
+                <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
-            <h1 class="text-3xl font-bold">Kategori</h1>
+            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Kategori Produk</h1>
         </div>
-        <div class="flex gap-2 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
-        </div>
+        <button type="button" wire:click="riwayatPembaruan"
+            class="bg-[#525252] border border-[#666666] text-white px-6 py-2.5 rounded-[15px] hover:bg-[#666666] transition-colors">
+            <span class="font-montserrat font-medium text-[14px]">Riwayat Pembaruan</span>
+        </button>
     </div>
 
-    <div class="flex items-center border bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Kategori Produk digunakan untuk mengelompokkan produk berdasarkan ciri khas atau kriteria tertentu.
-                Seunit produk dapat memiliki lebih dari satu kategori. Pastikan kategori dan produk yang dikelompokkan
-                benar dan tepat.
-            </p>
-        </div>
-    </div>
-    <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
+    <x-alert.info class="font-montserrat font-semibold text-[14px] leading-[1.4]">
+        Kategori Produk. Lihat atau tambah kategori untuk mengelompokkan produk berdasarkan jenis, rasa, cara
+        masak, dan lain sebagainya. Produk dapat memiliki banyak kategori dan kategori dapat terdiri dari banyak
+        produk.
+    </x-alert.info>
 
-        <div class="flex justify-between items-center mb-7">
-            <!-- Search Input -->
-            <div class="p-4 flex">
-                <input wire:model.live="search" placeholder="Cari..."
-                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <flux:button :loading="false" class="ml-2" variant="ghost">
-                    <flux:icon.funnel variant="mini" />
-                    <span>Filter</span>
-                </flux:button>
+
+    <div
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-6 border border-[#ececec]">
+        <div class="flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex-1 min-w-[220px] max-w-[545px]">
+                <div
+                    class="flex items-center gap-2 bg-white border border-[#666666] rounded-[20px] px-4 h-[40px] w-full">
+                    <flux:icon.magnifying-glass class="size-5 text-[#666666]" />
+                    <input wire:model.live="search" placeholder="Cari Kategori"
+                        class="flex-1 bg-transparent border-0 font-montserrat font-medium text-[16px] text-[#959595] focus:outline-none focus:ring-0" />
+                </div>
             </div>
-            <div class="flex gap-2 items-center">
-                {{-- <a href="{{ route('kategori.tambah') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                    wire:navigate>
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
+            <div class="flex items-center gap-3">
+                <button type="button" wire:click="showAddModal"
+                    class="bg-[#74512d] hover:bg-[#5f4224] text-[#f6f6f6] px-6 py-2.5 rounded-[15px] font-montserrat font-semibold text-[16px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors">
+                    <flux:icon.plus class="size-5" />
                     Tambah Kategori
-                </a> --}}
-                <flux:button type="button" variant="primary" wire:click="showAddModal" icon="plus">Tambah
-                    Kategori</flux:button>
-            </div>
-        </div>
-        <div class="flex justify-between items-center mb-7">
-            <div class="p-4 flex">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                        @else
-                        Semua Kategori
-                        @endif
-                        {{-- {{ $filterStatus ? ' (' . $categories->total() . ')' : ' (' . $categories->count() . ')' }}
-                        --}}
-                        ({{ $categories->total() }})
-                        <flux:icon.chevron-down variant="mini" />
-                    </flux:button>
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model.live="filterStatus">
-                            <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
-                            <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                            <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
-            <div class="flex gap-2 items-center">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        Urutkan Kategori
-                        <flux:icon.chevron-down variant="mini" />
-
-                    </flux:button>
-
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model="sortByCategory">
-                            <flux:menu.radio value="name">Nama</flux:menu.radio>
-                            <flux:menu.radio value="status">Status</flux:menu.radio>
-                            <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
+                </button>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border">
-            <!-- Table -->
+        <div class="w-full rounded-[15px] overflow-hidden border border-[#e4e4e4] bg-white">
             <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("name")'>
-                                Nama
-                                Kategori
-                                {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-[#3f4e4f] h-[60px]">
+                            <th class="text-left px-6 py-5">
+                                <button type="button" wire:click="sortBy('name')"
+                                    class="flex items-center gap-2 text-left w-full">
+                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Kategori
+                                        Produk</span>
+                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                </button>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("is_active")'>
-                                Status Kategori
-                                {{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}
+                            <th class="text-left px-6 py-5">
+                                <button type="button" wire:click="sortBy('is_active')"
+                                    class="flex items-center gap-2 text-left w-full">
+                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Status
+                                        Tampil</span>
+                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                </button>
                             </th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("products_count")'>
-                                Jenis Produk
-                                {{ $sortDirection === 'asc' && $sortField === 'products_count' ? '↑' : '↓' }}
+                            <th class="text-right px-6 py-5">
+                                <button type="button" wire:click="sortBy('products_count')"
+                                    class="flex items-center gap-2 w-full justify-end">
+                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Jumlah
+                                        Penggunaan</span>
+                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
+                                </button>
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($categories as $category)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap hover:bg-gray-50 cursor-pointer"
+                    <tbody class="bg-[#fafafa]">
+                        @forelse ($categories as $category)
+                            <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors cursor-pointer"
                                 wire:click="edit('{{ $category->id }}')">
-                                {{ $category->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                            </td>
-                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                                {{ $category->products_count }}
-                            </td>
-                        </tr>
+                                <td class="px-6">
+                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                        {{ $category->name }}
+                                    </span>
+                                </td>
+                                <td class="px-6">
+                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                        {{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 text-right">
+                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                        {{ $category->products_count }}
+                                    </span>
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                        </tr>
+                            <tr class="h-[60px]">
+                                <td colspan="3" class="px-6 text-center">
+                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">Tidak ada
+                                        data.</span>
+                                </td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $categories->links() }}
+            <div class="flex flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between">
+                <div class="font-montserrat font-medium text-[14px] text-[#666666] opacity-70">
+                    @php
+                        $first = $categories->firstItem() ?? 0;
+                        $last = $categories->lastItem() ?? 0;
+                        $total = $categories->total();
+                    @endphp
+                    <span>Menampilkan {{ $first }} hingga {{ $last }} dari {{ $total }} baris
+                        data</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" wire:click="previousPage" @disabled($categories->onFirstPage())
+                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $categories->onFirstPage() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
+                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
+                    </button>
+                    <div class="bg-[#666666] min-w-[30px] px-3 py-1 rounded-[5px] text-center">
+                        <span
+                            class="font-montserrat font-medium text-[14px] text-white">{{ $categories->currentPage() }}</span>
+                    </div>
+                    <button type="button" wire:click="nextPage" @disabled(!$categories->hasMorePages())
+                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $categories->hasMorePages() ? 'hover:bg-[#f0f0f0]' : 'opacity-50 cursor-not-allowed' }}">
+                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <flux:modal name="tambah-kategori" class="w-full max-w-md" wire:model="showModal">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Tambah Kategori</flux:heading>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                    <input type="text" id="name" wire:model.lazy="name"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        required />
-                    @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
+    <flux:modal name="tambah-kategori" class="w-full max-w-lg" wire:model="showModal">
+        <div class="bg-[#fafafa] rounded-[15px] p-8 space-y-8">
+            <div class="space-y-2">
+                <p class="font-montserrat font-medium text-[20px] text-[#333333]">Tambah Kategori Persediaan</p>
+                <div class="space-y-3">
+                    <div class="space-y-2">
+                        <p class="font-montserrat font-medium text-[18px] text-[#333333]">Nama Kategori</p>
+                        <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-5 py-2.5 flex items-center">
+                            <input type="text" wire:model.lazy="name" placeholder="Contoh : Kue Tradisional"
+                                class="flex-1 bg-transparent border-0 font-montserrat text-[16px] text-[#666666] placeholder:text-[#959595] focus:outline-none focus:ring-0" />
+                        </div>
+                        @error('name')
+                            <span class="text-sm text-red-500 font-montserrat">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <p class="font-montserrat font-medium text-[18px] text-[#666666]">Tampil Kategori</p>
+                            <button type="button" wire:click="$toggle('is_active')"
+                                class="relative h-[25px] w-[45px] rounded-full transition-colors duration-200 {{ $is_active ? 'bg-green-500' : 'bg-[#666666]' }}"
+                                aria-pressed="{{ $is_active ? 'true' : 'false' }}">
+                                <span
+                                    class="absolute top-[3px] h-[19px] w-[19px] rounded-full bg-white transition-all duration-200 {{ $is_active ? 'left-[23px]' : 'left-[3px]' }}"></span>
+                            </button>
+                        </div>
+                        <p class="font-montserrat text-[14px] text-[#666666]">Aktifkan opsi ini jika kategori ingin
+                            ditampilkan dan digunakan.</p>
+                    </div>
                 </div>
             </div>
-            <div class="mt-6 flex justify-end space-x-2">
+            <div class="flex justify-end gap-3">
                 <flux:modal.close>
-                    <flux:button type="button" icon="x-mark">Batal</flux:button>
+                    <button type="button"
+                        class="bg-[#c4c4c4] text-[#333333] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                        Batal
+                    </button>
                 </flux:modal.close>
-                <flux:button type="button" icon="save" variant="primary" wire:click="store">Simpan Kategori
-                </flux:button>
+                <button type="button" wire:click="store"
+                    class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5" class="size-5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 7.5V21h18V7.5L16.5 3h-9L3 7.5zM15 21v-7.5H9V21" />
+                    </svg>
+                    Simpan
+                </button>
             </div>
         </div>
     </flux:modal>
 
-    <flux:modal name="rincian-kategori" class="w-full max-w-md" wire:model="showEditModal">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Rincian Kategori</flux:heading>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                    <input type="text" id="name" wire:model.lazy="name"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        required />
-                    @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label for="products" class="block text-sm font-medium text-gray-700">Jumlah Penggunaan</label>
-                    <input type="text" id="products" wire:model.lazy="products"
-                        class="mt-1 block w-full border-gray-300 bg-gray-200 rounded-md shadow-sm" disabled />
-                </div>
-            </div>
-            <div class="mt-6 flex justify-end space-x-2">
-                <flux:modal.trigger name="delete-category" class="mr-4">
-                    <flux:button variant="ghost" icon="trash" />
-                </flux:modal.trigger>
-
-                <flux:modal name="delete-category" class="min-w-[22rem]">
-                    <div class="space-y-6">
-                        <div>
-                            <flux:heading size="lg">Hapus Kategori</flux:heading>
-
-                            <flux:text class="mt-2">
-                                <p>Apakah Anda yakin ingin menghapus kategori ini?</p>
-                            </flux:text>
+    <flux:modal name="rincian-kategori" class="w-full max-w-lg" wire:model="showEditModal">
+        <div class="bg-[#fafafa] rounded-[15px] p-8 space-y-8">
+            <div class="space-y-2">
+                <p class="font-montserrat font-medium text-[20px] text-[#333333]">Rincian Kategori Persediaan</p>
+                <div class="space-y-3">
+                    <div class="space-y-2">
+                        <p class="font-montserrat font-medium text-[18px] text-[#333333]">Nama Kategori</p>
+                        <div class="bg-[#fafafa] border border-[#adadad] rounded-[15px] px-5 py-2.5 flex items-center">
+                            <input type="text" wire:model.lazy="name"
+                                class="flex-1 bg-transparent border-0 font-montserrat text-[16px] text-[#666666] focus:outline-none focus:ring-0" />
                         </div>
-
-                        <div class="flex gap-2">
-                            <flux:spacer />
-
-                            <flux:modal.close>
-                                <flux:button variant="ghost">Batal</flux:button>
-                            </flux:modal.close>
-
-                            <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
-                        </div>
+                        @error('name')
+                            <span class="text-sm text-red-500 font-montserrat">{{ $message }}</span>
+                        @enderror
                     </div>
-                </flux:modal>
-                <flux:button type="button" icon="x-mark" wire:click="$set('showEditModal', false)">Batal
-                </flux:button>
-                <flux:button type="button" icon="save" variant="primary" wire:click="update">Simpan Kategori
-                </flux:button>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-montserrat font-medium text-[16px] text-[#333333]">Jumlah Penggunaan</p>
+                            <p class="font-montserrat text-[16px] text-[#333333]">{{ $products ?? 0 }}</p>
+                        </div>
+                        <button type="button" @disabled(!$category_id)
+                            @if ($category_id) wire:click="openUsageModal('{{ $category_id }}')" @endif
+                            class="size-10 rounded-full flex items-center justify-center {{ $category_id ? 'bg-transparent' : 'opacity-40 cursor-not-allowed' }}">
+                            <flux:icon.chevron-right class="size-4 text-[#333333]" />
+                        </button>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <p class="font-montserrat font-medium text-[18px] text-[#666666]">Tampil Kategori</p>
+                            <button type="button" wire:click="$toggle('is_active')"
+                                class="relative h-[25px] w-[45px] rounded-full transition-colors duration-200 {{ $is_active ? 'bg-green-500' : 'bg-[#666666]' }}"
+                                aria-pressed="{{ $is_active ? 'true' : 'false' }}">
+                                <span
+                                    class="absolute top-[3px] h-[19px] w-[19px] rounded-full bg-white transition-all duration-200 {{ $is_active ? 'left-[23px]' : 'left-[3px]' }}"></span>
+                            </button>
+                        </div>
+                        <p class="font-montserrat text-[14px] text-[#666666]">Aktifkan opsi ini jika kategori ingin
+                            ditampilkan dan digunakan.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <flux:modal.trigger name="delete-category">
+                    <button type="button"
+                        class="bg-[#eb5757] rounded-[15px] p-3 text-white hover:bg-[#d64545] transition-colors">
+                        <flux:icon.trash class="size-5" />
+                    </button>
+                </flux:modal.trigger>
+                <div class="flex items-center gap-3">
+                    <button type="button" wire:click="$set('showEditModal', false)"
+                        class="bg-[#c4c4c4] text-[#333333] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                        Batal
+                    </button>
+                    <button type="button" wire:click="update"
+                        class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 7.5V21h18V7.5L16.5 3h-9L3 7.5zM15 21v-7.5H9V21" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <flux:modal name="delete-category" class="w-full max-w-md">
+            <div class="space-y-4 p-6">
+                <flux:heading size="lg">Hapus Kategori</flux:heading>
+                <p class="font-montserrat text-[14px] text-[#666666]">Apakah Anda yakin ingin menghapus kategori ini?
+                </p>
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <button type="button"
+                            class="px-4 py-2 rounded-[10px] bg-[#f5f5f5] text-[#333333] font-montserrat">Batal</button>
+                    </flux:modal.close>
+                    <button type="button" wire:click="delete"
+                        class="px-4 py-2 rounded-[10px] bg-[#eb5757] text-white font-montserrat">Hapus</button>
+                </div>
+            </div>
+        </flux:modal>
+    </flux:modal>
+
+    <flux:modal name="jumlah-penggunaan" class="w-full max-w-2xl" wire:model="showUsageModal">
+        <div class="bg-[#fafafa] rounded-[15px] p-8 space-y-4">
+            <p class="font-montserrat font-medium text-[18px] text-[#333333]">Daftar Produk</p>
+            <div class="flex items-center gap-3">
+                <div
+                    class="flex-1 flex items-center gap-2 bg-white border border-[#666666] rounded-[20px] px-4 h-[40px]">
+                    <flux:icon.magnifying-glass class="size-5 text-[#666666]" />
+                    <input type="text" wire:model.live="usageSearch" placeholder="Cari Produk"
+                        class="flex-1 bg-transparent border-0 font-montserrat text-[16px] text-[#959595] focus:outline-none focus:ring-0" />
+                </div>
+            </div>
+            <div class="border border-[#d4d4d4] rounded-[15px] overflow-hidden">
+                <div
+                    class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-bold text-[14px] px-6 py-4 rounded-t-[15px]">
+                    <div class="flex items-center justify-between">
+                        <span>Produk</span>
+                        <flux:icon.chevron-up-down class="size-4" />
+                    </div>
+                </div>
+                <div class="divide-y divide-[#d4d4d4]">
+                    @forelse ($usageProducts as $product)
+                        <div class="flex items-center justify-between px-6 py-4">
+                            <span class="font-montserrat text-[14px] text-[#666666]">{{ $product['name'] }}</span>
+                            <span class="text-[#666666]">
+                                <flux:icon.trash class="size-4" />
+                            </span>
+                        </div>
+                    @empty
+                        <div class="px-6 py-6 text-center font-montserrat text-[14px] text-[#666666]">
+                            Tidak ada produk di kategori ini.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <span class="font-montserrat text-[14px] text-[#666666] opacity-70">Menampilkan
+                    {{ $usageSummary['from'] }} hingga {{ $usageSummary['to'] }} dari
+                    {{ $usageSummary['total'] }} baris data</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" wire:click="previousUsagePage" @disabled($usagePage === 1 || $usageSummary['total'] === 0)
+                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $usagePage === 1 || $usageSummary['total'] === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
+                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
+                    </button>
+                    <div class="bg-[#666666] min-w-[30px] px-3 py-1 rounded-[5px] text-center">
+                        <span class="font-montserrat text-[14px] text-white">{{ $usagePage }}</span>
+                    </div>
+                    <button type="button" wire:click="nextUsagePage" @disabled($usagePage >= $usageSummary['pages'] || $usageSummary['total'] === 0)
+                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $usagePage >= $usageSummary['pages'] || $usageSummary['total'] === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
+                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
+                    </button>
+                </div>
+            </div>
+            <div class="border-t border-dotted border-[#666666] pt-3">
+                <p class="font-montserrat text-[14px] text-[#666666] text-center opacity-70">Tekan bagian luar untuk
+                    menutup halaman</p>
             </div>
         </div>
     </flux:modal>
@@ -241,13 +332,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

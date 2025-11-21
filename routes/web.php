@@ -85,14 +85,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['middleware' => ['permission:Inventori']], function () {
         Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
-        Route::get('/kategori/tambah', App\Livewire\Category\Tambah::class)->name('kategori.tambah');
-        Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
+        // Route::get('/kategori/tambah', App\Livewire\Category\Tambah::class)->name('kategori.tambah');
+        // Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
         Route::get('/kategori/cetak', [PdfController::class, 'generateCategoryPDF'])
             ->name('kategori.pdf');
         Route::get('/satuan-ukur', App\Livewire\Unit\Index::class)->name('satuan-ukur');
 
         Route::get('/satuan-ukur/cetak', [PdfController::class, 'generateUnitPDF'])
             ->name('satuan-ukur.pdf');
+        Route::get('/jenis-biaya', App\Livewire\TypeCost\Index::class)->name('jenis-biaya');
         Route::get('/kategori-persediaan', App\Livewire\IngredientCategory\Index::class)->name('kategori-persediaan');
         // Route::get('/kategori-persediaan/tambah', App\Livewire\IngredientCategory\Tambah::class)->name('kategori-persediaan.tambah');
         // Route::get('/kategori-persediaan/{id}/rincian', App\Livewire\IngredientCategory\Rincian::class)->name('kategori-persediaan.edit');

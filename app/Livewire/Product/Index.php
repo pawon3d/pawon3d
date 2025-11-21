@@ -23,8 +23,24 @@ class Index extends Component
     public $method = 'pesanan-reguler';
     public $sortField = 'name';
     public $sortDirection = 'desc';
+    public $perPage = 10;
+    public $statusSummary = [
+        'total' => 0,
+        'active' => 0,
+        'inactive' => 0,
+        'recommended' => 0,
+    ];
 
-    protected $queryString = ['viewMode', 'method', 'search', 'sortField', 'sortDirection'];
+    protected $methodSummary = null;
+
+    protected $queryString = [
+        'viewMode' => ['except' => 'grid'],
+        'method' => ['except' => 'pesanan-reguler'],
+        'search' => ['except' => ''],
+        'sortField' => ['except' => 'name'],
+        'sortDirection' => ['except' => 'desc'],
+        'filterStatus' => ['except' => ''],
+    ];
 
     public function sortBy($field)
     {
@@ -34,6 +50,16 @@ class Index extends Component
             $this->sortDirection = 'asc';
         }
         $this->sortField = $field;
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterStatus()
+    {
+        $this->resetPage();
     }
 
     public function riwayatPembaruan()
@@ -75,21 +101,88 @@ class Index extends Component
     public function updatedMethod($value)
     {
         session()->put('method', $value);
+        $this->resetPage();
     }
 
     public function render()
     {
-        $products = Product::with(['product_categories', 'product_compositions', 'reviews'])
-            ->when($this->method, function ($query) {
-                $query->whereJsonContains('method', $this->method);
-            })
-            ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
-            ->withAvg('reviews', 'rating')->withCount('reviews')->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+        $baseQuery = $this->baseProductQuery();
 
+        $this->statusSummary = $this->buildStatusSummary(clone $baseQuery);
+
+        $productsQuery = $this->applyStatusFilter(clone $baseQuery);
+
+        $products = $productsQuery
+            ->with(['product_categories', 'product_compositions', 'reviews'])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->perPage);
 
         return view('livewire.product.index', [
             'products' => $products,
+            'statusSummary' => $this->statusSummary,
+            'methodSummary' => $this->methodSummary ?? $this->buildMethodSummary(),
         ]);
+    }
+
+    protected function baseProductQuery()
+    {
+        return Product::query()
+            ->when($this->method, function ($query) {
+                $query->whereJsonContains('method', $this->method);
+            })
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . trim($this->search) . '%');
+            });
+    }
+
+    protected function applyStatusFilter($query)
+    {
+        if (!$this->filterStatus) {
+            return $query;
+        }
+
+        return $query->when($this->filterStatus === 'active', fn($q) => $q->where('is_active', true))
+            ->when($this->filterStatus === 'inactive', fn($q) => $q->where('is_active', false))
+            ->when($this->filterStatus === 'recommended', fn($q) => $q->where('is_recommended', true));
+    }
+
+    protected function buildStatusSummary($query)
+    {
+        return [
+            'total' => (clone $query)->count(),
+            'active' => (clone $query)->where('is_active', true)->count(),
+            'inactive' => (clone $query)->where('is_active', false)->count(),
+            'recommended' => (clone $query)->where('is_recommended', true)->count(),
+        ];
+    }
+
+    protected function buildMethodSummary()
+    {
+        if ($this->methodSummary !== null) {
+            return $this->methodSummary;
+        }
+
+        $summary = [
+            'pesanan-reguler' => 0,
+            'pesanan-kotak' => 0,
+            'siap-beli' => 0,
+        ];
+
+        Product::select('method')
+            ->whereNotNull('method')
+            ->orderBy('created_at')
+            ->chunk(200, function ($products) use (&$summary) {
+                foreach ($products as $product) {
+                    foreach ((array) $product->method as $method) {
+                        if (array_key_exists($method, $summary)) {
+                            $summary[$method]++;
+                        }
+                    }
+                }
+            });
+
+        return $this->methodSummary = $summary;
     }
 }

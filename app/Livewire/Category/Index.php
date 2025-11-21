@@ -21,9 +21,24 @@ class Index extends Component
     public $filterStatus = '';
     public $sortField = 'name';
     public $sortDirection = 'desc';
-    public $name, $is_active = true, $category_id, $products;
+    public $name;
+    public $is_active = true;
+    public $category_id;
+    public $products;
     public $showModal = false;
     public $showEditModal = false;
+    public $showUsageModal = false;
+    public $usageCategoryId;
+    public $usageProducts = [];
+    public $usageSummary = [
+        'from' => 0,
+        'to' => 0,
+        'total' => 0,
+        'pages' => 1,
+    ];
+    public $usagePage = 1;
+    public $usagePerPage = 5;
+    public $usageSearch = '';
     public $sortByCategory = false;
     protected $listeners = [
         'delete',
@@ -49,6 +64,12 @@ class Index extends Component
             $this->sortDirection = 'asc';
         }
         $this->sortField = $field;
+    }
+
+    public function updatedUsageSearch()
+    {
+        $this->usagePage = 1;
+        $this->refreshUsageList();
     }
 
     public function riwayatPembaruan()
@@ -94,7 +115,7 @@ class Index extends Component
 
         Category::create([
             'name' => $this->name,
-            'is_active' => true,
+            'is_active' => (bool) $this->is_active,
         ]);
 
         $this->resetForm();
@@ -104,10 +125,17 @@ class Index extends Component
 
     public function edit($id)
     {
+        $category = Category::withCount('products')->find($id);
+
+        if (!$category) {
+            $this->alert('error', 'Kategori tidak ditemukan');
+            return;
+        }
+
         $this->category_id = $id;
-        $this->products = \App\Models\Product::where('category_id', $this->category_id)->count();
-        $this->name = \App\Models\Category::find($this->category_id)->name;
-        $this->is_active = \App\Models\Category::find($this->category_id)->is_active;
+        $this->products = $category->products_count;
+        $this->name = $category->name;
+        $this->is_active = (bool) $category->is_active;
         $this->showEditModal = true;
     }
 
@@ -124,7 +152,7 @@ class Index extends Component
         $category = \App\Models\Category::find($this->category_id);
         $category->update([
             'name' => $this->name,
-            'is_active' => true,
+            'is_active' => (bool) $this->is_active,
         ]);
         $this->alert('success', 'Kategori berhasil diperbarui');
         $this->showEditModal = false;
@@ -161,12 +189,103 @@ class Index extends Component
         }
     }
 
+    public function openUsageModal($categoryId)
+    {
+        $this->usageCategoryId = $categoryId;
+        $this->usageSearch = '';
+        $this->usagePage = 1;
+        $this->refreshUsageList();
+        $this->showUsageModal = true;
+    }
+
+    public function previousUsagePage()
+    {
+        if ($this->usagePage <= 1) {
+            return;
+        }
+
+        $this->usagePage--;
+        $this->refreshUsageList();
+    }
+
+    public function nextUsagePage()
+    {
+        if ($this->usagePage >= $this->usageSummary['pages']) {
+            return;
+        }
+
+        $this->usagePage++;
+        $this->refreshUsageList();
+    }
+
+    protected function refreshUsageList()
+    {
+        if (!$this->usageCategoryId) {
+            $this->usageProducts = [];
+            $this->usageSummary = [
+                'from' => 0,
+                'to' => 0,
+                'total' => 0,
+                'pages' => 1,
+            ];
+            return;
+        }
+
+        $category = Category::find($this->usageCategoryId);
+
+        if (!$category) {
+            $this->usageProducts = [];
+            $this->usageSummary = [
+                'from' => 0,
+                'to' => 0,
+                'total' => 0,
+                'pages' => 1,
+            ];
+            $this->showUsageModal = false;
+            $this->alert('error', 'Kategori tidak ditemukan');
+            return;
+        }
+
+        $products = $category->products()
+            ->when($this->usageSearch, function ($query) {
+                $term = trim($this->usageSearch);
+                return $query->where('products.name', 'like', '%' . $term . '%');
+            })
+            ->orderBy('products.name')
+            ->get();
+
+        $total = $products->count();
+        $pages = max(1, (int) ceil($total / $this->usagePerPage));
+        $this->usagePage = min($this->usagePage, $pages);
+        $offset = ($this->usagePage - 1) * $this->usagePerPage;
+
+        $current = $products
+            ->slice($offset, $this->usagePerPage)
+            ->values()
+            ->map(fn($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+            ]);
+
+        $from = $total ? $offset + 1 : 0;
+        $to = $total ? $offset + $current->count() : 0;
+
+        $this->usageProducts = $current->toArray();
+        $this->usageSummary = [
+            'from' => $from,
+            'to' => $to,
+            'total' => $total,
+            'pages' => $pages,
+        ];
+    }
+
 
     public function resetForm()
     {
         $this->name = '';
-        $this->is_active = false;
+        $this->is_active = true;
         $this->category_id = null;
+        $this->products = null;
     }
 
     public function cetakInformasi()

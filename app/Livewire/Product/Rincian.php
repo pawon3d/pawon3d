@@ -8,6 +8,7 @@ use App\Models\ProductCategory;
 use App\Models\MaterialDetail;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Livewire\WithFileUploads;
 
@@ -92,6 +93,7 @@ class Rincian extends Component
         }
         $this->other_costs = $product->other_costs->map(function ($cost) {
             return [
+                'type_cost_id' => $cost->type_cost_id,
                 'name' => $cost->name,
                 'price' => $cost->price,
             ];
@@ -116,45 +118,31 @@ class Rincian extends Component
         $this->showHistoryModal = true;
     }
 
-    public function updatedIsRecipe()
+    public function updatedIsRecipe($value)
     {
-        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_capital', 'price');
-        $this->product_compositions = [[
-            'material_id' => '',
-            'material_quantity' => 0,
-            'unit_id' => '',
-            'material_price' => 0,
-        ]];
-        $this->other_costs = [[
-            'name' => '',
-            'price' => 0,
-        ]];
-        $this->pcs = 1;
-        $this->recalculateCapital();
+        $this->resetRecipeState((bool) $value);
     }
 
     public function addComposition()
     {
-        $this->product_compositions = [[
-            'material_id' => '',
-            'material_quantity' => 0,
-            'unit_id' => '',
-            'material_price' => 0,
-        ]];
+        $this->product_compositions[] = $this->defaultCompositionRow();
     }
 
     public function removeComposition($index)
     {
         unset($this->product_compositions[$index]);
         $this->product_compositions = array_values($this->product_compositions);
+
+        if (empty($this->product_compositions)) {
+            $this->product_compositions[] = $this->defaultCompositionRow();
+        }
+
+        $this->recalculateCapital();
     }
 
     public function addOther()
     {
-        $this->other_costs[] = [
-            'name' => '',
-            'price' => 0,
-        ];
+        $this->other_costs[] = $this->defaultOtherCostRow();
     }
 
     public function updatedOtherCosts()
@@ -167,11 +155,24 @@ class Rincian extends Component
     {
         unset($this->other_costs[$index]);
         $this->other_costs = array_values($this->other_costs);
+
+        if (empty($this->other_costs)) {
+            $this->other_costs[] = $this->defaultOtherCostRow();
+        }
+
+        $this->recalculateCapital();
     }
 
     public function setMaterial($index, $materialId)
     {
+        if (!array_key_exists($index, $this->product_compositions)) {
+            return;
+        }
+
         $this->product_compositions[$index]['material_id'] = $materialId;
+        $this->product_compositions[$index]['unit_id'] = '';
+        $this->product_compositions[$index]['material_price'] = 0;
+        $this->recalculateCapital();
     }
 
     public function setSoloMaterial($index, $materialId)
@@ -189,19 +190,23 @@ class Rincian extends Component
 
     public function setUnit($index, $unitId)
     {
+        if (!array_key_exists($index, $this->product_compositions)) {
+            return;
+        }
+
         if ($unitId) {
             $this->product_compositions[$index]['unit_id'] = $unitId;
-            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'])
+            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'] ?? null)
                 ->where('unit_id', $unitId)
                 ->first();
-            if ($materialDetail) {
-                $this->product_compositions[$index]['material_price'] = $materialDetail->supply_price;
-            } else {
-                $this->product_compositions[$index]['material_price'] = 0;
-            }
+
+            $this->product_compositions[$index]['material_price'] = $materialDetail?->supply_price ?? 0;
         } else {
             $this->product_compositions[$index]['unit_id'] = '';
+            $this->product_compositions[$index]['material_price'] = 0;
         }
+
+        $this->recalculateCapital();
     }
 
     public function updatedProductImage()
@@ -210,7 +215,6 @@ class Rincian extends Component
             'product_image' => 'image|max:2048|mimes:jpg,jpeg,png',
         ]);
 
-        // Untuk preview langsung setelah upload
         $this->previewImage = $this->product_image->temporaryUrl();
     }
 
@@ -226,75 +230,25 @@ class Rincian extends Component
             'product_image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
         ]);
 
-        $product = Product::find($this->product_id);
-        $product->update([
-            'name' => $this->name,
-            'description' => $this->description,
-            'price' => $this->price,
-            'method' => $this->selectedMethods,
-            'is_recipe' => $this->is_recipe,
-            'is_active' => $this->is_active,
-            'is_recommended' => $this->is_recommended,
-            'is_other' => $this->is_other,
-            'pcs' => $this->pcs,
-            'capital' => $this->capital,
-            'pcs_capital' => $this->pcs_capital,
-            'suhu_ruangan' => $this->suhu_ruangan,
-            'suhu_dingin' => $this->suhu_dingin,
-            'suhu_beku' => $this->suhu_beku,
-        ]);
+        DB::transaction(function () {
+            $product = Product::findOrFail($this->product_id);
+            $product->update($this->productPayload());
 
-        if ($this->product_image) {
-            // Hapus gambar lama jika ada
-            if ($product->product_image) {
-                $oldImagePath = public_path('storage/' . $product->product_image);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+            if ($this->product_image) {
+                if ($product->product_image) {
+                    $oldImagePath = public_path('storage/' . $product->product_image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
                 }
+                $product->product_image = $this->product_image->store('product_images', 'public');
+                $product->save();
             }
-            $product->product_image = $this->product_image->store('product_images', 'public');
-            $product->save();
-        }
 
-        if ($this->category_ids) {
-            // Hapus kategori lama
-            $product->product_categories()->delete();
-            // Tambah kategori baru
-            foreach ($this->category_ids as $category_id) {
-                ProductCategory::create([
-                    'product_id' => $product->id,
-                    'category_id' => $category_id,
-                ]);
-            }
-        }
-
-        if ($this->product_compositions && $this->product_compositions[0]['material_id'] !== '') {
-            // Hapus komposisi lama
-            $product->product_compositions()->delete();
-            // Tambah komposisi baru
-            foreach ($this->product_compositions as $composition) {
-                $cleanData = [
-                    'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
-                    'material_quantity' => $composition['material_quantity'],
-                    'unit_id' => $composition['unit_id'] ?? null,
-                ];
-
-                $product->product_compositions()->create($cleanData);
-            }
-        }
-        if ($this->other_costs) {
-            // Hapus biaya lain-lain lama
-            $product->other_costs()->delete();
-            // Tambah biaya lain-lain baru
-            foreach ($this->other_costs as $cost) {
-                $cleanData = [
-                    'name' => $cost['name'],
-                    'price' => $cost['price'],
-                ];
-
-                $product->other_costs()->create($cleanData);
-            }
-        }
+            $this->syncCategories($product);
+            $this->syncCompositions($product);
+            $this->syncOtherCosts($product);
+        });
 
         return redirect()->intended(route('produk'))->with('success', 'Produk berhasil diperbarui.');
     }
@@ -314,15 +268,18 @@ class Rincian extends Component
     {
         $this->resetErrorBag('price');
 
-        $this->validateOnly('price');
-        if ($this->pcs > 1) {
-            if ($value < $this->pcs_capital) {
-                $this->addError('price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
-            } else {
-            }
-            if ($value < $this->capital) {
-                $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
-            }
+        if (!is_numeric($value)) {
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        if ($this->pcs > 1 && $numericValue < $this->pcs_capital) {
+            $this->addError('price', 'Harga jual per unit tidak boleh kurang dari modal per unit.');
+        }
+
+        if ($numericValue < $this->capital) {
+            $this->addError('price', 'Harga jual tidak boleh kurang dari total modal.');
         }
     }
     protected function recalculatePcsCapital()
@@ -331,17 +288,16 @@ class Rincian extends Component
             $this->pcs = 1;
         }
 
-        $this->pcs_capital = $this->capital / $this->pcs;
+        $this->pcs_capital = $this->pcs ? $this->capital / $this->pcs : $this->capital;
     }
 
     public function updatedPcs($value)
     {
         $this->resetErrorBag('pcs');
 
-        $this->validateOnly('pcs');
-
         if ($value < 1) {
-            $this->addError('pcs', "Jumlah pcs tidak boleh kurang dari 1.");
+            $this->addError('pcs', 'Jumlah pcs tidak boleh kurang dari 1.');
+            $this->pcs = 1;
         }
 
         $this->recalculateCapital();
@@ -352,13 +308,14 @@ class Rincian extends Component
     public function updatedProductCompositions()
     {
         $this->product_compositions = array_map(function ($composition) {
+            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn($value) => $value !== null));
+
             return [
-                'material_id' => $composition['material_id'] ?? '',
-                'material_quantity' => $composition['material_quantity'] ?? 0,
-                'unit_id' => $composition['unit_id'] ?? '',
-                'material_price' => $composition['material_price'] ?? 0,
+                'material_id' => $normalized['material_id'] ?? '',
+                'material_quantity' => (float) ($normalized['material_quantity'] ?? 0),
+                'unit_id' => $normalized['unit_id'] ?? '',
+                'material_price' => (float) ($normalized['material_price'] ?? 0),
             ];
-            $this->total = $composition['material_quantity'] * $composition['material_price'];
         }, $this->product_compositions);
         $this->recalculateCapital();
         $this->recalculatePcsCapital();
@@ -397,12 +354,185 @@ class Rincian extends Component
     }
 
 
+    protected function resetRecipeState(bool $isRecipe): void
+    {
+        $this->is_recipe = $isRecipe;
+        $this->is_other = false;
+        $this->product_compositions = [$this->defaultCompositionRow()];
+        $this->other_costs = [$this->defaultOtherCostRow()];
+        $this->pcs = 1;
+        $this->recalculateCapital();
+    }
+
+    protected function defaultCompositionRow(): array
+    {
+        return [
+            'material_id' => '',
+            'material_quantity' => 0,
+            'unit_id' => '',
+            'material_price' => 0,
+        ];
+    }
+
+    protected function defaultOtherCostRow(): array
+    {
+        return [
+            'type_cost_id' => '',
+            'name' => '',
+            'price' => 0,
+        ];
+    }
+
+    protected function productPayload(): array
+    {
+        return [
+            'name' => $this->name,
+            'description' => $this->description,
+            'price' => (float) $this->price,
+            'method' => $this->selectedMethods,
+            'is_recipe' => $this->is_recipe,
+            'is_active' => $this->is_active,
+            'is_recommended' => $this->is_recommended,
+            'is_other' => $this->is_other,
+            'pcs' => $this->pcs,
+            'capital' => $this->capital,
+            'pcs_capital' => $this->pcs_capital,
+            'suhu_ruangan' => $this->suhu_ruangan,
+            'suhu_dingin' => $this->suhu_dingin,
+            'suhu_beku' => $this->suhu_beku,
+        ];
+    }
+
+    protected function syncCategories(Product $product): void
+    {
+        if (empty($this->category_ids)) {
+            return;
+        }
+
+        $product->product_categories()->delete();
+
+        foreach ($this->category_ids as $categoryId) {
+            ProductCategory::create([
+                'product_id' => $product->id,
+                'category_id' => $categoryId,
+            ]);
+        }
+    }
+
+    protected function syncCompositions(Product $product): void
+    {
+        $product->product_compositions()->delete();
+
+        if (empty($this->product_compositions)) {
+            return;
+        }
+
+        foreach ($this->product_compositions as $composition) {
+            if (blank($composition['material_id'])) {
+                continue;
+            }
+
+            $product->product_compositions()->create([
+                'material_id' => $composition['material_id'],
+                'material_quantity' => $composition['material_quantity'],
+                'unit_id' => $composition['unit_id'] ?: null,
+            ]);
+        }
+    }
+
+    protected function syncOtherCosts(Product $product): void
+    {
+        $product->other_costs()->delete();
+
+        if (empty($this->other_costs)) {
+            return;
+        }
+
+        foreach ($this->other_costs as $cost) {
+            if (blank($cost['type_cost_id']) && blank($cost['name']) && empty($cost['price'])) {
+                continue;
+            }
+
+            $product->other_costs()->create([
+                'type_cost_id' => $cost['type_cost_id'] ?: null,
+                'name' => $cost['name'],
+                'price' => (float) ($cost['price'] ?? 0),
+            ]);
+        }
+    }
+
+    protected function categoryOptions()
+    {
+        return once(fn() => \App\Models\Category::orderBy('name')->get(['id', 'name']));
+    }
+
+    protected function recipeMaterials()
+    {
+        return once(fn() => Material::where('is_recipe', false)
+            ->with(['material_details.unit'])
+            ->orderBy('name')
+            ->get());
+    }
+
+    protected function readyMaterials()
+    {
+        return once(fn() => Material::where('is_recipe', true)
+            ->with(['material_details.unit', 'batches.unit'])
+            ->orderBy('name')
+            ->get());
+    }
+
+    protected function typeCostOptions()
+    {
+        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+    }
+
+    protected function resolveSoloInventory(): ?array
+    {
+        $materialId = $this->product_compositions[0]['material_id'] ?? null;
+
+        if (!$materialId) {
+            return null;
+        }
+
+        $material = $this->readyMaterials()->firstWhere('id', $materialId);
+
+        if (!$material) {
+            return null;
+        }
+
+        $mainDetail = $material->material_details->firstWhere('is_main', true);
+        $mainUnitAlias = $mainDetail?->unit->alias;
+
+        $batches = $material->batches->map(function ($batch) use ($material) {
+            $conversion = $material->material_details->firstWhere('unit_id', $batch->unit_id);
+            $mainQuantity = $conversion ? $batch->batch_quantity * ($conversion->quantity ?? 1) : $batch->batch_quantity;
+
+            return [
+                'number' => $batch->batch_number,
+                'quantity' => $batch->batch_quantity,
+                'unit_alias' => $batch->unit->alias ?? '',
+                'date' => $batch->date,
+                'main_quantity' => $mainQuantity,
+            ];
+        })->values();
+
+        return [
+            'material' => $material,
+            'batches' => $batches,
+            'main_unit_alias' => $mainUnitAlias,
+            'total_main' => $batches->sum('main_quantity'),
+        ];
+    }
+
     public function render()
     {
         return view('livewire.product.rincian', [
-            'categories' => \App\Models\Category::lazy(),
-            'materials' => \App\Models\Material::where('is_recipe', false)->with(['batches', 'material_details'])->lazy(),
-
+            'categoryOptions' => $this->categoryOptions(),
+            'recipeMaterials' => $this->recipeMaterials(),
+            'readyMaterials' => $this->readyMaterials(),
+            'soloInventory' => $this->resolveSoloInventory(),
+            'typeCosts' => $this->typeCostOptions(),
         ]);
     }
 }

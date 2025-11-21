@@ -4,42 +4,76 @@ namespace App\Livewire\Product;
 
 use App\Models\Product;
 use Livewire\Component;
+use App\Models\Category;
 use App\Models\Material;
 use App\Models\MaterialDetail;
+use App\Models\ProductCategory;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Rule;
 use Livewire\WithFileUploads;
-use App\Models\ProductCategory;
-use Illuminate\Support\Facades\View;
 
 class Tambah extends Component
 {
     use WithFileUploads;
 
-    public $product_image, $name, $description, $category_ids, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_capital = 0;
-    public $previewImage;
-    public $product_compositions = [];
-    public $other_costs = [];
+    #[Rule('nullable|image|max:2048|mimes:jpg,jpeg,png')]
+    public $product_image;
 
-    public $price = 0, $total = 0;
-    public $stock = 0;
-    public $selectedMethods = [];
-    public $suhu_ruangan = 0, $suhu_dingin = 0, $suhu_beku = 0;
+    public ?string $previewImage = null;
 
+    #[Rule('required|string|min:3|max:255')]
+    public string $name = '';
 
-    protected $listeners = [
-        'updatedProductImage' => 'updatedProductImage',
-        'removeImage' => 'removeImage',
-    ];
+    #[Rule('nullable|string|max:500')]
+    public ?string $description = null;
 
-    protected array $rules = [
-        'price' => 'nullable|numeric|min:0',
-    ];
+    #[Rule('array')]
+    public array $category_ids = [];
+
+    #[Rule('array|min:1')]
+    public array $selectedMethods = ['pesanan-reguler'];
+
+    #[Rule('boolean')]
+    public bool $is_recipe = false;
+
+    #[Rule('boolean')]
+    public bool $is_active = false;
+
+    #[Rule('boolean')]
+    public bool $is_recommended = false;
+
+    #[Rule('boolean')]
+    public bool $is_other = false;
+
+    #[Rule('integer|min:1')]
+    public int $pcs = 1;
+
+    #[Rule('nullable|numeric|min:0')]
+    public $price = 0;
+
+    #[Rule('array')]
+    public array $product_compositions = [];
+
+    #[Rule('array')]
+    public array $other_costs = [];
+
+    #[Rule('integer|min:0')]
+    public int $suhu_ruangan = 0;
+
+    #[Rule('integer|min:0')]
+    public int $suhu_dingin = 0;
+
+    #[Rule('integer|min:0')]
+    public int $suhu_beku = 0;
+
+    public float $capital = 0;
+    public float $pcs_capital = 0;
 
     protected $messages = [
         'name.required' => 'Nama produk tidak boleh kosong.',
-        'product_image.image' => 'File yang diunggah harus berupa gambar.',
-        'product_image.max' => 'Ukuran gambar tidak boleh lebih dari 2 MB.',
-        'product_image.mimes' => 'Format gambar yang diizinkan adalah jpg, jpeg, png.',
+        'selectedMethods.min' => 'Pilih minimal satu metode penjualan.',
     ];
 
     public function mount()
@@ -47,60 +81,34 @@ class Tambah extends Component
         View::share('title', 'Tambah Produk');
         View::share('mainTitle', 'Inventori');
 
-        $this->product_compositions = [[
-            'material_id' => '',
-            'material_quantity' => 0,
-            'unit_id' => '',
-            'material_price' => 0,
-        ]];
-        $this->other_costs = [[
-            'name' => '',
-            'price' => 0,
-        ]];
-
-        $this->recalculateCapital();
+        $this->initializeFormState();
     }
 
-
-    public function updatedIsRecipe()
+    public function updatedIsRecipe($value)
     {
-        $this->reset('product_compositions', 'is_other', 'other_costs', 'pcs', 'pcs_capital', 'price');
-        $this->product_compositions = [[
-            'material_id' => '',
-            'material_quantity' => 0,
-            'unit_id' => '',
-            'material_price' => 0,
-        ]];
-        $this->other_costs = [[
-            'name' => '',
-            'price' => 0,
-        ]];
-        $this->pcs = 1;
-        $this->recalculateCapital();
+        $this->resetRecipeState((bool) $value);
     }
 
     public function addComposition()
     {
-        $this->product_compositions[] = [
-            'material_id' => '',
-            'material_quantity' => 0,
-            'unit_id' => '',
-            'material_price' => 0,
-        ];
+        $this->product_compositions[] = $this->defaultCompositionRow();
     }
 
     public function removeComposition($index)
     {
         unset($this->product_compositions[$index]);
         $this->product_compositions = array_values($this->product_compositions);
+
+        if (empty($this->product_compositions)) {
+            $this->product_compositions[] = $this->defaultCompositionRow();
+        }
+
+        $this->recalculateCapital();
     }
 
     public function addOther()
     {
-        $this->other_costs[] = [
-            'name' => '',
-            'price' => 0,
-        ];
+        $this->other_costs[] = $this->defaultOtherCostRow();
     }
 
     public function updatedOtherCosts()
@@ -113,11 +121,24 @@ class Tambah extends Component
     {
         unset($this->other_costs[$index]);
         $this->other_costs = array_values($this->other_costs);
+
+        if (empty($this->other_costs)) {
+            $this->other_costs[] = $this->defaultOtherCostRow();
+        }
+
+        $this->recalculateCapital();
     }
 
     public function setMaterial($index, $materialId)
     {
+        if (!array_key_exists($index, $this->product_compositions)) {
+            return;
+        }
+
         $this->product_compositions[$index]['material_id'] = $materialId;
+        $this->product_compositions[$index]['unit_id'] = '';
+        $this->product_compositions[$index]['material_price'] = 0;
+        $this->recalculateCapital();
     }
 
     public function setSoloMaterial($index, $materialId)
@@ -134,27 +155,27 @@ class Tambah extends Component
     }
     public function setUnit($index, $unitId)
     {
+        if (!array_key_exists($index, $this->product_compositions)) {
+            return;
+        }
+
         if ($unitId) {
             $this->product_compositions[$index]['unit_id'] = $unitId;
-            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'])
+            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'] ?? null)
                 ->where('unit_id', $unitId)
                 ->first();
-            if ($materialDetail) {
-                $this->product_compositions[$index]['material_price'] = $materialDetail->supply_price;
-            } else {
-                $this->product_compositions[$index]['material_price'] = 0;
-            }
+
+            $this->product_compositions[$index]['material_price'] = $materialDetail?->supply_price ?? 0;
         } else {
             $this->product_compositions[$index]['unit_id'] = '';
+            $this->product_compositions[$index]['material_price'] = 0;
         }
+
+        $this->recalculateCapital();
     }
     public function updatedProductImage()
     {
-        $this->validate([
-            'product_image' => 'image|max:2048|mimes:jpg,jpeg,png',
-        ]);
-
-        // Untuk preview langsung setelah upload
+        $this->validateOnly('product_image');
         $this->previewImage = $this->product_image->temporaryUrl();
     }
 
@@ -165,63 +186,20 @@ class Tambah extends Component
 
     public function store()
     {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'product_image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
-        ]);
-        $product = Product::create([
-            'name' => $this->name,
-            'description' => $this->description,
-            'price' => $this->price,
-            'stock' => 0,
-            'method' => $this->selectedMethods,
-            'is_recipe' => $this->is_recipe,
-            'is_active' => $this->is_active,
-            'is_recommended' => $this->is_recommended,
-            'is_other' => $this->is_other,
-            'pcs' => $this->pcs,
-            'capital' => $this->capital,
-            'pcs_capital' => $this->pcs_capital,
-            'suhu_ruangan' => $this->suhu_ruangan,
-            'suhu_dingin' => $this->suhu_dingin,
-            'suhu_beku' => $this->suhu_beku,
-        ]);
+        $this->validate();
 
-        if ($this->product_image) {
-            $product->product_image = $this->product_image->store('product_images', 'public');
-            $product->save();
-        }
-        if ($this->category_ids) {
-            foreach ($this->category_ids as $category_id) {
-                ProductCategory::create([
-                    'product_id' => $product->id,
-                    'category_id' => $category_id,
-                ]);
+        DB::transaction(function () {
+            $product = Product::create($this->productPayload());
+
+            if ($this->product_image) {
+                $product->product_image = $this->product_image->store('product_images', 'public');
+                $product->save();
             }
-        }
 
-        if ($this->product_compositions[0]['material_id'] !== '') {
-            foreach ($this->product_compositions as $composition) {
-                $cleanData = [
-                    'material_id' => !empty($composition['material_id']) ? $composition['material_id'] : null,
-                    'material_quantity' => $composition['material_quantity'],
-                    'unit_id' => $composition['unit_id'] ?? null,
-                ];
-
-                $product->product_compositions()->create($cleanData);
-            }
-        }
-        if ($this->other_costs) {
-            foreach ($this->other_costs as $cost) {
-                $cleanData = [
-                    'name' => $cost['name'],
-                    'price' => $cost['price'],
-                ];
-
-                $product->other_costs()->create($cleanData);
-            }
-        }
-
+            $this->syncCategories($product);
+            $this->syncCompositions($product);
+            $this->syncOtherCosts($product);
+        });
 
         $this->resetForm();
 
@@ -237,61 +215,60 @@ class Tambah extends Component
             ->sum('price');
 
         $this->capital = $otherTotal + $compositionTotal;
+        $this->recalculatePcsCapital();
     }
 
     public function updatedPrice($value)
     {
         $this->resetErrorBag('price');
 
-        $this->validateOnly('price');
-        if ($this->pcs > 1) {
-            if ($value < $this->pcs_capital) {
-                $this->addError('price', "Harga jual per buah tidak boleh kurang dari modal per buah.");
-            } else {
-            }
-            if ($value < $this->capital) {
-                $this->addError('price', "Harga jual tidak boleh kurang dari modal.");
-            }
+        if (!is_numeric($value)) {
+            return;
+        }
+
+        $numericValue = (float) $value;
+
+        if ($this->pcs > 1 && $numericValue < $this->pcs_capital) {
+            $this->addError('price', 'Harga jual per unit tidak boleh kurang dari modal per unit.');
+        }
+
+        if ($numericValue < $this->capital) {
+            $this->addError('price', 'Harga jual tidak boleh kurang dari total modal.');
         }
     }
 
     public function updatedProductCompositions()
     {
         $this->product_compositions = array_map(function ($composition) {
+            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn($value) => $value !== null));
+
             return [
-                'material_id' => $composition['material_id'] ?? '',
-                'material_quantity' => $composition['material_quantity'] ?? 0,
-                'unit_id' => $composition['unit_id'] ?? '',
-                'material_price' => $composition['material_price'] ?? 0,
+                'material_id' => $normalized['material_id'] ?? '',
+                'material_quantity' => (float) ($normalized['material_quantity'] ?? 0),
+                'unit_id' => $normalized['unit_id'] ?? '',
+                'material_price' => (float) ($normalized['material_price'] ?? 0),
             ];
-            $this->total = $composition['material_quantity'] * $composition['material_price'];
         }, $this->product_compositions);
         $this->recalculateCapital();
         $this->recalculatePcsCapital();
     }
 
-    protected function updateTotal()
-    {
-        $this->total = collect($this->product_compositions)
-            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
-    }
     protected function recalculatePcsCapital()
     {
         if ($this->pcs < 1) {
             $this->pcs = 1;
         }
 
-        $this->pcs_capital = $this->capital / $this->pcs;
+        $this->pcs_capital = $this->pcs ? $this->capital / $this->pcs : $this->capital;
     }
 
     public function updatedPcs($value)
     {
         $this->resetErrorBag('pcs');
 
-        $this->validateOnly('pcs');
-
         if ($value < 1) {
-            $this->addError('pcs', "Jumlah pcs tidak boleh kurang dari 1.");
+            $this->addError('pcs', 'Jumlah pcs tidak boleh kurang dari 1.');
+            $this->pcs = 1;
         }
 
         $this->recalculateCapital();
@@ -304,16 +281,211 @@ class Tambah extends Component
             'name',
             'product_image',
             'description',
-            'category_ids',
             'previewImage',
+            'is_recipe',
+            'is_active',
+            'is_recommended',
+            'is_other',
+            'price',
+            'suhu_ruangan',
+            'suhu_dingin',
+            'suhu_beku',
         ]);
+
+        $this->category_ids = [];
+        $this->selectedMethods = ['pesanan-reguler'];
+        $this->product_compositions = [$this->defaultCompositionRow()];
+        $this->other_costs = [$this->defaultOtherCostRow()];
+        $this->pcs = 1;
+        $this->capital = 0;
+        $this->pcs_capital = 0;
     }
 
     public function render()
     {
-        return view('livewire.product.tambah', [
-            'categories' => \App\Models\Category::lazy(),
-            'materials' => \App\Models\Material::where('is_recipe', false)->with(['batches', 'material_details'])->lazy(),
+        return view('livewire.product.tambah-new', [
+            'categoryOptions' => $this->categoryOptions(),
+            'recipeMaterials' => $this->recipeMaterials(),
+            'readyMaterials' => $this->readyMaterials(),
+            'soloInventory' => $this->resolveSoloInventory(),
+            'typeCosts' => $this->typeCostOptions(),
         ]);
+    }
+
+    protected function initializeFormState(): void
+    {
+        $this->category_ids = [];
+        $this->selectedMethods = ['pesanan-reguler'];
+        $this->product_compositions = [$this->defaultCompositionRow()];
+        $this->other_costs = [$this->defaultOtherCostRow()];
+        $this->pcs = 1;
+        $this->capital = 0;
+        $this->pcs_capital = 0;
+    }
+
+    protected function resetRecipeState(bool $isRecipe): void
+    {
+        $this->is_recipe = $isRecipe;
+        $this->is_other = false;
+        $this->product_compositions = [$this->defaultCompositionRow()];
+        $this->other_costs = [$this->defaultOtherCostRow()];
+        $this->pcs = 1;
+        $this->recalculateCapital();
+    }
+
+    protected function defaultCompositionRow(): array
+    {
+        return [
+            'material_id' => '',
+            'material_quantity' => 0,
+            'unit_id' => '',
+            'material_price' => 0,
+        ];
+    }
+
+    protected function defaultOtherCostRow(): array
+    {
+        return [
+            'type_cost_id' => '',
+            'name' => '',
+            'price' => 0,
+        ];
+    }
+
+    protected function productPayload(): array
+    {
+        return [
+            'name' => $this->name,
+            'description' => $this->description,
+            'price' => (float) $this->price,
+            'stock' => 0,
+            'method' => $this->selectedMethods,
+            'is_recipe' => $this->is_recipe,
+            'is_active' => $this->is_active,
+            'is_recommended' => $this->is_recommended,
+            'is_other' => $this->is_other,
+            'pcs' => $this->pcs,
+            'capital' => $this->capital,
+            'pcs_capital' => $this->pcs_capital,
+            'suhu_ruangan' => $this->suhu_ruangan,
+            'suhu_dingin' => $this->suhu_dingin,
+            'suhu_beku' => $this->suhu_beku,
+        ];
+    }
+
+    protected function syncCategories(Product $product): void
+    {
+        if (empty($this->category_ids)) {
+            return;
+        }
+
+        foreach ($this->category_ids as $categoryId) {
+            ProductCategory::create([
+                'product_id' => $product->id,
+                'category_id' => $categoryId,
+            ]);
+        }
+    }
+
+    protected function syncCompositions(Product $product): void
+    {
+        if (empty($this->product_compositions)) {
+            return;
+        }
+
+        foreach ($this->product_compositions as $composition) {
+            if (blank($composition['material_id'])) {
+                continue;
+            }
+
+            $product->product_compositions()->create([
+                'material_id' => $composition['material_id'],
+                'material_quantity' => $composition['material_quantity'],
+                'unit_id' => $composition['unit_id'] ?: null,
+            ]);
+        }
+    }
+
+    protected function syncOtherCosts(Product $product): void
+    {
+        if (empty($this->other_costs)) {
+            return;
+        }
+
+        foreach ($this->other_costs as $cost) {
+            if (blank($cost['type_cost_id']) && blank($cost['name']) && empty($cost['price'])) {
+                continue;
+            }
+
+            $product->other_costs()->create([
+                'type_cost_id' => $cost['type_cost_id'] ?: null,
+                'name' => $cost['name'],
+                'price' => (float) ($cost['price'] ?? 0),
+            ]);
+        }
+    }
+
+    protected function categoryOptions(): Collection
+    {
+        return once(fn() => Category::orderBy('name')->get(['id', 'name']));
+    }
+
+    protected function recipeMaterials(): Collection
+    {
+        return once(fn() => Material::where('is_recipe', false)
+            ->with(['material_details.unit'])
+            ->orderBy('name')
+            ->get());
+    }
+
+    protected function readyMaterials(): Collection
+    {
+        return once(fn() => Material::where('is_recipe', true)
+            ->with(['material_details.unit', 'batches.unit'])
+            ->orderBy('name')
+            ->get());
+    }
+
+    protected function typeCostOptions(): Collection
+    {
+        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+    }
+
+    protected function resolveSoloInventory(): ?array
+    {
+        $materialId = $this->product_compositions[0]['material_id'] ?? null;
+
+        if (!$materialId) {
+            return null;
+        }
+
+        $material = $this->readyMaterials()->firstWhere('id', $materialId);
+
+        if (!$material) {
+            return null;
+        }
+
+        $mainDetail = $material->material_details->firstWhere('is_main', true);
+        $mainUnitAlias = $mainDetail?->unit->alias;
+
+        $batches = $material->batches->map(function ($batch) use ($material) {
+            $conversion = $material->material_details->firstWhere('unit_id', $batch->unit_id);
+            $mainQuantity = $conversion ? $batch->batch_quantity * ($conversion->quantity ?? 1) : $batch->batch_quantity;
+
+            return [
+                'number' => $batch->batch_number,
+                'quantity' => $batch->batch_quantity,
+                'unit_alias' => $batch->unit->alias ?? '',
+                'date' => $batch->date,
+                'main_quantity' => $mainQuantity,
+            ];
+        })->values();
+
+        return [
+            'material' => $material,
+            'batches' => $batches,
+            'main_unit_alias' => $mainUnitAlias,
+            'total_main' => $batches->sum('main_quantity'),
+        ];
     }
 }
