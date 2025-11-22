@@ -12,6 +12,7 @@ use Livewire\Volt\Volt;
 Route::get('/', App\Livewire\Landing\Index::class)->name('home');
 Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
+Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 
 
 Route::get('/tes', function () {
@@ -111,8 +112,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/cetak', [PdfController::class, 'generateSupplierPDF'])
             ->name('supplier.pdf');
         Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
-        Route::get('/bahan-baku/tambah', App\Livewire\Material\Tambah::class)->name('bahan-baku.tambah');
-        Route::get('/bahan-baku/{id}/rincian', App\Livewire\Material\Rincian::class)->name('bahan-baku.edit');
+        Route::get('/bahan-baku/tambah', App\Livewire\Material\Form::class)->name('bahan-baku.tambah');
+        Route::get('/bahan-baku/{id}/rincian', App\Livewire\Material\Form::class)->name('bahan-baku.edit');
         Route::get('/bahan-baku/cetak', [PdfController::class, 'generateMaterialPDF'])
             ->name('bahan-baku.pdf');
         Route::get('/belanja', App\Livewire\Expense\Index::class)->name('belanja');

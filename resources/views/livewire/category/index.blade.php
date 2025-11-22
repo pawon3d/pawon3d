@@ -41,95 +41,39 @@
             </div>
         </div>
 
-        <div class="w-full rounded-[15px] overflow-hidden border border-[#e4e4e4] bg-white">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-[#3f4e4f] h-[60px]">
-                            <th class="text-left px-6 py-5">
-                                <button type="button" wire:click="sortBy('name')"
-                                    class="flex items-center gap-2 text-left w-full">
-                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Kategori
-                                        Produk</span>
-                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
-                                </button>
-                            </th>
-                            <th class="text-left px-6 py-5">
-                                <button type="button" wire:click="sortBy('is_active')"
-                                    class="flex items-center gap-2 text-left w-full">
-                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Status
-                                        Tampil</span>
-                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
-                                </button>
-                            </th>
-                            <th class="text-right px-6 py-5">
-                                <button type="button" wire:click="sortBy('products_count')"
-                                    class="flex items-center gap-2 w-full justify-end">
-                                    <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Jumlah
-                                        Penggunaan</span>
-                                    <flux:icon.chevron-up-down class="size-3.5 text-[#f8f4e1]" />
-                                </button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-[#fafafa]">
-                        @forelse ($categories as $category)
-                            <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors cursor-pointer"
-                                wire:click="edit('{{ $category->id }}')">
-                                <td class="px-6">
-                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                        {{ $category->name }}
-                                    </span>
-                                </td>
-                                <td class="px-6">
-                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                        {{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                    </span>
-                                </td>
-                                <td class="px-6 text-right">
-                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                        {{ $category->products_count }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr class="h-[60px]">
-                                <td colspan="3" class="px-6 text-center">
-                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">Tidak ada
-                                        data.</span>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="flex flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between">
-                <div class="font-montserrat font-medium text-[14px] text-[#666666] opacity-70">
-                    @php
-                        $first = $categories->firstItem() ?? 0;
-                        $last = $categories->lastItem() ?? 0;
-                        $total = $categories->total();
-                    @endphp
-                    <span>Menampilkan {{ $first }} hingga {{ $last }} dari {{ $total }} baris
-                        data</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" wire:click="previousPage" @disabled($categories->onFirstPage())
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $categories->onFirstPage() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
-                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
-                    </button>
-                    <div class="bg-[#666666] min-w-[30px] px-3 py-1 rounded-[5px] text-center">
-                        <span
-                            class="font-montserrat font-medium text-[14px] text-white">{{ $categories->currentPage() }}</span>
-                    </div>
-                    <button type="button" wire:click="nextPage" @disabled(!$categories->hasMorePages())
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $categories->hasMorePages() ? 'hover:bg-[#f0f0f0]' : 'opacity-50 cursor-not-allowed' }}">
-                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
-                    </button>
-                </div>
-            </div>
-        </div>
+        <x-table.paginated :headers="[
+            ['label' => 'Kategori Produk', 'sortable' => true, 'sort-by' => 'name'],
+            ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
+            [
+                'label' => 'Jumlah Penggunaan',
+                'align' => 'right',
+                'sortable' => true,
+                'sort-by' => 'products_count',
+            ],
+        ]" :paginator="$categories" emptyMessage="Tidak ada data." headerBg="#3f4e4f"
+            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+            class="w-full rounded-[15px] overflow-hidden border border-[#e4e4e4] bg-white">
+            @foreach ($categories as $category)
+                <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors cursor-pointer"
+                    wire:click="edit('{{ $category->id }}')">
+                    <td class="px-6">
+                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                            {{ $category->name }}
+                        </span>
+                    </td>
+                    <td class="px-6">
+                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                            {{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                        </span>
+                    </td>
+                    <td class="px-6 text-right">
+                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                            {{ $category->products_count }}
+                        </span>
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <flux:modal name="tambah-kategori" class="w-full max-w-lg" wire:model="showModal">
@@ -150,12 +94,7 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <p class="font-montserrat font-medium text-[18px] text-[#666666]">Tampil Kategori</p>
-                            <button type="button" wire:click="$toggle('is_active')"
-                                class="relative h-[25px] w-[45px] rounded-full transition-colors duration-200 {{ $is_active ? 'bg-green-500' : 'bg-[#666666]' }}"
-                                aria-pressed="{{ $is_active ? 'true' : 'false' }}">
-                                <span
-                                    class="absolute top-[3px] h-[19px] w-[19px] rounded-full bg-white transition-all duration-200 {{ $is_active ? 'left-[23px]' : 'left-[3px]' }}"></span>
-                            </button>
+                            <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
                         </div>
                         <p class="font-montserrat text-[14px] text-[#666666]">Aktifkan opsi ini jika kategori ingin
                             ditampilkan dan digunakan.</p>
@@ -169,15 +108,9 @@
                         Batal
                     </button>
                 </flux:modal.close>
-                <button type="button" wire:click="store"
-                    class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.5" class="size-5" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 7.5V21h18V7.5L16.5 3h-9L3 7.5zM15 21v-7.5H9V21" />
-                    </svg>
+                <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="store">
                     Simpan
-                </button>
+                </flux:button>
             </div>
         </div>
     </flux:modal>
@@ -211,12 +144,7 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <p class="font-montserrat font-medium text-[18px] text-[#666666]">Tampil Kategori</p>
-                            <button type="button" wire:click="$toggle('is_active')"
-                                class="relative h-[25px] w-[45px] rounded-full transition-colors duration-200 {{ $is_active ? 'bg-green-500' : 'bg-[#666666]' }}"
-                                aria-pressed="{{ $is_active ? 'true' : 'false' }}">
-                                <span
-                                    class="absolute top-[3px] h-[19px] w-[19px] rounded-full bg-white transition-all duration-200 {{ $is_active ? 'left-[23px]' : 'left-[3px]' }}"></span>
-                            </button>
+                            <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
                         </div>
                         <p class="font-montserrat text-[14px] text-[#666666]">Aktifkan opsi ini jika kategori ingin
                             ditampilkan dan digunakan.</p>
@@ -235,15 +163,9 @@
                         class="bg-[#c4c4c4] text-[#333333] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
                         Batal
                     </button>
-                    <button type="button" wire:click="update"
-                        class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.5" class="size-5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3 7.5V21h18V7.5L16.5 3h-9L3 7.5zM15 21v-7.5H9V21" />
-                        </svg>
+                    <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="update">
                         Simpan Perubahan
-                    </button>
+                    </flux:button>
                 </div>
             </div>
         </div>
@@ -276,47 +198,20 @@
                         class="flex-1 bg-transparent border-0 font-montserrat text-[16px] text-[#959595] focus:outline-none focus:ring-0" />
                 </div>
             </div>
-            <div class="border border-[#d4d4d4] rounded-[15px] overflow-hidden">
-                <div
-                    class="bg-[#3f4e4f] text-[#f8f4e1] font-montserrat font-bold text-[14px] px-6 py-4 rounded-t-[15px]">
-                    <div class="flex items-center justify-between">
-                        <span>Produk</span>
-                        <flux:icon.chevron-up-down class="size-4" />
-                    </div>
-                </div>
-                <div class="divide-y divide-[#d4d4d4]">
-                    @forelse ($usageProducts as $product)
-                        <div class="flex items-center justify-between px-6 py-4">
+
+            <x-list.paginated :items="$usageProducts" :columns="[['label' => 'Produk', 'sortable' => true, 'sort-method' => 'sortUsageProducts']]" :summary="$usageSummary" :currentPage="$usagePage"
+                previousMethod="previousUsagePage" nextMethod="nextUsagePage" headerBg="#3f4e4f"
+                headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                emptyMessage="Tidak ada produk di kategori ini.">
+                @foreach ($usageProducts as $product)
+                    <tr>
+                        <td class="px-6 py-5">
                             <span class="font-montserrat text-[14px] text-[#666666]">{{ $product['name'] }}</span>
-                            <span class="text-[#666666]">
-                                <flux:icon.trash class="size-4" />
-                            </span>
-                        </div>
-                    @empty
-                        <div class="px-6 py-6 text-center font-montserrat text-[14px] text-[#666666]">
-                            Tidak ada produk di kategori ini.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <span class="font-montserrat text-[14px] text-[#666666] opacity-70">Menampilkan
-                    {{ $usageSummary['from'] }} hingga {{ $usageSummary['to'] }} dari
-                    {{ $usageSummary['total'] }} baris data</span>
-                <div class="flex items-center gap-2">
-                    <button type="button" wire:click="previousUsagePage" @disabled($usagePage === 1 || $usageSummary['total'] === 0)
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $usagePage === 1 || $usageSummary['total'] === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
-                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
-                    </button>
-                    <div class="bg-[#666666] min-w-[30px] px-3 py-1 rounded-[5px] text-center">
-                        <span class="font-montserrat text-[14px] text-white">{{ $usagePage }}</span>
-                    </div>
-                    <button type="button" wire:click="nextUsagePage" @disabled($usagePage >= $usageSummary['pages'] || $usageSummary['total'] === 0)
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $usagePage >= $usageSummary['pages'] || $usageSummary['total'] === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
-                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
-                    </button>
-                </div>
-            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </x-list.paginated>
+
             <div class="border-t border-dotted border-[#666666] pt-3">
                 <p class="font-montserrat text-[14px] text-[#666666] text-center opacity-70">Tekan bagian luar untuk
                     menutup halaman</p>

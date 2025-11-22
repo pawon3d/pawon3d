@@ -24,8 +24,18 @@ class Index extends Component
     public $showModal = false;
     public $showEditModal = false;
     public $sortByCategory = false;
+    public $showUsageModal = false;
     public $usageSearch = '';
-    public $usageMaterials = null;
+    public $usageMaterials = [];
+    public $usageSummary = [
+        'from' => 0,
+        'to' => 0,
+        'total' => 0,
+        'pages' => 1,
+    ];
+    public $usagePage = 1;
+    public $usagePerPage = 2;
+    public $usageSortDirection = 'asc';
 
     protected $listeners = [
         'delete',
@@ -112,22 +122,31 @@ class Index extends Component
     public function edit($id)
     {
         $this->unit_id = $id;
-        $unit = \App\Models\Unit::where('id', $this->unit_id)->withCount('material_details')->first();
-        $this->materials = $unit->material_details_count;
+        $unit = \App\Models\Unit::find($this->unit_id);
+
+        // Count unique materials that use this unit
+        $this->materials = \App\Models\Material::whereHas('material_details', function ($query) {
+            $query->where('unit_id', $this->unit_id);
+        })->count();
+
         $this->name = $unit->name;
         $this->alias = $unit->alias;
         $this->group = $unit->group;
 
         // Load materials that use this unit
-        $this->loadUsageMaterials();
+        $this->usageSearch = '';
+        $this->usagePage = 1;
+        $this->refreshUsageList();
 
         $this->showEditModal = true;
     }
 
-    public function showUsageModal()
+    public function openUsageModal()
     {
-        $this->loadUsageMaterials();
-        Flux::modal('usage-modal')->show();
+        $this->usageSearch = '';
+        $this->usagePage = 1;
+        $this->refreshUsageList();
+        $this->showUsageModal = true;
     }
 
     protected function loadUsageMaterials()
@@ -145,7 +164,99 @@ class Index extends Component
 
     public function updatedUsageSearch()
     {
-        $this->loadUsageMaterials();
+        $this->usagePage = 1;
+        $this->refreshUsageList();
+    }
+
+    public function previousUsagePage()
+    {
+        if ($this->usagePage <= 1) {
+            return;
+        }
+
+        $this->usagePage--;
+        $this->refreshUsageList();
+    }
+
+    public function nextUsagePage()
+    {
+        if ($this->usagePage >= $this->usageSummary['pages']) {
+            return;
+        }
+
+        $this->usagePage++;
+        $this->refreshUsageList();
+    }
+
+    public function sortUsageMaterials()
+    {
+        $this->usageSortDirection = $this->usageSortDirection === 'asc' ? 'desc' : 'asc';
+        $this->refreshUsageList();
+    }
+
+    protected function refreshUsageList()
+    {
+        if (!$this->unit_id) {
+            $this->usageMaterials = [];
+            $this->usageSummary = [
+                'from' => 0,
+                'to' => 0,
+                'total' => 0,
+                'pages' => 1,
+            ];
+            return;
+        }
+
+        $unit = \App\Models\Unit::find($this->unit_id);
+
+        if (!$unit) {
+            $this->usageMaterials = [];
+            $this->usageSummary = [
+                'from' => 0,
+                'to' => 0,
+                'total' => 0,
+                'pages' => 1,
+            ];
+            $this->showUsageModal = false;
+            $this->alert('error', 'Satuan tidak ditemukan');
+            return;
+        }
+
+        $materials = \App\Models\Material::when($this->usageSearch, function ($query) {
+            $term = trim($this->usageSearch);
+            return $query->where('name', 'like', '%' . $term . '%');
+        })->whereHas('material_details', function ($query) {
+            $query->where('unit_id', $this->unit_id);
+        })->with(['material_details' => function ($query) {
+            $query->where('unit_id', $this->unit_id)->with('unit');
+        }])
+            ->orderBy('name', $this->usageSortDirection)
+            ->get();
+
+        $total = $materials->count();
+        $pages = max(1, (int) ceil($total / $this->usagePerPage));
+        $this->usagePage = min($this->usagePage, $pages);
+        $offset = ($this->usagePage - 1) * $this->usagePerPage;
+
+        $current = $materials
+            ->slice($offset, $this->usagePerPage)
+            ->values()
+            ->map(fn($material) => [
+                'id' => $material->id,
+                'name' => $material->name,
+                'unit_alias' => $material->material_details->where('unit_id', $this->unit_id)->first() ? $material->material_details->where('unit_id', $this->unit_id)->first()->unit->alias : '-',
+            ]);
+
+        $from = $total ? $offset + 1 : 0;
+        $to = $total ? $offset + $current->count() : 0;
+
+        $this->usageMaterials = $current->toArray();
+        $this->usageSummary = [
+            'from' => $from,
+            'to' => $to,
+            'total' => $total,
+            'pages' => $pages,
+        ];
     }
 
     public function update()
@@ -190,15 +301,20 @@ class Index extends Component
 
         if ($unit) {
             // Check if unit is being used
-            if ($unit->material_details()->count() > 0) {
+            $usageCount = \App\Models\Material::whereHas('material_details', function ($query) {
+                $query->where('unit_id', $this->unit_id);
+            })->count();
+
+            if ($usageCount > 0) {
                 $this->alert('error', 'Satuan tidak dapat dihapus karena masih digunakan!');
                 return;
             }
 
             $unit->delete();
             $this->alert('success', 'Satuan berhasil dihapus!');
-            $this->reset('unit_id');
-            $this->showEditModal = false;
+
+            Flux::modals()->close();
+            $this->resetForm();
         } else {
             $this->alert('error', 'Satuan tidak ditemukan!');
         }
@@ -212,7 +328,8 @@ class Index extends Component
         $this->group = '';
         $this->unit_id = null;
         $this->materials = null;
-        $this->usageMaterials = null;
+        $this->usageMaterials = [];
         $this->usageSearch = '';
+        $this->usagePage = 1;
     }
 }

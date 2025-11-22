@@ -53,72 +53,26 @@
             </div>
         </div>
 
-        <div class="border rounded-[15px] overflow-hidden">
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-[#3f4e4f]">
-                        <tr>
-                            <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1] cursor-pointer"
-                                wire:click="sortBy('name')">
-                                <div class="flex items-center gap-1">
-                                    Kategori Persediaan
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                        <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                        <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
-                                    </svg>
-                                </div>
-                            </th>
-                            <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1] cursor-pointer"
-                                wire:click="sortBy('is_active')">
-                                <div class="flex items-center gap-1">
-                                    Status Tampil
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                        <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                        <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
-                                    </svg>
-                                </div>
-                            </th>
-                            <th class="px-6 py-5 text-right text-sm font-bold text-[#f8f4e1] cursor-pointer"
-                                wire:click="sortBy('details_count')">
-                                <div class="flex items-center justify-end gap-1">
-                                    Jumlah Penggunaan
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                        <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                        <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
-                                    </svg>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-[#fafafa] divide-y divide-[#d4d4d4]">
-                        @forelse($categories as $category)
-                            <tr class="hover:bg-gray-50 cursor-pointer" wire:click="edit('{{ $category->id }}')">
-                                <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                                    {{ $category->name }}
-                                </td>
-                                <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                                    {{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                </td>
-                                <td class="px-6 py-5 text-right text-[#666666] font-medium text-sm">
-                                    {{ $category->details_count }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="px-6 py-5 text-center text-[#666666] font-medium text-sm">
-                                    Tidak ada data.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $categories->links() }}
-            </div>
-        </div>
+        <x-table.paginated :headers="[
+            ['label' => 'Kategori Persediaan', 'sortable' => true, 'sort-by' => 'name'],
+            ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
+            ['label' => 'Jumlah Penggunaan', 'sortable' => true, 'sort-by' => 'details_count', 'align' => 'right'],
+        ]" :paginator="$categories" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
+            bodyText="#666666" emptyMessage="Tidak ada data.">
+            @foreach ($categories as $category)
+                <tr class="hover:bg-gray-50 cursor-pointer" wire:click="edit('{{ $category->id }}')">
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $category->name }}
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $category->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                    </td>
+                    <td class="px-6 py-5 text-right text-[#666666] font-medium text-sm">
+                        {{ $category->details_count }}
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <flux:modal name="tambah-kategori" class="w-full max-w-lg" wire:model="showModal">
@@ -142,12 +96,7 @@
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <label class="text-lg font-medium text-[#666666]">Tampil Kategori</label>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" wire:model="is_active" class="sr-only peer">
-                                <div
-                                    class="w-11 h-6 bg-[#525252] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#fafafa] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#525252]">
-                                </div>
-                            </label>
+                            <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
                         </div>
                         <p class="text-sm text-[#666666] leading-relaxed">
                             Aktifkan opsi ini jika kategori ingin ditampilkan dan digunakan.
@@ -165,15 +114,9 @@
                         </svg>
                         Batal
                     </button>
-                    <button type="button" wire:click="store"
-                        class="px-6 py-2.5 bg-[#3f4e4f] hover:bg-[#4a5d5e] text-[#f8f4e1] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z">
-                            </path>
-                        </svg>
+                    <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="store">
                         Simpan
-                    </button>
+                    </flux:button>
                 </div>
             </div>
         </div>
@@ -212,12 +155,7 @@
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <label class="text-lg font-medium text-[#666666]">Tampil Kategori</label>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" wire:model="is_active" class="sr-only peer">
-                                <div
-                                    class="w-11 h-6 bg-[#525252] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#fafafa] after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#525252]">
-                                </div>
-                            </label>
+                            <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500" />
                         </div>
                         <p class="text-sm text-[#666666] leading-relaxed">
                             Aktifkan opsi ini jika kategori ingin ditampilkan dan digunakan.
@@ -247,15 +185,9 @@
                             </svg>
                             Batal
                         </button>
-                        <button type="button" wire:click="update"
-                            class="px-6 py-2.5 bg-[#3f4e4f] hover:bg-[#4a5d5e] text-[#f8f4e1] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z">
-                                </path>
-                            </svg>
+                        <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="update">
                             Simpan Pembaruan
-                        </button>
+                        </flux:button>
                     </div>
                 </div>
             </div>
@@ -305,116 +237,38 @@
                     </div>
 
                     <!-- Table -->
-                    <div class="space-y-5">
-                        <div class="border rounded-[15px] overflow-hidden max-h-[180px]">
-                            <table class="min-w-full">
-                                <thead class="bg-[#3f4e4f]">
-                                    <tr>
-                                        <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1]">
-                                            <div class="flex items-center gap-1">
-                                                Barang Persediaan
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                                    <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                                    <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
-                                                </svg>
-                                            </div>
-                                        </th>
-                                        <th class="px-6 py-5 w-[72px]"></th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-[#fafafa] divide-y divide-[#d4d4d4]">
-                                    @forelse($usageMaterials ?? [] as $material)
-                                        <tr>
-                                            <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                                                {{ $material->name }}
-                                            </td>
-                                            <td class="px-6 py-5 text-center">
-                                                <button type="button"
-                                                    wire:click="removeFromCategory('{{ $material->id }}')"
-                                                    class="text-[#666666] hover:text-[#eb5757] transition">
-                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                            clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="2"
-                                                class="px-6 py-5 text-center text-[#666666] font-medium text-sm">
-                                                Tidak ada persediaan.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination -->
-                        @if ($usageMaterials && method_exists($usageMaterials, 'firstItem'))
-                            <div class="flex justify-between items-center">
-                                <p class="text-sm font-medium text-[#666666] opacity-70">
-                                    Menampilkan {{ $usageMaterials->firstItem() ?? 0 }} hingga
-                                    {{ $usageMaterials->lastItem() ?? 0 }} dari {{ $usageMaterials->total() ?? 0 }}
-                                    baris
-                                    data
-                                </p>
-                                <div class="flex gap-2.5 items-center">
-                                    <button type="button" {{ $usageMaterials->onFirstPage() ? 'disabled' : '' }}
-                                        wire:click="previousUsagePage"
-                                        class="min-w-[30px] px-2.5 py-1 bg-[#fafafa] border border-[#666666] rounded-[5px] disabled:opacity-50">
-                                        <svg class="w-4 h-4 text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                    <div class="min-w-[30px] px-2.5 py-1 bg-[#666666] rounded-[5px] text-center">
-                                        <span
-                                            class="text-sm font-medium text-[#fafafa]">{{ $usageMaterials->currentPage() ?? 1 }}</span>
-                                    </div>
-                                    <button type="button" {{ !$usageMaterials->hasMorePages() ? 'disabled' : '' }}
-                                        wire:click="nextUsagePage"
-                                        class="min-w-[30px] px-2.5 py-1 bg-[#fafafa] border border-[#666666] rounded-[5px] disabled:opacity-50">
-                                        <svg class="w-4 h-4 text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        @else
-                            <div class="flex justify-between items-center">
-                                <p class="text-sm font-medium text-[#666666] opacity-70">
-                                    Menampilkan 0 hingga 0 dari 0 baris data
-                                </p>
-                                <div class="flex gap-2.5 items-center">
-                                    <button type="button" disabled
-                                        class="min-w-[30px] px-2.5 py-1 bg-[#fafafa] border border-[#666666] rounded-[5px] opacity-50">
-                                        <svg class="w-4 h-4 text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                    <div class="min-w-[30px] px-2.5 py-1 bg-[#666666] rounded-[5px] text-center">
-                                        <span class="text-sm font-medium text-[#fafafa]">1</span>
-                                    </div>
-                                    <button type="button" disabled
-                                        class="min-w-[30px] px-2.5 py-1 bg-[#fafafa] border border-[#666666] rounded-[5px] opacity-50">
-                                        <svg class="w-4 h-4 text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+                    <x-list.paginated :items="$usageMaterials" :columns="[
+                        [
+                            'label' => 'Barang Persediaan',
+                            'sortable' => true,
+                            'sort-method' => 'sortUsageMaterials',
+                        ],
+                    ]" headerBg="#3f4e4f" headerText="#f8f4e1"
+                        bodyBg="#fafafa" bodyText="#666666" emptyMessage="Tidak ada persediaan.">
+                        @if ($usageMaterials && count($usageMaterials) > 0)
+                            @foreach ($usageMaterials as $material)
+                                <tr>
+                                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                                        {{ $material->name }}
+                                    </td>
+                                    <td class="px-6 py-5 text-center w-[72px]">
+                                        <button type="button" wire:click="removeFromCategory('{{ $material->id }}')"
+                                            class="text-[#666666] hover:text-[#eb5757] transition">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @endif
-                    </div>
+
+                        <x-slot name="actionColumn">
+                            <th class="px-6 py-5 w-[72px]"></th>
+                        </x-slot>
+                    </x-list.paginated>
                 </div>
 
                 <!-- Bottom Section -->

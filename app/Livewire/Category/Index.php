@@ -37,8 +37,9 @@ class Index extends Component
         'pages' => 1,
     ];
     public $usagePage = 1;
-    public $usagePerPage = 5;
+    public $usagePerPage = 2;
     public $usageSearch = '';
+    public $usageSortDirection = 'asc';
     public $sortByCategory = false;
     protected $listeners = [
         'delete',
@@ -218,6 +219,12 @@ class Index extends Component
         $this->refreshUsageList();
     }
 
+    public function sortUsageProducts()
+    {
+        $this->usageSortDirection = $this->usageSortDirection === 'asc' ? 'desc' : 'asc';
+        $this->refreshUsageList();
+    }
+
     protected function refreshUsageList()
     {
         if (!$this->usageCategoryId) {
@@ -251,7 +258,7 @@ class Index extends Component
                 $term = trim($this->usageSearch);
                 return $query->where('products.name', 'like', '%' . $term . '%');
             })
-            ->orderBy('products.name')
+            ->orderBy('products.name', $this->usageSortDirection)
             ->get();
 
         $total = $products->count();

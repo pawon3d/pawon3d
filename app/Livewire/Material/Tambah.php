@@ -28,7 +28,7 @@ class Tambah extends Component
         'image.mimes' => 'Format gambar yang diizinkan adalah jpg, jpeg, png.',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         \Illuminate\Support\Facades\View::share('title', 'Tambah Bahan Baku');
         View::share('mainTitle', 'Inventori');
@@ -39,7 +39,7 @@ class Tambah extends Component
             'quantity' => 1,
         ]];
     }
-    public function updatedImage()
+    public function updatedImage(): void
     {
         $this->validate([
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
@@ -47,12 +47,12 @@ class Tambah extends Component
 
         $this->previewImage = $this->image->temporaryUrl();
     }
-    public function removeImage()
+    public function removeImage(): void
     {
         $this->reset('image', 'previewImage');
     }
 
-    public function addUnit()
+    public function addUnit(): void
     {
         $this->material_details[] = [
             'unit_id' => '',
@@ -62,7 +62,7 @@ class Tambah extends Component
             'is_main' => false,
         ];
     }
-    public function removeUnit($index)
+    public function removeUnit($index): void
     {
         if (count($this->material_details) > 1) {
             unset($this->material_details[$index]);
@@ -70,24 +70,31 @@ class Tambah extends Component
         }
     }
 
-    public function setUnit($index, $unitId)
+    public function setUnit($index, $unitId): void
     {
+        if (!$unitId) {
+            return;
+        }
+
+        $unit = Unit::find($unitId);
+
+        if (!$unit) {
+            return;
+        }
+
         if ($index == 0) {
             $this->main_unit_id = $unitId;
-            $this->main_unit_alias = Unit::find($unitId)->alias;
-            $this->main_unit_name = Unit::find($unitId)->name;
+            $this->main_unit_alias = $unit->alias;
+            $this->main_unit_name = $unit->name;
             $this->material_details[$index]['is_main'] = true;
         }
-        $this->material_details[$index]['unit_id'] = $unitId;
 
-        if ($unitId) {
-            $unit = Unit::find($unitId);
-            $this->material_details[$index]['unit'] = $unit->alias;
-            $this->material_details[$index]['unit_name'] = $unit->name;
-        }
+        $this->material_details[$index]['unit_id'] = $unitId;
+        $this->material_details[$index]['unit'] = $unit->alias;
+        $this->material_details[$index]['unit_name'] = $unit->name;
     }
 
-    public function updatedMaterialDetails()
+    public function updatedMaterialDetails(): void
     {
         $this->material_details = array_map(function ($detail) {
             return [
@@ -125,41 +132,39 @@ class Tambah extends Component
             'material_details.*.is_main' => 'boolean',
         ]);
 
-        $material = \App\Models\Material::create([
-            'name' => $this->name,
-            'description' => $this->description,
-            'expiry_date' => null,
-            'status' => $this->status,
-            'minimum' => $this->minimum,
-            'is_active' => $this->is_active,
-            'is_recipe' => $this->is_recipe,
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $material = \App\Models\Material::create([
+                'name' => $this->name,
+                'description' => $this->description,
+                'expiry_date' => null,
+                'status' => $this->status,
+                'minimum' => $this->minimum,
+                'is_active' => $this->is_active,
+                'is_recipe' => $this->is_recipe,
+                'image' => $this->image ? $this->image->store('material_images', 'public') : null,
+            ]);
 
-        if ($this->image) {
-            $material->image = $this->image->store('material_images', 'public');
-            $material->save();
-        }
-
-        if ($this->category_ids) {
-            foreach ($this->category_ids as $category_id) {
-                IngredientCategoryDetail::create([
-                    'material_id' => $material->id,
-                    'ingredient_category_id' => $category_id,
-                ]);
+            // Create category relationships
+            if ($this->category_ids) {
+                foreach ($this->category_ids as $category_id) {
+                    IngredientCategoryDetail::create([
+                        'material_id' => $material->id,
+                        'ingredient_category_id' => $category_id,
+                    ]);
+                }
             }
-        }
 
-        if ($this->material_details[0]['unit_id'] != null && $this->material_details[0]['unit_id'] != '') {
-            foreach ($this->material_details as $detail) {
-                $cleanData = [
+            // Create material details
+            if (!empty($this->material_details[0]['unit_id'])) {
+                $detailsData = collect($this->material_details)->map(fn($detail) => [
                     'unit_id' => $detail['unit_id'] ?? null,
                     'quantity' => $detail['quantity'] ?? 0,
                     'is_main' => $detail['is_main'] ?? false,
-                ];
+                ])->toArray();
 
-                $material->material_details()->create($cleanData);
+                $material->material_details()->createMany($detailsData);
             }
-        }
+        });
 
         return redirect()->intended(route('bahan-baku'))
             ->with('success', 'Bahan Baku berhasil ditambahkan.');

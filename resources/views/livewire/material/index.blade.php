@@ -165,133 +165,70 @@
             </div>
         @elseif ($viewMode === 'list')
             {{-- list view --}}
-            @if ($materials->isEmpty())
-                <div
-                    class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-                    <p class="text-gray-700 font-semibold">Belum ada barang persediaan.</p>
-                    <p class="text-gray-700">Tekan tombol "Tambah Persediaan" untuk menambahkan persediaan.</p>
-                </div>
-            @else
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead class="bg-[#3f4e4f]">
-                                <tr>
-                                    <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1] cursor-pointer montserrat-bold"
-                                        wire:click="sortBy('name')">
-                                        <div class="flex items-center gap-2">
-                                            <span>Barang Persediaan</span>
-                                            <span
-                                                class="text-xs">{{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}</span>
-                                        </div>
-                                    </th>
-                                    <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1] cursor-pointer montserrat-bold"
-                                        wire:click='sortBy("is_active")'>
-                                        <div class="flex items-center gap-2">
-                                            <span>Status Tampil</span>
-                                            <span
-                                                class="text-xs">{{ $sortDirection === 'asc' && $sortField === 'is_active' ? '↑' : '↓' }}</span>
-                                        </div>
-                                    </th>
-                                    <th class="px-6 py-5 text-right text-sm font-bold text-[#f8f4e1] montserrat-bold">
-                                        Jumlah Persediaan
-                                    </th>
-                                    <th class="px-6 py-5 text-left text-sm font-bold text-[#f8f4e1] cursor-pointer montserrat-bold"
-                                        wire:click='sortBy("expiry_date")'>
-                                        <div class="flex items-center gap-2">
-                                            <span>Tanggal Expired</span>
-                                            <span
-                                                class="text-xs">{{ $sortDirection === 'asc' && $sortField === 'expiry_date' ? '↑' : '↓' }}</span>
-                                        </div>
-                                    </th>
-                                    <th class="px-6 py-5 text-right text-sm font-bold text-[#f8f4e1] cursor-pointer montserrat-bold"
-                                        wire:click='sortBy("status")'>
-                                        <div class="flex items-center gap-2 justify-end">
-                                            <span>Status Persediaan</span>
-                                            <span
-                                                class="text-xs">{{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}</span>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-[#d4d4d4]">
-                                @foreach ($materials as $material)
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <a href="{{ route('bahan-baku.edit', $material->id) }}"
-                                                class="text-sm text-[#666666] font-medium montserrat-medium hover:underline">
-                                                {{ $material->name }}
-                                            </a>
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium whitespace-nowrap">
-                                            {{ $material->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium text-right">
-                                            @php
-                                                $quantity_main_total = 0;
-                                                $batches = $material->batches;
+            <x-table.paginated :headers="[
+                ['label' => 'Barang Persediaan', 'sortable' => true, 'sort-by' => 'name'],
+                ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
+                ['label' => 'Jumlah Persediaan', 'align' => 'right'],
+                ['label' => 'Tanggal Expired', 'sortable' => true, 'sort-by' => 'expiry_date'],
+                ['label' => 'Status Persediaan', 'sortable' => true, 'sort-by' => 'status', 'align' => 'right'],
+            ]" :paginator="$materials" headerBg="#3f4e4f" headerText="#f8f4e1"
+                bodyBg="#fafafa" bodyText="#666666"
+                emptyMessage="Belum ada barang persediaan. Tekan tombol 'Tambah Persediaan' untuk menambahkan persediaan.">
+                @foreach ($materials as $material)
+                    <tr class="hover:bg-gray-50 transition-colors divide-y divide-[#d4d4d4]">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{{ route('bahan-baku.edit', $material->id) }}"
+                                class="text-sm text-[#666666] font-medium montserrat-medium hover:underline">
+                                {{ $material->name }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium whitespace-nowrap">
+                            {{ $material->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium text-right">
+                            @php
+                                $quantity_main_total = 0;
+                                $batches = $material->batches;
 
-                                                foreach ($batches as $b) {
-                                                    $detail = \App\Models\MaterialDetail::where(
-                                                        'material_id',
-                                                        $material->id,
-                                                    )
-                                                        ->where('unit_id', $b->unit_id)
-                                                        ->first();
+                                foreach ($batches as $b) {
+                                    $detail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                        ->where('unit_id', $b->unit_id)
+                                        ->first();
 
-                                                    if ($detail) {
-                                                        $quantity_main =
-                                                            ($b->batch_quantity ?? 0) * ($detail->quantity ?? 0);
-                                                        $quantity_main_total += $quantity_main;
-                                                    }
-                                                }
+                                    if ($detail) {
+                                        $quantity_main = ($b->batch_quantity ?? 0) * ($detail->quantity ?? 0);
+                                        $quantity_main_total += $quantity_main;
+                                    }
+                                }
 
-                                                // Ambil satu detail utama untuk unit (jika ada)
-                                                $mainDetail = \App\Models\MaterialDetail::where(
-                                                    'material_id',
-                                                    $material->id,
-                                                )
-                                                    ->where('is_main', true)
-                                                    ->first();
-                                            @endphp
-                                            <span>{{ $batches->isNotEmpty() ? $quantity_main_total : '0' }}</span>
-                                            <span
-                                                class="ml-1">{{ $batches->isNotEmpty() && $mainDetail ? $mainDetail->unit->alias : '' }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium">
-                                            @php
-                                                // Ambil semua batch
-                                                $batches = $material->batches;
+                                // Ambil satu detail utama untuk unit (jika ada)
+                                $mainDetail = \App\Models\MaterialDetail::where('material_id', $material->id)
+                                    ->where('is_main', true)
+                                    ->first();
+                            @endphp
+                            <span>{{ $batches->isNotEmpty() ? $quantity_main_total : '0' }}</span>
+                            <span
+                                class="ml-1">{{ $batches->isNotEmpty() && $mainDetail ? $mainDetail->unit->alias : '' }}</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium">
+                            @php
+                                // Ambil semua batch
+                                $batches = $material->batches;
 
-                                                // Filter batch yang belum kadaluarsa dan urutkan dari yang paling dekat
-                                                $nextBatch = $batches
-                                                    ->filter(
-                                                        fn($batch) => \Carbon\Carbon::parse($batch->date)->isFuture(),
-                                                    )
-                                                    ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
-                                                    ->first();
-                                            @endphp
-                                            {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d M Y') : 'Belum Ada Tanggal' }}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium text-right">
-                                            {{ $material->status ?? 'Kosong' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="p-4 border-t border-gray-200">
-                        {{ $materials->links() }}
-                    </div>
-                </div>
-            @endif
+                                // Filter batch yang belum kadaluarsa dan urutkan dari yang paling dekat
+                                $nextBatch = $batches
+                                    ->filter(fn($batch) => \Carbon\Carbon::parse($batch->date)->isFuture())
+                                    ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
+                                    ->first();
+                            @endphp
+                            {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d M Y') : 'Belum Ada Tanggal' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium text-right">
+                            {{ $material->status ?? 'Kosong' }}
+                        </td>
+                    </tr>
+                @endforeach
+            </x-table.paginated>
         @else
             <div class="bg-white rounded-xl border">
                 <!-- Table -->
@@ -377,7 +314,7 @@
                                         {{ $nextBatch
                                             ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y')
                                             : 'Belum
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Ada Tanggal' }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Ada Tanggal' }}
 
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">

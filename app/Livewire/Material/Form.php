@@ -6,28 +6,41 @@ use App\Models\IngredientCategoryDetail;
 use App\Models\Material;
 use App\Models\Unit;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 
-class Rincian extends Component
+class Form extends Component
 {
     use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
 
+    // Material ID (null for create, has value for edit)
     public $material_id;
-    public $name, $description, $expiry_date = '00-00-0000', $status = 'Kosong', $category_ids, $minimum = 0, $is_active = false;
+
+    // Form fields
+    public $name, $description, $expiry_date = '00/00/0000', $status = 'Kosong', $category_ids, $minimum = 0;
+    public $is_active = false, $is_recipe = false;
+
+    // Unit related
     public $main_unit_id, $main_unit_alias, $main_unit_name, $main_supply_quantity = 0;
-    public $previewImage;
-    public $image;
+
+    // Image
+    public $previewImage, $image;
+
+    // Details
     public $material_details = [];
     public $ingredient_category_details = [];
-    public $supply_quantity_main, $supply_quantity_total = 0, $supply_quantity_modal = 0;
-    public $supply_price_total;
+
+    // Calculations
+    public $supply_quantity_main = 0, $supply_quantity_total = 0, $supply_quantity_modal = 0;
+    public $supply_price_total = 0;
+    public $quantity_main, $quantity_main_total;
+
+    // UI State
     public $showHistoryModal = false;
     public $activityLogs = [];
     public $material;
-    public $is_recipe = false;
-
-    public $quantity_main, $quantity_main_total;
 
     protected $listeners = [
         'delete',
@@ -41,13 +54,29 @@ class Rincian extends Component
         'image.mimes' => 'Format gambar yang diizinkan adalah jpg, jpeg, png.',
     ];
 
-    public function mount($id): void
+    public function mount($id = null): void
     {
-        \Illuminate\Support\Facades\View::share('title', 'Rincian Bahan Baku');
-        View::share('mainTitle', 'Inventori');
-
         $this->material_id = $id;
-        $material = \App\Models\Material::with(['material_details.unit', 'ingredientCategoryDetails'])
+
+        if ($id) {
+            // Edit mode
+            View::share('title', 'Rincian Bahan Baku');
+            $this->loadMaterial($id);
+        } else {
+            // Create mode
+            View::share('title', 'Tambah Bahan Baku');
+            $this->material_details = [[
+                'unit_id' => '',
+                'quantity' => 1,
+            ]];
+        }
+
+        View::share('mainTitle', 'Inventori');
+    }
+
+    protected function loadMaterial($id): void
+    {
+        $material = Material::with(['material_details.unit', 'ingredientCategoryDetails'])
             ->findOrFail($id);
 
         $this->material = $material;
@@ -86,17 +115,21 @@ class Rincian extends Component
             })->toArray();
 
             // Calculate totals
-            $details = collect($this->material_details);
-            $this->supply_quantity_main = $details->sum('quantity');
-            $this->supply_price_total = $details->sum(fn($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
-            $this->supply_quantity_total = $details->sum(fn($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
-            $this->supply_quantity_modal = $details->sum(fn($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+            $this->calculateTotals();
         }
 
         // Set preview image
         $this->previewImage = $material->image ? env('APP_URL') . '/storage/' . $material->image : null;
     }
 
+    protected function calculateTotals(): void
+    {
+        $details = collect($this->material_details);
+        $this->supply_quantity_main = $details->sum('quantity');
+        $this->supply_price_total = $details->sum(fn($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
+        $this->supply_quantity_total = $details->sum(fn($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+        $this->supply_quantity_modal = $details->sum(fn($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+    }
 
     public function riwayatPembaruan(): void
     {
@@ -116,6 +149,7 @@ class Rincian extends Component
 
         $this->previewImage = $this->image->temporaryUrl();
     }
+
     public function removeImage(): void
     {
         $this->reset('image', 'previewImage');
@@ -131,6 +165,7 @@ class Rincian extends Component
             'is_main' => false,
         ];
     }
+
     public function removeUnit($index): void
     {
         if (count($this->material_details) > 1) {
@@ -176,24 +211,9 @@ class Rincian extends Component
                 'supply_price' => $detail['supply_price'] ?? 0,
             ];
         }, $this->material_details);
-        $this->supply_quantity_main = collect($this->material_details)
-            ->sum(function ($detail) {
-                return ($detail['quantity'] ?? 0);
-            });
-        $this->supply_price_total = collect($this->material_details)
-            ->sum(function ($detail) {
-                return ($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0);
-            });
-        $this->supply_quantity_total = collect($this->material_details)
-            ->sum(function ($detail) {
-                return (($detail['supply_quantity'] <= 0 ? 1 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
-            });
-        $this->supply_quantity_modal = collect($this->material_details)
-            ->sum(function ($detail) {
-                return (($detail['supply_quantity'] <= 0 ? 0 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
-            });
-    }
 
+        $this->calculateTotals();
+    }
 
     public function confirmDelete(): void
     {
@@ -209,6 +229,7 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
         $material = Material::find($this->material_id);
@@ -217,10 +238,10 @@ class Rincian extends Component
             return redirect()->intended(route('bahan-baku'))->with('error', 'Bahan tidak ditemukan.');
         }
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($material) {
+        DB::transaction(function () use ($material) {
             // Hapus gambar jika ada
-            if ($material->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($material->image)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($material->image);
+            if ($material->image && Storage::disk('public')->exists($material->image)) {
+                Storage::disk('public')->delete($material->image);
             }
 
             $material->delete();
@@ -229,7 +250,7 @@ class Rincian extends Component
         return redirect()->intended(route('bahan-baku'))->with('success', 'Bahan berhasil dihapus.');
     }
 
-    public function update()
+    public function save()
     {
         $this->validate([
             'name' => 'required|string|max:50',
@@ -244,79 +265,113 @@ class Rincian extends Component
             'material_details.*.is_main' => 'boolean',
         ]);
 
-        \Illuminate\Support\Facades\DB::transaction(function () {
-            $material = \App\Models\Material::with('batches')->findOrFail($this->material_id);
-
-            // Calculate status based on batches
-            $hasExpiredBatch = $material->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
-            $totalQuantity = $material->batches->sum('batch_quantity');
-
-            if ($hasExpiredBatch) {
-                $status = 'Expired';
-            } elseif ($totalQuantity <= 0) {
-                $status = 'Kosong';
-            } elseif ($totalQuantity <= $this->minimum) {
-                $status = 'Habis';
-            } elseif ($totalQuantity > $this->minimum * 2) {
-                $status = 'Tersedia';
+        DB::transaction(function () {
+            if ($this->material_id) {
+                $this->updateMaterial();
             } else {
-                $status = 'Hampir Habis';
-            }
-
-            // Handle image upload
-            $imageData = [];
-            if ($this->image) {
-                // Delete old image
-                if ($material->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($material->image)) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($material->image);
-                }
-                $imageData['image'] = $this->image->store('material_images', 'public');
-            }
-
-            // Update material
-            $material->update(array_merge([
-                'name' => $this->name,
-                'description' => $this->description,
-                'status' => $status,
-                'minimum' => $this->minimum,
-                'is_active' => $this->is_active,
-                'is_recipe' => $this->is_recipe,
-            ], $imageData));
-
-            // Update categories
-            if ($this->category_ids) {
-                $material->ingredientCategoryDetails()->delete();
-
-                foreach ($this->category_ids as $category_id) {
-                    IngredientCategoryDetail::create([
-                        'material_id' => $material->id,
-                        'ingredient_category_id' => $category_id,
-                    ]);
-                }
-            }
-
-            // Update material details
-            if (!empty($this->material_details[0]['unit_id'])) {
-                $material->material_details()->delete();
-
-                $detailsData = collect($this->material_details)->map(fn($detail) => [
-                    'unit_id' => $detail['unit_id'] ?? null,
-                    'quantity' => $detail['quantity'] ?? 0,
-                    'is_main' => $detail['is_main'] ?? false,
-                    'supply_quantity' => $detail['supply_quantity'] ?? 0,
-                    'supply_price' => $detail['supply_price'] ?? 0,
-                ])->toArray();
-
-                $material->material_details()->createMany($detailsData);
+                $this->createMaterial();
             }
         });
 
         return redirect()->intended(route('bahan-baku'))
-            ->with('success', 'Bahan Baku berhasil diperbarui.');
+            ->with('success', 'Bahan Baku berhasil ' . ($this->material_id ? 'diperbarui' : 'ditambahkan') . '.');
     }
+
+    protected function createMaterial(): void
+    {
+        $material = Material::create([
+            'name' => $this->name,
+            'description' => $this->description,
+            'expiry_date' => null,
+            'status' => $this->status,
+            'minimum' => $this->minimum,
+            'is_active' => $this->is_active,
+            'is_recipe' => $this->is_recipe,
+            'image' => $this->image ? $this->image->store('material_images', 'public') : null,
+        ]);
+
+        $this->saveCategoryRelationships($material);
+        $this->saveMaterialDetails($material);
+    }
+
+    protected function updateMaterial(): void
+    {
+        $material = Material::with('batches')->findOrFail($this->material_id);
+
+        // Calculate status based on batches
+        $hasExpiredBatch = $material->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
+        $totalQuantity = $material->batches->sum('batch_quantity');
+
+        if ($hasExpiredBatch) {
+            $status = 'Expired';
+        } elseif ($totalQuantity <= 0) {
+            $status = 'Kosong';
+        } elseif ($totalQuantity <= $this->minimum) {
+            $status = 'Habis';
+        } elseif ($totalQuantity > $this->minimum * 2) {
+            $status = 'Tersedia';
+        } else {
+            $status = 'Hampir Habis';
+        }
+
+        // Handle image upload
+        $imageData = [];
+        if ($this->image) {
+            // Delete old image
+            if ($material->image && Storage::disk('public')->exists($material->image)) {
+                Storage::disk('public')->delete($material->image);
+            }
+            $imageData['image'] = $this->image->store('material_images', 'public');
+        }
+
+        // Update material
+        $material->update(array_merge([
+            'name' => $this->name,
+            'description' => $this->description,
+            'status' => $status,
+            'minimum' => $this->minimum,
+            'is_active' => $this->is_active,
+            'is_recipe' => $this->is_recipe,
+        ], $imageData));
+
+        // Update relationships
+        $material->ingredientCategoryDetails()->delete();
+        $material->material_details()->delete();
+
+        $this->saveCategoryRelationships($material);
+        $this->saveMaterialDetails($material);
+    }
+
+    protected function saveCategoryRelationships($material): void
+    {
+        if ($this->category_ids) {
+            foreach ($this->category_ids as $category_id) {
+                IngredientCategoryDetail::create([
+                    'material_id' => $material->id,
+                    'ingredient_category_id' => $category_id,
+                ]);
+            }
+        }
+    }
+
+    protected function saveMaterialDetails($material): void
+    {
+        if (!empty($this->material_details[0]['unit_id'])) {
+            $detailsData = collect($this->material_details)->map(fn($detail) => [
+                'unit_id' => $detail['unit_id'] ?? null,
+                'quantity' => $detail['quantity'] ?? 0,
+                'is_main' => $detail['is_main'] ?? false,
+                'supply_quantity' => $detail['supply_quantity'] ?? 0,
+                'supply_price' => $detail['supply_price'] ?? 0,
+            ])->toArray();
+
+            $material->material_details()->createMany($detailsData);
+        }
+    }
+
     public function render()
     {
-        return view('livewire.material.rincian', [
+        return view('livewire.material.form', [
             'categories' => \App\Models\IngredientCategory::lazy(),
             'units' => \App\Models\Unit::lazy(),
         ]);

@@ -244,7 +244,7 @@
     </section>
 
     <!-- Contact/Location Section -->
-    <section class="relative py-20 bg-[#252324]">
+    <section id="wilayah" class="relative py-20 bg-[#252324]">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
                 <h2 class="text-[38px] leading-[60px] pacifico-regular text-white">Lokasi Toko dan Wilayah Pemesanan
@@ -457,7 +457,7 @@
     </section>
 
     <!-- Tentang Kami Section -->
-    <section class="py-20 bg-[#fafafa]">
+    <section id="tentang" class="py-20 bg-[#fafafa]">
         <div class="max-w-7xl mx-auto px-4">
             <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] text-center mb-[60px]">
                 Tentang Kami

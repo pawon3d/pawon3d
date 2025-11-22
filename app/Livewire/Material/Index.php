@@ -25,12 +25,12 @@ class Index extends Component
     protected $queryString = ['viewMode', 'filterStatus', 'search', 'sortField', 'sortDirection'];
 
 
-    public function updatingSearch()
+    public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function sortBy($field)
+    public function sortBy($field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -41,7 +41,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('materials')
             ->latest()
@@ -58,11 +58,11 @@ class Index extends Component
         ]);
     }
 
-    public function updatedViewMode($value)
+    public function updatedViewMode($value): void
     {
         session()->put('viewMode', $value);
     }
-    public function mount()
+    public function mount(): void
     {
         View::share('mainTitle', 'Inventori');
         View::share('title', 'Bahan Baku');
@@ -78,8 +78,9 @@ class Index extends Component
             return $query->where('name', 'like', '%' . $this->search . '%');
         })->when($this->filterStatus, function ($query) {
             return $query->where('is_active', $this->filterStatus === 'aktif');
-        })->orderBy($this->sortField, $this->sortDirection)->with('material_details')
-            ->orderBy('name')
+        })
+            ->with('material_details')
+            ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
         return view('livewire.material.index', compact('materials'));

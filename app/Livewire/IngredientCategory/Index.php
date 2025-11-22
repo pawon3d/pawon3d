@@ -25,14 +25,14 @@ class Index extends Component
     public $showEditModal = false;
     public $sortByCategory = false;
     public $usageSearch = '';
-    public $usagePage = 1;
+    public $usageSortDirection = 'asc';
     public $jumlahPenggunaan = false;
     protected $listeners = [
         'delete',
         'cancelled',
     ];
     protected $rules = [
-        'name' => 'required|min:3|unique:categories,name',
+        'name' => 'required|min:3|unique:ingredient_categories,name',
     ];
 
     protected $messages = [
@@ -43,7 +43,7 @@ class Index extends Component
 
     protected $queryString = ['search', 'filterStatus',  'sortField', 'sortDirection'];
 
-    public function sortBy($field)
+    public function sortBy($field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -54,7 +54,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('ingredient_categories')
             ->latest()
@@ -64,7 +64,7 @@ class Index extends Component
         $this->showHistoryModal = true;
     }
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Kategori Persediaan');
         View::share('mainTitle', 'Inventori');
@@ -85,19 +85,19 @@ class Index extends Component
         ]);
     }
 
-    public function showAddModal()
+    public function showAddModal(): void
     {
         $this->resetForm();
         $this->showModal = true;
     }
 
-    public function store()
+    public function store(): void
     {
         $this->validate();
 
         IngredientCategory::create([
             'name' => $this->name,
-            'is_active' => true,
+            'is_active' => $this->is_active,
         ]);
 
         $this->resetForm();
@@ -105,35 +105,37 @@ class Index extends Component
         $this->showModal = false;
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
+        $category = IngredientCategory::withCount('details')->findOrFail($id);
+
         $this->category_id = $id;
-        $this->products = \App\Models\IngredientCategory::where('id', $this->category_id)->withCount('details')->first()->details_count;
-        $this->name = \App\Models\IngredientCategory::find($this->category_id)->name;
-        $this->is_active = \App\Models\IngredientCategory::find($this->category_id)->is_active;
+        $this->products = $category->details_count;
+        $this->name = $category->name;
+        $this->is_active = $category->is_active;
         $this->showEditModal = true;
     }
 
-    public function update()
+    public function update(): void
     {
         $this->validate([
             'name' => [
                 'required',
                 'min:3',
-                Rule::unique('categories')->ignore($this->category_id),
+                Rule::unique('ingredient_categories')->ignore($this->category_id),
             ],
         ]);
 
-        $category = \App\Models\IngredientCategory::find($this->category_id);
+        $category = IngredientCategory::findOrFail($this->category_id);
         $category->update([
             'name' => $this->name,
-            'is_active' => true,
+            'is_active' => $this->is_active,
         ]);
         $this->alert('success', 'Kategori berhasil diperbarui');
         $this->showEditModal = false;
         $this->resetForm();
     }
-    public function confirmDelete()
+    public function confirmDelete(): void
     {
         // Konfirmasi menggunakan Livewire Alert
         $this->alert('warning', 'Apakah Anda yakin ingin menghapus kategori ini?', [
@@ -149,7 +151,7 @@ class Index extends Component
         ]);
     }
 
-    public function delete()
+    public function delete(): void
     {
 
         $category = IngredientCategory::find($this->category_id);
@@ -164,10 +166,10 @@ class Index extends Component
         }
     }
 
-    public function showUsageModal()
+    public function showUsageModal(): void
     {
-        $this->usagePage = 1;
         $this->usageSearch = '';
+        $this->resetPage('usagePage');
         Flux::modal('jumlah-penggunaan')->show();
     }
 
@@ -185,38 +187,32 @@ class Index extends Component
                 $query->where('name', 'like', '%' . $this->usageSearch . '%');
             }
 
-            return $query->paginate(2, ['*'], 'usagePage', $this->usagePage);
+            // Apply sorting
+            $query->orderBy('name', $this->usageSortDirection);
+
+            return $query->paginate(2, ['*'], 'usagePage');
         }
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
             [],
             0,
             2,
-            $this->usagePage,
+            1,
             ['path' => request()->url(), 'pageName' => 'usagePage']
         );
     }
 
-    public function updatedUsageSearch()
+    public function updatedUsageSearch(): void
     {
-        $this->usagePage = 1;
+        $this->resetPage('usagePage');
     }
 
-    public function previousUsagePage()
+    public function sortUsageMaterials(): void
     {
-        if ($this->usagePage > 1) {
-            $this->usagePage--;
-        }
+        $this->usageSortDirection = $this->usageSortDirection === 'asc' ? 'desc' : 'asc';
     }
 
-    public function nextUsagePage()
-    {
-        if ($this->usageMaterials && $this->usageMaterials->hasMorePages()) {
-            $this->usagePage++;
-        }
-    }
-
-    public function removeFromCategory($materialId)
+    public function removeFromCategory($materialId): void
     {
         // Find the detail entry and delete it
         $detail = \App\Models\IngredientCategoryDetail::where('category_id', $this->category_id)
@@ -228,19 +224,14 @@ class Index extends Component
             $this->alert('success', 'Persediaan berhasil dihapus dari kategori');
 
             // Update count
-            $this->products = \App\Models\IngredientCategory::where('id', $this->category_id)->withCount('details')->first()->details_count;
-
-            // Check if current page is now empty and go to previous page if needed
-            if ($this->usageMaterials->isEmpty() && $this->usagePage > 1) {
-                $this->usagePage--;
-            }
+            $this->products = IngredientCategory::where('id', $this->category_id)->withCount('details')->first()->details_count;
         }
     }
 
-    public function resetForm()
+    public function resetForm(): void
     {
         $this->name = '';
-        $this->is_active = false;
+        $this->is_active = true;
         $this->category_id = null;
     }
 
