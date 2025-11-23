@@ -1,6 +1,6 @@
 @props([
     'headers' => [],
-    'rows' => [],
+    'rows' => null,
     'footer' => null,
     'emptyMessage' => 'Belum ada data.',
     'headerBg' => 'bg-[#3F4E4F]',
@@ -26,7 +26,7 @@
 
         {{-- Body --}}
         <tbody class="{{ $bodyBg }} {{ $bodyText }}">
-            @if (count($rows) > 0)
+            @if ($rows && !$rows->isEmpty())
                 {{ $rows }}
             @else
                 <tr>

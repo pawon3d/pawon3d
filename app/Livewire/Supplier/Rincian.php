@@ -2,25 +2,46 @@
 
 namespace App\Livewire\Supplier;
 
+use App\Models\Supplier;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Spatie\Activitylog\Models\Activity;
 
-
 class Rincian extends Component
 {
-    use WithFileUploads, LivewireAlert;
-    public $name, $description, $contact_name, $phone, $image, $id;
+    use LivewireAlert, WithFileUploads;
+
+    public $id;
+
+    public $name;
+
+    public $description;
+
+    public $contact_name;
+
+    public $phone;
+
+    public $image;
+
     public $previewImage;
+
+    public $street;
+
+    public $landmark;
+
+    public $maps_link;
+
     public $activityLogs = [];
+
     public $showHistoryModal = false;
 
     protected $listeners = [
         'updatedImage' => 'updatedImage',
         'removeImage' => 'removeImage',
-        'delete'
+        'delete',
     ];
 
     public function mount($id)
@@ -28,13 +49,17 @@ class Rincian extends Component
         View::share('title', 'Rincian Toko Persediaan');
         View::share('mainTitle', 'Inventori');
         $this->id = $id;
-        $supplier = \App\Models\Supplier::find($this->id);
+        $supplier = Supplier::findOrFail($this->id);
         $this->name = $supplier->name;
         $this->description = $supplier->description;
         $this->contact_name = $supplier->contact_name;
         $this->phone = $supplier->phone;
+        $this->street = $supplier->street;
+        $this->landmark = $supplier->landmark;
+        $this->maps_link = $supplier->maps_link;
+
         if ($supplier->image) {
-            $this->previewImage = env('APP_URL') . '/storage/' . $supplier->image;
+            $this->previewImage = Storage::url($supplier->image);
         } else {
             $this->previewImage = null;
         }
@@ -42,7 +67,9 @@ class Rincian extends Component
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('suppliers')->where('subject_id', $this->id)
+        $this->activityLogs = Activity::inLog('suppliers')
+            ->where('subject_id', $this->id)
+            ->with('causer:id,name')
             ->latest()
             ->limit(50)
             ->get();
@@ -65,29 +92,39 @@ class Rincian extends Component
 
     public function update()
     {
-        $this->validate([
+        $validated = $this->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
             'contact_name' => 'nullable|string|max:50',
             'phone' => 'nullable|string|max:20',
+            'street' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
+            'maps_link' => 'nullable|url|max:500',
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
+        ], [
+            'name.required' => 'Nama toko wajib diisi.',
+            'name.max' => 'Nama toko maksimal 50 karakter.',
+            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
+            'maps_link.url' => 'Link Google Maps harus berupa URL yang valid.',
+            'image.image' => 'File harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
-        $supplier = \App\Models\Supplier::find($this->id);
+        $supplier = Supplier::findOrFail($this->id);
 
         $supplier->update([
             'name' => $this->name,
             'description' => $this->description,
             'contact_name' => $this->contact_name,
             'phone' => $this->phone,
+            'street' => $this->street,
+            'landmark' => $this->landmark,
+            'maps_link' => $this->maps_link,
         ]);
 
         if ($this->image) {
             if ($supplier->image) {
-                $oldImagePath = public_path('storage/' . $supplier->image);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
+                Storage::disk('public')->delete($supplier->image);
             }
             $supplier->image = $this->image->store('supplier_images', 'public');
             $supplier->save();
@@ -110,21 +147,20 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
-        $supplier = \App\Models\Supplier::find($this->id);
+        $supplier = Supplier::findOrFail($this->id);
 
-        if ($supplier) {
-            $supplier->delete();
-            if ($supplier->image) {
-                $oldImagePath = public_path('storage/' . $supplier->image);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
-            }
-            return redirect()->intended(route('supplier'))->with('success', 'Toko Persediaan berhasil dihapus.');
+        if ($supplier->image) {
+            Storage::disk('public')->delete($supplier->image);
         }
+
+        $supplier->delete();
+
+        return redirect()->intended(route('supplier'))->with('success', 'Toko Persediaan berhasil dihapus.');
     }
+
     public function render()
     {
         return view('livewire.supplier.rincian');

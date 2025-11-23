@@ -9,8 +9,17 @@ class Tambah extends Component
 {
     public $supplier_id = '';
 
-    public $expense_date = 'dd/mm/yyyy', $note, $grand_total_expect;
-    public $expense_details = [], $prevInputs = [], $prevPrice = [];
+    public $expense_date = 'dd/mm/yyyy';
+
+    public $note;
+
+    public $grand_total_expect;
+
+    public $expense_details = [];
+
+    public $prevInputs = [];
+
+    public $prevPrice = [];
 
     public function mount()
     {
@@ -64,7 +73,7 @@ class Tambah extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $satuan?->unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -75,7 +84,7 @@ class Tambah extends Component
                 $batchItem = $persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
                 $batchQty = $batchItem?->batch_quantity ?? 0;
                 $alias = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
             $this->expense_details[$index]['price_expect'] = 0;
@@ -110,7 +119,7 @@ class Tambah extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -131,6 +140,7 @@ class Tambah extends Component
             if (isset($detail['material_id']) && isset($detail['unit_id']) && $detail['material_id'] && $detail['unit_id']) {
                 $detail['detail_total_expect'] = $detail['quantity_expect'] * $detail['price_expect'];
             }
+
             return $detail;
         }, $this->expense_details);
         $this->grand_total_expect = array_sum(array_column($this->expense_details, 'detail_total_expect'));
@@ -140,6 +150,7 @@ class Tambah extends Component
     {
         $this->supplier_id = $value;
     }
+
     public function store()
     {
         $this->validate([
@@ -222,13 +233,17 @@ class Tambah extends Component
                 ]);
             }
         }
+
         return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Belanja berhasil Dimulai');
     }
+
     public function render()
     {
         return view('livewire.expense.tambah', [
-            'suppliers' => \App\Models\Supplier::lazy(),
-            'materials' => \App\Models\Material::with('material_details')->lazy(),
+            'suppliers' => \App\Models\Supplier::select('id', 'name')->get(),
+            'materials' => \App\Models\Material::select('id', 'name')
+                ->with(['material_details:id,material_id,unit_id,supply_price,is_main', 'material_details.unit:id,name,alias', 'batches:id,material_id,unit_id,batch_quantity,date'])
+                ->get(),
         ]);
     }
 }

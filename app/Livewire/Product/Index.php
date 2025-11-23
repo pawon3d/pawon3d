@@ -2,28 +2,36 @@
 
 namespace App\Livewire\Product;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\Product;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
-
 
 class Index extends Component
 {
-    use WithPagination, WithFileUploads, LivewireAlert;
+    use LivewireAlert, WithFileUploads, WithPagination;
 
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $viewMode = 'grid';
+
     public $method = 'pesanan-reguler';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
-    public $perPage = 10;
+
+    public $perPage = 12;
+
     public $statusSummary = [
         'total' => 0,
         'active' => 0,
@@ -84,7 +92,6 @@ class Index extends Component
         View::share('title', 'Produk');
         View::share('mainTitle', 'Inventori');
 
-
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
@@ -139,7 +146,7 @@ class Index extends Component
 
     protected function applyStatusFilter($query)
     {
-        if (!$this->filterStatus) {
+        if (! $this->filterStatus) {
             return $query;
         }
 

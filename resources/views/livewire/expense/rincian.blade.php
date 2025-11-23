@@ -11,14 +11,12 @@
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Rincian Belanja Persediaan</h1>
         </div>
         <div class="flex gap-2.5 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="bg-[#525252] border border-[#666666] text-white px-6 py-2.5 rounded-[15px] hover:bg-[#666666] transition-colors">
-                <span class="font-montserrat font-medium text-[14px]">Cetak Informasi</span>
-            </button>
-            <button type="button" wire:click="riwayatPembaruan"
-                class="bg-[#525252] border border-[#666666] text-white px-6 py-2.5 rounded-[15px] hover:bg-[#666666] transition-colors">
-                <span class="font-montserrat font-medium text-[14px]">Riwayat Pembaruan</span>
-            </button>
+            <flux:button type="button" wire:click="cetakInformasi" variant="filled">
+                Cetak Informasi
+            </flux:button>
+            <flux:button type="button" wire:click="riwayatPembaruan" variant="filled">
+                Riwayat Pembaruan
+            </flux:button>
         </div>
     </div>
 
@@ -94,11 +92,9 @@
             <div class="flex items-center justify-between">
                 <p class="font-montserrat font-medium text-[18px] text-[#666666]">Rencana Belanja</p>
                 @if (!$is_start)
-                    <button type="button" wire:click="editRencanaBelanja"
-                        class="bg-[#666666] hover:bg-[#525252] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
-                        <flux:icon.pencil variant="mini" class="size-3" />
-                        <span class="font-montserrat font-semibold text-[16px]">Buat Catatan</span>
-                    </button>
+                    <flux:button type="button" wire:click="editRencanaBelanja" variant="filled" icon="pencil">
+                        Buat Catatan
+                    </flux:button>
                 @endif
             </div>
             <div class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-5 py-2.5 min-h-[120px]">
@@ -113,98 +109,77 @@
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-5 mt-12">
         <p class="font-montserrat font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</p>
-        <div class="w-full">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-[#3f4e4f] h-[60px]">
-                        <th class="text-left px-6 py-5 rounded-tl-[15px]">
-                            <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Barang Persediaan</span>
-                        </th>
-                        <th class="text-right px-6 py-5">
-                            <span
-                                class="font-montserrat font-bold text-[14px] text-[#f8f4e1] leading-tight">Rencana<br>Belanja</span>
-                        </th>
-                        <th class="text-right px-6 py-5">
-                            <span
-                                class="font-montserrat font-bold text-[14px] text-[#f8f4e1] leading-tight">Jumlah<br>Didapatkan</span>
-                        </th>
-                        <th class="text-left px-6 py-5">
-                            <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1] leading-tight">Satuan
-                                Ukur<br>Belanja</span>
-                        </th>
-                        <th class="text-right px-6 py-5">
-                            <span
-                                class="font-montserrat font-bold text-[14px] text-[#f8f4e1] leading-tight">Harga<br>Satuan</span>
-                        </th>
-                        <th class="text-right px-6 py-5">
-                            <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Total Harga</span>
-                        </th>
-                        <th class="text-right px-6 py-5 rounded-tr-[15px]">
-                            <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1] leading-tight">Total
-                                Harga<br>(Sebenarnya)</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-[#fafafa]">
-                    @foreach ($expenseDetails as $detail)
-                        <tr class="border-b border-[#d4d4d4] h-[60px]">
-                            <td class="px-6 py-0">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0 text-right">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $detail->quantity_expect }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0 text-right">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $detail->quantity_get }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $detail->unit->name ?? '' }} ({{ $detail->unit->alias ?? '' }})
-                                </span>
-                            </td>
-                            <td class="px-6 py-0 text-right">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    Rp{{ number_format($detail->price_expect, 0, ',', '.') }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0 text-right">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    Rp{{ number_format($detail->total_expect, 0, ',', '.') }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0 text-right">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    Rp{{ number_format($detail->total_actual, 0, ',', '.') }}
-                                </span>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot class="bg-[#eaeaea] h-[60px]">
-                    <tr>
-                        <td class="px-6 py-0 rounded-bl-[15px]" colspan="5">
-                            <span class="font-montserrat font-bold text-[14px] text-[#666666]">Total</span>
+        <x-table.form :headers="[
+            ['label' => 'Barang Persediaan', 'class' => 'text-left px-6 py-5'],
+            ['label' => 'Rencana Belanja', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Jumlah Didapatkan', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-6 py-5'],
+            ['label' => 'Harga Satuan', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Total Harga', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Total Harga (Sebenarnya)', 'class' => 'text-right px-6 py-5'],
+        ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
+            body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
+            empty-message="Belum ada data belanja.">
+            <x-slot:rows>
+                @foreach ($expenseDetails as $detail)
+                    <tr class="border-b border-[#d4d4d4] h-[60px]">
+                        <td class="px-6 py-0">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                {{ $detail->material->name ?? 'Barang Tidak Ditemukan' }}
+                            </span>
                         </td>
                         <td class="px-6 py-0 text-right">
-                            <span class="font-montserrat font-bold text-[14px] text-[#666666]">
-                                Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                {{ $detail->quantity_expect }}
                             </span>
                         </td>
-                        <td class="px-6 py-0 text-right rounded-br-[15px]">
-                            <span class="font-montserrat font-bold text-[14px] text-[#666666]">
-                                Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
+                        <td class="px-6 py-0 text-right">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                {{ $detail->quantity_get }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-0">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                {{ $detail->unit->name ?? '' }} ({{ $detail->unit->alias ?? '' }})
+                            </span>
+                        </td>
+                        <td class="px-6 py-0 text-right">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                Rp{{ number_format($detail->price_expect, 0, ',', '.') }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-0 text-right">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                Rp{{ number_format($detail->total_expect, 0, ',', '.') }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-0 text-right">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                Rp{{ number_format($detail->total_actual, 0, ',', '.') }}
                             </span>
                         </td>
                     </tr>
-                </tfoot>
-            </table>
-        </div>
+                @endforeach
+            </x-slot:rows>
+
+            <x-slot:footer>
+                <tr class="h-[60px]">
+                    <td class="px-6 py-0 rounded-bl-[15px]" colspan="5">
+                        <span class="font-montserrat font-bold text-[14px] text-[#666666]">Total</span>
+                    </td>
+                    <td class="px-6 py-0 text-right">
+                        <span class="font-montserrat font-bold text-[14px] text-[#666666]">
+                            Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-0 text-right rounded-br-[15px]">
+                        <span class="font-montserrat font-bold text-[14px] text-[#666666]">
+                            Rp{{ number_format($expense->grand_total_actual, 0, ',', '.') }}
+                        </span>
+                    </td>
+                </tr>
+            </x-slot:footer>
+        </x-table.form>
     </div>
 
     @if ($is_start && !$is_finish)
@@ -259,10 +234,9 @@
                 <p class="text-sm text-red-500 font-montserrat">{{ $message }}</p>
             @enderror
             <div class="flex justify-end gap-2.5">
-                <button type="button" wire:click="$set('showNoteModal', false)"
-                    class="bg-[#c4c4c4] hover:bg-[#b3b3b3] text-[#333333] px-5 py-2.5 rounded-[12px] font-montserrat font-semibold text-[14px]">
+                <flux:button type="button" wire:click="$set('showNoteModal', false)" variant="subtle">
                     Batal
-                </button>
+                </flux:button>
                 <flux:button icon="save" type="button" variant="primary" wire:click="saveNote">
                     Simpan Catatan
                 </flux:button>

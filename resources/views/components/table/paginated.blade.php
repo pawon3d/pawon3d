@@ -35,7 +35,11 @@
                             class="px-6 py-5 text-left text-xs font-bold uppercase {{ $headerTextClass }} {{ $header['class'] ?? '' }}"
                             style="{{ $headerTextStyle }}">
                             @if (isset($header['sortable']) && $header['sortable'])
-                                <button type="button" wire:click="sortBy('{{ $header['sort-by'] ?? '' }}')"
+                                @php
+                                    $sortMethod = $header['sort-method'] ?? 'sortBy';
+                                    $sortField = $header['sort-by'] ?? '';
+                                @endphp
+                                <button type="button" wire:click="{{ $sortMethod }}('{{ $sortField }}')"
                                     class="flex items-center gap-2 {{ $header['align'] ?? '' == 'right' ? 'justify-end' : '' }} w-full">
                                     <span>{{ is_array($header) ? $header['label'] : $header }}</span>
                                     <flux:icon.chevron-up-down class="size-3.5" />

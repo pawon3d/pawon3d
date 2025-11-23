@@ -9,10 +9,9 @@
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Toko Persediaan</h1>
         </div>
         <div class="flex gap-2.5 items-center">
-            <button type="button" wire:click="riwayatPembaruan"
-                class="bg-[#525252] border border-[#666666] text-white px-6 py-2.5 rounded-[15px] hover:bg-[#666666] transition-colors">
-                <span class="font-montserrat font-medium text-[14px]">Riwayat Pembaruan</span>
-            </button>
+            <flux:button type="button" wire:click="riwayatPembaruan" variant="filled">
+                Riwayat Pembaruan
+            </flux:button>
         </div>
     </div>
     <x-alert.info>
@@ -35,113 +34,50 @@
                     <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
                 </div>
             </div>
-            <a href="{{ route('supplier.tambah') }}"
-                class="bg-[#74512d] hover:bg-[#5f4224] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
-                wire:navigate>
-                <flux:icon.plus class="size-5" />
-                <span class="font-montserrat font-semibold text-[16px]">Tambah Toko</span>
-            </a>
+            <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}">
+                Tambah Toko
+            </flux:button>
         </div>
 
-        <div class="w-full">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-[#3f4e4f] h-[60px]">
-                        <th class="text-left px-6 py-5 rounded-tl-[15px]">
-                            <div class="flex items-center gap-1">
-                                <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Nama Toko
-                                    Persediaan</span>
-                                <button class="size-3.5">
-                                    <flux:icon.chevron-up-down class="text-[#f8f4e1]" />
-                                </button>
-                            </div>
-                        </th>
-                        <th class="text-left px-6 py-5">
-                            <div class="flex items-center gap-1">
-                                <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">Nama Kontak</span>
-                                <button class="size-3.5">
-                                    <flux:icon.chevron-up-down class="text-[#f8f4e1]" />
-                                </button>
-                            </div>
-                        </th>
-                        <th class="text-left px-6 py-5 rounded-tr-[15px]">
-                            <span class="font-montserrat font-bold text-[14px] text-[#f8f4e1]">No. Telepon</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-[#fafafa]">
-                    @forelse($suppliers as $supplier)
-                        <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors">
-                            <td class="px-6 py-0">
-                                <a href="{{ route('supplier.edit', $supplier->id) }}" class="block">
-                                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                        {{ $supplier->name }}
-                                    </span>
-                                </a>
-                            </td>
-                            <td class="px-6 py-0">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $supplier->contact_name }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-0">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                    {{ $supplier->phone }}
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr class="h-[60px]">
-                            <td colspan="3" class="px-6 py-0 text-center">
-                                <span class="font-montserrat font-medium text-[14px] text-[#666666]">Tidak ada
-                                    data.</span>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="flex justify-between items-center mt-5">
-            <div class="flex gap-1 items-center font-montserrat font-medium text-[14px] text-[#666666] opacity-70">
-                <span>Menampilkan</span>
-                <span>{{ $suppliers->firstItem() ?? 0 }}</span>
-                <span>hingga</span>
-                <span>{{ $suppliers->lastItem() ?? 0 }}</span>
-                <span>dari</span>
-                <span>{{ $suppliers->total() }}</span>
-                <span>baris data</span>
-            </div>
-            <div class="flex gap-2.5 items-center">
-                @if ($suppliers->onFirstPage())
-                    <button disabled
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] opacity-50 cursor-not-allowed">
-                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
-                    </button>
-                @else
-                    <button wire:click="previousPage"
-                        class="bg-[#fafafa] border border-[#666666] hover:bg-[#f0f0f0] min-w-[30px] px-2.5 py-1 rounded-[5px] transition-colors">
-                        <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
-                    </button>
-                @endif
-
-                <div class="bg-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px]">
-                    <span
-                        class="font-montserrat font-medium text-[14px] text-[#fafafa] text-center block">{{ $suppliers->currentPage() }}</span>
-                </div>
-
-                @if ($suppliers->hasMorePages())
-                    <button wire:click="nextPage"
-                        class="bg-[#fafafa] border border-[#666666] hover:bg-[#f0f0f0] min-w-[30px] px-2.5 py-1 rounded-[5px] transition-colors">
-                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
-                    </button>
-                @else
-                    <button disabled
-                        class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] opacity-50 cursor-not-allowed">
-                        <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
-                    </button>
-                @endif
-            </div>
-        </div>
+        <x-table.paginated :headers="[
+            [
+                'label' => 'Nama Toko Persediaan',
+                'sortable' => true,
+                'sort-by' => 'name',
+                'sort-method' => 'sortByColumn',
+            ],
+            [
+                'label' => 'Nama Kontak',
+                'sortable' => true,
+                'sort-by' => 'contact_name',
+                'sort-method' => 'sortByColumn',
+            ],
+            ['label' => 'No. Telepon', 'sortable' => false],
+        ]" :paginator="$suppliers" :sortBy="$sortBy" :sortDirection="$sortDirection" headerBg="#3f4e4f"
+            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666" emptyMessage="Tidak ada data."
+            wrapperClass="w-full rounded-[15px] overflow-hidden border-0 shadow-none">
+            @foreach ($suppliers as $supplier)
+                <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors">
+                    <td class="px-6 py-0">
+                        <a href="{{ route('supplier.edit', $supplier->id) }}" class="block">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                {{ $supplier->name }}
+                            </span>
+                        </a>
+                    </td>
+                    <td class="px-6 py-0">
+                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                            {{ $supplier->contact_name }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-0">
+                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                            {{ $supplier->phone }}
+                        </span>
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->

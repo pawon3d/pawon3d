@@ -2,18 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Supplier extends Model
 {
     use LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'suppliers';
+
     protected $guarded = [
         'id',
     ];
@@ -22,7 +27,7 @@ class Supplier extends Model
     {
         return LogOptions::defaults()
             ->useLogName('suppliers')
-            ->logOnly(['name', 'description', 'contact_name', 'phone', 'image'])
+            ->logOnly(['name', 'description', 'contact_name', 'phone', 'street', 'landmark', 'maps_link', 'image'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
                 $namaToko = $this->name;
@@ -43,7 +48,6 @@ class Supplier extends Model
     {
         return $this->hasMany(Expense::class, 'supplier_id', 'id');
     }
-
 
     public static function boot()
     {

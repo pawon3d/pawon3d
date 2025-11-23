@@ -12,7 +12,9 @@ class Rencana extends Component
     use WithPagination;
 
     public $search = '';
+
     public $sortField = 'expense_date';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -31,7 +33,7 @@ class Rencana extends Component
         $this->resetPage();
     }
 
-    public function sortBy($field)
+    public function sortByColumn($field)
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -39,17 +41,19 @@ class Rencana extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
+        $this->resetPage();
     }
 
     public function render()
     {
-        $plannedExpenses = Expense::with('supplier')
+        $plannedExpenses = Expense::select('id', 'expense_number', 'expense_date', 'supplier_id', 'grand_total_expect', 'note')
+            ->with('supplier:id,name')
             ->where('status', 'Draft')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('expense_number', 'like', '%' . $this->search . '%')
+                    $q->where('expense_number', 'like', '%'.$this->search.'%')
                         ->orWhereHas('supplier', function ($q) {
-                            $q->where('name', 'like', '%' . $this->search . '%');
+                            $q->where('name', 'like', '%'.$this->search.'%');
                         });
                 });
             })

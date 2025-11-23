@@ -10,24 +10,47 @@ use Spatie\Activitylog\Models\Activity;
 class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $expense_id;
+
     public $expense;
+
     public $expenseDetails;
+
     public $showHistoryModal = false;
+
     public $showNoteModal = false;
+
     public $noteInput = '';
+
     public $activityLogs = [];
-    public $total_quantity_expect, $total_quantity_get, $percentage;
-    public $is_start = false, $is_finish = false, $status, $end_date;
+
+    public $total_quantity_expect;
+
+    public $total_quantity_get;
+
+    public $percentage;
+
+    public $is_start = false;
+
+    public $is_finish = false;
+
+    public $status;
+
+    public $end_date;
 
     protected $listeners = [
-        'delete'
+        'delete',
     ];
 
     public function mount($id)
     {
         $this->expense_id = $id;
-        $this->expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])
+        $this->expense = \App\Models\Expense::select('id', 'supplier_id', 'expense_number', 'expense_date', 'note', 'grand_total_expect', 'grand_total_actual', 'is_start', 'is_finish', 'status', 'end_date')
+            ->with([
+                'expenseDetails:id,expense_id,material_id,unit_id,quantity_expect,quantity_get,price_expect,price_actual,total_expect,total_actual,expiry_date',
+                'supplier:id,name,contact_name,phone',
+            ])
             ->findOrFail($this->expense_id);
         $this->is_start = $this->expense->is_start;
         $this->is_finish = $this->expense->is_finish;
@@ -49,7 +72,9 @@ class Rincian extends Component
 
     public function riwayatPembaruan()
     {
-        $this->activityLogs = Activity::inLog('expenses')->where('subject_id', $this->expense_id)
+        $this->activityLogs = Activity::inLog('expenses')
+            ->where('subject_id', $this->expense_id)
+            ->with('causer:id,name')
             ->latest()
             ->limit(50)
             ->get();
@@ -119,6 +144,7 @@ class Rincian extends Component
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         if ($expense) {
             $expense->delete();
+
             return redirect()->intended(route('belanja'))->with('success', 'Daftar belanja berhasil dihapus!');
         } else {
             $this->alert('error', 'belanja tidak ditemukan!');
@@ -133,6 +159,7 @@ class Rincian extends Component
         $expense->update(['is_start' => $this->is_start, 'status' => $this->status]);
         $this->alert('success', 'Belanja berhasil dimulai.');
     }
+
     public function finish()
     {
         $this->is_finish = true;
@@ -154,7 +181,7 @@ class Rincian extends Component
                 ]);
             }
             // Generate a batch number if not present in detail
-            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
+            $batchNumber = 'B-'.Carbon::parse($detail->expiry_date)->format('ymd');
 
             // Cek apakah sudah ada batch dengan batch_number dan unit_id yang sama
             $materialBatch = \App\Models\MaterialBatch::where('batch_number', $batchNumber)

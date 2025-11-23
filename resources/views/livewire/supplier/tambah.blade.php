@@ -181,16 +181,12 @@
     </div>
 
     <div class="flex justify-end gap-8">
-        <a href="{{ route('supplier') }}"
-            class="bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
-            <flux:icon.x-mark class="size-5" />
-            <span class="font-montserrat font-semibold text-[16px]">Batal</span>
-        </a>
-        <button type="button" wire:click.prevent="store"
-            class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
-            <flux:icon.bookmark-square class="size-5" />
-            <span class="font-montserrat font-semibold text-[16px]">Simpan</span>
-        </button>
+        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('supplier') }}">
+            Batal
+        </flux:button>
+        <flux:button type="button" wire:click.prevent="store" variant="primary" icon="bookmark-square">
+            Simpan
+        </flux:button>
     </div>
 
 

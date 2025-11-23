@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PdfController;
-use App\Livewire\User\Index;
 use App\Livewire\Dashboard;
 use App\Livewire\Review\ReviewForm;
+use App\Livewire\User\Index;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -13,7 +13,6 @@ Route::get('/', App\Livewire\Landing\Index::class)->name('home');
 Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
-
 
 Route::get('/tes', function () {
     return view('tes');
@@ -72,17 +71,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/read-notification/{id}', function ($id) {
         $notification = \App\Models\Notification::find($id);
         $notification->update(['is_read' => true]);
+
         return response()->json(['message' => 'Notifikasi telah dibaca']);
     })->name('read-notification');
 
     Route::post('/read-all-notification', function () {
         $user = Auth::user();
         \App\Models\Notification::where('user_id', $user->id)->update(['is_read' => true]);
+
         return response()->json(['message' => 'Semua notifikasi telah dibaca']);
     })->name('read-all-notification');
 
     Route::get('/notifikasi', App\Livewire\Notification\Index::class)->name('notifikasi');
-
 
     Route::group(['middleware' => ['permission:Inventori']], function () {
         Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
@@ -101,9 +101,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
             ->name('kategori-persediaan.pdf');
         Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
-        Route::get('/produk/tambah/', App\Livewire\Product\Tambah::class)->name('produk.tambah');
+        Route::get('/produk/tambah/', App\Livewire\Product\Form::class)->name('produk.tambah');
         // Route::get('/produk/salin/{method}', App\Livewire\Product\Salin::class)->name('produk.salin');
-        Route::get('/produk/{id}/rincian', App\Livewire\Product\Rincian::class)->name('produk.edit');
+        Route::get('/produk/{id}/rincian', App\Livewire\Product\Form::class)->name('produk.edit');
         Route::get('/produk/cetak', [PdfController::class, 'generateProductPDF'])
             ->name('produk.pdf');
         Route::get('/supplier', App\Livewire\Supplier\Index::class)->name('supplier');
@@ -154,7 +154,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('rincian-transaksi.pdf');
         Route::get('/transaksi/{id}/print', function () {
             return view('pdf.pdf', [
-                'transaction' => \App\Models\Transaction::find(request()->id)
+                'transaction' => \App\Models\Transaction::find(request()->id),
             ]);
         })->name('transaksi.cetak');
         Route::get('/cetak-struk/{id}', App\Livewire\Receipt::class)->name('cetak-struk');
@@ -188,15 +188,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
     Route::get('/profil-saya/{id}', App\Livewire\Setting\MyProfile::class)->name('profil-saya');
 
-
     Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
         Route::get('/profil-usaha', App\Livewire\Setting\StoreProfile::class)->name('profil-usaha');
         Route::get('/metode-pembayaran', App\Livewire\Setting\PaymentMethod::class)->name('metode-pembayaran');
     });
 
     Route::get('/panduan-pengguna', App\Livewire\Setting\UserManual::class)->name('panduan-pengguna');
-
-
 
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });

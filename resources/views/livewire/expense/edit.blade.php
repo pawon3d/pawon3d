@@ -1,10 +1,8 @@
 <div class="space-y-[30px]">
     <div class="flex items-center justify-between gap-[15px] flex-wrap">
-        <a href="{{ route('belanja.rincian', $expense_id) }}" wire:navigate
-            class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-            <flux:icon.arrow-left class="size-5 text-[#f6f6f6]" />
-            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Kembali</span>
-        </a>
+        <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja.rincian', $expense_id) }}">
+            Kembali
+        </flux:button>
         <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Ubah Daftar Belanja</h1>
     </div>
 
@@ -87,11 +85,9 @@
         <div class="space-y-[10px]">
             <div class="flex items-center justify-between gap-[15px] flex-wrap">
                 <p class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</p>
-                <button type="button" wire:click="addDetail"
-                    class="px-[25px] py-[10px] rounded-[15px] bg-[#74512d] text-[#f6f6f6] font-['Montserrat'] font-semibold text-[16px] flex items-center gap-[8px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-                    <flux:icon icon="plus" class="size-5" />
+                <flux:button type="button" wire:click="addDetail" variant="primary" icon="plus">
                     Tambah Belanja
-                </button>
+                </flux:button>
             </div>
             <p class="font-['Montserrat'] text-[14px] text-[#666666]">
                 Tambahkan barang sesuai kebutuhan operasional. Satuan belanja akan dikonversi menjadi satuan persediaan
@@ -100,133 +96,110 @@
             </p>
         </div>
 
-        <div class="w-full overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-[#3f4e4f] text-left">
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[220px]">
-                            Barang Persediaan
-                        </th>
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] text-right min-w-[130px]">
-                            Jumlah Terkini
-                        </th>
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] text-right min-w-[130px]">
-                            Jumlah Belanja
-                        </th>
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] min-w-[200px]">
-                            Satuan Ukur Belanja
-                        </th>
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] text-right min-w-[150px]">
-                            Harga Satuan
-                        </th>
-                        <th
-                            class="px-[25px] py-[21px] font-['Montserrat'] font-bold text-[14px] text-[#f8f4e1] text-right min-w-[150px]">
-                            Total Harga
-                        </th>
-                        <th class="px-[25px] py-[21px]">&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($expense_details as $index => $detail)
-                        <tr class="border-b border-[#d4d4d4]">
-                            <td class="px-[25px] py-[18px]">
-                                <select
-                                    class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[8px] font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0"
-                                    wire:model="expense_details.{{ $index }}.material_id"
-                                    wire:change="setMaterial({{ $index }}, $event.target.value)">
-                                    <option value="">- Pilih Bahan Baku -</option>
-                                    @foreach ($materials as $material)
-                                        <option value="{{ $material->id }}">{{ $material->name }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="px-[25px] py-[18px] text-right">
-                                <p class="font-['Montserrat'] text-[14px] text-[#666666]">
-                                    {{ $detail['material_quantity'] }}</p>
-                            </td>
-                            <td class="px-[25px] py-[18px] text-right">
+        <x-table.form :headers="[
+            ['label' => 'Barang Persediaan', 'class' => 'text-left px-[25px] py-[21px] min-w-[220px]'],
+            ['label' => 'Jumlah Terkini', 'class' => 'text-right px-[25px] py-[21px] min-w-[130px]'],
+            ['label' => 'Jumlah Belanja', 'class' => 'text-right px-[25px] py-[21px] min-w-[130px]'],
+            ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-[25px] py-[21px] min-w-[200px]'],
+            ['label' => 'Harga Satuan', 'class' => 'text-right px-[25px] py-[21px] min-w-[150px]'],
+            ['label' => 'Total Harga', 'class' => 'text-right px-[25px] py-[21px] min-w-[150px]'],
+            ['label' => '', 'class' => 'px-[25px] py-[21px]'],
+        ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
+            body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
+            empty-message="Belum ada barang belanja. Klik tombol 'Tambah Belanja' untuk menambahkan.">
+            <x-slot:rows>
+                @foreach ($expense_details as $index => $detail)
+                    <tr class="border-b border-[#d4d4d4]">
+                        <td class="px-[25px] py-[18px]">
+                            <select
+                                class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[8px] font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                wire:model="expense_details.{{ $index }}.material_id"
+                                wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                <option value="">- Pilih Bahan Baku -</option>
+                                @foreach ($materials as $material)
+                                    <option value="{{ $material->id }}">{{ $material->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td class="px-[25px] py-[18px] text-right">
+                            <p class="font-['Montserrat'] text-[14px] text-[#666666]">
+                                {{ $detail['material_quantity'] }}</p>
+                        </td>
+                        <td class="px-[25px] py-[18px] text-right">
+                            <input type="number" placeholder="0" min="0"
+                                wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
+                                class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[6px] text-right font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
+                        </td>
+                        <td class="px-[25px] py-[18px]">
+                            <select
+                                class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[8px] font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                wire:model="expense_details.{{ $index }}.unit_id"
+                                wire:change="setUnit({{ $index }}, $event.target.value)">
+                                @php
+                                    $material = $materials->firstWhere('id', $detail['material_id']);
+                                    $units = $material?->material_details
+                                        ->map(function ($detail) {
+                                            return $detail->unit;
+                                        })
+                                        ->filter();
+                                @endphp
+                                <option value="">- Pilih Satuan Ukur -</option>
+                                @foreach ($units ?? [] as $unit)
+                                    <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->alias }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td class="px-[25px] py-[18px] text-right">
+                            <div class="space-y-1">
                                 <input type="number" placeholder="0" min="0"
-                                    wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
+                                    wire:model.number.live="expense_details.{{ $index }}.price_expect"
                                     class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[6px] text-right font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
-                            </td>
-                            <td class="px-[25px] py-[18px]">
-                                <select
-                                    class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[8px] font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0"
-                                    wire:model="expense_details.{{ $index }}.unit_id"
-                                    wire:change="setUnit({{ $index }}, $event.target.value)">
-                                    @php
-                                        $material = $materials->firstWhere('id', $detail['material_id']);
-                                        $units = $material?->material_details
-                                            ->map(function ($detail) {
-                                                return $detail->unit;
-                                            })
-                                            ->filter();
-                                    @endphp
-                                    <option value="">- Pilih Satuan Ukur -</option>
-                                    @foreach ($units ?? [] as $unit)
-                                        <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->alias }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="px-[25px] py-[18px] text-right">
-                                <div class="space-y-1">
-                                    <input type="number" placeholder="0" min="0"
-                                        wire:model.number.live="expense_details.{{ $index }}.price_expect"
-                                        class="w-full bg-[#fafafa] border border-[#adadad] rounded-[10px] px-[15px] py-[6px] text-right font-['Montserrat'] text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
-                                    @if (isset($prevInputs[$index]))
-                                        <span class="block text-xs text-[#3f4e4f] font-['Montserrat']">Harga Sebelumnya:
-                                            Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-[25px] py-[18px] text-right">
-                                <p class="font-['Montserrat'] text-[14px] text-[#666666]">
-                                    Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
-                                </p>
-                            </td>
-                            <td class="px-[25px] py-[18px] text-right">
-                                <button type="button" wire:click.prevent="removeDetail({{ $index }})"
-                                    class="text-[#666666]">
-                                    <flux:icon icon="trash" class="size-5" />
-                                </button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr class="bg-[#eaeaea]">
-                        <td class="px-[25px] py-[18px] font-['Montserrat'] font-bold text-[14px] text-[#666666]"
-                            colspan="5">
-                            Total Harga Keseluruhan
+                                @if (isset($prevInputs[$index]))
+                                    <span class="block text-xs text-[#3f4e4f] font-['Montserrat']">Harga Sebelumnya:
+                                        Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</span>
+                                @endif
+                            </div>
                         </td>
-                        <td
-                            class="px-[25px] py-[18px] font-['Montserrat'] font-bold text-[14px] text-[#666666] text-right">
-                            Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
+                        <td class="px-[25px] py-[18px] text-right">
+                            <p class="font-['Montserrat'] text-[14px] text-[#666666]">
+                                Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
+                            </p>
                         </td>
-                        <td></td>
+                        <td class="px-[25px] py-[18px] text-right">
+                            <button type="button" wire:click.prevent="removeDetail({{ $index }})"
+                                class="text-[#666666]">
+                                <flux:icon icon="trash" class="size-5" />
+                            </button>
+                        </td>
                     </tr>
-                </tfoot>
-            </table>
-        </div>
+                @endforeach
+            </x-slot:rows>
+
+            <x-slot:footer>
+                <tr>
+                    <td class="px-[25px] py-[18px] font-['Montserrat'] font-bold text-[14px] text-[#666666]"
+                        colspan="5">
+                        Total Harga Keseluruhan
+                    </td>
+                    <td
+                        class="px-[25px] py-[18px] font-['Montserrat'] font-bold text-[14px] text-[#666666] text-right">
+                        Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
+                    </td>
+                    <td></td>
+                </tr>
+            </x-slot:footer>
+        </x-table.form>
     </div>
 
     <div class="flex justify-end gap-[15px] flex-wrap">
-        <a href="{{ route('belanja.rincian', $expense_id) }}" wire:navigate
-            class="px-[25px] py-[10px] rounded-[15px] bg-[#c4c4c4] flex items-center gap-[5px] font-['Montserrat'] font-semibold text-[16px] text-[#333333] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-            <flux:icon.x-mark class="size-5" />
+        <flux:button type="button" variant="subtle" icon="x-mark"
+            href="{{ route('belanja.rincian', $expense_id) }}">
             Batal
-        </a>
-        <button type="button" wire:click.prevent="update"
-            class="px-[25px] py-[10px] rounded-[15px] bg-[#3f4e4f] flex items-center gap-[5px] font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-            <flux:icon icon="save" class="size-5" />
+        </flux:button>
+        <flux:button type="button" wire:click.prevent="update" variant="primary" icon="save">
             Simpan Perubahan
-        </button>
+        </flux:button>
     </div>
 
 </div>

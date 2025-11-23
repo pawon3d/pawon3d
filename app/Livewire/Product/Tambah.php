@@ -2,16 +2,16 @@
 
 namespace App\Livewire\Product;
 
-use App\Models\Product;
-use Livewire\Component;
 use App\Models\Category;
 use App\Models\Material;
 use App\Models\MaterialDetail;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Rule;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class Tambah extends Component
@@ -69,6 +69,7 @@ class Tambah extends Component
     public int $suhu_beku = 0;
 
     public float $capital = 0;
+
     public float $pcs_capital = 0;
 
     protected $messages = [
@@ -131,7 +132,7 @@ class Tambah extends Component
 
     public function setMaterial($index, $materialId)
     {
-        if (!array_key_exists($index, $this->product_compositions)) {
+        if (! array_key_exists($index, $this->product_compositions)) {
             return;
         }
 
@@ -153,9 +154,10 @@ class Tambah extends Component
             $this->recalculateCapital();
         }
     }
+
     public function setUnit($index, $unitId)
     {
-        if (!array_key_exists($index, $this->product_compositions)) {
+        if (! array_key_exists($index, $this->product_compositions)) {
             return;
         }
 
@@ -173,6 +175,7 @@ class Tambah extends Component
 
         $this->recalculateCapital();
     }
+
     public function updatedProductImage()
     {
         $this->validateOnly('product_image');
@@ -209,7 +212,7 @@ class Tambah extends Component
     protected function recalculateCapital()
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
@@ -222,7 +225,7 @@ class Tambah extends Component
     {
         $this->resetErrorBag('price');
 
-        if (!is_numeric($value)) {
+        if (! is_numeric($value)) {
             return;
         }
 
@@ -240,7 +243,7 @@ class Tambah extends Component
     public function updatedProductCompositions()
     {
         $this->product_compositions = array_map(function ($composition) {
-            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn($value) => $value !== null));
+            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn ($value) => $value !== null));
 
             return [
                 'material_id' => $normalized['material_id'] ?? '',
@@ -303,7 +306,7 @@ class Tambah extends Component
 
     public function render()
     {
-        return view('livewire.product.tambah-new', [
+        return view('livewire.product.tambah', [
             'categoryOptions' => $this->categoryOptions(),
             'recipeMaterials' => $this->recipeMaterials(),
             'readyMaterials' => $this->readyMaterials(),
@@ -427,12 +430,12 @@ class Tambah extends Component
 
     protected function categoryOptions(): Collection
     {
-        return once(fn() => Category::orderBy('name')->get(['id', 'name']));
+        return once(fn () => Category::orderBy('name')->get(['id', 'name']));
     }
 
     protected function recipeMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', false)
+        return once(fn () => Material::where('is_recipe', false)
             ->with(['material_details.unit'])
             ->orderBy('name')
             ->get());
@@ -440,7 +443,7 @@ class Tambah extends Component
 
     protected function readyMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', true)
+        return once(fn () => Material::where('is_recipe', true)
             ->with(['material_details.unit', 'batches.unit'])
             ->orderBy('name')
             ->get());
@@ -448,20 +451,20 @@ class Tambah extends Component
 
     protected function typeCostOptions(): Collection
     {
-        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+        return once(fn () => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
     }
 
     protected function resolveSoloInventory(): ?array
     {
         $materialId = $this->product_compositions[0]['material_id'] ?? null;
 
-        if (!$materialId) {
+        if (! $materialId) {
             return null;
         }
 
         $material = $this->readyMaterials()->firstWhere('id', $materialId);
 
-        if (!$material) {
+        if (! $material) {
             return null;
         }
 
