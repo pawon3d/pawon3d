@@ -37,7 +37,7 @@
                             @if (isset($header['sortable']) && $header['sortable'])
                                 @php
                                     $sortMethod = $header['sort-method'] ?? 'sortBy';
-                                    $sortField = $header['sort-by'] ?? '';
+                                    $sortField = $header['sort-by'] ?? ($header['field'] ?? '');
                                 @endphp
                                 <button type="button" wire:click="{{ $sortMethod }}('{{ $sortField }}')"
                                     class="flex items-center gap-2 {{ $header['align'] ?? '' == 'right' ? 'justify-end' : '' }} w-full">

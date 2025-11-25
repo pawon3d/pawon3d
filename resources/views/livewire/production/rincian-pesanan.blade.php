@@ -1,138 +1,201 @@
-<div>
-    <div class="mb-4 flex justify-between items-center">
-        <div class="flex gap-2 items-center">
+<div style="padding: 0 15px;">
+    {{-- Header Section --}}
+    <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
             <a href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
-                Kembali
+                style="background: #313131; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; padding: 10px 25px; text-decoration: none;">
+                <svg style="width: 20px; height: 20px; min-width: 20px;" viewBox="0 0 20 20" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 16L6 10L12 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span
+                    style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Kembali</span>
             </a>
-            <h1 class="text-2xl">Rincian Pesanan</h1>
-        </div>
-        <div class="flex gap-2 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
-        </div>
-    </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Sed pharetra netus gravida non curabitur fermentum etiam. Lorem
-                orci auctor adipiscing vel blandit. In in integer viverra proin risus eu eleifend.
-            </p>
+            <h1
+                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
+                Rincian Pesanan</h1>
         </div>
     </div>
 
-    <div class="w-full flex flex-col gap-4 mt-4">
-        <h1 class="text-3xl font-bold">{{ $transaction->invoice_number }}</h1>
-        <p class="text-lg text-gray-500">{{ $transaction->status }}</p>
-        <div class="flex items-center justify-between gap-4 flex-row">
-            <div class="flex items-center gap-16 flex-row">
-                <div class="flex items-start gap-4 flex-col">
-                    <flux:heading class="text-lg font-semibold">Tanggal Pesanan Masuk</flux:heading>
-                    <p class="text-sm text-start">
-                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d / m / Y H:i') : '-' }}
-                    </p>
-                </div>
-                <div class="flex items-start gap-4 flex-col">
-                    <flux:heading class="text-lg font-semibold">Tanggal Pengambilan Pesanan</flux:heading>
-                    <p class="text-sm text-start">
-                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d / m / Y') : '-' }}
-                        {{ $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '-' }}
-                    </p>
+    {{-- Main Content Container --}}
+    <div style="display: flex; flex-direction: column; gap: 50px; align-items: flex-end;">
+        <div style="display: flex; flex-direction: column; gap: 30px; width: 100%;">
+            {{-- Order Information Card --}}
+            <div
+                style="background: #fafafa; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); padding: 25px 30px; display: flex; flex-direction: column; gap: 30px;">
+                {{-- Invoice Number and Status --}}
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px;">
+                    <p
+                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: clamp(20px, 5vw, 30px); color: #666666; margin: 0; word-break: break-word;">
+                        {{ $transaction->invoice_number }}</p>
+                    @php
+                        $statusColors = [
+                            'Belum Diproses' => ['bg' => '#adadad', 'text' => '#fafafa'],
+                            'Sedang Diproses' => ['bg' => '#ffa500', 'text' => '#fafafa'],
+                            'Selesai' => ['bg' => '#56c568', 'text' => '#fafafa'],
+                            'Gagal' => ['bg' => '#ff0000', 'text' => '#fafafa'],
+                            'Draft' => ['bg' => '#cccccc', 'text' => '#666666'],
+                        ];
+                        $statusColor = $statusColors[$transaction->status] ?? ['bg' => '#adadad', 'text' => '#fafafa'];
+                    @endphp
+                    <div style="border-radius: 30px; padding: 8px 20px; background-color: {{ $statusColor['bg'] }};">
+                        <p
+                            style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 16px; color: {{ $statusColor['text'] }}; white-space: nowrap; margin: 0;">
+                            {{ $transaction->status }}</p>
+                    </div>
                 </div>
 
+                {{-- Date and User Information --}}
+                <div style="display: flex; flex-direction: row; gap: 20px; width: 100%;" class="justify-between">
+                    <div style="display: flex; flex-wrap: wrap; gap: 30px; width: 100%;">
+                        {{-- Tanggal Pesanan Masuk --}}
+                        <div style="display: flex; flex-direction: column; gap: 5px; min-width: 200px; flex: 1;">
+                            <p
+                                style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                                Tanggal Pesanan Masuk</p>
+                            <div
+                                style="display: flex; flex-wrap: wrap; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                @if ($transaction->start_date)
+                                    <p style="margin: 0;">
+                                        {{ \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d M Y') }}
+                                    </p>
+                                    <p style="margin: 0;">
+                                        {{ \Carbon\Carbon::parse($transaction->start_date)->format('H:i') }}</p>
+                                @else
+                                    <p style="margin: 0;">-</p>
+                                @endif
+                            </div>
+                        </div>
+                        {{-- Tanggal Ambil Pesanan --}}
+                        <div style="display: flex; flex-direction: column; gap: 5px; min-width: 200px; flex: 1;">
+                            <p
+                                style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                                Tanggal Ambil Pesanan</p>
+                            <div
+                                style="display: flex; flex-wrap: wrap; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                @if ($transaction->date)
+                                    <p style="margin: 0;">
+                                        {{ \Carbon\Carbon::parse($transaction->date)->translatedFormat('d M Y') }}</p>
+                                    <p style="margin: 0;">
+                                        {{ $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '00:00' }}
+                                    </p>
+                                @else
+                                    <p style="margin: 0;">-</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Pembeli and Kasir --}}
+                    <div style="display: flex; flex-wrap: wrap; gap: 30px; width: 100%;" class="justify-end text-right">
+                        <div
+                            style="display: flex; flex-direction: column; gap: 5px; font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; min-width: 150px;">
+                            <p style="font-weight: 500; margin: 0;">Pembeli</p>
+                            <p style="font-weight: 400; margin: 0; word-break: break-word;">
+                                {{ $transaction->name ?? '-' }}</p>
+                        </div>
+                        <div
+                            style="display: flex; flex-direction: column; gap: 5px; font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; min-width: 150px;">
+                            <p style="font-weight: 500; margin: 0;">Kasir</p>
+                            <p style="font-weight: 400; margin: 0; word-break: break-word;">
+                                {{ $transaction->user->name ?? '-' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Catatan Pesanan Section --}}
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <p
+                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 18px; color: #666666; margin: 0;">
+                        Catatan Pesanan</p>
+                    <div
+                        style="background: #eaeaea; border: 1px solid #d4d4d4; border-radius: 15px; padding: 10px 20px; min-height: 120px;">
+                        <p
+                            style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666; text-align: justify; margin: 0; word-wrap: break-word;">
+                            {{ $transaction->note ?: 'Tidak ada catatan' }}
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-center gap-16 flex-row">
-                <div class="flex items-end gap-4 flex-col">
-                    <flux:heading class="text-lg font-semibold">Pemesan</flux:heading>
-                    <p class="text-sm">
-                        {{ $transaction->name ?? '-' }}
-                    </p>
-                </div>
-                <div class="flex items-end gap-4 flex-col">
-                    <flux:heading class="text-lg font-semibold">Kasir</flux:heading>
-                    <p class="text-sm">
-                        {{ $transaction->user->name ?? '-' }}
-                    </p>
+
+            {{-- Product Table Card --}}
+            <div
+                style="background: #fafafa; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); padding: 25px 30px; display: flex; flex-direction: column; gap: 20px;">
+                <p
+                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                    Daftar Produk</p>
+
+                <div style="width: 100%; overflow-x: auto;">
+                    <div style="display: flex; flex-direction: column; min-width: 600px;">
+                        {{-- Table Header --}}
+                        <div
+                            style="display: flex; align-items: center; width: 100%; border-radius: 15px 15px 0 0; overflow: hidden;">
+                            <div
+                                style="flex: 1; background: #3f4e4f; padding: 21px 25px; height: 60px; display: flex; align-items: center;">
+                                <p
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; white-space: nowrap; margin: 0;">
+                                    Produk</p>
+                            </div>
+                            <div
+                                style="width: 180px; background: #3f4e4f; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end;">
+                                <p
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; white-space: nowrap; text-align: right; margin: 0;">
+                                    Jumlah Pesanan</p>
+                            </div>
+                        </div>
+
+                        {{-- Table Body --}}
+                        <div style="background: #fafafa; display: flex; flex-direction: column; width: 100%;">
+                            @foreach ($details as $detail)
+                                <div style="display: flex; align-items: center; width: 100%;">
+                                    <div
+                                        style="flex: 1; background: #fafafa; border-bottom: 1px solid #d4d4d4; padding: 0 25px; height: 60px; display: flex; align-items: center;">
+                                        <p
+                                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; margin: 0;">
+                                            {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}</p>
+                                    </div>
+                                    <div
+                                        style="width: 180px; background: #fafafa; border-bottom: 1px solid #d4d4d4; padding: 0 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end;">
+                                        <p
+                                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right; white-space: nowrap; margin: 0;">
+                                            {{ $detail->quantity ?? 0 }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Table Footer --}}
+                        <div
+                            style="display: flex; align-items: center; width: 100%; height: 60px; border-radius: 0 0 15px 15px; overflow: hidden;">
+                            <div
+                                style="flex: 1; background: #eaeaea; padding: 0 25px; height: 100%; display: flex; align-items: center;">
+                                <p
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; white-space: nowrap; margin: 0;">
+                                    Total</p>
+                            </div>
+                            <div
+                                style="width: 180px; background: #eaeaea; padding: 0 25px; height: 100%; display: flex; align-items: center; justify-content: flex-end;">
+                                <p
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right; white-space: nowrap; margin: 0;">
+                                    {{ $details->sum('quantity') }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-start text-start space-x-2 gap-3 flex-col mt-4">
-            <flux:heading class="text-lg font-semibold">Catatan Pesanan</flux:heading>
-            <flux:textarea rows="4" class="bg-gray-300" disabled>{{ $transaction->note }}
-            </flux:textarea>
-        </div>
-
-    </div>
-
-
-    <div class="w-full mt-8 flex flex-col gap-4">
-        <div class="w-full flex items-center justify-start gap-4 flex-row">
-            <flux:label>Daftar Produk</flux:label>
-        </div>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th class="text-left px-6 py-3">Produk</th>
-                        <th class="text-right px-6 py-3">Jumlah Pesanan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($details as $detail)
-                        <tr>
-                            <td class="px-6 py-3">
-                                <span class="text-sm">
-                                    {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm ">
-                                    {{ $detail->quantity ?? 0 }}
-                                </span>
-                            </td>
-                        </tr>
-                    @endforeach
-
-                </tbody>
-                <tfoot class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <td class="px-6 py-3">
-                            <span class="text-gray-700 font-bold">Total</span>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <span class="text-gray-700">
-                                {{ $details->sum('quantity') }}
-                            </span>
-                        </td>
-                    </tr>
-                </tfoot>
-
-            </table>
-        </div>
-
-    </div>
-
-    <div class="flex justify-end mt-16 gap-4">
+        {{-- Mulai Produksi Button --}}
         @if (empty($transaction->production))
-            <flux:button icon="chef-hat" type="button" variant="primary" wire:click="start">
-                Rencanakan Produksi
+            <flux:button wire:click="start" variant="secondary" icon="cake">
+                Mulai Produksi
             </flux:button>
         @endif
     </div>
 
-
-    <!-- Modal Riwayat Pembaruan -->
+    {{-- Modal Riwayat Pembaruan --}}
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>

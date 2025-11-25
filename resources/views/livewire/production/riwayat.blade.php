@@ -1,178 +1,133 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('produksi') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
-                wire:navigate>
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
-            </a>
-            <h1 class="text-2xl hidden md:block">Riwayat Produksi {{ $methodName }}</h1>
+    <!-- Header dengan tombol kembali dan judul -->
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+        <a href="{{ route('produksi') }}"
+            style="background-color: #313131; color: white; padding: 10px 25px; border-radius: 15px; display: flex; align-items: center; gap: 5px; text-decoration: none; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);"
+            wire:navigate>
+            <flux:icon.arrow-left style="width: 20px; height: 20px;" />
+            <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Kembali</span>
+        </a>
+        <h1 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
+            Riwayat Produksi {{ $methodName }}
+        </h1>
+    </div>
+
+    <!-- Container utama -->
+    <div style="background-color: #fafafa; padding: 30px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);">
+        <!-- Baris search dan filter -->
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+            <!-- Search bar -->
+            <div
+                style="flex: 1; background-color: white; border: 1px solid #666666; border-radius: 20px; display: flex; align-items: center; padding: 0 15px; height: 40px;">
+                <flux:icon.magnifying-glass style="width: 30px; height: 30px; color: #666666;" />
+                <input wire:model.live="search" placeholder="Cari Produksi"
+                    style="flex: 1; border: none; outline: none; padding: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #959595;" />
+            </div>
+
+            <!-- Filter button -->
+            <div style="display: flex; align-items: center; cursor: pointer;">
+                <div style="width: 25px; height: 25px; color: #666666;">
+                    <svg viewBox="0 0 25 25" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10.4167 19.7917V16.6667H14.5833V19.7917H10.4167ZM6.25 14.0625V10.9375H18.75V14.0625H6.25ZM3.125 8.33333V5.20833H21.875V8.33333H3.125Z" />
+                    </svg>
+                </div>
+                <div style="padding: 10px 5px;">
+                    <p
+                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                        Filter</p>
+                </div>
+            </div>
         </div>
-        <div class="flex gap-2 items-center justify-end-safe">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-        </div>
-    </div>
 
+        <!-- Tabel dengan custom component -->
+        <x-table.paginated :headers="[
+            ['label' => 'ID Produksi', 'field' => 'production_number', 'sortable' => true],
+            ['label' => 'Tanggal Selesai', 'field' => 'end_date', 'sortable' => true],
+            ['label' => 'Daftar Produk', 'field' => 'product_name', 'sortable' => false],
+            ['label' => 'Koki', 'field' => 'worker_name', 'sortable' => true],
+            ['label' => 'Status Produksi', 'field' => 'status', 'sortable' => true, 'multiline' => true],
+            ['label' => 'Kemajuan Produksi', 'field' => '', 'sortable' => false],
+        ]" :paginator="$productions" :sortField="$sortField" :sortDirection="$sortDirection" headerBg="#3f4e4f"
+            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666">
+            @foreach ($productions as $production)
+                @php
+                    $finishDate = $production->end_date ?? $production->updated_at;
+                    $total_plan = $production->details->sum('quantity_plan');
+                    $total_done = $production->details->sum('quantity_get');
+                    $progress = $total_plan > 0 ? (int) (($total_done / $total_plan) * 100) : 0;
+                    $progress = $progress > 100 ? 100 : $progress;
+                @endphp
+                <tr>
+                    <!-- ID Produksi -->
+                    <td style="padding: 0 25px; height: 60px;">
+                        <a href="{{ route('produksi.rincian', $production->id) }}"
+                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-decoration: none;">
+                            {{ $production->production_number }}
+                        </a>
+                    </td>
 
-    <div class="flex justify-between items-center mb-4">
-        <!-- Search Input -->
-        <div class="p-4 flex">
-            <input wire:model.live="search" placeholder="Cari..."
-                class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <flux:button :loading="false" class="ml-2" variant="ghost">
-                <flux:icon.funnel variant="mini" />
-                <span>Filter</span>
-            </flux:button>
-        </div>
-    </div>
-    <div class="flex justify-between items-center mb-4">
-        <flux:dropdown>
-            <flux:button variant="ghost">
-                @if($filterStatus)
-                {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                @else
-                Semua Produksi
-                @endif
-                ({{ $productions->total() }})
-                <flux:icon.chevron-down variant="mini" />
-            </flux:button>
-            <flux:menu>
-                <flux:menu.radio.group wire:model.live="filterStatus">
-                    <flux:menu.radio value="">Semua Produksi</flux:menu.radio>
-                    <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                    <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                </flux:menu.radio.group>
-            </flux:menu>
-        </flux:dropdown>
-        <flux:dropdown>
-            <flux:button variant="ghost">
-                Urutkan Produk
-                <flux:icon.chevron-down variant="mini" />
+                    <!-- Tanggal Selesai -->
+                    <td style="padding: 0 25px; height: 60px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <div
+                                style="display: flex; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666;">
+                                <span>{{ \Carbon\Carbon::parse($finishDate)->translatedFormat('d M Y') }}</span>
+                                <span>{{ \Carbon\Carbon::parse($finishDate)->format('H:i') }}</span>
+                            </div>
+                        </div>
+                    </td>
 
-            </flux:button>
-
-            <flux:menu>
-                <flux:menu.radio.group wire:model="sortByCategory">
-                    <flux:menu.radio value="name">Nama</flux:menu.radio>
-                    <flux:menu.radio value="status">Status</flux:menu.radio>
-                    <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                </flux:menu.radio.group>
-            </flux:menu>
-        </flux:dropdown>
-
-    </div>
-
-    @if ($productions->isEmpty())
-    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum ada produksi.</p>
-        <p class="text-gray-700">Tekan tombol “Tambah Produksi” untuk menambahkan produksi.</p>
-    </div>
-    @else
-    <div class="bg-white rounded-xl border shadow-sm">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('production_number')">
-                            ID Produk
-                            <span>{{ $sortDirection === 'asc' && $sortField === 'production_number' ? '↑' : '↓'
-                                }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('start_date')">Jadwal
-                            Produksi
-                            <span>{{ $sortDirection === 'asc' && $sortField === 'start_date' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("product_name")'>
-                            Daftar Produk
-                            <span>{{ $sortDirection === 'asc' && $sortField === 'product_name' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("worker_name")'>
-                            Pekerja
-                            <span>{{ $sortDirection === 'asc' && $sortField === 'worker_name' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('status')">Status
-                            <span>{{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">Kemajuan</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-900">
-                    @foreach($productions as $production)
-                    <tr class="hover:bg-gray-50 transition">
-                        <!-- ID Produk -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('produksi.edit', $production->id) }}">
-                                {{ $production->production_number }}
-                            </a>
-                        </td>
-
-                        <!-- Jadwal Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{ $production->start_date
-                            ? \Carbon\Carbon::parse($production->start_date)->format('d-m-Y')
-                            : '-' }}
-                        </td>
-
-                        <!-- Daftar Produk -->
-                        <td class="px-6 py-4 max-w-xs truncate">
+                    <!-- Daftar Produk -->
+                    <td style="padding: 0 25px; height: 60px; max-width: 255px;">
+                        <div
+                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
                             {{ $production->details->count() > 0
-                            ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
-                            : 'Tidak ada produk' }}
-                        </td>
+                                ? $production->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
+                                : 'Tidak ada produk' }}
+                        </div>
+                    </td>
 
-                        <!-- Pekerja -->
-                        <td class="px-6 py-4 max-w-xs truncate">
+                    <!-- Koki -->
+                    <td style="padding: 0 25px; height: 60px; max-width: 140px;">
+                        <div
+                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             {{ $production->workers->count() > 0
-                            ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
-                            : 'Tidak ada pekerja' }}
-                        </td>
+                                ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ')
+                                : '-' }}
+                        </div>
+                    </td>
 
-                        <!-- Status -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                            {{ 
-                                $production->status === 'selesai' ? 'bg-green-100 text-green-800' :
-                                ($production->status === 'berjalan' ? 'bg-blue-100 text-blue-800' :
-                                'bg-gray-100 text-gray-700') 
-                            }}">
-                                {{ ucfirst($production->status) }}
-                            </span>
-                        </td>
+                    <!-- Status Produksi -->
+                    <td style="padding: 0 25px; height: 60px;">
+                        <div
+                            style="background-color: #56c568; color: #fafafa; min-height: 40px; min-width: 90px; padding: 5px 15px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                            <span
+                                style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px; text-align: center; white-space: pre-line;">Selesai</span>
+                        </div>
+                    </td>
 
-                        <!-- Kemajuan Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @php
-                            $total_plan = $production->details->sum('quantity_plan');
-                            $total_done = $production->details->sum('quantity_get');
-                            $progress = $total_plan > 0 ? ($total_done / $total_plan) * 100 : 0;
-                            @endphp
-
-                            <div class="flex flex-col gap-1">
-                                <div class="w-full bg-gray-200 h-4 rounded-full overflow-hidden">
-                                    <div class="h-4 bg-blue-600 rounded-full transition-all"
-                                        style="width: {{ number_format($progress, 0) }}%"></div>
+                    <!-- Kemajuan Produksi -->
+                    <td style="padding: 0 25px; height: 60px; min-width: 200px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <!-- Progress bar -->
+                            <div
+                                style="width: 100%; height: 18px; background-color: #eaeaea; border-radius: 5px; overflow: hidden; position: relative;">
+                                <div
+                                    style="position: absolute; top: 0; left: 0; height: 100%; width: {{ $progress }}%; background-color: #49aa59; border-radius: 5px;">
                                 </div>
-                                <span class="text-xs text-gray-500">
-                                    {{ number_format($progress, 0) }}% ({{ $total_done }} dari {{ $total_plan }})
+                            </div>
+                            <!-- Progress text -->
+                            <div style="display: flex; gap: 5px; align-items: center; justify-content: center;">
+                                <span
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 12px; color: #525252;">
+                                    {{ $progress }}% ({{ $total_done }} dari {{ $total_plan }})
                                 </span>
                             </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $productions->links() }}
-        </div>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
-    @endif
-
 </div>

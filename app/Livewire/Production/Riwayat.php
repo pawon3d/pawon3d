@@ -8,12 +8,16 @@ use Livewire\Component;
 
 class Riwayat extends Component
 {
-
     public $search = '';
+
     public $filterStatus = '';
+
     public $methodName = '';
+
     public $sortField = 'production_number';
+
     public $sortDirection = 'desc';
+
     public $method = 'pesanan-reguler';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
@@ -28,12 +32,12 @@ class Riwayat extends Component
         $this->sortField = $field;
     }
 
-
     public function mount($method)
     {
+        $this->method = $method;
         if ($method == 'pesanan-reguler') {
             $this->methodName = 'Pesanan Reguler';
-        } else if ($method == 'pesanan-kotak') {
+        } elseif ($method == 'pesanan-kotak') {
             $this->methodName = 'Pesanan Kotak';
         } elseif ($method == 'siap-beli') {
             $this->methodName = 'Siap Beli';
@@ -41,12 +45,18 @@ class Riwayat extends Component
         View::share('title', 'Riwayat Produksi ' . $this->methodName);
         View::share('mainTitle', 'Produksi');
     }
+
     public function render()
     {
         $query = Production::with(['details.product', 'workers'])
             ->where('productions.production_number', 'like', '%' . $this->search . '%')
             ->where('productions.is_finish', true)
             ->where('productions.method', $this->method);
+
+        // Validasi sortField untuk mencegah query error
+        if (empty($this->sortField)) {
+            $this->sortField = 'production_number';
+        }
 
         if ($this->sortField === 'product_name') {
             $query->join('production_details', 'productions.id', '=', 'production_details.production_id')
@@ -56,11 +66,15 @@ class Riwayat extends Component
             $query->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
                 ->join('users', 'production_workers.user_id', '=', 'users.id')
                 ->orderBy('users.name', $this->sortDirection);
+        } elseif ($this->sortField === 'end_date') {
+            // Sort by end_date jika ada, fallback ke updated_at
+            $query->orderBy('productions.end_date', $this->sortDirection);
         } else {
             $query->orderBy("productions.{$this->sortField}", $this->sortDirection);
         }
 
         $productions = $query->select('productions.*')->distinct()->paginate(10);
+
         return view('livewire.production.riwayat', [
             'productions' => $productions,
         ]);

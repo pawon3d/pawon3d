@@ -53,7 +53,7 @@ class Rincian extends Component
         $this->material = $material;
         $this->name = $material->name;
         $this->description = $material->description;
-        $this->expiry_date = $material->expiry_date ? $material->expiry_date->format('d/m/Y') : '00/00/0000';
+        $this->expiry_date = $material->expiry_date ? \Carbon\Carbon::parse($material->expiry_date)->format('d/m/Y') : '00/00/0000';
         $this->status = $material->status;
         $this->minimum = $material->minimum;
         $this->is_active = $material->is_active ?? false;

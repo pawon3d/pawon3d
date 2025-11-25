@@ -2,24 +2,31 @@
 
 namespace App\Livewire\Production;
 
-use Livewire\Component;
 use App\Models\Production;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $viewMode = 'grid';
+
     public $method = 'pesanan-reguler';
+
     public $sortField = 'production_number';
+
     public $sortDirection = 'desc';
 
     protected $queryString = ['viewMode', 'method', 'search', 'sortField', 'sortDirection'];
@@ -62,7 +69,6 @@ class Index extends Component
         View::share('title', 'Produksi');
         View::share('mainTitle', 'Produksi');
 
-
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
@@ -72,13 +78,21 @@ class Index extends Component
     public function updatedMethod($value)
     {
         session()->put('method', $value);
+
+        if ($this->sortField === 'pickup_date' && $value === 'siap-beli') {
+            $this->sortField = 'production_number';
+            $this->sortDirection = 'desc';
+        }
+
+        $this->resetPage();
     }
 
     public function render()
     {
         $query = Production::with(['details.product', 'workers'])
             ->where('productions.production_number', 'like', '%' . $this->search . '%')
-            ->where('productions.method', $this->method);
+            ->where('productions.method', $this->method)
+            ->whereIn('productions.status', ['Sedang Diproses']);
 
         if ($this->sortField === 'product_name') {
             $query->join('production_details', 'productions.id', '=', 'production_details.production_id')
@@ -88,12 +102,14 @@ class Index extends Component
             $query->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
                 ->join('users', 'production_workers.user_id', '=', 'users.id')
                 ->orderBy('users.name', $this->sortDirection);
+        } elseif ($this->sortField === 'pickup_date' && $this->method !== 'siap-beli') {
+            // Hanya sort by pickup_date jika bukan siap-beli
+            $query->orderBy('productions.pickup_date', $this->sortDirection);
         } else {
             $query->orderBy("productions.{$this->sortField}", $this->sortDirection);
         }
 
         $productions = $query->select('productions.*')->distinct()->paginate(10);
-
 
         return view('livewire.production.index', [
             'productions' => $productions,

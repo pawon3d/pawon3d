@@ -13,13 +13,36 @@ use Spatie\Activitylog\Models\Activity;
 class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $production_id;
+
     public $production;
+
     public $production_details;
+
     public $showHistoryModal = false;
+
+    public $showNoteModal = false;
+
     public $activityLogs = [];
-    public $total_quantity_plan, $total_quantity_get, $percentage;
-    public $is_start = false, $is_finish = false, $status, $end_date, $date;
+
+    public $total_quantity_plan;
+
+    public $total_quantity_get;
+
+    public $percentage;
+
+    public $is_start = false;
+
+    public $is_finish = false;
+
+    public $status;
+
+    public $end_date;
+
+    public $date;
+
+    public $noteInput = '';
 
     protected $listeners = [
         'confirmDelete' => 'confirmDelete',
@@ -63,6 +86,28 @@ class Rincian extends Component
         $this->showHistoryModal = true;
     }
 
+    public function buatCatatan()
+    {
+        $this->noteInput = $this->production->note ?? '';
+        $this->showNoteModal = true;
+    }
+
+    public function simpanCatatan()
+    {
+        $this->validate([
+            'noteInput' => 'nullable|string|max:1000',
+        ]);
+
+        $production = \App\Models\Production::findOrFail($this->production_id);
+        $production->update(['note' => $this->noteInput]);
+
+        // Refresh production data
+        $this->production = $production;
+
+        $this->showNoteModal = false;
+        $this->alert('success', 'Catatan produksi berhasil disimpan!');
+    }
+
     public function cetakInformasi()
     {
         return redirect()->route('rincian-produksi.pdf', [
@@ -92,6 +137,7 @@ class Rincian extends Component
         $production = \App\Models\Production::findOrFail($this->production_id);
         if ($production) {
             $production->delete();
+
             return redirect()->intended(route('produksi'))->with('success', 'Produksi berhasil dihapus!');
         } else {
             $this->alert('error', 'Produksi tidak ditemukan!');
@@ -117,6 +163,7 @@ class Rincian extends Component
         // });
         $this->alert('success', 'Produksi berhasil dimulai.');
     }
+
     public function finish()
     {
         $this->is_finish = true;
@@ -126,7 +173,7 @@ class Rincian extends Component
         $production->update([
             'is_finish' => $this->is_finish,
             'status' => 'Selesai',
-            'end_date' => $this->end_date
+            'end_date' => $this->end_date,
         ]);
         if ($production->method != 'siap-beli') {
             if ($production->details->sum('quantity_get') >= $production->details->sum('quantity_plan')) {
@@ -155,16 +202,17 @@ class Rincian extends Component
                         $product->save();
 
                         // Opsional: Log/track penambahan stok
-                        Log::info("Excess production added to stock", [
+                        Log::info('Excess production added to stock', [
                             'production_id' => $production->id,
                             'product_id' => $product->id,
-                            'excess_quantity' => $excess
+                            'excess_quantity' => $excess,
                         ]);
                     }
                 }
             }
         });
     }
+
     public function render()
     {
         return view('livewire.production.rincian');

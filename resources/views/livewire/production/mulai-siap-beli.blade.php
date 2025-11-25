@@ -1,16 +1,12 @@
 <div>
-    <div style="background: #eaeaea; min-height: 100vh; padding: 30px 0;">
+    <div>
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <a href="{{ route('produksi.rincian', $production_id) }}"
-                    style="background: #313131; color: #f6f6f6; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                    <svg style="width: 20px; height: 20px; fill: #ffffff;" viewBox="0 0 20 20">
-                        <path
-                            d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM8.70711 7.29289L6 10L8.70711 12.7071L9.41421 12L7.82843 10.5H14V9.5H7.82843L9.41421 8L8.70711 7.29289Z" />
-                    </svg>
+                <flux:button variant="secondary" icon="arrow-left"
+                    href="{{ route('produksi.rincian-siap-beli', $production_id) }}">
                     Kembali
-                </a>
+                </flux:button>
                 <p
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
                     Dapatkan Produk</p>
@@ -63,7 +59,7 @@
                                 Produk</th>
                             <th
                                 style="padding: 21px 25px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; width: 135px; line-height: normal;">
-                                Jumlah<br>Pesanan</th>
+                                Rencana<br>Produksi</th>
                             <th
                                 style="padding: 21px 25px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; width: 135px; line-height: normal;">
                                 Jumlah<br>Didapatkan</th>
@@ -114,7 +110,7 @@
                                 </td>
                                 <td
                                     style="padding: 0 25px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right; width: 110px;">
-                                    {{ $detail['cycle'] }}
+                                    {{ max(0, $detail['quantity_get'] - $detail['quantity_plan']) }}
                                 </td>
                                 <td style="padding: 0 25px; text-align: right; width: 110px;">
                                     <input type="checkbox" :value="'{{ $detail['id'] }}'" x-model="selectedProducts"
@@ -132,22 +128,12 @@
 
         <!-- Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
-            <a href="{{ route('produksi.rincian', $production_id) }}"
-                style="background: #c4c4c4; color: #333333; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                <svg style="width: 20px; height: 20px; fill: #333333;" viewBox="0 0 20 20">
-                    <path
-                        d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM13.0607 11.0607L12.3536 11.7678L10 9.41421L7.64645 11.7678L6.93934 11.0607L9.29289 8.70711L6.93934 6.35355L7.64645 5.64645L10 8L12.3536 5.64645L13.0607 6.35355L10.7071 8.70711L13.0607 11.0607Z" />
-                </svg>
+            <flux:button icon="x-circle" href="{{ route('produksi.rincian-siap-beli', $production_id) }}">
                 Batal
-            </a>
-            <button type="button" wire:click="save"
-                style="background: #3f4e4f; color: #f8f4e1; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer;">
-                <svg style="width: 20px; height: 20px; fill: #f8f4e1;" viewBox="0 0 20 20">
-                    <path
-                        d="M15 2H5C3.89543 2 3 2.89543 3 4V16C3 17.1046 3.89543 18 5 18H15C16.1046 18 17 17.1046 17 16V4C17 2.89543 16.1046 2 15 2ZM7 2V6H13V2H7ZM10 14C8.89543 14 8 13.1046 8 12C8 10.8954 8.89543 10 10 10C11.1046 10 12 10.8954 12 12C12 13.1046 11.1046 14 10 14Z" />
-                </svg>
+            </flux:button>
+            <flux:button variant="secondary" icon="bookmark-square" type="button" wire:click="save">
                 Simpan
-            </button>
+            </flux:button>
         </div>
 
         <!-- Modal Riwayat Pembaruan -->
