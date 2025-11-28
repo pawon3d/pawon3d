@@ -132,8 +132,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
 
         <div class="flex items-center justify-end">
-            <button type="submit"
-                class="w-full rounded-2xl py-2 border-black border-2 hover:bg-black hover:text-white bg-white text-black cursor-pointer">{{ __('Masuk') }}</button>
+            <flux:button variant="subtle" type="submit"
+                class="w-full rounded-2xl py-2 border-black border-2 hover:bg-black hover:text-white bg-white text-black cursor-pointer">
+                {{ __('Masuk') }}</flux:button>
         </div>
     </form>
 
