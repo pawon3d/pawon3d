@@ -50,7 +50,7 @@
         <nav class="max-w-[1280px] mx-auto px-[50px] py-0 h-[100px] flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center gap-[40px]">
-                <div class="w-[64px] h-[64px]">
+                <a href="/" class="w-[64px] h-[64px]" wire:navigate>
                     @if (!empty($storeProfile->logo))
                         <img src="{{ asset('storage/' . $storeProfile->logo) }}"
                             alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
@@ -58,7 +58,7 @@
                         <img src="{{ asset('img/logo.png') }}" alt="{{ $storeProfile->name ?? 'Pawon3D' }}"
                             class="w-full h-full object-contain">
                     @endif
-                </div>
+                </a>
 
                 <!-- Navigation -->
                 <div class="hidden md:flex items-center gap-[5px]">

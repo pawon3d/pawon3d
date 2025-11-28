@@ -43,8 +43,8 @@
     <!-- Featured Section -->
     <section class="bg-[#fafafa] py-20">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-14 max-w-[872px] mx-auto">
-                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] mb-9">
+            <div class="text-center mb-[91px] max-w-[872px] mx-auto">
+                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] mb-[37px]">
                     Produk Unggulan Kami
                 </h2>
                 <p class="text-[16px] montserrat-medium text-[#525252] leading-normal">
@@ -55,23 +55,26 @@
 
             <div class="flex gap-5 items-center justify-center overflow-x-auto pb-4">
                 @forelse ($products as $product)
-                    <div class="flex flex-col gap-4 pb-6 min-w-[234px]">
+                    <a href="{{ route('landing-produk-detail', $product->id) }}" wire:navigate
+                        class="flex flex-col gap-[15px] pb-[25px] min-w-[234px] hover:scale-105 transition-transform">
                         <div class="w-[234px] h-[155px] rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
                             @if ($product->product_image)
-                                <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover">
+                                <img src="{{ asset('storage/' . $product->product_image) }}"
+                                    alt="{{ $product->name }}" class="w-full h-full object-cover">
                             @else
                                 <img src="{{ asset('/img/no-img.jpg') }}" alt="{{ $product->name }}"
                                     class="w-full h-full object-cover">
                             @endif
                         </div>
-                        <div class="text-center px-4">
-                            <h3 class="text-[16px] montserrat-medium text-[#666666] mb-5 line-clamp-2 min-h-[48px]">
-                                {{ $product->name }}</h3>
-                            <p class="text-[18px] montserrat-semibold text-[#666666]">Rp
-                                {{ number_format($product->price, 0, ',', '.') }}</p>
+                        <div class="text-center px-[15px] flex flex-col gap-[20px]">
+                            <div class="min-h-[30px] flex flex-col gap-[5px] items-center">
+                                <h3 class="text-[16px] montserrat-medium text-[#666666] line-clamp-2">
+                                    {{ $product->name }}</h3>
+                            </div>
+                            <p class="text-[18px] montserrat-semibold text-[#666666]">
+                                Rp{{ number_format($product->price, 0, ',', '.') }}</p>
                         </div>
-                    </div>
+                    </a>
                 @empty
                     <p class="text-[#666666] text-center">Tidak ada produk unggulan saat ini.</p>
                 @endforelse
@@ -113,8 +116,8 @@
     <!-- Menu/Daftar Menu Section -->
     <section class="py-20 w-full bg-[#fafafa]" id="menu">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-15">
-                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333] mb-12">Daftar Menu</h2>
+            <div class="text-center mb-[60px]">
+                <h2 class="text-[38px] leading-[60px] pacifico-regular text-[#333333]">Daftar Menu</h2>
             </div>
 
             <!-- Method Selector -->
@@ -198,11 +201,11 @@
                             <span class="text-[16px] montserrat-medium text-[#666666]">Filter</span>
                         </button>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-[15px]">
                         @forelse ($exploreProducts as $product)
-                            <div class="flex flex-col gap-4 pb-6">
-                                <div
-                                    class="w-full aspect-square rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
+                            <a href="{{ route('landing-produk-detail', $product->id) }}" wire:navigate
+                                class="flex flex-col gap-[15px] pb-[25px] max-w-[210px] min-w-[180px] hover:scale-105 transition-transform">
+                                <div class="w-full h-[119px] rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
                                     @if ($product->product_image)
                                         <img src="{{ asset('storage/' . $product->product_image) }}"
                                             alt="{{ $product->name }}" class="w-full h-full object-cover">
@@ -211,14 +214,18 @@
                                             class="w-full h-full object-cover">
                                     @endif
                                 </div>
-                                <div class="text-center px-2">
-                                    <h3
-                                        class="text-[16px] montserrat-medium text-[#666666] mb-3 line-clamp-2 min-h-[40px]">
-                                        {{ $product->name }}</h3>
-                                    <p class="text-[18px] montserrat-semibold text-[#666666]">Rp
-                                        {{ number_format($product->price, 0, ',', '.') }}</p>
+                                <div class="text-center px-[15px] flex flex-col gap-[25px]">
+                                    <div class="min-h-[70px] flex flex-col gap-[10px] items-center">
+                                        <h3 class="text-[16px] montserrat-medium text-[#666666] line-clamp-2">
+                                            {{ $product->name }}</h3>
+                                        <span
+                                            class="text-[16px] montserrat-medium text-[#666666]">({{ $product->pcs ?? 1 }}
+                                            pcs)</span>
+                                    </div>
+                                    <p class="text-[18px] montserrat-semibold text-[#666666]">
+                                        Rp{{ number_format($product->price, 0, ',', '.') }}</p>
                                 </div>
-                            </div>
+                            </a>
                         @empty
                             <div class="col-span-full text-center py-8 text-[#666666]">
                                 Tidak ada produk tersedia
@@ -226,15 +233,15 @@
                         @endforelse
                     </div>
 
-                    <!-- Pagination -->
+                    {{-- <!-- Pagination -->
                     <div class="mt-6">
                         {{ $exploreProducts->links(data: ['scrollTo' => false]) }}
-                    </div>
+                    </div> --}}
                 </div>
 
                 <!-- Selengkapnya Button -->
                 <div class="flex justify-center">
-                    <a href="/landing-produk"
+                    <a href="/landing-produk" wire:navigate
                         class="px-9 py-6 bg-[#74512d] rounded-[15px] montserrat-semibold text-[20px] text-white hover:bg-[#5d3f23] transition-all inline-block">
                         Selengkapnya
                     </a>
@@ -251,40 +258,42 @@
                 </h2>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-6 items-center justify-center mb-8">
+            <div class="flex flex-col md:flex-row gap-6 items-start justify-center mb-8">
                 <div class="flex flex-col items-start text-white max-w-[225px]">
-                    <h3 class="text-[18px] montserrat-bold mb-4">Wilayah Pemesanan</h3>
-                    <ul class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2">
-                        <li>• Muara Bulian</li>
-                        <li>• Muara Tembesi</li>
-                        <li>• Muara Jambi</li>
-                        <li>• Kota Jambi</li>
+                    <h3 class="text-[18px] montserrat-bold mb-[17px]">Wilayah Pemesanan</h3>
+                    <ul class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-0 list-disc list-inside">
+                        <li>Muara Bulian</li>
+                        <li>Muara Tembesi</li>
+                        <li>Muara Jambi</li>
+                        <li>Kota Jambi</li>
                     </ul>
-                    <p class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2 mt-4">
+                    <p class="text-[16px] montserrat-medium text-[#c4c4c4] mt-6">
                         Senin - Sabtu <br>
-                        08:00 - 17:00
+                        08:00 - 17:00 WIB
                     </p>
                 </div>
 
                 <div class="w-full md:w-[585px] h-[346px] rounded-[10px] overflow-hidden">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!4v1742133851135!6m8!1m7!1sKwaGqQ5eD1Pjwm1wY_m6ng!2m2!1d-1.729048731821646!2d103.2726813742673!3f215.95130838744583!4f1.839142862723449!5f0.7820865974627469"
-                        class="w-full h-full" style="border: 0;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <a href="https://maps.google.com/?q=-1.729048731821646,103.2726813742673" target="_blank"
+                        rel="noopener noreferrer">
+                        <img src="{{ asset('img/lokasi.png') }}" alt="Lokasi Toko Pawon3D"
+                            class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+                    </a>
                 </div>
 
                 <div class="flex flex-col items-end text-end text-white max-w-[225px]">
-                    <h3 class="text-[18px] montserrat-bold mb-4">Metode Pengambilan Pesanan</h3>
-                    <ul class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-2">
-                        <li>• Pengambilan di Toko</li>
-                        <li>• Pengiriman langsung (terbatas jarak 2 km)</li>
+                    <h3 class="text-[18px] montserrat-bold mb-[17px]">Metode Pengambilan Pesanan</h3>
+                    <ul
+                        class="text-[16px] montserrat-medium text-[#c4c4c4] space-y-0 list-disc list-inside text-right">
+                        <li>Pengambilan di Toko</li>
+                        <li>Pengiriman langsung (terbatas jarak 2 km)</li>
                     </ul>
                 </div>
             </div>
 
             <div class="text-center">
-                <h3 class="text-[18px] montserrat-bold text-white mb-4">Lokasi Toko</h3>
-                <p class="text-[16px] montserrat-medium text-[#c4c4c4] max-w-[560px] mx-auto">
+                <h3 class="text-[18px] montserrat-bold text-white mb-[17px]">Lokasi Toko</h3>
+                <p class="text-[16px] montserrat-medium text-[#c4c4c4] max-w-[561px] mx-auto">
                     Jl. Jenderal Sudirman Km.3, Muara Bulian, Batang Hari, Jambi. sebelah Puskesmas Muara Bulian
                 </p>
             </div>
@@ -292,89 +301,95 @@
     </section>
 
     <!-- Cara Pesan Section -->
-    <section class="mx-auto px-4 py-16 w-full bg-[#fafafa]" id="carapesan">
-        <div class="max-w-7xl mx-auto flex flex-col gap-12 items-center">
-            <!-- Title -->
-            <h2 class="text-[38px] pacifico-regular leading-[60px] text-[#333333] text-center">Cara Pesan</h2>
+    <section class="mx-auto py-20 w-full bg-[#fafafa]" id="carapesan">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col gap-[50px] items-center">
+            <!-- Title and Tabs -->
+            <div class="flex flex-col gap-[30px] items-center w-[347px]">
+                <h2 class="text-[38px] pacifico-regular leading-[60px] text-[#333333] text-center w-full">Cara Pesan
+                </h2>
 
-            <!-- Tabs -->
-            <div class="flex gap-4 items-center">
-                <button
-                    class="px-6 py-2.5 {{ $caraPesan === 'whatsapp' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] font-semibold text-base transition-colors montserrat-regular"
-                    wire:click="$set('caraPesan', 'whatsapp')">
-                    WhatsApp
-                </button>
-                <button
-                    class="px-6 py-2.5 {{ $caraPesan === 'toko' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] font-medium text-base transition-colors montserrat-regular"
-                    wire:click="$set('caraPesan', 'toko')">
-                    Langsung di Toko
-                </button>
+                <!-- Tabs -->
+                <div class="flex gap-[15px] items-center w-full">
+                    <button
+                        class="px-[25px] py-[10px] {{ $caraPesan === 'whatsapp' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] montserrat-semibold text-[16px] transition-colors"
+                        wire:click="$set('caraPesan', 'whatsapp')">
+                        WhatsApp
+                    </button>
+                    <button
+                        class="px-[25px] py-[10px] {{ $caraPesan === 'toko' ? 'bg-[#74512d] text-white' : 'bg-white text-[#666666] border border-[#666666]' }} rounded-[20px] montserrat-medium text-[16px] transition-colors"
+                        wire:click="$set('caraPesan', 'toko')">
+                        Langsung di Toko
+                    </button>
+                </div>
             </div>
 
             <!-- Konten Cara Pesan -->
             @if ($caraPesan === 'whatsapp')
-                <div class="flex flex-col md:flex-row gap-6 items-start justify-center w-full max-w-[1053px]">
+                <div class="flex flex-col md:flex-row gap-[25px] items-start justify-center w-full">
                     <!-- Left Column -->
-                    <div class="flex flex-col gap-8 flex-1 w-full md:w-auto">
+                    <div class="flex flex-col gap-[30px] flex-1 w-full md:w-auto">
                         <!-- Step 1 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[440px]">
                             <ol
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Pilih menu <span class="font-bold">Pesanan Reguler</span> atau <span
-                                        class="font-bold">Pesanan Kotak</span> dan lihat <span
-                                        class="font-bold">daftar menu</span></li>
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Pilih menu <span class="montserrat-bold">Pesanan Reguler</span> atau <span
+                                        class="montserrat-bold">Pesanan Kotak</span> dan lihat <span
+                                        class="montserrat-bold">daftar menu</span></li>
                             </ol>
                         </div>
 
                         <!-- Step 2 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[388px]">
                             <ol start="2"
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Pilih satu atau lebih <span class="font-bold">produk</span> yang diinginkan, lalu
-                                    <span class="font-bold">screenshot</span>.
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Pilih satu atau lebih <span class="montserrat-bold">produk</span> yang diinginkan,
+                                    lalu
+                                    <span class="montserrat-bold">screenshot</span>.
                                 </li>
                             </ol>
                         </div>
 
                         <!-- Step 3 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[440px]">
                             <ol start="3"
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Tekan <span class="font-bold">Pesan Sekarang</span> untuk beralih ke <span
-                                        class="font-bold">WhatsApp</span> dan kirimkan hasil <span
-                                        class="font-bold">screenshot</span> untuk melakukan <span
-                                        class="font-bold">konfirmasi pesanan.</span></li>
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Tekan <span class="montserrat-bold">Pesan Sekarang</span> untuk beralih ke <span
+                                        class="montserrat-bold">WhatsApp</span> dan kirimkan hasil <span
+                                        class="montserrat-bold">screenshot</span> untuk melakukan <span
+                                        class="montserrat-bold">konfirmasi pesanan.</span></li>
                             </ol>
                         </div>
                     </div>
 
                     <!-- Right Column -->
-                    <div class="flex flex-col gap-8 flex-1 w-full md:w-auto">
+                    <div class="flex flex-col gap-[30px] flex-1 w-full md:w-auto items-end">
                         <!-- Step 4 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm w-full max-w-[613px]">
                             <ol start="4"
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Lakukan <span class="font-bold">konfirmasi pesanan</span> dan <span
-                                        class="font-bold">pembayaran,</span> maka pesanan akan dicatat (pastikan
-                                    pesanan berada di dalam <span class="font-bold">wilayah pemesanan</span>)</li>
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Lakukan <span class="montserrat-bold">konfirmasi pesanan</span> dan <span
+                                        class="montserrat-bold">pembayaran,</span> maka pesanan akan dicatat (pastikan
+                                    pesanan berada di dalam <span class="montserrat-bold">wilayah pemesanan</span>)
+                                </li>
                             </ol>
                         </div>
 
                         <!-- Step 5 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[558px]">
                             <ol start="5"
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Terima <span class="font-bold">invoice</span> dan ambil pesanan <span
-                                        class="font-bold">sesuai kesepakatan</span> atau <span
-                                        class="font-bold">tunggu kabar dari penjual.</span></li>
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Terima <span class="montserrat-bold">invoice</span> dan ambil pesanan <span
+                                        class="montserrat-bold">sesuai kesepakatan</span> atau <span
+                                        class="montserrat-bold">tunggu kabar dari penjual.</span></li>
                             </ol>
                         </div>
 
                         <!-- Step 6 -->
-                        <div class="bg-[#333333] rounded-[15px] px-8 py-6 shadow-sm">
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[584px]">
                             <ol start="6"
-                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-lg leading-normal m-0">
-                                <li>Datang ke <span class="font-bold">toko</span> atau <span class="font-bold">tunggu
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Datang ke <span class="montserrat-bold">toko</span> atau <span
+                                        class="montserrat-bold">tunggu
                                         pengiriman</span> untuk menerima pesanan, jika pesanan belum lunas maka lakukan
                                     pelunasan.</li>
                             </ol>
@@ -382,9 +397,62 @@
                     </div>
                 </div>
             @else
-                <div class="text-center text-gray-600">
-                    <p class="montserrat-regular text-lg">Konten untuk pemesanan langsung di toko akan ditampilkan di
-                        sini.</p>
+                <div class="flex flex-col md:flex-row gap-[25px] items-start justify-center w-full">
+                    <!-- Left Column -->
+                    <div class="flex flex-col gap-[30px] flex-1 w-full md:w-auto">
+                        <!-- Step 1 -->
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[440px]">
+                            <ol
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Temui <span class="montserrat-bold">kasir</span>, pilih <span
+                                        class="montserrat-bold">metode pembelian</span>, dan lihat <span
+                                        class="montserrat-bold">daftar menu</span></li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[388px]">
+                            <ol start="2"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Pilih satu atau lebih <span class="montserrat-bold">produk</span> yang diinginkan.
+                                </li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[440px]">
+                            <ol start="3"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Lakukan <span class="montserrat-bold">konfirmasi pembelian</span> dan lakukan <span
+                                        class="montserrat-bold">pembayaran</span> (bayar uang muka untuk pembelian
+                                    pesanan)</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="flex flex-col gap-[30px] flex-1 w-full md:w-auto items-end">
+                        <!-- Step 4 -->
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm w-full max-w-[613px]">
+                            <ol start="4"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Terima <span class="montserrat-bold">produk</span> dan <span
+                                        class="montserrat-bold">struk pembayaran</span> (jika pembelian pesanan, maka
+                                    terima
+                                    invoice untuk dibawa saat mengambil pesanan)</li>
+                            </ol>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="bg-[#333333] rounded-[15px] px-[30px] py-[25px] shadow-sm max-w-[584px]">
+                            <ol start="5"
+                                class="list-decimal list-inside montserrat-regular text-[#fafafa] text-[18px] leading-normal m-0">
+                                <li>Jika pembelian pesanan, <span class="montserrat-bold">ambil sesuai
+                                        kesepakatan</span> atau <span class="montserrat-bold">tunggu kabar dari
+                                        penjual.</span></li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>

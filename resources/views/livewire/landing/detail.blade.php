@@ -1,7 +1,7 @@
 <div class="bg-[#EAEAEA] w-full min-h-screen">
     {{-- Back Button & Title --}}
     <div class="flex items-center gap-4 px-16 py-8">
-        <a href="{{ route('landing-produk') }}" wire:navigate
+        <button onclick="window.history.back()"
             class="bg-[#313131] text-[#F6F6F6] px-6 py-2 rounded-2xl shadow flex items-center gap-2 hover:bg-[#252324] transition-colors">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
@@ -9,7 +9,7 @@
                     clip-rule="evenodd" />
             </svg>
             <span class="font-semibold text-base">Kembali</span>
-        </a>
+        </button>
         <span class="text-[#666666] font-medium text-xl">Deskripsi Produk</span>
     </div>
 
@@ -25,14 +25,14 @@
                     <div class="flex flex-col gap-3">
                         <div class="flex items-start gap-2">
                             <h1 class="font-medium text-[30px] text-[#666666]">{{ $product->name }}</h1>
-                            @if ($product->unit && $product->unit->name)
+                            @if ($product->pcs)
                                 <span class="font-medium text-[30px] text-[#666666]">
-                                    ({{ $product->quantity }} {{ $product->unit->name }})
+                                    ({{ $product->pcs }} pcs)
                                 </span>
                             @endif
                         </div>
                         <p class="font-semibold text-2xl text-[#666666]">
-                            Rp {{ number_format($product->price, 0, ',', '.') }}
+                            Rp{{ number_format($product->price, 0, ',', '.') }}
                         </p>
                     </div>
 
@@ -107,14 +107,11 @@
                                             {{ $relatedProduct->name }}
                                         </p>
                                     </div>
-                                    @if ($relatedProduct->unit && $relatedProduct->unit->name)
+                                    @if ($relatedProduct->pcs)
                                         <div class="flex items-start justify-center w-full">
-                                            <span class="font-medium text-base text-[#666666]">(</span>
                                             <span
-                                                class="font-medium text-base text-[#666666]">{{ $relatedProduct->quantity }}</span>
-                                            <span class="font-medium text-base text-[#666666]">
-                                                {{ $relatedProduct->unit->name }}</span>
-                                            <span class="font-medium text-base text-[#666666]">)</span>
+                                                class="font-medium text-base text-[#666666]">({{ $relatedProduct->pcs }}
+                                                pcs)</span>
                                         </div>
                                     @endif
                                 </div>
@@ -122,8 +119,7 @@
                                 {{-- Price --}}
                                 <div
                                     class="flex items-start justify-center font-semibold text-lg text-[#666666] text-center">
-                                    <span>Rp</span>
-                                    <span>{{ number_format($relatedProduct->price, 0, ',', '.') }}</span>
+                                    <span>Rp{{ number_format($relatedProduct->price, 0, ',', '.') }}</span>
                                 </div>
                             </div>
                         </a>

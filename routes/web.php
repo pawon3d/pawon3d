@@ -13,6 +13,7 @@ Route::get('/', App\Livewire\Landing\Index::class)->name('home');
 Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
+Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
 
 Route::get('/tes', function () {
     return view('tes');
@@ -205,4 +206,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
