@@ -1,392 +1,432 @@
 <div>
-    <div class="mb-4 flex items-center">
-        <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-            <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
+    <!-- Header Section -->
+    <div class="flex items-center gap-4 mb-8" style="margin-bottom: 30px; gap: 15px;">
+        <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}" wire:navigate
+            class="inline-flex items-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
+            style="background-color: #313131; color: #f6f6f6; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
+            <flux:icon.arrow-left class="size-4" />
             Kembali
         </a>
-        <h1 class="text-2xl">Ubah Pesanan</h1>
-    </div>
-    <div class="flex items-center border bg-white border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Viverra erat aenean mauris adipiscing nibh. Nullam adipiscing
-                dignissim consequat volutpat augue. Auctor euismod arcu at euismod. Odio cras proin eget facilisis vitae
-                at. Non at vitae lorem nec quis urna.
-            </p>
-        </div>
+        <h1 class="text-xl font-semibold"
+            style="font-family: Montserrat, sans-serif; font-size: 20px; line-height: 1; color: #666666; font-weight: 600;">
+            Ubah Pesanan</h1>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4 bg-white border-gray-300 shadow-md p-4 rounded-lg">
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Nomor Telepon</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan Nomor Telepon Aktif
-            </p>
-            <div>
-                <flux:input placeholder="081122345678" wire:model.live="phone" />
-                @if ($phone)
-                @if($customer)
-                <div class="text-xs text-gray-500 mt-1 flex flex-row justify-between items-center">
-                    <span>
-                        Terdaftar Sebagai Pelanggan
-                    </span>
-                    <span>
-                        {{ $customer->points ?? 0 }} Poin
-                    </span>
-                </div>
-                @else
-                <div class="text-xs text-gray-500 mt-1 flex flex-row justify-between items-center">
-                    <span>
-                        Ingin menjadi pelanggan?
-                    </span>
-                    <span class="underline cursor-pointer" wire:click="showCustomerModal">
-                        Tambah Pelanggan
-                    </span>
-                </div>
-                @endif
-                @endif
-            </div>
-            <flux:error name="phone" />
-            <flux:label>Nama Pemesan</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan Nama Pemesan
-            </p>
-            <flux:input placeholder="Masukkan Nama Pemesan..." wire:model="name" />
-            <flux:error name="name" />
-            <flux:label>Tanggal Pengambilan Pesanan</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan kapan tanggal pengambilan pesanan akan dilakukan.
-            </p>
-            <div class="flex flex-row gap-2 w-full">
-                <div x-init="picker = new Pikaday({
-                    field: $refs.datepicker,
-                    format: 'DD-MM-YYYY',
-                    toString(date, format) {
-                        const day = String(date.getDate()).padStart(2, 0);
-                        const month = String(date.getMonth() + 1).padStart(2, 0);
-                        const year = date.getFullYear();
-                        return `${day}-${month}-${year}`;
-                    },
-                    onSelect: function() {
-                        @this.set('date', moment(this.getDate()).format('DD-MM-YYYY'));
-                        console.log(moment(this.getDate()).format('DD-MM-YYYY'));
-                    }
-                });" class="relative">
-                    <!-- Icon kalender -->
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <!-- Heroicons outline calendar icon -->
-                        <flux:icon icon="calendar-date-range" />
-                    </div>
+    <!-- Info Banner -->
+    <div class="flex items-center gap-5 mb-8 p-6 rounded-2xl"
+        style="background-color: #3f4e4f; border-radius: 20px; padding: 24px 30px; min-height: 110px; gap: 20px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); margin-bottom: 30px;">
+        <flux:icon.megaphone class="size-15 shrink-0" style="width: 60px; height: 60px; color: #dcd7c9;" />
+        <p class="font-semibold text-justify"
+            style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1.4; color: #dcd7c9; font-weight: 600;">
+            Ubah Pesanan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat. Informasi
+            akan digunakan untuk membuat pesanan dan melakukan produksi.
+        </p>
+    </div>
 
-                    <input type="text"
-                        class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                        x-ref="datepicker" wire:model.defer="date" id="datepicker" placeholder="dd-mm-yyyy" readonly />
+    <!-- Form Section -->
+    <div class="w-full flex flex-wrap gap-20 p-6 rounded-2xl mb-8"
+        style="background-color: #fafafa; border-radius: 15px; padding: 25px 30px; gap: 90px;">
+        <!-- Left Column -->
+        <div class="flex-1 flex flex-col gap-8" style="gap: 30px; min-width: 300px;">
+            <!-- Phone Number -->
+            <div class="flex flex-col gap-4" style="gap: 15px;">
+                <div class="flex flex-col gap-4" style="gap: 15px;">
+                    <p class="font-medium"
+                        style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                        No. Telepon</p>
+                    <p class="font-normal text-justify"
+                        style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
+                        Masukkan nomorn telepon aktif.</p>
                 </div>
-                <div x-data="{ time: @entangle('time').defer }" x-init="flatpickr($refs.input, {
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: 'H:i',
-                    time_24hr: true,
-                    onChange: function(selectedDates, dateStr) {
-                        time = dateStr;
-                        @this.set('time', dateStr);
-                    }
-                });" class="relative">
-                    <!-- Icon jam -->
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <!-- Heroicons outline clock icon -->
-                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-
-                    <input x-ref="input" wire:model="time" type="text"
-                        class="pr-10 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                        placeholder="00:00" />
+                <div class="flex flex-col gap-2" style="gap: 10px;">
+                    <input type="text" placeholder="081122345678" wire:model.live="phone"
+                        class="px-5 py-2 rounded-2xl border-2 focus:outline-none focus:ring-0 w-full"
+                        style="background-color: #fafafa; border: 1.5px solid #adadad; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666; " />
+                    @if ($phone)
+                        @if ($customer)
+                            <div class="flex items-center justify-between text-xs w-full"
+                                style="font-family: Montserrat, sans-serif; font-size: 12px; line-height: 1; color: #666666; ">
+                                <span style="font-weight: 400;">Terdaftar sebagai Pelanggan.</span>
+                                <span style="font-weight: 600;">{{ $customer->points ?? 0 }} Poin</span>
+                            </div>
+                        @else
+                            <div class="flex items-center justify-between text-xs w-full"
+                                style="font-family: Montserrat, sans-serif; font-size: 12px; line-height: 1; color: #666666; ">
+                                <span>Ingin menjadi pelanggan?</span>
+                                <span class="underline cursor-pointer" wire:click="showCustomerModal">Tambah
+                                    Pelanggan</span>
+                            </div>
+                        @endif
+                    @endif
                 </div>
-
+                <flux:error name="phone" />
             </div>
 
-            <flux:error name="date" />
+            <!-- Buyer Name -->
+            <div class="flex flex-col gap-4" style="gap: 15px;">
+                <div class="flex flex-col gap-4" style="gap: 15px;">
+                    <p class="font-medium"
+                        style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                        Nama Pembeli</p>
+                    <p class="font-normal text-justify"
+                        style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
+                        Masukkan nama Pembeli.</p>
+                </div>
+                <input type="text" placeholder="Masukkan Nama Pembeli..." wire:model="name"
+                    class="px-5 py-2 rounded-2xl border focus:outline-none focus:ring-0 w-full"
+                    style="background-color: #eaeaea; border: 1px solid #d4d4d4; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666;" />
+                <flux:error name="name" />
+            </div>
+
+            <!-- Pickup Date -->
+            <div class="flex flex-col gap-4" style="gap: 15px;">
+                <div class="flex flex-col gap-4" style="gap: 15px;">
+                    <p class="font-medium"
+                        style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                        Tanggal Ambil Pesanan</p>
+                    <p class="font-normal text-justify"
+                        style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
+                        Masukkan tanggal Ambil Pesanan.</p>
+                </div>
+                <div class="flex flex-wrap gap-4 w-full" style="gap: 15px;">
+                    <div x-init="picker = new Pikaday({
+                        field: $refs.datepicker,
+                        format: 'DD MMM YYYY',
+                        toString(date, format) {
+                            const day = String(date.getDate()).padStart(2, 0);
+                            const month = String(date.getMonth() + 1).padStart(2, 0);
+                            const year = date.getFullYear();
+                            return `${day} ${month} ${year}`;
+                        },
+                        onSelect: function() {
+                            @this.set('date', moment(this.getDate()).format('DD MMM YYYY'));
+                        }
+                    });" class="relative flex-1" style="min-width: 190px;">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <flux:icon.calendar class="size-5" style="color: #666666;" />
+                        </div>
+                        <input type="text" x-ref="datepicker" wire:model.defer="date" placeholder="dd mm yyyy"
+                            readonly class="pr-10 px-5 py-2 rounded-2xl border-2 focus:outline-none focus:ring-0 w-full"
+                            style="background-color: #fafafa; border: 1.5px solid #adadad; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666;" />
+                    </div>
+                    <div x-data="{ time: @entangle('time').defer }" x-init="flatpickr($refs.input, {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: 'H:i',
+                        time_24hr: true,
+                        onChange: function(selectedDates, dateStr) {
+                            time = dateStr;
+                            @this.set('time', dateStr);
+                        }
+                    });" class="relative flex-1">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="#666666">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <input x-ref="input" wire:model="time" type="text" placeholder="hh:mm"
+                            class="pr-10 px-5 py-2 rounded-2xl border-2 focus:outline-none focus:ring-0 w-full"
+                            style="background-color: #fafafa; border: 1.5px solid #adadad; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666;" />
+                    </div>
+                </div>
+                <flux:error name="date" />
+            </div>
         </div>
 
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Catatan Pesanan</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan catatan pesanan apabila ada pesan atau sesuatu yang penting untuk diberitahu.
-            </p>
-            <flux:textarea wire:model.defer="note" rows="7" placeholder="Masukkan Catatan Pesanan...." />
+        <!-- Right Column - Notes -->
+        <div class="flex-1 flex flex-col gap-4" style="gap: 15px; min-width: 300px; height: 399px;">
+            <div class="flex flex-col gap-4" style="gap: 15px;">
+                <p class="font-medium"
+                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                    Catatan Pesanan</p>
+                <p class="font-normal text-justify"
+                    style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
+                    Masukkan catatan pesanan apabila diperlukan.</p>
+            </div>
+            <textarea wire:model.defer="note" placeholder="Masukkan catatan pesanan..." rows="7"
+                class="flex-1 px-5 py-2 rounded-2xl border focus:outline-none focus:ring-0 w-full resize-none"
+                style="background-color: #fafafa; border: 1px solid #adadad; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666;"></textarea>
         </div>
     </div>
 
 
-    <div class="w-full mt-8 mb-8 flex flex-col gap-4 rounded-lg bg-white border border-gray-200 p-4 shadow-sm">
-        <div class="flex items-center justify-start mb-4">
-            <h2 class="text-lg font-semibold">Detail Pesanan</h2>
-        </div>
-        <div>
-            <ul class="space-y-3">
+    <!-- Product List Section -->
+    <div class="w-full border rounded-2xl overflow-hidden mb-8"
+        style="background-color: #fafafa; border: 1px solid #d4d4d4; border-radius: 15px;">
+        <div class="p-6 flex flex-col gap-5" style="padding: 25px 30px; gap: 20px;">
+            <!-- Title -->
+            <div class="flex items-center gap-5" style="gap: 20px;">
+                <p class="font-medium"
+                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                    Daftar Pesanan</p>
+            </div>
+
+            <!-- Product Items -->
+            <div class="flex flex-col gap-0 pb-4" style="padding-bottom: 15px;">
                 @foreach ($details as $id => $item)
-                <li class="flex justify-between items-start border-b pb-2">
-                    <div class="text-left">
-                        <div class="flex items-center justify-start mt-1">
-                            <p class="text-sm font-semibold">{{ $item['name'] }}</p>
-                        </div>
-                        <div class="flex items-center justify-start mt-2">
-                            <p class="text-sm text-gray-500 py-1">{{ $item['quantity'] }} x
-                                Rp{{ number_format($item['price'], 0, ',', '.') }}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="flex items-center justify-end mt-1">
-                            <p class="text-sm text-right text-gray-500">
-                                Rp{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
-                            </p>
-                        </div>
-                        <div class="flex items-center mt-2 justify-end gap-1">
-                            <div class="flex items-center gap-2">
-                                <flux:button icon="trash" variant="ghost" wire:click="removeItem('{{ $id }}')" />
+                    <div class="flex flex-wrap items-center justify-between gap-4 py-2 border-b border-white"
+                        style="padding: 10px 0; border-bottom: 1px solid #ffffff; gap: 15px; min-width: 180px;">
+                        <!-- Left Side: Product Info -->
+                        <div class="flex flex-col gap-2" style="gap: 10px; height: 73px;">
+                            <div class="flex items-center gap-1" style="gap: 5px; height: 24px;">
+                                <p class="font-medium truncate"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">
+                                    {{ $item['name'] }}</p>
                             </div>
-                            <div class="bg-gray-100 rounded-xl px-4 flex items-center gap-2">
-                                <button
-                                    class="text-gray-500 hover:text-red-500 w-5 h-5 flex items-center justify-center rounded-full"
-                                    wire:click="decrementItem('{{ $id }}')">
-                                    -
-                                </button>
-                                <span class="mx-2 text-sm bg-white px-3 py-1 my-1 rounded border">{{ $item['quantity']
-                                    }}</span>
-                                <button
-                                    class="text-gray-500 hover:text-green-500 w-5 h-5 flex items-center justify-center rounded-full"
-                                    wire:click="incrementItem('{{ $id }}')">
-                                    +
-                                </button>
+                            <div class="flex items-center gap-1" style="gap: 5px; height: 40px;">
+                                <span class="font-normal"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">{{ $item['quantity'] }}</span>
+                                <span class="font-normal"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">x</span>
+                                <span class="font-normal"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">Rp{{ number_format($item['price'], 0, ',', '.') }}</span>
                             </div>
                         </div>
+
+                        <!-- Right Side: Total and Controls -->
+                        <div class="flex flex-col items-end gap-2" style="gap: 10px;">
+                            <!-- Total -->
+                            <div class="flex items-center gap-1" style="gap: 5px;">
+                                <span class="font-normal"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">=</span>
+                                <span class="font-medium"
+                                    style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">Rp{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="flex items-center gap-6" style="gap: 25px; height: 40px;">
+                                <!-- Delete Button -->
+                                <button type="button" wire:click="removeItem('{{ $id }}')"
+                                    class="flex items-center justify-center rounded-2xl"
+                                    style="background-color: #eb5757; width: 32px; height: 32px; border-radius: 15px;">
+                                    <flux:icon.trash class="size-4" style="color: #f8f4e1;" />
+                                </button>
+
+                                <!-- Quantity Controls -->
+                                <div class="flex items-center gap-3" style="gap: 11px;">
+                                    <!-- Minus Button -->
+                                    <button type="button" wire:click="decrementItem('{{ $id }}')"
+                                        class="flex items-center justify-center rounded-full border-2"
+                                        style="width: 30px; height: 30px; border: 1.5px solid #74512d; border-radius: 30px;">
+                                        <flux:icon.minus class="size-4" style="color: #74512d;" />
+                                    </button>
+
+                                    <!-- Quantity Display -->
+                                    <div class="flex items-center justify-center px-2 py-1 rounded-lg border"
+                                        style="width: 36px; padding: 3px 10px; border: 1px solid rgba(116,81,45,0.2); border-radius: 10px;">
+                                        <span class="font-semibold"
+                                            style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 600;">{{ $item['quantity'] }}</span>
+                                    </div>
+
+                                    <!-- Plus Button -->
+                                    <button type="button" wire:click="incrementItem('{{ $id }}')"
+                                        class="flex items-center justify-center rounded-full border-2"
+                                        style="width: 30px; height: 30px; border: 1.5px solid #74512d; border-radius: 30px;">
+                                        <flux:icon.plus class="size-4" style="color: #74512d;" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </li>
                 @endforeach
-            </ul>
-            <flux:button icon="plus" type="button" variant="primary" wire:click="$set('showItemModal', true)"
-                class="w-full mt-4">
-                Tambah Item
-            </flux:button>
+            </div>
+
+            <!-- Add Product Button -->
+            <button type="button" wire:click="$set('showItemModal', true)"
+                class="flex items-center justify-center gap-1 px-6 py-2 rounded-2xl w-full font-semibold"
+                style="background-color: #74512d; color: #f8f4e1; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
+                <flux:icon.plus class="size-5" />
+                Tambah Produk
+            </button>
         </div>
-        <div class="w-full flex flex-col border-t border-b border-gray-200">
-            <div class="flex flex-row justify-between w-full">
-                <p class="p-4 text-sm text-gray-500">Subtotal {{ count($details) }} Produk</p>
-                <p class="p-4 text-sm text-gray-500">
-                    Rp{{ number_format($total, 0, ',', '.') }}
-                </p>
+
+        <!-- Subtotal Section -->
+        <div class="border-t p-6 flex flex-col items-end gap-4"
+            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; padding: 25px 30px; gap: 15px;">
+            <div class="flex items-center justify-between w-full font-medium"
+                style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                <span>Subtotal {{ count($details) }} Produk</span>
+                <span>Rp{{ number_format($total, 0, ',', '.') }}</span>
             </div>
-            <div class="flex flex-row justify-between w-full">
-                <p class="p-4 text-sm text-gray-500 font-bold">Total Tagihan</p>
-                <p class="p-4 text-sm text-gray-500 font-bold">
-                    Rp{{ number_format($total, 0, ',', '.') }}
-                </p>
+            <div class="flex items-center justify-between w-full font-bold"
+                style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 700;">
+                <span>Total Tagihan</span>
+                <span>Rp{{ number_format($total, 0, ',', '.') }}</span>
             </div>
         </div>
-        <div class="w-full flex flex-col">
-            <div class="flex flex-row justify-between w-full">
-                <p class="p-4 text-sm text-gray-500">Pembayaran</p>
-                <p class="p-4 text-sm text-gray-500">
-                    Rp{{ number_format($paidAmount, 0, ',', '.') }}
-                </p>
+
+        <!-- Payment Section -->
+        <div class="border-t p-6 flex flex-col items-end gap-4"
+            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; padding: 25px 30px; gap: 15px;">
+            <div class="flex items-center justify-between w-full font-medium"
+                style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
+                <span>Total Bayar</span>
+                <span>Rp{{ number_format($paidAmount, 0, ',', '.') }}</span>
             </div>
-            <div class="flex flex-row justify-between w-full">
-                <p class="p-4 text-sm text-red-500 font-bold">Sisa Tagihan</p>
-                <p class="p-4 text-sm text-red-500 font-bold">
-                    Rp{{ number_format($total - $paidAmount, 0, ',', '.') }}
-                </p>
+            <div class="flex items-center justify-between w-full font-medium"
+                style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #eb5757; font-weight: 500;">
+                <span>Sisa Tagihan</span>
+                <span>Rp{{ number_format($total - $paidAmount, 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
 
-    <div class="w-full flex flex-col gap-4 bg-white border-gray-300 rounded-lg p-4">
-
-        <flux:label>Metode Pembayaran</flux:label>
-        <p class="text-sm text-gray-500">
-            Pilih Metode Pembayaran (Tunai, Transfer, atau QRIS). Jika Bukan Tunai maka akan diminta bukti pembayaran
-            berupa
-            gambar (.jpg dan .png)
-        </p>
-        <flux:select wire:model.live="paymentMethod" class="mt-2" placeholder="Pilih Metode Pembayaran">
-            <flux:select.option value="tunai" class="text-gray-700">Tunai</flux:select.option>
-            <flux:select.option value="transfer" class="text-gray-700">Transfer</flux:select.option>
-            <flux:select.option value="qris" class="text-gray-700">QRIS</flux:select.option>
-        </flux:select>
-        <flux:error name="paymentMethod" />
-
-        @if ($paymentMethod == 'transfer')
-        <div class="mt-2 flex flex-row gap-2 w-full">
-            <div class="w-1/4">
-                <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
-                    @foreach ($paymentChannels as $channel)
-                    <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
-                        {{ $channel->bank_name }}
-                    </flux:select.option>
-                    @endforeach
-                </flux:select>
-                <flux:error name="paymentChannelId" />
-            </div>
-            <div class="w-3/4">
-                <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
-                <flux:error name="paymentAccount" />
-            </div>
-        </div>
-        @endif
-
-
-        <flux:label>Nominal Pembayaran</flux:label>
-        <p class="text-sm text-gray-500">
-            Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
-            setengah
-            dari
-            Total Tagihan.
-        </p>
-        <div class="flex flex-row gap-2 w-full">
-            <div class="flex flex-col gap-2 w-full">
-                @if ($paymentMethod == 'tunai')
-                <span class="text-xs text-gray-500">
-                    Nominal Uang Yang Diterima
-                </span>
-                @endif
-                <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
-                <flux:error name="paidAmount" />
-            </div>
-            @if ($paymentMethod == 'tunai')
-            <div class="flex flex-col gap-2 w-full">
-                <span class="text-xs text-gray-500">
-                    Nominal Uang Kembalian
-                </span>
-                <flux:input placeholder="Kembalian"
-                    value="{{ number_format(max(0, $paidAmount - $total), 0, ',', '.') }}" readonly />
-            </div>
-            @endif
-        </div>
-
-        @if ($paymentMethod == 'transfer')
-        <div class="mb-5 w-full">
-            <div class="flex flex-row items-center gap-4">
-                <label
-                    class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
-                    Pilih Bukti Pembayaran
-                    <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
-                        class="hidden" />
-                </label>
-
-                @if ($image)
-                <input type="text"
-                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                    value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}" readonly
-                    wire:loading.remove wire:target="image">
-                <input type="text"
-                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                    value="Mengupload gambar..." readonly wire:loading wire:target="image">
-                @else
-                <input type="text"
-                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                    value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove wire:target="image">
-                <input type="text"
-                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                    value="Mengupload gambar..." readonly wire:loading wire:target="image">
-                @endif
-
-            </div>
-        </div>
-        <flux:error name="image" />
-        @endif
-    </div>
-
-    <div class="flex justify-end mt-16 gap-4">
-        <flux:button icon="x-mark" type="button" :loading="false"
-            href="{{ route('transaksi.rincian-pesanan', $transactionId) }}">
+    <!-- Action Buttons -->
+    <div class="flex items-center justify-end gap-8 mt-8" style="gap: 30px;">
+        <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}" wire:navigate
+            class="inline-flex items-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
+            style="background-color: #c4c4c4; color: #333333; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
+            <flux:icon.x-mark class="size-5" />
             Batal
-        </flux:button>
-        <flux:button icon="save" :loading="false" type="button" variant="primary" wire:click.prevent="save">
+        </a>
+        <button type="button" wire:click.prevent="save"
+            class="inline-flex items-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
+            style="background-color: #3f4e4f; color: #f8f4e1; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
+            <flux:icon.check class="size-5" />
             Simpan Perubahan
-        </flux:button>
+        </button>
     </div>
 
-    <flux:modal name="tambah-item" class="w-full max-w-2xl bg-white rounded-2xl p-4" variant="bare"
-        wire:model="showItemModal">
-        <div class="w-full">
-            <div class="flex justify-between items-center mb-4 max-w-full">
-                <!-- Search Input -->
-                <div class="p-4 flex w-full">
-                    <input wire:model.live="search" placeholder="Cari..."
-                        class="w-full px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-0" />
-                    <flux:button :loading="false" class="ml-2" variant="ghost">
-                        <flux:icon.funnel variant="mini" />
-                        <span>Filter</span>
-                    </flux:button>
-                </div>
-                <div class="flex gap-2 items-center">
-                    <flux:modal.close>
-                        <flux:button icon="x-circle" variant="primary" type="button">
-                            Batal
-                        </flux:button>
-                    </flux:modal.close>
-                </div>
-            </div>
-            <div class="grid md:grid-cols-3 grid-cols-1 gap-4 p-4 max-h[400px] overflow-y-auto">
-                @forelse ($products as $product)
-                <div class="overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="p-3">
-                        <div class="relative mb-3">
-                            @if ($product->product_image)
-                            <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
-                                class="w-full h-32 object-cover rounded-md">
-                            @else
-                            <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
-                                class="w-full h-32 object-cover rounded-md bg-gray-100">
-                            @endif
+    <flux:modal name="tambah-item" class="w-full max-w-[700px] h-full" variant="bare" wire:model="showItemModal">
+        <div class="bg-[#fafafa] rounded-tl-[15px] h-full rounded-tr-[15px] p-[30px] flex flex-col gap-[30px]">
+            {{-- Search & Filter --}}
+            <div class="flex items-start gap-[30px]">
+                <div class="flex-1 flex items-center gap-[15px]">
+                    {{-- Search Input --}}
+                    <div
+                        class="flex-1 bg-[#ffffff] border border-[#666666] rounded-[20px] px-[15px] flex items-center">
+                        <flux:icon icon="magnifying-glass" class="size-[30px]" style="color: #666666;" />
+                        <input type="text" wire:model.live="search" placeholder="Cari Produk"
+                            class="flex-1 font-['Montserrat'] font-medium text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-[10px]"
+                            style="line-height: 1;" />
+                    </div>
 
-                            <div class="absolute top-2 left-2 flex gap-1">
-                                <span class="bg-gray-600 text-white text-xs px-1.5 py-1 rounded-full flex items-center">
-                                    {{ $product->stock }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <h3 class="text-sm font-semibold mb-1 truncate">{{ $product->name }}</h3>
-
-                            <p class="text-gray-800 font-bold mb-3">
-                                Rp
-                                {{ number_format($product->price, 0, ',', '.') }}
-                            </p>
-
-                            @if (isset($details[$product->id]))
-                            @php
-                            $id = $product->id;
-                            $item = $details[$id];
-                            @endphp
-                            <div class="w-full flex items-center mt-2 justify-between gap-2 bg-gray-100 rounded-xl">
-                                <flux:button variant="ghost" icon="minus" type="button"
-                                    wire:click="decrementItem('{{ $id }}')" />
-                                <span class="mx-2 text-sm bg-white px-3 py-1 my-1 rounded border">{{ $item['quantity']
-                                    }}</span>
-                                <flux:button variant="ghost" icon="plus" type="button"
-                                    wire:click="incrementItem('{{ $id }}')" />
-                            </div>
-                            @else
-                            <flux:button class="w-full" variant="primary" wire:click="addToCart('{{ $product->id }}')">
-                                Tambah
-                            </flux:button>
-                            @endif
-                        </div>
+                    {{-- Filter --}}
+                    <div class="flex items-center">
+                        <flux:icon icon="funnel" class="size-[25px]" style="color: #666666;" />
+                        <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666] px-[5px] py-[10px]"
+                            style="line-height: 1;">Filter</span>
                     </div>
                 </div>
-                @empty
-                <div class="col-span-3 text-center p-4">
-                    <p class="text-gray-500">Tidak ada produk yang ditemukan.</p>
-                </div>
-                @endforelse
             </div>
+
+            {{-- Divider --}}
+            <div class="h-0 w-full border-t border-[#d4d4d4]"></div>
+
+            {{-- Product Grid --}}
+            <div class="flex gap-[15px] h-[530px] overflow-y-auto">
+                <div class="flex-1 flex flex-wrap gap-[30px] content-start">
+                    @forelse ($products as $product)
+                        <div class="min-w-[180px] max-w-[210px] flex flex-col gap-[20px] pb-[25px]">
+                            {{-- Product Card --}}
+                            <div class="flex flex-col gap-[15px]">
+                                @if ($product->product_image)
+                                    <img src="{{ asset('storage/' . $product->product_image) }}"
+                                        alt="{{ $product->name }}"
+                                        class="h-[119px] w-[182px] object-cover rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                                @else
+                                    <div
+                                        class="h-[119px] w-[182px] bg-[#eaeaea] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center">
+                                        <span class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">No
+                                            Image</span>
+                                    </div>
+                                @endif
+
+                                {{-- Product Info --}}
+                                <div class="px-[15px] flex flex-col gap-[30px] items-center">
+                                    <div class="flex flex-col gap-[10px] items-center min-h-[70px] w-full">
+                                        {{-- Product Name --}}
+                                        <div class="flex flex-col gap-[5px] items-center w-full">
+                                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] text-center truncate w-full"
+                                                style="line-height: 1;">
+                                                {{ $product->name }}
+                                            </p>
+                                        </div>
+
+                                        {{-- Stock --}}
+                                        <div class="flex items-center justify-center w-full">
+                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                                style="line-height: 1;">(</span>
+                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                                style="line-height: 1;">{{ $product->stock }}</span>
+                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                                style="line-height: 1;"> pcs)</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Price --}}
+                                    <div class="flex items-center justify-center w-full">
+                                        <span
+                                            class="font-['Montserrat'] font-semibold text-[18px] text-[#666666] text-center truncate"
+                                            style="line-height: 1;">
+                                            Rp{{ number_format($product->price, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Add/Quantity Controls --}}
+                            @if (isset($details[$product->id]))
+                                @php
+                                    $id = $product->id;
+                                    $item = $details[$id];
+                                @endphp
+                                <div
+                                    class="bg-[#fafafa] h-[40px] rounded-[15px] px-[25px] flex items-center justify-between w-full">
+                                    <button wire:click="decrementItem('{{ $id }}')"
+                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                        <flux:icon icon="minus" class="size-[18px]" style="color: #666666;" />
+                                    </button>
+                                    <div
+                                        class="border border-[rgba(116,81,45,0.2)] rounded-[10px] px-[15px] py-[3px] flex items-center justify-center">
+                                        <span class="font-['Montserrat'] font-semibold text-[16px] text-[#666666]"
+                                            style="line-height: 1;">{{ $item['quantity'] }}</span>
+                                    </div>
+                                    <button wire:click="incrementItem('{{ $id }}')"
+                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                        <flux:icon icon="plus" class="size-[18px]" style="color: #666666;" />
+                                    </button>
+                                </div>
+                            @else
+                                <button wire:click="addToCart('{{ $product->id }}')"
+                                    class="bg-[#ffffff] border-[1.5px] border-[#74512d] rounded-[20px] w-full px-[25px] py-[10px]">
+                                    <span class="font-['Montserrat'] font-bold text-[16px] text-[#74512d]"
+                                        style="line-height: 1;">Tambah</span>
+                                </button>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="col-span-3 text-center p-4 w-full">
+                            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk yang
+                                ditemukan.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div
+            class="bg-[#fafafa] shadow-[4px_0px_4px_0px_rgba(0,0,0,0.25)] p-[20px] flex items-center justify-end gap-[10px]">
+            <flux:modal.close>
+                <button
+                    class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                    <flux:icon icon="x-mark" class="size-5" style="color: #333333;" />
+                    <span class="font-['Montserrat'] font-semibold text-[16px] text-[#333333]"
+                        style="line-height: 1;">Batal</span>
+                </button>
+            </flux:modal.close>
+
+            <flux:modal.close>
+                <button
+                    class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                    <flux:icon icon="check" class="size-5" style="color: #f6f6f6;" />
+                    <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]"
+                        style="line-height: 1;">Simpan Perubahan</span>
+                </button>
+            </flux:modal.close>
         </div>
     </flux:modal>
 
@@ -402,7 +442,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('phoneCustomer')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -411,7 +451,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('nameCustomer')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>

@@ -65,17 +65,14 @@ $isLastPage = $currentPage >= ($summary['pages'] ?? 1) || !$hasItems;
                                 <button type="button" wire:click="{{ $column['sort-method'] }}"
                                     class="flex items-center gap-1">
                                     <span>{{ $column['label'] }}</span>
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                        <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                        <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
-                                    </svg>
+                                    <flux:icon.arrows-up-down class="size-3.5" />
                                 </button>
                             @else
                                 <div class="flex items-center gap-1">
                                     {{ $column['label'] }}
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 14 14">
-                                        <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
-                                        <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
+                                    <flux:icon.arrows-up-down class="size-3.5" />
+                                    <path d="M7 2L11 6H3L7 2Z" opacity="0.5" />
+                                    <path d="M7 12L3 8H11L7 12Z" opacity="0.5" />
                                     </svg>
                                 </div>
                             @endif

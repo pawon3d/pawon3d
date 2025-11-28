@@ -3,61 +3,93 @@
 namespace App\Livewire\Transaction;
 
 use App\Models\Product;
-use App\Models\Shift;
-use Livewire\Component;
-use Mike42\Escpos\Printer;
 use App\Models\Transaction;
-use Illuminate\Support\Str;
-use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Mike42\Escpos\Printer;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $method = 'pesanan-reguler';
+
     public array $cart = [];
+
     public $todayShiftId;
+
     public $todayShiftNumber;
+
     public $todayShiftStatus;
+
     public $todayShiftStartTime;
+
     public $todayShiftEndTime;
+
     public $todayShiftOpenedBy;
+
     public $todayShiftClosedBy;
+
     public $initialCash = 0;
+
     public $finalCash = 0;
+
     public $receivedCash = 0;
+
     public $receivedNonCash = 0;
+
     public $discountToday = 0;
+
     public $expectedCash = 0;
+
     public $refundTotal = 0;
+
+    public $refundCash = 0;
+
+    public $refundNonCash = 0;
+
     public $openShiftModal = false;
+
     public $closeShiftModal = false;
+
     public $finishShiftModal = false;
 
     public $historyShifts = [];
+
     public $showHistoryShiftModal = false;
-    public $searchHistoryShift = '', $searchDate = '';
+
+    public $searchHistoryShift = '';
+
+    public $searchDate = '';
+
     public $showDetailHistoryShiftModal = false;
+
     public $selectedShiftId = null;
+
     public $selectedShift;
 
     public $showNonCashDetailsModal = false;
+
     public $nonCashDetails = [];
 
     protected $queryString = ['method'];
 
     protected $listeners = [
         'refreshTransactions' => '$refresh',
-        'delete'
+        'delete',
     ];
 
     public function mount()
@@ -68,6 +100,10 @@ class Index extends Component
             $this->alert('success', session('success'));
         }
         $this->method = session('method', 'pesanan-reguler');
+
+        // Auto-close shifts from previous days that are still open
+        $this->autoClosePreviousDayShifts();
+
         $todayShift = \App\Models\Shift::whereDate('start_time', now())
             ->where('status', 'open')
             ->latest()->first();
@@ -95,6 +131,15 @@ class Index extends Component
                     return $transaction->payments->sum('paid_amount');
                 });
             $transactionShift = \App\Models\Transaction::where('refund_by_shift', $todayShift->id)->sum('total_refund');
+
+            // Calculate refund cash and non-cash separately
+            $refundCash = \App\Models\Refund::where('refund_by_shift', $todayShift->id)
+                ->where('refund_method', 'tunai')
+                ->sum('total_amount');
+            $refundNonCash = \App\Models\Refund::where('refund_by_shift', $todayShift->id)
+                ->where('refund_method', '!=', 'tunai')
+                ->sum('total_amount');
+
             $this->todayShiftId = $todayShift->id;
             $this->todayShiftNumber = $todayShift->shift_number;
             $this->todayShiftStatus = $todayShift->status;
@@ -106,7 +151,9 @@ class Index extends Component
             $this->receivedNonCash = $nonCash ?? 0;
             $this->discountToday = 0;
             $this->refundTotal = $transactionShift;
-            $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday - $this->refundTotal;
+            $this->refundCash = $refundCash;
+            $this->refundNonCash = $refundNonCash;
+            $this->expectedCash = $todayShift->initial_cash + $this->receivedCash - $this->discountToday - $this->refundCash;
         } else {
             $this->todayShiftId = null;
             $this->todayShiftNumber = null;
@@ -116,10 +163,44 @@ class Index extends Component
         }
     }
 
+    /**
+     * Automatically close shifts from previous days that are still open.
+     * Sets end_time to 23:59:59 of the shift's start date.
+     */
+    protected function autoClosePreviousDayShifts(): void
+    {
+        $previousDayOpenShifts = \App\Models\Shift::where('status', 'open')
+            ->whereDate('start_time', '<', now()->toDateString())
+            ->get();
+
+        foreach ($previousDayOpenShifts as $shift) {
+            // Calculate final cash for the shift
+            $receivedCash = \App\Models\Transaction::where('created_by_shift', $shift->id)
+                ->whereHas('payments', fn ($q) => $q->where('payment_method', 'tunai'))
+                ->with(['payments' => fn ($q) => $q->where('payment_method', 'tunai')])
+                ->get()
+                ->sum(fn ($t) => $t->payments->sum('paid_amount'));
+
+            $refundTotal = \App\Models\Transaction::where('refund_by_shift', $shift->id)->sum('total_refund');
+            $finalCash = $shift->initial_cash + $receivedCash - $refundTotal;
+
+            // Set end_time to 23:59:59 of the start_time date
+            $endTime = \Carbon\Carbon::parse($shift->start_time)->endOfDay();
+
+            $shift->update([
+                'closed_by' => null, // System closed
+                'end_time' => $endTime,
+                'status' => 'closed',
+                'final_cash' => $finalCash,
+            ]);
+        }
+    }
+
     public function openShift()
     {
         if ($this->todayShiftId) {
             $this->alert('warning', 'Shift hari ini sudah dibuka!');
+
             return;
         }
 
@@ -148,14 +229,16 @@ class Index extends Component
 
     public function closeShift()
     {
-        if (!$this->todayShiftId) {
+        if (! $this->todayShiftId) {
             $this->alert('warning', 'Tidak ada sesi yang dibuka hari ini!');
+
             return;
         }
 
         $shift = \App\Models\Shift::find($this->todayShiftId);
-        if (!$shift) {
+        if (! $shift) {
             $this->alert('warning', 'Sesi tidak ditemukan!');
+
             return;
         }
 
@@ -176,45 +259,6 @@ class Index extends Component
         $this->finishShiftModal = true;
 
         $this->alert('success', 'Sesi berhasil ditutup!');
-    }
-
-    public function openHistoryShiftModal()
-    {
-        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
-            ->get();
-        $this->searchHistoryShift = '';
-
-        $this->showHistoryShiftModal = true;
-    }
-
-    public function updatedSearchHistoryShift($value)
-    {
-        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
-            ->when($value, function ($query) use ($value) {
-                $query->where('shift_number', 'like', '%' . $value . '%');
-            })
-            ->orderBy('shift_number')
-            ->get();
-        $this->searchDate = null;
-    }
-
-    public function updatedSearchDate($value)
-    {
-        $this->historyShifts = \App\Models\Shift::with(['openedBy', 'closedBy'])
-            ->when($value, function ($query) use ($value) {
-                $query->whereDate('start_time', $value);
-            })
-            ->orderBy('shift_number')
-            ->get();
-        $this->searchHistoryShift = null;
-    }
-
-    public function viewShift($id)
-    {
-        $this->selectedShiftId = $id;
-        $shift = Shift::findOrFail($this->selectedShiftId);
-        $this->selectedShift = $shift;
-        $this->showDetailHistoryShiftModal = true;
     }
 
     public function showNonCashDetails($id)
@@ -258,6 +302,7 @@ class Index extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
                     $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
+                    $this->alert('warning', 'Stok produk ini hanya tersisa '.$this->cart[$itemId]['stock'].' buah!');
                 }
             }
         }
@@ -284,6 +329,7 @@ class Index extends Component
             if ($this->method == 'siap-beli') {
                 if ($product->stock <= 0) {
                     $this->alert('warning', 'Stok produk ini sudah habis!');
+
                     return;
                 }
             }
@@ -312,14 +358,14 @@ class Index extends Component
     // Perhitungan total
     protected function getTotalProperty()
     {
-        return collect($this->cart)->reduce(fn($carry, $item) =>
-        $carry + ($item['price'] * $item['quantity']), 0);
+        return collect($this->cart)->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
     }
 
     public function checkout()
     {
         if (empty($this->cart)) {
             $this->alert('warning', 'Keranjang belanja masih kosong!');
+
             return;
         }
 
@@ -347,11 +393,11 @@ class Index extends Component
     public function render()
     {
         return view('livewire.transaction.index', [
-            "products" => Product::with(['product_categories', 'product_compositions', 'reviews'])
+            'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })
-                ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
+                ->when($this->search, fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
                 ->paginate(10),
         ]);
     }
@@ -377,7 +423,6 @@ class Index extends Component
     //     // Dispatch event untuk membuka URL PDF di tab baru
     //     $this->dispatch('open-pdf', ['url' => $url]);
     // }
-
 
     public function print($id)
     {
@@ -414,7 +459,6 @@ class Index extends Component
         // $printer->close();
 
         $pdf = Pdf::loadView('pdf.pdf', compact('transaction'))->setPaper([0, 0, 227, 400], 'portrait');
-
 
         return $pdf->stream('struk-transaksi.pdf');
     }

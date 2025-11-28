@@ -1,193 +1,244 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-4">
+    {{-- Header with Back Button and Title --}}
+    <div class="flex gap-[32px] items-center mb-8">
+        <div class="flex gap-[15px] items-center">
             <a href="{{ route('transaksi') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
-                wire:navigate>
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
+                class="bg-[#313131] flex items-center justify-center gap-[5px] px-[25px] py-[10px] rounded-[15px] shadow-sm hover:bg-[#252324] transition-colors"
+                wire:navigate style="font-family: 'Montserrat', sans-serif;">
+                <flux:icon icon="arrow-left" class="size-5 text-[#f8f4e1]" />
+                <span class="font-semibold text-[16px] text-[#f8f4e1]">Kembali</span>
             </a>
-            <h1 class="text-2xl hidden md:block">Daftar {{ $methodName }}</h1>
-        </div>
-        <div class="flex gap-2 items-center justify-end-safe">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
+            <p class="font-semibold text-[20px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
+                Daftar {{ $methodName }}
+            </p>
         </div>
     </div>
 
+    {{-- Content Container --}}
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
+        {{-- Search Bar --}}
+        <div class="flex justify-between items-center mb-[20px]">
+            <div class="flex-1 flex gap-[15px] items-center">
+                {{-- Search Input --}}
+                <div class="flex-1 bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex items-center">
+                    <flux:icon icon="magnifying-glass" class="size-[30px] text-[#666666]" />
+                    <input wire:model.live="search" placeholder="Cari Pesanan" type="text"
+                        class="flex-1 px-[10px] py-[10px] font-medium text-[16px] text-[#959595] border-0 focus:ring-0 focus:outline-none bg-transparent"
+                        style="font-family: 'Montserrat', sans-serif;" />
+                </div>
 
-    <div class="flex justify-between items-center mb-4">
-        <!-- Search Input -->
-        <div class="p-4 flex">
-            <input wire:model.live="search" placeholder="Cari..."
-                class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <flux:button :loading="false" class="ml-2" variant="ghost">
-                <flux:icon.funnel variant="mini" />
-                <span>Filter</span>
-            </flux:button>
+                {{-- Filter Button --}}
+                <div class="flex items-center gap-[5px] cursor-pointer">
+                    <flux:icon icon="funnel" class="size-[25px] text-[#666666]" />
+                    <span class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
+                        Filter
+                    </span>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="flex justify-between items-center mb-4">
-        <flux:dropdown>
-            <flux:button variant="ghost">
-                @if($filterStatus)
-                {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                @else
-                Semua Produksi
-                @endif
-                ({{ $transactions->total() }})
-                <flux:icon.chevron-down variant="mini" />
-            </flux:button>
-            <flux:menu>
-                <flux:menu.radio.group wire:model.live="filterStatus">
-                    <flux:menu.radio value="">Semua Produksi</flux:menu.radio>
-                    <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                    <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                </flux:menu.radio.group>
-            </flux:menu>
-        </flux:dropdown>
-        <flux:dropdown>
-            <flux:button variant="ghost">
-                Urutkan Produk
-                <flux:icon.chevron-down variant="mini" />
 
-            </flux:button>
+        {{-- Table --}}
+        @php
+            $headers = [
+                [
+                    'label' => 'ID Transaksi',
+                    'sortable' => true,
+                    'sort-by' => 'invoice_number',
+                    'field' => 'invoice_number',
+                ],
+                [
+                    'label' => $method == 'siap-beli' ? 'Tanggal Pembelian' : 'Tanggal Ambil',
+                    'sortable' => true,
+                    'sort-by' => 'date',
+                    'field' => 'date',
+                ],
+                [
+                    'label' => 'Daftar Produk',
+                    'sortable' => true,
+                    'sort-by' => 'product_name',
+                    'field' => 'product_name',
+                ],
+            ];
 
-            <flux:menu>
-                <flux:menu.radio.group wire:model="sortByCategory">
-                    <flux:menu.radio value="name">Nama</flux:menu.radio>
-                    <flux:menu.radio value="status">Status</flux:menu.radio>
-                    <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                </flux:menu.radio.group>
-            </flux:menu>
-        </flux:dropdown>
+            if ($method != 'siap-beli') {
+                $headers[] = [
+                    'label' => 'Pembeli',
+                    'sortable' => true,
+                    'sort-by' => 'name',
+                    'field' => 'name',
+                ];
+            }
 
-    </div>
+            $headers[] = [
+                'label' => 'Kasir',
+                'sortable' => true,
+                'sort-by' => 'user_name',
+                'field' => 'user_name',
+            ];
 
-    @if ($transactions->isEmpty())
-    <div class="col-span-5 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-        <p class="text-gray-700 font-semibold">Belum ada transaksi.</p>
-        <p class="text-gray-700">Tambah transaksi di menu utama.</p>
-    </div>
-    @else
-    <div class="bg-white rounded-xl border shadow-sm">
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-left">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 font-semibold">
-                            ID Pesanan
-                            <span class="cursor-pointer" wire:click="sortBy('invoice_number')">{{ $sortDirection ===
-                                'asc' && $sortField === 'invoice_number' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">
-                            Tanggal
-                            @if ($method == 'siap-beli')
-                            Pembelian
-                            @else
-                            Pengambilan
+            if ($method != 'siap-beli') {
+                $headers[] = [
+                    'label' => 'Status Bayar',
+                    'sortable' => true,
+                    'sort-by' => 'payment_status',
+                    'field' => 'payment_status',
+                ];
+                $headers[] = [
+                    'label' => 'Status Pesanan',
+                    'sortable' => true,
+                    'sort-by' => 'status',
+                    'field' => 'status',
+                ];
+            }
+        @endphp
+
+        <x-table.paginated :headers="$headers" :paginator="$transactions" emptyMessage="Belum ada pesanan." headerBg="#3f4e4f"
+            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+            wrapperClass="rounded-[15px] border border-[#d4d4d4]">
+            @foreach ($transactions as $transaction)
+                <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
+                    {{-- ID Transaksi --}}
+                    <td class="px-6 py-4">
+                        <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}"
+                            class="font-medium text-[14px] text-[#666666] hover:underline"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            {{ $transaction->invoice_number }}
+                        </a>
+                    </td>
+
+                    {{-- Tanggal --}}
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-[5px]">
+                            <div class="flex gap-[10px] items-center">
+                                <p class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    @if ($method == 'siap-beli')
+                                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d M Y') : '-' }}
+                                    @else
+                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d M Y') : '-' }}
+                                    @endif
+                                </p>
+                                <p class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    @if ($method == 'siap-beli')
+                                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('H:i') : '-' }}
+                                    @else
+                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('H:i') : '-' }}
+                                    @endif
+                                </p>
+                            </div>
+                            @php
+                                $targetDate = $method == 'siap-beli' ? $transaction->start_date : $transaction->date;
+                                $daysUntil = $targetDate
+                                    ? \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($targetDate), false)
+                                    : null;
+                            @endphp
+                            @if ($daysUntil !== null)
+                                <p class="font-medium text-[14px] text-center {{ $daysUntil <= 2 ? 'text-[#eb5757]' : 'text-[#3fa2f7]' }}"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    (H{{ $daysUntil >= 0 ? '+' : '' }}{{ $daysUntil }})
+                                </p>
                             @endif
-                            <span class="cursor-pointer" wire:click="sortBy('date')">{{ $sortDirection ===
-                                'asc' && $sortField === 'date' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">Daftar Produk
-                            <span class="cursor-pointer" wire:click="sortBy('product_name')">{{ $sortDirection ===
-                                'asc' && $sortField === 'product_name' ? '↑' : '↓' }}</span>
-                        </th>
-                        @if ($method != 'siap-beli')
-                        <th class="px-6 py-3 font-semibold">Pemesan
-                            <span class="cursor-pointer" wire:click="sortBy('name')">{{ $sortDirection ===
-                                'asc' && $sortField === 'name' ? '↑' : '↓' }}</span>
-                        </th>
-                        @endif
-                        <th class="px-6 py-3 font-semibold">Kasir
-                            <span class="cursor-pointer" wire:click="sortBy('user_name')">{{ $sortDirection ===
-                                'asc' && $sortField === 'user_name' ? '↑' : '↓' }}</span>
-                        </th>
-                        @if ($method != 'siap-beli')
-                        <th class="px-6 py-3 font-semibold">Status Pembayaran
-                            <span class="cursor-pointer" wire:click="sortBy('payment_status')">{{ $sortDirection ===
-                                'asc' && $sortField === 'payment_status' ? '↑' : '↓' }}</span>
-                        </th>
-                        <th class="px-6 py-3 font-semibold">Status Pesanan
-                            <span class="cursor-pointer" wire:click="sortBy('status')">{{ $sortDirection ===
-                                'asc' && $sortField === 'status' ? '↑' : '↓' }}</span>
-                        </th>
-                        @endif
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-900">
-                    @foreach($transactions as $transaction)
-                    <tr class="hover:bg-gray-50 transition">
-                        <!-- ID Produk -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}">
-                                {{ $transaction->invoice_number }}
-                            </a>
-                        </td>
+                        </div>
+                    </td>
 
-                        <!-- Jadwal Produksi -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if ($method == 'siap-beli')
-                            {{ $transaction->start_date ?
-                            \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y') : '-' }}
-                            @else
-                            {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '-' }}
-                            @endif
-                        </td>
+                    {{-- Daftar Produk --}}
+                    <td class="px-6 py-4">
+                        <p class="font-medium text-[14px] text-[#666666] truncate max-w-md"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            {{ $transaction->details->count() > 0 ? $transaction->details->map(fn($d) => $d->product?->name)->filter()->implode(', ') : 'Tidak ada produk' }}
+                        </p>
+                    </td>
 
-                        <!-- Daftar Produk -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $transaction->details->count() > 0
-                            ? $transaction->details->map(fn($d) => $d->product?->name)->filter()->implode(', ')
-                            : 'Tidak ada produk' }}
+                    {{-- Pembeli (hidden for siap-beli) --}}
+                    @if ($method != 'siap-beli')
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-[14px] text-[#666666]"
+                                style="font-family: 'Montserrat', sans-serif;">
+                                {{ $transaction->name ?? '-' }}
+                            </p>
                         </td>
+                    @endif
 
-                        <!-- Pemesan -->
-                        <td class="px-6 py-4 max-w-xs truncate">
-                            {{ $transaction->name
-                            ? $transaction->name
-                            : '-' }}
+                    {{-- Kasir --}}
+                    <td class="px-6 py-4">
+                        <p class="font-medium text-[14px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            {{ ucfirst($transaction->user->name) }}
+                        </p>
+                    </td>
+
+                    {{-- Status Pembayaran (hidden for siap-beli) --}}
+                    @if ($method != 'siap-beli')
+                        <td class="px-6 py-4">
+                            @php
+                                $paymentStatus = strtolower($transaction->payment_status);
+                                if ($paymentStatus === 'lunas') {
+                                    $bgColor = '#56c568';
+                                    $textColor = '#fafafa';
+                                    $label = 'Lunas';
+                                } elseif (in_array($paymentStatus, ['belum lunas', 'belum dibayar'])) {
+                                    $bgColor = '#ffc400';
+                                    $textColor = '#fafafa';
+                                    $label = 'Belum Lunas';
+                                } else {
+                                    $bgColor = '#fafafa';
+                                    $textColor = '#666666';
+                                    $label = ucfirst($transaction->payment_status);
+                                }
+                            @endphp
+                            <div class="flex items-center justify-center">
+                                <div class="px-[15px] py-[5px] rounded-[15px] min-w-[90px] flex items-center justify-center"
+                                    style="background-color: {{ $bgColor }}; {{ $bgColor === '#fafafa' ? 'border: 1px solid #666666;' : '' }}">
+                                    <p class="font-bold text-[12px] text-center"
+                                        style="font-family: 'Montserrat', sans-serif; color: {{ $textColor }};">
+                                        {{ $label }}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
+                    @endif
 
-                        <!-- Kasir -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ ucfirst($transaction->user->name) }}
-                            </span>
+                    {{-- Status Pesanan (hidden for siap-beli) --}}
+                    @if ($method != 'siap-beli')
+                        <td class="px-6 py-4">
+                            @php
+                                $orderStatus = strtolower($transaction->status);
+                                if (in_array($orderStatus, ['dapat diambil', 'selesai'])) {
+                                    $bgColor = '#3fa2f7';
+                                    $textColor = '#fafafa';
+                                    $label = 'Dapat Diambil';
+                                } elseif (in_array($orderStatus, ['sedang diproses', 'diproses'])) {
+                                    $bgColor = '#ffc400';
+                                    $textColor = '#fafafa';
+                                    $label = 'Sedang Diproses';
+                                } elseif (in_array($orderStatus, ['belum diproses', 'pending'])) {
+                                    $bgColor = '#adadad';
+                                    $textColor = '#fafafa';
+                                    $label = 'Belum Diproses';
+                                } elseif ($orderStatus === 'draft') {
+                                    $bgColor = '#f6f6f6';
+                                    $textColor = '#666666';
+                                    $label = 'Draft';
+                                } else {
+                                    $bgColor = '#fafafa';
+                                    $textColor = '#666666';
+                                    $label = ucfirst($transaction->status);
+                                }
+                            @endphp
+                            <div class="flex items-center justify-center">
+                                <div class="px-[15px] py-[5px] rounded-[15px] min-w-[90px] flex items-center justify-center"
+                                    style="background-color: {{ $bgColor }}; {{ in_array($bgColor, ['#fafafa', '#f6f6f6']) ? 'border: 1px solid #666666;' : '' }}">
+                                    <p class="font-bold text-[12px] text-center"
+                                        style="font-family: 'Montserrat', sans-serif; color: {{ $textColor }};">
+                                        {{ $label }}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
-
-                        <!-- Status Pembayaran -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ $transaction->payment_status }}
-                            </span>
-                        </td>
-
-                        <!-- Status Pesanan -->
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
-                                {{ $transaction->status }}
-                            </span>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="p-4">
-            {{ $transactions->links() }}
-        </div>
+                    @endif
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
-    @endif
-
 </div>

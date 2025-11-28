@@ -5,36 +5,69 @@ namespace App\Livewire\Transaction;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\PaymentChannel;
-use Livewire\Component;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class Edit extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
+
     public $transactionId;
+
     public $transaction;
+
     public $search = '';
+
     public $details = [];
+
     public $paymentChannels = [];
+
     public $paymentChannelId = '';
-    public $paymentMethod = '', $paymentBank = '', $paymentAccount = '', $paymentAccountNumber, $paymentAccountName, $image;
+
+    public $paymentMethod = '';
+
+    public $paymentBank = '';
+
+    public $paymentAccount = '';
+
+    public $paymentAccountNumber;
+
+    public $paymentAccountName;
+
+    public $image;
+
     public $totalAmount = 0;
+
     public $paidAmount = 0;
+
     public $showItemModal = false;
+
     public $customer;
 
-    public $phoneCustomer, $nameCustomer;
+    public $phoneCustomer;
+
+    public $nameCustomer;
+
     public $customerModal = false;
 
+    public $name;
 
-    public $name, $phone, $date, $time, $note, $method;
+    public $phone;
+
+    public $date;
+
+    public $time;
+
+    public $note;
+
+    public $method;
 
     public function mount($id)
     {
-        View::share('title', 'Buat Pesanan');
+        View::share('title', 'Ubah Pesanan');
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);
@@ -56,7 +89,7 @@ class Edit extends Component
             })->toArray();
             $this->name = $transaction->name;
             $this->phone = $transaction->phone;
-            $this->date = $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '';
+            $this->date = $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d M Y') : '';
             $this->time = $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '';
             $this->note = $transaction->note;
             $this->totalAmount = $transaction->total_amount;
@@ -70,17 +103,18 @@ class Edit extends Component
             $this->paymentBank = $transaction->payment ? $transaction->payment->channel->bank_name : '';
             $this->paymentAccountNumber = $transaction->payment ? $transaction->payment->channel->account_number : '';
             $this->paymentAccountName = $transaction->payment ? $transaction->payment->channel->account_name : '';
-            $this->paymentAccount = $this->paymentAccountName . ' - ' . $this->paymentAccountNumber;
+            $this->paymentAccount = $this->paymentAccountName.' - '.$this->paymentAccountNumber;
             $customer = Customer::where('phone', $this->phone)->first();
             if ($customer) {
                 $this->customer = $customer;
                 $this->name = $customer->name;
             } else {
                 $this->customer = null;
-                $this->name = null;
+                $this->name = $transaction->name ?? '';
             }
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
+
             return redirect()->route('transaksi');
         }
     }
@@ -95,7 +129,7 @@ class Edit extends Component
     {
         $customer = Customer::create([
             'name' => $this->nameCustomer,
-            'phone' => $this->phoneCustomer
+            'phone' => $this->phoneCustomer,
         ]);
         $this->customer = $customer;
         $this->name = $customer->name;
@@ -122,7 +156,7 @@ class Edit extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
                 }
             }
         }
@@ -149,10 +183,11 @@ class Edit extends Component
             if ($this->method == 'siap-beli') {
                 if ($product->stock <= 0) {
                     $this->alert('warning', 'Stok produk ini sudah habis!');
+
                     return;
                 }
             }
-            $this->cart[$productId] = [
+            $this->details[$productId] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->price,
@@ -195,7 +230,7 @@ class Edit extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -219,7 +254,7 @@ class Edit extends Component
             $transaction->update([
                 'name' => $this->name,
                 'phone' => $this->phone,
-                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
+                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d M Y', $this->date)->format('Y-m-d') : null,
                 'time' => $this->time,
                 'note' => $this->note,
                 'total_amount' => $this->getTotalProperty(),
@@ -257,8 +292,10 @@ class Edit extends Component
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }
+
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
+
     public function render()
     {
         return view('livewire.transaction.edit', [
@@ -266,7 +303,7 @@ class Edit extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

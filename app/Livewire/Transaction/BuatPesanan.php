@@ -15,29 +15,62 @@ use Livewire\WithFileUploads;
 class BuatPesanan extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
+
     public $transactionId;
+
     public $search = '';
+
     public $transaction;
+
     public $details = [];
+
     public $paymentChannels = [];
+
     public $paymentChannelId = '';
-    public $paymentMethod = '', $paymentBank = '', $paymentAccount = '', $paymentAccountNumber, $paymentAccountName, $image;
+
+    public $paymentMethod = '';
+
+    public $paymentBank = '';
+
+    public $paymentAccount = '';
+
+    public $paymentAccountNumber;
+
+    public $paymentAccountName;
+
+    public $image;
+
     public $totalAmount = 0;
+
     public $paidAmount = 0;
+
     public $showItemModal = false;
+
     public $customer;
 
-    public $phoneCustomer, $nameCustomer;
+    public $phoneCustomer;
+
+    public $nameCustomer;
+
     public $customerModal = false;
 
+    public $name;
 
-    public $name, $phone, $date, $time, $note, $method;
+    public $phone;
+
+    public $date;
+
+    public $time;
+
+    public $note;
+
+    public $method;
 
     protected $messages = [
         'name.required' => 'Nama harus diisi.',
         'phone.required' => 'Nomor telepon harus diisi.',
         'date.required' => 'Tanggal harus diisi.',
-        'time.required' => 'Jam harus diisi'
+        'time.required' => 'Jam harus diisi',
     ];
 
     public function mount($id)
@@ -64,6 +97,7 @@ class BuatPesanan extends Component
             $this->paidAmount = 0.5 * $this->totalAmount;
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
+
             return redirect()->route('transaksi');
         }
     }
@@ -78,12 +112,13 @@ class BuatPesanan extends Component
     {
         $customer = Customer::create([
             'name' => $this->nameCustomer,
-            'phone' => $this->phoneCustomer
+            'phone' => $this->phoneCustomer,
         ]);
         $this->customer = $customer;
         $this->name = $customer->name;
         $this->customerModal = false;
     }
+
     public function updatedPhone($value)
     {
         $customer = Customer::where('phone', $value)->first();
@@ -103,7 +138,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
                 }
             }
         }
@@ -129,6 +164,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($product->stock <= 0) {
                     $this->alert('warning', 'Stok produk ini sudah habis!');
+
                     return;
                 }
             }
@@ -175,15 +211,13 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
             $this->paymentAccountName = '';
         }
     }
-
-
 
     public function save()
     {
@@ -218,7 +252,7 @@ class BuatPesanan extends Component
             $transaction->update([
                 'name' => $this->name,
                 'phone' => $this->phone,
-                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
+                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d M Y', $this->date)->format('Y-m-d') : null,
                 'time' => $this->time,
                 'start_date' => now(),
                 'note' => $this->note,
@@ -256,11 +290,11 @@ class BuatPesanan extends Component
             //     }
             // }
 
-
             session()->flash('success', 'Pesanan berhasil dibuat.');
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }
+
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
@@ -297,9 +331,11 @@ class BuatPesanan extends Component
 
         if ($this->paymentMethod == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
+
             return;
         } elseif ($this->paymentChannelId == '' && $this->paymentMethod == 'transfer') {
             $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
+
             return;
             // } elseif ($this->image == null && $this->paymentMethod != 'tunai') {
             //     $this->alert('warning', 'Silakan unggah bukti pembayaran.');
@@ -311,18 +347,17 @@ class BuatPesanan extends Component
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             if ($this->paidAmount < 0.5 * $this->getTotalProperty()) {
                 $this->alert('warning', 'Jumlah pembayaran minimal 50% dari sisa.');
+
                 return;
             }
         }
-
-
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
             $transaction->update([
                 'name' => $this->name,
                 'phone' => $this->phone,
-                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d-m-Y', $this->date)->format('Y-m-d') : null,
+                'date' => $this->date ? \Carbon\Carbon::createFromFormat('d M Y', $this->date)->format('Y-m-d') : null,
                 'time' => $this->time,
                 'start_date' => now(),
                 'note' => $this->note,
@@ -379,6 +414,7 @@ class BuatPesanan extends Component
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }
+
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
@@ -388,11 +424,13 @@ class BuatPesanan extends Component
         if ($transaction) {
             $transaction->delete();
             session()->flash('success', 'Transaksi berhasil dibatalkan.');
+
             return redirect()->route('transaksi');
         } else {
             $this->alert('error', 'Transaksi tidak ditemukan.');
         }
     }
+
     public function render()
     {
         return view('livewire.transaction.buat-pesanan', [
@@ -400,7 +438,7 @@ class BuatPesanan extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

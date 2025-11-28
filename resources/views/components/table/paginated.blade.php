@@ -42,7 +42,7 @@
                                 <button type="button" wire:click="{{ $sortMethod }}('{{ $sortField }}')"
                                     class="flex items-center gap-2 {{ $header['align'] ?? '' == 'right' ? 'justify-end' : '' }} w-full">
                                     <span>{{ is_array($header) ? $header['label'] : $header }}</span>
-                                    <flux:icon.chevron-up-down class="size-3.5" />
+                                    <flux:icon.arrows-up-down class="size-3.5" />
                                 </button>
                             @else
                                 <span class="{{ $header['align'] ?? '' == 'right' ? 'flex justify-end' : '' }}">

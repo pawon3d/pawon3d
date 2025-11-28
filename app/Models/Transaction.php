@@ -3,18 +3,23 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 
 class Transaction extends Model
 {
     use \Spatie\Activitylog\Traits\LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'transactions';
+
     protected $guarded = [
         'id',
     ];
@@ -42,6 +47,11 @@ class Transaction extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function refund()
+    {
+        return $this->hasOne(Refund::class);
     }
 
     public function getActivitylogOptions(): LogOptions
@@ -85,12 +95,12 @@ class Transaction extends Model
                 $method = $model->method ?? 'default';
                 $basePrefix = $prefixMap[$method] ?? 'OR'; // fallback ke 'PS' kalau tidak cocok
 
-                $prefix = $basePrefix . '-' . $today;
+                $prefix = $basePrefix.'-'.$today;
 
                 // Cari nomor terakhir untuk kombinasi metode + tanggal
                 $lastTransaction = DB::table('transactions')
                     ->lockForUpdate()
-                    ->where('invoice_number', 'like', $prefix . '-%')
+                    ->where('invoice_number', 'like', $prefix.'-%')
                     ->orderByDesc('invoice_number')
                     ->first();
 
@@ -100,7 +110,7 @@ class Transaction extends Model
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->invoice_number = $prefix . '-' . $nextNumber;
+                $model->invoice_number = $prefix.'-'.$nextNumber;
             });
         });
     }

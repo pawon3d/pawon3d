@@ -148,6 +148,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi/{method}/pesanan', App\Livewire\Transaction\Pesanan::class)->name('transaksi.pesanan');
         Route::get('/transaksi/{method}/riwayat', App\Livewire\Transaction\Riwayat::class)->name('transaksi.riwayat');
         Route::get('/transaksi/{id}/buat-pesanan', App\Livewire\Transaction\BuatPesanan::class)->name('transaksi.buat-pesanan');
+        Route::get('/transaksi-riwayat-sesi', App\Livewire\Transaction\RiwayatSesiPenjualan::class)->name('transaksi.riwayat-sesi');
+        Route::get('/transaksi-rincian-sesi/{id}', App\Livewire\Transaction\RincianSesi::class)->name('transaksi.rincian-sesi');
         Route::get('/transaksi/cetak', [PdfController::class, 'generateTransactionPDF'])
             ->name('transaksi.pdf');
         Route::get('/transaksi/cetak/{id}', [PdfController::class, 'generateTransactionDetailPDF'])
@@ -203,4 +205,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
