@@ -2,24 +2,32 @@
 
 namespace App\Livewire\StoreSetting;
 
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
-
 
 class Index extends Component
 {
     use LivewireAlert, WithFileUploads;
+
     public $storeName;
+
     public $contact;
+
     public $address;
+
     public $heroImage;
+
     public $heroTitle;
+
     public $heroSubtitle;
+
     public $logo;
+
     public $previewLogo = null;
+
     public $previewHeroImage = null;
 
     public function mount()
@@ -52,21 +60,21 @@ class Index extends Component
 
         if ($storeSetting) {
             $storeSetting->update([
-                'store_name'     => $this->storeName,
-                'contact'        => $this->contact,
-                'address'        => $this->address,
-                'hero_title'     => $this->heroTitle,
-                'hero_subtitle'  => $this->heroSubtitle,
+                'store_name' => $this->storeName,
+                'contact' => $this->contact,
+                'address' => $this->address,
+                'hero_title' => $this->heroTitle,
+                'hero_subtitle' => $this->heroSubtitle,
             ]);
         } else {
             $storeSetting = \App\Models\StoreSetting::create([
-                'store_name'     => $this->storeName,
-                'contact'        => $this->contact,
-                'address'        => $this->address,
-                'hero_title'     => $this->heroTitle,
-                'hero_subtitle'  => $this->heroSubtitle,
-                'hero_image'     => null,
-                'logo'           => null,
+                'store_name' => $this->storeName,
+                'contact' => $this->contact,
+                'address' => $this->address,
+                'hero_title' => $this->heroTitle,
+                'hero_subtitle' => $this->heroSubtitle,
+                'hero_image' => null,
+                'logo' => null,
             ]);
         }
 
@@ -106,6 +114,7 @@ class Index extends Component
     {
         $this->previewHeroImage = $this->heroImage->temporaryUrl();
     }
+
     public function updatedLogo()
     {
         $this->previewLogo = $this->logo->temporaryUrl();

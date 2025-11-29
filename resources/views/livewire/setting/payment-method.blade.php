@@ -1,204 +1,289 @@
-<div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center">
-            <a href="{{ route('pengaturan') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
-            </a>
-            <h1 class="text-2xl hidden md:block">Metode Pembayaran</h1>
-        </div>
-    </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Bibendum sit in habitant id. Quis aenean placerat aliquet
-                laoreet ac arcu posuere leo in. Ultricies consequat quis sollicitudin etiam. Luctus feugiat ac orci
-                netus dolor sapien.
-            </p>
-        </div>
+<div class="flex flex-col gap-6">
+    <!-- Header -->
+    <div class="flex items-center gap-4">
+        <a href="{{ route('pengaturan') }}" wire:navigate
+            class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
+            <flux:icon.arrow-left class="size-5" />
+            Kembali
+        </a>
+        <h1 class="text-xl font-semibold text-[#666666]">Metode Pembayaran</h1>
     </div>
 
-    <div class="flex justify-between items-center mt-8">
-        <div class="p-4 flex items-end">
-            <p class="text-lg text-gray-500">
-                Daftar Metode
-            </p>
-        </div>
-        <div class="flex gap-2 items-center">
-            <flux:button type="button" variant="primary" wire:click="openModal" icon="plus">
+    <!-- Info Box -->
+
+    <x-alert.info>
+        <p class="text-sm leading-relaxed">
+            Metode Pembayaran. Pembayaran dapat dilakukan dengan cara tunai dan non tunai. Berbagai metode
+            pembayaran dibuat untuk mempermudah proses pembayaran.
+        </p>
+    </x-alert.info>
+
+    <!-- Table Section -->
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-base font-medium text-[#666666]">Daftar Metode</p>
+            <flux:button type="button" wire:click="openModal" icon="plus"
+                class="!bg-[#74512D] hover:!bg-[#5d4024] !text-[#F8F4E1] !px-6 !py-2.5 !rounded-[15px] !font-semibold">
                 Tambah Metode
             </flux:button>
         </div>
-    </div>
 
-    <div class="bg-white rounded-xl border mt-4">
         <!-- Table -->
         <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            wire:click="sortBy('bank_name')">Sumber Pembayaran
-                            {{ $sortDirection === 'asc' && $sortField === 'bank_name' ? '↑' : '↓' }}
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-[#3F4E4F]">
+                        <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
+                            wire:click="sortBy('bank_name')">
+                            Sumber Pembayaran
+                            @if ($sortField === 'bank_name')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
+                            wire:click="sortBy('type')">
+                            Media Pembayaran
+                            @if ($sortField === 'type')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('group')">
                             Metode Pembayaran
-                            {{ $sortDirection === 'asc' && $sortField === 'group' ? '↑' : '↓' }}
+                            @if ($sortField === 'group')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('account_number')">
                             Nomor Tujuan
-                            {{ $sortDirection === 'asc' && $sortField === 'account_number' ? '↑' : '↓' }}
+                            @if ($sortField === 'account_number')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('account_name')">
                             Atas Nama
-                            {{ $sortDirection === 'asc' && $sortField === 'account_name' ? '↑' : '↓' }}
+                            @if ($sortField === 'account_name')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach ($paymentChannels as $channel)
-                        <tr class="hover:bg-gray-100">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer"
-                                wire:click="openModal(true,'{{ $channel->id }}')">
+                <tbody>
+                    @forelse ($paymentChannels as $channel)
+                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 cursor-pointer"
+                            wire:click="openModal(true,'{{ $channel->id }}')">
+                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
                                 {{ $channel->bank_name }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
+                            <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
+                                {{ $channel->type }}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
                                 {{ $channel->group }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $channel->account_number }}
+                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
+                                {{ $channel->account_number ?? '-' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $channel->account_name }}
+                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
+                                {{ $channel->account_name ?? '-' }}
                             </td>
                         </tr>
-                    @endforeach
-                    @if (!$paymentChannels)
+                    @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                            <td colspan="5" class="px-6 py-8 text-center text-sm text-[#666666]">
                                 Tidak ada metode pembayaran yang tersedia.
                             </td>
                         </tr>
-                    @endif
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <!-- Pagination -->
-        <div class="p-4">
-            {{ $paymentChannels->links() }}
-        </div>
+        @if ($paymentChannels->hasPages())
+            <div class="mt-4">
+                {{ $paymentChannels->links() }}
+            </div>
+        @endif
     </div>
 
-    <flux:modal name="channel" class="w-full max-w-md" wire:model="showModal">
-        <div class="space-y-6">
+    <!-- Modal -->
+    <flux:modal name="channel" class="w-full max-w-lg" wire:model="showModal">
+        <div class="space-y-6 p-6">
             <div>
-                <flux:heading size="lg">{{ $edit ? 'Rincian' : 'Tambah' }} Metode Pembayaran</flux:heading>
+                <flux:heading size="lg" class="text-[#333333]">
+                    {{ $edit ? 'Rincian' : 'Tambah' }} Metode Pembayaran
+                </flux:heading>
             </div>
-            <div class="space-y-4">
-                <div>
-                    <label for="group" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
-                    <flux:select name="group" wire:model.defer="group" id="group" required>
-                        <option value="">Pilih Metode Pembayaran</option>
-                        <option value="tunai">Tunai</option>
-                        <option value="transfer bank">Transfer Bank</option>
-                        <option value="dompet digital">Dompet Digital</option>
-                        <option value="qris">QRIS</option>
-                    </flux:select>
-                    @error('group')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label for="bankName" class="block text-sm font-medium text-gray-700">Sumber Pembayaran</label>
-                    <input type="text" id="bankName" wire:model.lazy="bankName" placeholder="Contoh: BCA, Mandiri"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    @error('bankName')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label for="accountNumber" class="block text-sm font-medium text-gray-700">Nomor Tujuan</label>
-                    <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                        wire:model.defer="accountNumber" id="accountNumber" placeholder="Nomor Rekening" />
-                </div>
-                @error('accountNumber')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
 
+            <div class="space-y-5">
+                <!-- Sumber Pembayaran -->
                 <div>
-                    <label for="accountName" class="block text-sm font-medium text-gray-700">Atas Nama</label>
-                    <input type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                        wire:model.defer="accountName" id="accountName" placeholder="Contoh: Sulastri" />
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Sumber Pembayaran</label>
+                    <input type="text" wire:model.defer="bankName" placeholder="Contoh : Bank Mandiri (Mandiri)"
+                        class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
+                    @error('bankName')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
-                <div class="mb-5 w-full">
-                    <p class="mb-2 text-sm text-gray-500">
-                        Unggah Gambar QRIS (Opsional)
-                    </p>
-                    <div class="flex flex-row items-center gap-4">
+
+                <!-- Metode Pembayaran -->
+                <div>
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Metode Pembayaran</label>
+                    <select wire:model.live="group"
+                        class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] focus:outline-none focus:ring-2 focus:ring-[#74512D]">
+                        <option value="" hidden>Pilih Metode Pembayaran</option>
+                        <option value="tunai">Tunai</option>
+                        <option value="non-tunai">Non-Tunai</option>
+                    </select>
+                    @error('group')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Media Pembayaran -->
+                <div>
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Media Pembayaran</label>
+                    <select wire:model.defer="type"
+                        class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] focus:outline-none focus:ring-2 focus:ring-[#74512D]">
+                        <option value="" hidden>Pilih Media Pembayaran</option>
+                        @if ($this->group == 'tunai')
+                            <option value="tunai">Tunai</option>
+                        @else
+                            <option value="transfer">Transfer Bank</option>
+                            <option value="dompet digital">Dompet Digital</option>
+                            <option value="qris">QRIS</option>
+                        @endif
+                    </select>
+                    @error('type')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Nomor Tujuan -->
+                <div>
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Nomor Tujuan</label>
+                    <input type="text" wire:model.defer="accountNumber" placeholder="098765432109"
+                        class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
+                    @error('accountNumber')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Atas Nama -->
+                <div>
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Atas Nama</label>
+                    <input type="text" wire:model.defer="accountName" placeholder="RARA"
+                        class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
+                    @error('accountName')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Upload File -->
+                <div>
+                    <label class="block text-sm font-medium text-[#666666] mb-2">Unggah File (Jika ada QR
+                        Code)</label>
+                    <div class="flex items-center gap-3">
                         <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4">
+                            class="px-6 py-2.5 bg-[#74512D] hover:bg-[#5d4024] text-[#F8F4E1] rounded-[10px] font-semibold text-sm cursor-pointer inline-flex items-center gap-2">
                             Pilih File
-                            <input type="file" wire:model.live="qrisImage"
-                                accept="image/jpeg, image/png, image/jpg, application/pdf" class="hidden" />
+                            <input type="file" wire:model="qrisImage" accept="image/*" class="hidden" />
                         </label>
 
-                        @if ($qrisImage)
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="{{ is_string($qrisImage) ? basename($qrisImage) : $qrisImage->getClientOriginalName() }}"
-                                readonly wire:loading.remove wire:target="qrisImage">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload File..." readonly wire:loading wire:target="qrisImage">
-                        @else
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="qrisImage">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload File..." readonly wire:loading wire:target="qrisImage">
-                        @endif
+                        <input type="text"
+                            class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa]"
+                            value="{{ $qrisImage ? (is_string($qrisImage) ? basename($qrisImage) : $qrisImage->getClientOriginalName()) : 'File Belum Dipilih' }}"
+                            readonly wire:loading.remove wire:target="qrisImage">
 
-                    </div>
-                </div>
-                <flux:error name="qrisImage" />
-            </div>
-            <div class="mt-6 flex justify-end space-x-2">
-                @if ($edit)
-                    <flux:modal.trigger name="delete-channel" class="mr-4">
-                        <flux:button variant="ghost" icon="trash" />
-                    </flux:modal.trigger>
-                    <flux:modal name="delete-channel" class="min-w-[22rem]">
-                        <div class="space-y-6">
-                            <div>
-                                <flux:heading size="lg">Hapus Metode Pembayaran</flux:heading>
+                        <input type="text"
+                            class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa]"
+                            value="Mengupload File..." readonly wire:loading wire:target="qrisImage">
 
-                                <flux:text class="mt-2">
-                                    <p>Apakah Anda yakin ingin menghapus metode pembayaran ini?</p>
-                                </flux:text>
-                            </div>
-
+                        @if ($edit && $qrisImage)
                             <div class="flex gap-2">
-                                <flux:spacer />
-
-                                <flux:modal.close>
-                                    <flux:button variant="ghost">Batal</flux:button>
-                                </flux:modal.close>
-
-                                <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
+                                <button type="button" wire:click="previewImage"
+                                    class="p-2 bg-[#525252] hover:bg-[#404040] rounded-full">
+                                    <flux:icon.eye class="size-5 text-white" />
+                                </button>
+                                <button type="button" wire:click="downloadImage"
+                                    class="p-2 bg-[#27ae60] hover:bg-[#229954] rounded-full">
+                                    <flux:icon.arrow-down-tray class="size-5 text-white" />
+                                </button>
+                                <button type="button" wire:click="deleteImage"
+                                    class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
+                                    <flux:icon.trash class="size-5 text-white" />
+                                </button>
                             </div>
-                        </div>
-                    </flux:modal>
+                        @endif
+                    </div>
+                    @error('qrisImage')
+                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center pt-4">
+                @if ($edit)
+                    <button type="button" wire:click="confirmDelete"
+                        class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
+                        <flux:icon.trash class="size-5 text-white" />
+                    </button>
+                @else
+                    <div></div>
                 @endif
-                <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)">Batal
+
+                <div class="flex gap-3">
+                    <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)"
+                        class="!bg-[#adadad] hover:!bg-[#8c8c8c] !text-white !px-6 !py-2.5 !rounded-[10px] !font-semibold">
+                        Batal
+                    </flux:button>
+                    <flux:button type="button" icon="check" wire:click="save"
+                        class="!bg-[#3F4E4F] hover:!bg-[#2d3738] !text-[#F8F4E1] !px-6 !py-2.5 !rounded-[10px] !font-semibold">
+                        Simpan
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+    </flux:modal>
+
+    <!-- Image Preview Modal -->
+    <flux:modal name="preview-image" class="w-full max-w-4xl" wire:model="showPreviewModal">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <flux:heading size="lg" class="text-[#333333]">Preview Gambar QRIS</flux:heading>
+            </div>
+
+            <div class="bg-gray-100 rounded-lg p-4 flex items-center justify-center">
+                @if ($previewImageUrl)
+                    <img src="{{ $previewImageUrl }}" alt="QRIS Preview"
+                        class="max-w-full max-h-[70vh] object-contain rounded">
+                @endif
+            </div>
+        </div>
+    </flux:modal>
+
+    <!-- Delete Confirmation Modal -->
+    <flux:modal name="delete-channel" class="w-full max-w-md" wire:model="showDeleteModal">
+        <div class="space-y-6 p-6">
+            <div>
+                <flux:heading size="lg" class="text-[#333333]">Hapus Metode Pembayaran</flux:heading>
+                <p class="mt-2 text-sm text-[#666666]">
+                    Apakah Anda yakin ingin menghapus metode pembayaran ini?
+                </p>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <flux:button type="button" wire:click="$set('showDeleteModal', false)"
+                    class="!bg-[#adadad] hover:!bg-[#8c8c8c] !text-white !px-6 !py-2.5 !rounded-[10px] !font-semibold">
+                    Batal
                 </flux:button>
-                <flux:button type="button" icon="save" variant="primary" wire:click="save">Simpan
+                <flux:button type="button" wire:click="delete"
+                    class="!bg-[#eb5757] hover:!bg-[#c0392b] !text-white !px-6 !py-2.5 !rounded-[10px] !font-semibold">
+                    Hapus
                 </flux:button>
             </div>
         </div>

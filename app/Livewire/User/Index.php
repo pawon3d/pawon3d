@@ -2,22 +2,26 @@
 
 namespace App\Livewire\User;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
     use LivewireAlert;
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
@@ -58,7 +62,6 @@ class Index extends Component
         }
     }
 
-
     public function render()
     {
         $users = User::query()
@@ -69,7 +72,7 @@ class Index extends Component
             ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
             ->select('users.*', 'roles.name as role_name') // penting!
             ->orderBy(
-                $this->sortField === 'role_name' ? 'roles.name' : 'users.' . $this->sortField,
+                $this->sortField === 'role_name' ? 'roles.name' : 'users.'.$this->sortField,
                 $this->sortDirection
             )->distinct()
             ->paginate(10);

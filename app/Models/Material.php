@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-use App\Models\ProcessedMaterialDetail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -13,9 +12,13 @@ class Material extends Model
     use LogsActivity;
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'materials';
+
     protected $guarded = [
         'id',
     ];

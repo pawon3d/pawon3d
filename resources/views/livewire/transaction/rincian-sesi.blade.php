@@ -279,6 +279,8 @@
                                         return $detail->quantity * $detail->product->price;
                                     });
                                     $totalItems = $selectedTransaction->details->sum('quantity');
+                                    $pointsDiscount = $selectedTransaction->points_discount ?? 0;
+                                    $pointsUsed = $selectedTransaction->points_used ?? 0;
                                 @endphp
                                 <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
                                     style="font-size: 10px; line-height: 1.3;">
@@ -290,18 +292,21 @@
                                             <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between w-full text-black">
-                                        <div class="flex gap-[4px] items-center font-normal">
-                                            <p class="whitespace-nowrap">Tukar 0 Poin</p>
+                                    @if ($pointsUsed > 0)
+                                        <div class="flex items-center justify-between w-full text-black">
+                                            <div class="flex gap-[4px] items-center font-normal">
+                                                <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
+                                            </div>
+                                            <p class="font-medium whitespace-nowrap">
+                                                -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
                                         </div>
-                                        <p class="font-medium whitespace-nowrap">-Rp0</p>
-                                    </div>
+                                    @endif
                                     <div class="flex items-start justify-between w-full text-black">
                                         <div class="font-normal whitespace-nowrap">
                                             <p>Total Tagihan</p>
                                         </div>
                                         <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                                            <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -542,6 +547,8 @@
                                     $totalRefund = $selectedRefundTransaction->refund
                                         ? $selectedRefundTransaction->refund->total_amount
                                         : 0;
+                                    $pointsDiscount = $selectedRefundTransaction->points_discount ?? 0;
+                                    $pointsUsed = $selectedRefundTransaction->points_used ?? 0;
                                 @endphp
                                 <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
                                     style="font-size: 10px; line-height: 1.3;">
@@ -553,18 +560,21 @@
                                             <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between w-full text-black">
-                                        <div class="flex gap-[4px] items-center font-normal">
-                                            <p class="whitespace-nowrap">Tukar 0 Poin</p>
+                                    @if ($pointsUsed > 0)
+                                        <div class="flex items-center justify-between w-full text-black">
+                                            <div class="flex gap-[4px] items-center font-normal">
+                                                <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
+                                            </div>
+                                            <p class="font-medium whitespace-nowrap">
+                                                -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
                                         </div>
-                                        <p class="font-medium whitespace-nowrap">-Rp0</p>
-                                    </div>
+                                    @endif
                                     <div class="flex items-start justify-between w-full text-black">
                                         <div class="font-normal whitespace-nowrap">
                                             <p>Total Tagihan</p>
                                         </div>
                                         <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                                            <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
                                 </div>

@@ -48,11 +48,11 @@ Route::get('/ulasan/{transaction_id}', ReviewForm::class)
     ->name('ulasan');
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+    // Route::redirect('settings', 'settings/profile');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    // Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
+    // Volt::route('settings/password', 'settings.password')->name('settings.password');
+    // Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
     Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
         Route::get('/pekerja', Index::class)->name('user');

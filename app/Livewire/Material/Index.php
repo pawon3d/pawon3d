@@ -2,28 +2,33 @@
 
 namespace App\Livewire\Material;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Material;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, WithFileUploads, LivewireAlert;
+    use LivewireAlert, WithFileUploads, WithPagination;
 
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $viewMode = 'grid';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
 
     protected $queryString = ['viewMode', 'filterStatus', 'search', 'sortField', 'sortDirection'];
-
 
     public function updatingSearch(): void
     {
@@ -62,6 +67,7 @@ class Index extends Component
     {
         session()->put('viewMode', $value);
     }
+
     public function mount(): void
     {
         View::share('mainTitle', 'Inventori');
@@ -71,11 +77,10 @@ class Index extends Component
         }
     }
 
-
     public function render()
     {
         $materials = Material::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
+            return $query->where('name', 'like', '%'.$this->search.'%');
         })->when($this->filterStatus, function ($query) {
             return $query->where('is_active', $this->filterStatus === 'aktif');
         })

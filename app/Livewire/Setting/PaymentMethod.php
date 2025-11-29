@@ -10,13 +10,36 @@ use Livewire\Component;
 
 class PaymentMethod extends Component
 {
-    use \Livewire\WithPagination, \Livewire\WithFileUploads, LivewireAlert;
+    use \Livewire\WithFileUploads, \Livewire\WithPagination, LivewireAlert;
+
     public $sortDirection = 'desc';
+
     public $sortField = 'created_at';
-    public $bankName, $type, $group, $accountNumber, $accountName, $isActive = true;
+
+    public $bankName;
+
+    public $type;
+
+    public $group;
+
+    public $accountNumber;
+
+    public $accountName;
+
+    public $isActive = true;
+
     public $qrisImage;
+
     public $showModal = false;
+
+    public $showDeleteModal = false;
+
+    public $showPreviewModal = false;
+
+    public $previewImageUrl = '';
+
     public $edit = false;
+
     public $paymentChannelId;
 
     public function mount()
@@ -35,9 +58,47 @@ class PaymentMethod extends Component
         $this->isActive = true;
         $this->qrisImage = null;
         $this->showModal = false;
+        $this->showDeleteModal = false;
         $this->edit = false;
         $this->paymentChannelId = null;
     }
+
+    public function confirmDelete()
+    {
+        $this->showDeleteModal = true;
+    }
+
+    public function previewImage()
+    {
+        if ($this->qrisImage && is_string($this->qrisImage)) {
+            $this->previewImageUrl = asset('storage/'.$this->qrisImage);
+            $this->showPreviewModal = true;
+        }
+    }
+
+    public function downloadImage()
+    {
+        if ($this->qrisImage && is_string($this->qrisImage)) {
+            $path = storage_path('app/public/'.$this->qrisImage);
+
+            return response()->download($path);
+        }
+    }
+
+    public function deleteImage()
+    {
+        if ($this->qrisImage && is_string($this->qrisImage)) {
+            Storage::disk('public')->delete($this->qrisImage);
+            $channel = \App\Models\PaymentChannel::find($this->paymentChannelId);
+            if ($channel) {
+                $channel->qris_image = null;
+                $channel->save();
+            }
+            $this->qrisImage = null;
+            $this->alert('success', 'File berhasil dihapus.');
+        }
+    }
+
     public function openModal($edit = false, $paymentChannelId = null)
     {
         $this->resetFields();
@@ -60,6 +121,7 @@ class PaymentMethod extends Component
 
         $this->showModal = true;
     }
+
     public function save()
     {
         $this->validate([
@@ -89,10 +151,11 @@ class PaymentMethod extends Component
                     'account_name' => $this->accountName,
                     'is_active' => $this->isActive,
                 ]);
-                if ($this->qrisImage) {
+                // Only process if qrisImage is a new uploaded file (not a string path)
+                if ($this->qrisImage && ! is_string($this->qrisImage)) {
                     // If a new QRIS image is uploaded, store it and update the channel
                     if ($channel->qris_image) {
-                        // Optionally delete the old image if needed
+                        // Delete the old image
                         Storage::disk('public')->delete($channel->qris_image);
                     }
                     // Store the new QRIS image
@@ -110,7 +173,8 @@ class PaymentMethod extends Component
                 'account_name' => $this->accountName,
                 'is_active' => $this->isActive,
             ]);
-            if ($this->qrisImage) {
+            // Only process if qrisImage is a new uploaded file (not a string path)
+            if ($this->qrisImage && ! is_string($this->qrisImage)) {
                 // Store the QRIS image
                 $channel->qris_image = $this->qrisImage->store('qris_images', 'public');
                 $channel->save();
@@ -120,10 +184,14 @@ class PaymentMethod extends Component
 
         $this->resetFields();
     }
+
     public function delete()
     {
         $channel = \App\Models\PaymentChannel::find($this->paymentChannelId);
         if ($channel) {
+            if ($channel->qris_image) {
+                Storage::disk('public')->delete($channel->qris_image);
+            }
             $channel->delete();
             $this->alert('success', 'Metode pembayaran berhasil dihapus.');
         } else {
@@ -132,6 +200,7 @@ class PaymentMethod extends Component
         Flux::modals()->close();
         $this->resetFields();
     }
+
     public function render()
     {
         return view('livewire.setting.payment-method', [

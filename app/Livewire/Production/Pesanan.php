@@ -59,9 +59,9 @@ class Pesanan extends Component
     public function render()
     {
         $query = \App\Models\Transaction::query()
-            ->where('invoice_number', 'like', '%' . $this->search . '%')
+            ->where('invoice_number', 'like', '%'.$this->search.'%')
             ->where('method', $this->method)
-            ->whereIn('status', ['temp', 'Draft', "Belum Diproses"]);
+            ->whereIn('status', ['temp', 'Draft', 'Belum Diproses']);
 
         // Apply sorting based on field
         if ($this->sortField === 'product_name') {

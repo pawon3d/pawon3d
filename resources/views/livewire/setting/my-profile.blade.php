@@ -1,49 +1,46 @@
 <div>
-    <div class="mb-4 flex items-center justify-between">
-        <div class="flex items-center">
-            <a href="{{ route('pengaturan') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
-            </a>
-            <h1 class="text-2xl hidden md:block">Profil Saya</h1>
-        </div>
-    </div>
-    <div class="flex items-center bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Bibendum sit in habitant id. Quis aenean placerat aliquet
-                laoreet ac arcu posuere leo in. Ultricies consequat quis sollicitudin etiam. Luctus feugiat ac orci
-                netus dolor sapien.
-            </p>
-        </div>
+    <div class="mb-4 flex items-center gap-4">
+        <a href="{{ route('pengaturan') }}"
+            class="px-6 py-2 bg-[#313131] rounded-[15px] flex items-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]">
+            <flux:icon.arrow-left variant="mini" class="mr-2 size-5" />
+            Kembali
+        </a>
+        <h1 class="text-xl font-semibold text-[#666666]">Profil Anda</h1>
     </div>
 
-    <div class="w-full flex md:flex-row flex-col gap-8 mt-4 bg-white p-4 rounded-lg shadow-lg">
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Foto Profil</flux:label>
 
-            <div class="flex flex-col items-center w-full max-w-md mx-auto space-y-4">
+    <x-alert.info>
+        <p class="text-sm font-semibold leading-normal">
+            Lorem ipsum dolor sit amet consectetur. Sed pharetra netus gravida non curabitur fermentum etiam. Lorem
+            orci auctor adipiscing vel blandit. In in integer viverra proin risus eu eleifend.
+        </p>
+    </x-alert.info>
+
+    <div
+        class="w-full flex md:flex-row flex-col gap-[130px] bg-[#fafafa] p-[30px] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+        <div class="flex flex-col gap-4 min-w-[300px]">
+            <flux:label class="text-[#666666] text-base font-medium">Foto Profil</flux:label>
+
+            <div class="flex flex-col items-center w-full space-y-5">
                 <!-- Dropzone Area -->
-                <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                <div class="relative w-[300px] h-[170px] border-2 border-dashed border-black rounded-[15px] bg-[#fafafa] hover:bg-gray-50 transition-colors duration-200 overflow-hidden"
                     wire:ignore
-                    ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
-                    ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');" ondrop="handleDrop(event)"
+                    ondragover="event.preventDefault(); this.classList.add('border-[#74512d]', 'bg-gray-50');"
+                    ondragleave="this.classList.remove('border-[#74512d]', 'bg-gray-50');" ondrop="handleDrop(event)"
                     id="dropzone-container">
 
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
                                 <!-- Image Preview -->
-                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                    id="image-preview" />
+                                <img src="{{ $previewImage }}" alt="Preview"
+                                    class="object-cover w-full h-full rounded-[15px]" id="image-preview" />
                             @else
                                 <!-- Default Content -->
-                                <div class="flex flex-col items-center justify-center p-4 text-center">
-                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-2 text-gray-400" />
                                     <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                    <p class="mb-2 text-xs text-gray-600">
                                         Ukuran gambar tidak lebih dari
                                         <span class="font-semibold">2mb</span>
                                     </p>
@@ -64,8 +61,8 @@
 
                 <!-- Upload Button -->
                 <flux:button variant="primary" type="button" onclick="document.getElementById('dropzone-file').click()"
-                    class="w-full">
-                    Pilih Gambar
+                    class="w-full bg-[#74512d] hover:bg-[#5d3e1f] text-white rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    Pilih Foto
                 </flux:button>
 
                 <!-- Error Message -->
@@ -83,30 +80,52 @@
         </div>
 
 
-        <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-            <flux:label>Nama</flux:label>
-            <flux:input placeholder="Nama Lengkap" wire:model.defer="name" disabled />
-            <flux:error name="name" />
-            <flux:label>Jenis Kelamin</flux:label>
-            <flux:input placeholder="Pilih Jenis Kelamin" wire:model.defer="gender" disabled />
-            <flux:label>Email</flux:label>
-            <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" disabled />
-            <flux:error name="email" />
-            <flux:label>Password</flux:label>
-            <flux:input placeholder="Password" wire:model.live="password" type="text" disabled />
-            <flux:error name="password" />
-            <flux:label>Nomor Telepon</flux:label>
-            <flux:input placeholder="08xxxxxx" wire:model.defer="phone" disabled />
-            <flux:error name="phone" />
-            <flux:label>Peran</flux:label>
-            <flux:input placeholder="Pilih Peran" wire:model.defer="role" disabled />
-            <flux:error name="role" />
+        <div class="flex-1 flex flex-col gap-[30px] min-w-[370px]">
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">Nama</flux:label>
+                <flux:input placeholder="Nama Lengkap" wire:model.defer="name" disabled />
+                <flux:error name="name" />
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">Jenis Kelamin</flux:label>
+                <flux:select wire:model.defer="gender" disabled>
+                    <option value="" disabled>Pilih Jenis Kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </flux:select>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">Email</flux:label>
+                <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" disabled />
+                <flux:error name="email" />
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">No. Telepon</flux:label>
+                <flux:input placeholder="08xxxxxx" wire:model.defer="phone" disabled />
+                <flux:error name="phone" />
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">Kata Sandi</flux:label>
+                <flux:input placeholder="Password" wire:model="password" type="password" viewable />
+                <flux:error name="password" />
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <flux:label class="text-[#666666] text-base font-medium">Peran</flux:label>
+                <flux:input placeholder="Pilih Peran" wire:model.defer="role" disabled />
+                <flux:error name="role" />
+            </div>
         </div>
     </div>
 
-    <div class="flex justify-end gap-8 mt-4">
-        <flux:button href="{{ route('pengaturan') }}" icon="x-mark">Batal</flux:button>
-        <flux:button wire:click="updateUser" icon="save" variant="primary">Simpan</flux:button>
+    <div class="flex justify-end mt-[50px]">
+        <flux:button wire:click="updateUser" variant="primary" icon="bookmark">
+            Simpan Perubahan
+        </flux:button>
     </div>
 
     <script>

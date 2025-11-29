@@ -2,31 +2,45 @@
 
 namespace App\Livewire\TypeCost;
 
-use App\Models\TypeCost;
 use App\Models\Product;
+use App\Models\TypeCost;
 use Flux\Flux;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
-use Illuminate\Support\Str;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
-    public $name, $type_cost_id, $products;
+
+    public $name;
+
+    public $type_cost_id;
+
+    public $products;
+
     public $showModal = false;
+
     public $showEditModal = false;
+
     public $usageSearch = '';
+
     public $usageProducts = null;
 
     protected $listeners = [
@@ -76,7 +90,7 @@ class Index extends Component
     public function render()
     {
         $typeCosts = TypeCost::when($this->search, function ($query) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%');
         })->withCount('otherCosts')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
@@ -129,7 +143,7 @@ class Index extends Component
     {
         if ($this->type_cost_id) {
             $this->usageProducts = Product::when($this->usageSearch, function ($query) {
-                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+                $query->where('name', 'like', '%'.$this->usageSearch.'%');
             })->whereHas('other_costs', function ($query) {
                 $query->where('type_cost_id', $this->type_cost_id);
             })->with(['other_costs' => function ($query) {
@@ -185,6 +199,7 @@ class Index extends Component
             // Check if type cost is being used
             if ($typeCost->otherCosts()->count() > 0) {
                 $this->alert('error', 'Jenis Biaya tidak dapat dihapus karena masih digunakan!');
+
                 return;
             }
 

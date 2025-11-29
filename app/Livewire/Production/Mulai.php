@@ -9,12 +9,19 @@ use Spatie\Activitylog\Models\Activity;
 class Mulai extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $production_id;
+
     public $production;
+
     public $production_details = [];
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $selectedProducts = [];
+
     public $parsedQuantity;
 
     public function mount($id)
@@ -61,7 +68,6 @@ class Mulai extends Component
         }
     }
 
-
     private function parseFraction($input)
     {
         $input = str_replace(',', '.', $input); // Ubah koma ke titik
@@ -85,14 +91,12 @@ class Mulai extends Component
         return null;
     }
 
-
-
-
     public function save()
     {
         foreach ($this->production_details as $detail) {
             if ($this->parseFraction($detail['recipe_quantity'] ?? '') === null) {
                 $this->alert('error', 'Format kuantitas resep tidak valid. Gunakan format pecahan seperti "1/2", atau angka desimal.');
+
                 return;
             }
         }
@@ -118,14 +122,17 @@ class Mulai extends Component
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $parsed * $productComposition->material_quantity;
                 if ($batchQty < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
+                    $this->alert('error', 'Jumlah bahan baku produk '.$productionDetail->product->name.' tidak cukup untuk produksi ini.');
+
                     return;
                 }
 
                 $remaining = $requiredQuantity;
 
                 foreach ($materialBatches as $batch) {
-                    if ($remaining <= 0) break;
+                    if ($remaining <= 0) {
+                        break;
+                    }
 
                     if ($batch->batch_quantity >= $remaining) {
                         // Batch ini cukup, kurangi langsung
@@ -153,7 +160,7 @@ class Mulai extends Component
                 }
             }
         }
-        if (!empty($this->selectedProducts)) {
+        if (! empty($this->selectedProducts)) {
             \App\Models\ProductionDetail::whereIn('id', $this->selectedProducts)
                 ->where('production_id', $this->production_id)
                 ->increment('cycle');
@@ -162,6 +169,7 @@ class Mulai extends Component
         return redirect()->route('produksi.rincian', ['id' => $this->production_id])
             ->with('success', 'Produksi berhasil diperbarui.');
     }
+
     public function markAllReceived()
     {
         foreach ($this->production_details as $index => $detail) {

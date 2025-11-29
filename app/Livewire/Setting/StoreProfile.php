@@ -10,27 +10,108 @@ use Livewire\WithFileUploads;
 
 class StoreProfile extends Component
 {
-    use WithFileUploads, LivewireAlert;
+    use LivewireAlert, WithFileUploads;
 
-    public $previewLogoImage, $previewBannerImage, $previewBuildingImage;
-    public $logo, $banner, $building;
-    public $name, $tagline, $type;
-    public $product, $description;
-    public $location, $address, $contact, $email, $website;
-    public $is_senin, $open_senin, $close_senin;
-    public $is_selasa, $open_selasa, $close_selasa;
-    public $is_rabu, $open_rabu, $close_rabu;
-    public $is_kamis, $open_kamis, $close_kamis;
-    public $is_jumat, $open_jumat, $close_jumat;
-    public $is_sabtu, $open_sabtu, $close_sabtu;
-    public $is_minggu, $open_minggu, $close_minggu;
-    public $social_instagram, $social_facebook, $social_whatsapp;
+    public $previewLogoImage;
+
+    public $previewBannerImage;
+
+    public $previewBuildingImage;
+
+    public $logo;
+
+    public $banner;
+
+    public $building;
+
+    public $name;
+
+    public $tagline;
+
+    public $type;
+
+    public $product;
+
+    public $description;
+
+    public $location;
+
+    public $address;
+
+    public $contact;
+
+    public $email;
+
+    public $website;
+
+    public $is_senin;
+
+    public $open_senin;
+
+    public $close_senin;
+
+    public $is_selasa;
+
+    public $open_selasa;
+
+    public $close_selasa;
+
+    public $is_rabu;
+
+    public $open_rabu;
+
+    public $close_rabu;
+
+    public $is_kamis;
+
+    public $open_kamis;
+
+    public $close_kamis;
+
+    public $is_jumat;
+
+    public $open_jumat;
+
+    public $close_jumat;
+
+    public $is_sabtu;
+
+    public $open_sabtu;
+
+    public $close_sabtu;
+
+    public $is_minggu;
+
+    public $open_minggu;
+
+    public $close_minggu;
+
+    public $social_instagram;
+
+    public $social_facebook;
+
+    public $social_whatsapp;
 
     public $sortDirection = 'desc';
+
     public $sortField = 'created_at';
+
     public $storeDocuments = [];
-    public $documentName, $documentFile, $documentNumber, $validFrom, $validUntil;
-    public $documentId, $edit = false;
+
+    public $documentName;
+
+    public $documentFile;
+
+    public $documentNumber;
+
+    public $validFrom;
+
+    public $validUntil;
+
+    public $documentId;
+
+    public $edit = false;
+
     public $showModal = false;
 
     public function mount()
@@ -97,9 +178,9 @@ class StoreProfile extends Component
             $this->social_whatsapp = $storeProfile->social_whatsapp;
 
             // Preview images
-            $this->previewLogoImage = $storeProfile->logo ? env('APP_URL') . '/storage/' . $storeProfile->logo : null;
-            $this->previewBannerImage = $storeProfile->banner ? env('APP_URL') . '/storage/' . $storeProfile->banner : null;
-            $this->previewBuildingImage = $storeProfile->building ? env('APP_URL') . '/storage/' . $storeProfile->building : null;
+            $this->previewLogoImage = $storeProfile->logo ? env('APP_URL').'/storage/'.$storeProfile->logo : null;
+            $this->previewBannerImage = $storeProfile->banner ? env('APP_URL').'/storage/'.$storeProfile->banner : null;
+            $this->previewBuildingImage = $storeProfile->building ? env('APP_URL').'/storage/'.$storeProfile->building : null;
         } else {
             $this->previewLogoImage = null;
             $this->previewBannerImage = null;
@@ -128,6 +209,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
         $this->showModal = true;
     }
+
     public function editModal($id)
     {
         $this->edit = true;
@@ -145,7 +227,7 @@ class StoreProfile extends Component
     {
         $document = \App\Models\StoreDocument::findOrFail($this->documentId);
         if ($document->document_file) {
-            $oldFilePath = public_path('storage/' . $document->document_file);
+            $oldFilePath = public_path('storage/'.$document->document_file);
             if (file_exists($oldFilePath)) {
                 unlink($oldFilePath);
             }
@@ -161,6 +243,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
         $this->storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
     }
+
     public function storeDocument()
     {
         $this->validate([
@@ -171,7 +254,7 @@ class StoreProfile extends Component
             'validUntil' => 'nullable|date|after_or_equal:validFrom',
         ]);
 
-        $storeDocument = new \App\Models\StoreDocument();
+        $storeDocument = new \App\Models\StoreDocument;
         $storeDocument->document_name = $this->documentName;
         $storeDocument->document_number = $this->documentNumber;
         $storeDocument->valid_from = $this->validFrom;
@@ -180,7 +263,7 @@ class StoreProfile extends Component
         if ($this->documentFile) {
             // Hapus file lama jika ada
             if ($storeDocument->document_file) {
-                $oldFilePath = public_path('storage/' . $storeDocument->document_file);
+                $oldFilePath = public_path('storage/'.$storeDocument->document_file);
                 if (file_exists($oldFilePath)) {
                     unlink($oldFilePath);
                 }
@@ -200,6 +283,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
         $this->storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
     }
+
     public function updateDocument()
     {
         $this->validate([
@@ -219,7 +303,7 @@ class StoreProfile extends Component
         if ($this->documentFile instanceof \Illuminate\Http\UploadedFile) {
             // Hapus file lama jika ada
             if ($storeDocument->document_file) {
-                $oldFilePath = public_path('storage/' . $storeDocument->document_file);
+                $oldFilePath = public_path('storage/'.$storeDocument->document_file);
                 if (file_exists($oldFilePath)) {
                     unlink($oldFilePath);
                 }
@@ -248,6 +332,7 @@ class StoreProfile extends Component
         // Untuk preview langsung setelah upload
         $this->previewLogoImage = $this->logo->temporaryUrl();
     }
+
     public function updatedBanner()
     {
         $this->validate([
@@ -257,6 +342,7 @@ class StoreProfile extends Component
         // Untuk preview langsung setelah upload
         $this->previewBannerImage = $this->banner->temporaryUrl();
     }
+
     public function updatedBuilding()
     {
         $this->validate([
@@ -325,19 +411,19 @@ class StoreProfile extends Component
         $storeProfile = \App\Models\StoreProfile::first();
         if ($storeProfile) {
             if ($this->logo && $storeProfile->logo) {
-                $oldLogoPath = public_path('storage/' . $storeProfile->logo);
+                $oldLogoPath = public_path('storage/'.$storeProfile->logo);
                 if (file_exists($oldLogoPath)) {
                     unlink($oldLogoPath);
                 }
             }
             if ($this->banner && $storeProfile->banner) {
-                $oldBannerPath = public_path('storage/' . $storeProfile->banner);
+                $oldBannerPath = public_path('storage/'.$storeProfile->banner);
                 if (file_exists($oldBannerPath)) {
                     unlink($oldBannerPath);
                 }
             }
             if ($this->building && $storeProfile->building) {
-                $oldBuildingPath = public_path('storage/' . $storeProfile->building);
+                $oldBuildingPath = public_path('storage/'.$storeProfile->building);
                 if (file_exists($oldBuildingPath)) {
                     unlink($oldBuildingPath);
                 }
@@ -358,6 +444,7 @@ class StoreProfile extends Component
             ]);
         }
     }
+
     public function render()
     {
         return view('livewire.setting.store-profile');

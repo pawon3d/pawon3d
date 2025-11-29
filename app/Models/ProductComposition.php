@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use App\Models\Product;
-use App\Models\Material;
-use Illuminate\Support\Str;
-use App\Models\ProcessedMaterial;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ProductComposition extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'product_compositions';
 
     protected $guarded = [

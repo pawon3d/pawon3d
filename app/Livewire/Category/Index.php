@@ -2,49 +2,71 @@
 
 namespace App\Livewire\Category;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Category;
 use Flux\Flux;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
+
     public $name;
+
     public $is_active = true;
+
     public $category_id;
+
     public $products;
+
     public $showModal = false;
+
     public $showEditModal = false;
+
     public $showUsageModal = false;
+
     public $usageCategoryId;
+
     public $usageProducts = [];
+
     public $usageSummary = [
         'from' => 0,
         'to' => 0,
         'total' => 0,
         'pages' => 1,
     ];
+
     public $usagePage = 1;
+
     public $usagePerPage = 2;
+
     public $usageSearch = '';
+
     public $usageSortDirection = 'asc';
+
     public $sortByCategory = false;
+
     protected $listeners = [
         'delete',
         'cancelled',
     ];
+
     protected $rules = [
         'name' => 'required|min:3|unique:categories,name',
     ];
@@ -89,17 +111,15 @@ class Index extends Component
         View::share('mainTitle', 'Inventori');
     }
 
-
     public function render()
     {
         $categories = Category::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
+            return $query->where('name', 'like', '%'.$this->search.'%');
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
             })->with('products', 'productCategories')->withCount('products')->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-
 
         return view('livewire.category.index', compact('categories'));
     }
@@ -128,8 +148,9 @@ class Index extends Component
     {
         $category = Category::withCount('products')->find($id);
 
-        if (!$category) {
+        if (! $category) {
             $this->alert('error', 'Kategori tidak ditemukan');
+
             return;
         }
 
@@ -159,6 +180,7 @@ class Index extends Component
         $this->showEditModal = false;
         $this->resetForm();
     }
+
     public function confirmDelete()
     {
         // Konfirmasi menggunakan Livewire Alert
@@ -227,7 +249,7 @@ class Index extends Component
 
     protected function refreshUsageList()
     {
-        if (!$this->usageCategoryId) {
+        if (! $this->usageCategoryId) {
             $this->usageProducts = [];
             $this->usageSummary = [
                 'from' => 0,
@@ -235,12 +257,13 @@ class Index extends Component
                 'total' => 0,
                 'pages' => 1,
             ];
+
             return;
         }
 
         $category = Category::find($this->usageCategoryId);
 
-        if (!$category) {
+        if (! $category) {
             $this->usageProducts = [];
             $this->usageSummary = [
                 'from' => 0,
@@ -250,13 +273,15 @@ class Index extends Component
             ];
             $this->showUsageModal = false;
             $this->alert('error', 'Kategori tidak ditemukan');
+
             return;
         }
 
         $products = $category->products()
             ->when($this->usageSearch, function ($query) {
                 $term = trim($this->usageSearch);
-                return $query->where('products.name', 'like', '%' . $term . '%');
+
+                return $query->where('products.name', 'like', '%'.$term.'%');
             })
             ->orderBy('products.name', $this->usageSortDirection)
             ->get();
@@ -269,7 +294,7 @@ class Index extends Component
         $current = $products
             ->slice($offset, $this->usagePerPage)
             ->values()
-            ->map(fn($product) => [
+            ->map(fn ($product) => [
                 'id' => $product->id,
                 'name' => $product->name,
             ]);
@@ -285,7 +310,6 @@ class Index extends Component
             'pages' => $pages,
         ];
     }
-
 
     public function resetForm()
     {

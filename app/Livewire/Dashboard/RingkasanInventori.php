@@ -11,14 +11,21 @@ use Livewire\WithPagination;
 class RingkasanInventori extends Component
 {
     use WithPagination;
+
     public $currentMonth;
+
     public $currentYear;
+
     public $selectedDate;
+
     public $calendar = [];
+
     public $todayExpenses = [];
+
     public $otherExpenses = [];
 
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -72,7 +79,7 @@ class RingkasanInventori extends Component
 
         $expenseDates = Expense::whereBetween('expense_date', [$start->toDateString(), $end->toDateString()])
             ->pluck('expense_date')
-            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
             ->toArray();
         $calendar = [];
 
@@ -110,10 +117,12 @@ class RingkasanInventori extends Component
         }
         $this->sortField = $field;
     }
+
     public function redirectToMaterial($id)
     {
         return redirect()->route('bahan-baku.edit', ['id' => $id]);
     }
+
     public function render()
     {
         $query = \App\Models\Expense::with(['expenseDetails', 'supplier']);
@@ -133,8 +142,10 @@ class RingkasanInventori extends Component
             ->get();
         $filteredMaterials = $materials->filter(function ($material) {
             $total = $material->batches->sum('batch_quantity');
+
             return ($total >= $material->minimum) && ($total <= $material->minimum * 2);
         });
+
         return view('livewire.dashboard.ringkasan-inventori', [
             'expenses' => $expenses,
             'materials' => $filteredMaterials,

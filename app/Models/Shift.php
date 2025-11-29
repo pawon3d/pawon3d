@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Shift extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'shifts';
+
     protected $guarded = [
         'id',
     ];
-
 
     public function openedBy()
     {
@@ -26,7 +29,6 @@ class Shift extends Model
     {
         return $this->belongsTo(User::class, 'closed_by', 'id');
     }
-
 
     public static function boot()
     {

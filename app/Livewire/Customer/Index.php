@@ -16,27 +16,40 @@ class Index extends Component
     use LivewireAlert, WithFileUploads;
 
     public $search = '';
+
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus;
+
     public $customerModal = false;
+
     public $customerDetailModal = false;
+
     public $addPointsModal = false;
 
     public $customerId;
+
     public $name = '';
+
     public $phone = '';
+
     public $lastTransaction;
+
     public $points = 0;
+
     public $totalTransactions = 0;
 
-
     public $histories = [];
-    public $ig_image = null;
-    public $gmaps_image = null;
 
+    public $ig_image = null;
+
+    public $gmaps_image = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -49,7 +62,6 @@ class Index extends Component
         'phone.required' => 'Nomor telepon pelanggan harus diisi.',
         'phone.unique' => 'Nomor telepon ini sudah terdaftar.',
     ];
-
 
     public function mount()
     {
@@ -90,6 +102,31 @@ class Index extends Component
             'timer' => 3000,
             'toast' => true,
         ]);
+    }
+
+    public function update()
+    {
+        $this->validate([
+            'name' => 'required|string|max:50',
+            'phone' => 'required|string|unique:customers,phone,' . $this->customerId,
+        ]);
+
+        $customer = Customer::find($this->customerId);
+        if ($customer) {
+            $customer->update([
+                'name' => $this->name,
+                'phone' => $this->phone,
+            ]);
+
+            $this->customerDetailModal = false;
+            $this->alert('success', 'Pelanggan berhasil diperbarui.', [
+                'position' => 'top-end',
+                'timer' => 3000,
+                'toast' => true,
+            ]);
+        } else {
+            $this->alert('error', 'Pelanggan tidak ditemukan.');
+        }
     }
 
     public function showCustomerDetail($id)
@@ -134,6 +171,7 @@ class Index extends Component
             'ig_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     }
+
     public function updatedGmapsImage()
     {
         $this->validate([
@@ -197,6 +235,7 @@ class Index extends Component
             $this->sortDirection = 'asc';
         }
     }
+
     public function render()
     {
         return view('livewire.customer.index', [

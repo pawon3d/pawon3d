@@ -96,6 +96,12 @@ class RincianPesanan extends Component
 
     public $note = '';
 
+    public $pointsUsed = 0;
+
+    public $availablePoints = 0;
+
+    public $customer;
+
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
         'showStrukChanged',
@@ -162,6 +168,14 @@ class RincianPesanan extends Component
         $this->transaction = $transaction;
         $this->phoneNumber = $transaction->phone ?? '';
         $this->production = ! empty($transaction->production) ? $transaction->production : null;
+
+        // Load customer and points
+        if ($transaction->customer_id) {
+            $this->customer = \App\Models\Customer::find($transaction->customer_id);
+            $this->availablePoints = $this->customer ? $this->customer->points : 0;
+        }
+        $this->pointsUsed = $transaction->points_used ?? 0;
+
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
                 return [
@@ -216,7 +230,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
             }
         }
     }
@@ -243,7 +257,10 @@ class RincianPesanan extends Component
             return 0;
         }
 
-        return max(0, $this->totalAmount - ($this->totalPayment ?? 0));
+        // Total tagihan setelah diskon poin
+        $totalAfterPoints = $this->totalAmount - ($this->transaction->points_discount ?? 0);
+
+        return max(0, $totalAfterPoints - ($this->totalPayment ?? 0));
     }
 
     public function getChangeAmountProperty()
@@ -262,6 +279,84 @@ class RincianPesanan extends Component
         $this->paidAmount = $value;
     }
 
+    public function updatedPointsUsed($value)
+    {
+        // Pastikan nilai adalah angka
+        $value = (int) $value;
+
+        // Validasi: tidak boleh negatif
+        if ($value < 0) {
+            $this->pointsUsed = 0;
+            $this->alert('warning', 'Poin tidak boleh negatif.');
+
+            return;
+        }
+
+        // Validasi: tidak boleh melebihi poin yang tersedia
+        if ($value > $this->availablePoints) {
+            $this->pointsUsed = $this->availablePoints;
+            $this->alert('warning', 'Poin yang digunakan melebihi poin tersedia.');
+
+            return;
+        }
+
+        // Validasi: harus kelipatan 10
+        if ($value % 10 != 0) {
+            $this->pointsUsed = floor($value / 10) * 10;
+            $this->alert('warning', 'Poin harus kelipatan 10.');
+
+            return;
+        }
+
+        // Validasi: maksimal poin yang bisa dipakai = sisa tagihan / 100 (1 poin = Rp 100)
+        $sisaTagihan = $this->remainingAmount + ($this->transaction->points_discount ?? 0);
+        $maxPoints = floor($sisaTagihan / 100);
+        if ($value > $maxPoints) {
+            $this->pointsUsed = floor($maxPoints / 10) * 10;
+            $this->alert('warning', 'Poin yang digunakan tidak boleh melebihi sisa tagihan.');
+
+            return;
+        }
+
+        $this->pointsUsed = $value;
+    }
+
+    public function applyPoints()
+    {
+        if (! $this->customer) {
+            $this->alert('warning', 'Customer tidak ditemukan.');
+
+            return;
+        }
+
+        $pointsChange = $this->pointsUsed - ($this->transaction->points_used ?? 0);
+
+        // Jika mengurangi poin yang digunakan, kembalikan poin ke customer
+        if ($pointsChange < 0) {
+            $this->customer->increment('points', abs($pointsChange));
+        }
+        // Jika menambah poin yang digunakan, kurangi poin customer
+        elseif ($pointsChange > 0) {
+            if ($this->customer->points < $pointsChange) {
+                $this->alert('warning', 'Poin customer tidak mencukupi.');
+
+                return;
+            }
+            $this->customer->decrement('points', $pointsChange);
+        }
+
+        // Update transaction
+        $this->transaction->update([
+            'points_used' => $this->pointsUsed,
+            'points_discount' => $this->pointsUsed * 100,
+        ]);
+
+        $this->availablePoints = $this->customer->points;
+        $this->alert('success', 'Poin berhasil diperbarui.');
+
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
     public function updatedPaymentMethod($value)
     {
         if ($value == 'transfer') {
@@ -276,7 +371,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
+            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -347,7 +442,7 @@ class RincianPesanan extends Component
                 $transaction->details()->each(function ($detail) {
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($detail->product->stock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
 
                         return;
                     }
@@ -398,20 +493,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-'.$this->transaction->id.'.pdf';
-        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/'.$fileName);
+        $fileName = 'struk-' . $this->transaction->id . '.pdf';
+        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/' . $fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -427,11 +522,11 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62'.substr($phone, 1);
+            $phone = '62' . substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -542,13 +637,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/'.$payment->image);
+        $path = storage_path('app/public/' . $payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }

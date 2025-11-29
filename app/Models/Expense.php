@@ -3,19 +3,24 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Expense extends Model
 {
     use LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'expenses';
+
     protected $guarded = [
         'id',
     ];
@@ -45,11 +50,11 @@ class Expense extends Model
     {
         return $this->hasMany(ExpenseDetail::class, 'expense_id', 'id');
     }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
-
 
     public static function boot()
     {
@@ -59,12 +64,12 @@ class Expense extends Model
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
                 $today = Carbon::now()->format('ymd'); // YYMMDD
-                $prefix = 'BP-' . $today;
+                $prefix = 'BP-'.$today;
 
                 // Ambil produksi terakhir untuk hari ini
                 $lastExpense = DB::table('expenses')
                     ->lockForUpdate()
-                    ->where('expense_number', 'like', $prefix . '-%')
+                    ->where('expense_number', 'like', $prefix.'-%')
                     ->orderByDesc('expense_number')
                     ->first();
 
@@ -76,7 +81,7 @@ class Expense extends Model
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->expense_number = $prefix . '-' . $nextNumber;
+                $model->expense_number = $prefix.'-'.$nextNumber;
             });
         });
     }

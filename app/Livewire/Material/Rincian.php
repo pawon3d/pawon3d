@@ -11,23 +11,59 @@ use Spatie\Activitylog\Models\Activity;
 
 class Rincian extends Component
 {
-    use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
+    use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
     public $material_id;
-    public $name, $description, $expiry_date = '00-00-0000', $status = 'Kosong', $category_ids, $minimum = 0, $is_active = false;
-    public $main_unit_id, $main_unit_alias, $main_unit_name, $main_supply_quantity = 0;
+
+    public $name;
+
+    public $description;
+
+    public $expiry_date = '00-00-0000';
+
+    public $status = 'Kosong';
+
+    public $category_ids;
+
+    public $minimum = 0;
+
+    public $is_active = false;
+
+    public $main_unit_id;
+
+    public $main_unit_alias;
+
+    public $main_unit_name;
+
+    public $main_supply_quantity = 0;
+
     public $previewImage;
+
     public $image;
+
     public $material_details = [];
+
     public $ingredient_category_details = [];
-    public $supply_quantity_main, $supply_quantity_total = 0, $supply_quantity_modal = 0;
+
+    public $supply_quantity_main;
+
+    public $supply_quantity_total = 0;
+
+    public $supply_quantity_modal = 0;
+
     public $supply_price_total;
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $material;
+
     public $is_recipe = false;
 
-    public $quantity_main, $quantity_main_total;
+    public $quantity_main;
+
+    public $quantity_main_total;
 
     protected $listeners = [
         'delete',
@@ -88,15 +124,14 @@ class Rincian extends Component
             // Calculate totals
             $details = collect($this->material_details);
             $this->supply_quantity_main = $details->sum('quantity');
-            $this->supply_price_total = $details->sum(fn($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
-            $this->supply_quantity_total = $details->sum(fn($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
-            $this->supply_quantity_modal = $details->sum(fn($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+            $this->supply_price_total = $details->sum(fn ($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
+            $this->supply_quantity_total = $details->sum(fn ($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+            $this->supply_quantity_modal = $details->sum(fn ($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
         }
 
         // Set preview image
-        $this->previewImage = $material->image ? env('APP_URL') . '/storage/' . $material->image : null;
+        $this->previewImage = $material->image ? env('APP_URL').'/storage/'.$material->image : null;
     }
-
 
     public function riwayatPembaruan(): void
     {
@@ -116,6 +151,7 @@ class Rincian extends Component
 
         $this->previewImage = $this->image->temporaryUrl();
     }
+
     public function removeImage(): void
     {
         $this->reset('image', 'previewImage');
@@ -131,6 +167,7 @@ class Rincian extends Component
             'is_main' => false,
         ];
     }
+
     public function removeUnit($index): void
     {
         if (count($this->material_details) > 1) {
@@ -141,13 +178,13 @@ class Rincian extends Component
 
     public function setUnit($index, $unitId): void
     {
-        if (!$unitId) {
+        if (! $unitId) {
             return;
         }
 
         $unit = Unit::find($unitId);
 
-        if (!$unit) {
+        if (! $unit) {
             return;
         }
 
@@ -178,7 +215,7 @@ class Rincian extends Component
         }, $this->material_details);
         $this->supply_quantity_main = collect($this->material_details)
             ->sum(function ($detail) {
-                return ($detail['quantity'] ?? 0);
+                return $detail['quantity'] ?? 0;
             });
         $this->supply_price_total = collect($this->material_details)
             ->sum(function ($detail) {
@@ -186,14 +223,13 @@ class Rincian extends Component
             });
         $this->supply_quantity_total = collect($this->material_details)
             ->sum(function ($detail) {
-                return (($detail['supply_quantity'] <= 0 ? 1 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
+                return ($detail['supply_quantity'] <= 0 ? 1 : $detail['supply_quantity']) * ($detail['quantity'] ?? 0);
             });
         $this->supply_quantity_modal = collect($this->material_details)
             ->sum(function ($detail) {
-                return (($detail['supply_quantity'] <= 0 ? 0 : $detail['supply_quantity']) *  ($detail['quantity'] ?? 0));
+                return ($detail['supply_quantity'] <= 0 ? 0 : $detail['supply_quantity']) * ($detail['quantity'] ?? 0);
             });
     }
-
 
     public function confirmDelete(): void
     {
@@ -209,11 +245,12 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
         $material = Material::find($this->material_id);
 
-        if (!$material) {
+        if (! $material) {
             return redirect()->intended(route('bahan-baku'))->with('error', 'Bahan tidak ditemukan.');
         }
 
@@ -248,7 +285,7 @@ class Rincian extends Component
             $material = \App\Models\Material::with('batches')->findOrFail($this->material_id);
 
             // Calculate status based on batches
-            $hasExpiredBatch = $material->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
+            $hasExpiredBatch = $material->batches->contains(fn ($batch) => $batch->date < now()->format('Y-m-d'));
             $totalQuantity = $material->batches->sum('batch_quantity');
 
             if ($hasExpiredBatch) {
@@ -296,10 +333,10 @@ class Rincian extends Component
             }
 
             // Update material details
-            if (!empty($this->material_details[0]['unit_id'])) {
+            if (! empty($this->material_details[0]['unit_id'])) {
                 $material->material_details()->delete();
 
-                $detailsData = collect($this->material_details)->map(fn($detail) => [
+                $detailsData = collect($this->material_details)->map(fn ($detail) => [
                     'unit_id' => $detail['unit_id'] ?? null,
                     'quantity' => $detail['quantity'] ?? 0,
                     'is_main' => $detail['is_main'] ?? false,
@@ -314,6 +351,7 @@ class Rincian extends Component
         return redirect()->intended(route('bahan-baku'))
             ->with('success', 'Bahan Baku berhasil diperbarui.');
     }
+
     public function render()
     {
         return view('livewire.material.rincian', [

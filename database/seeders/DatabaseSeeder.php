@@ -4,16 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Expense;
-use App\Models\Hitung;
 use App\Models\IngredientCategory;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Material;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\MaterialBatch;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -106,7 +105,6 @@ class DatabaseSeeder extends Seeder
             'unit_id' => Unit::where('alias', 'kg')->first()->id,
             'material_id' => $material1->id,
         ]);
-
 
         $material2 = Material::create([
             'name' => 'Bahan Baku 2',

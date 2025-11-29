@@ -12,20 +12,29 @@ use Livewire\Component;
 class LaporanProduksi extends Component
 {
     use \Livewire\WithPagination;
+
     public $currentPage = 1;
+
     public $perPage = 10;
 
     public $selectedYear;
+
     public $selectedMethod = 'semua';
+
     public $productions;
+
     public $prevProductions;
+
     public $details;
 
     public $diffStats = [];
+
     public $topProductionsChartData = [];
+
     public $productionChartData = [];
 
     protected $listeners = ['refreshCharts' => '$refresh', 'update-top-products'];
+
     protected $queryString = [
         'selectedMethod' => ['except' => 'semua'],
         'currentPage' => ['except' => 1],
@@ -44,7 +53,7 @@ class LaporanProduksi extends Component
         $endDate = Carbon::create($this->selectedYear)->endOfYear();
 
         $this->productions = Production::whereBetween('start_date', [$startDate, $endDate])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->where('is_finish', true)
             ->get();
 
@@ -72,6 +81,7 @@ class LaporanProduksi extends Component
 
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
@@ -107,12 +117,14 @@ class LaporanProduksi extends Component
     {
         $diff = $current - $previous;
         $percentage = $previous > 0 ? round(($diff / $previous) * 100, 2) : ($current > 0 ? 100 : 0);
+
         return [
             'value' => $current,
             'diff' => $diff,
             'percentage' => $percentage,
         ];
     }
+
     public function render()
     {
         $startDate = Carbon::create($this->selectedYear)->startOfYear();
@@ -122,13 +134,13 @@ class LaporanProduksi extends Component
         $prevEnd = $endDate->copy()->subYear();
 
         $this->productions = Production::whereBetween('start_date', [$startDate, $endDate])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->where('is_finish', true)
             ->get();
         $productions = $this->productions;
 
         $this->prevProductions = Production::whereBetween('start_date', [$prevStart, $prevEnd])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->where('is_finish', true)
             ->get();
         $prevProductions = $this->prevProductions;
@@ -149,6 +161,7 @@ class LaporanProduksi extends Component
 
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
@@ -162,22 +175,23 @@ class LaporanProduksi extends Component
 
         $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $successProduction = $details
             ->where('quantity_get', '>', 0)
@@ -201,7 +215,8 @@ class LaporanProduksi extends Component
             $berhasil = $details->where('product_id', $product->id)->sum('quantity_get');
             $gagal = $details->where('product_id', $product->id)->sum('quantity_fail');
             $total = $berhasil + $gagal;
-            return (object)[
+
+            return (object) [
                 'name' => $product->name,
                 'total' => $total,
                 'success' => $berhasil,
@@ -216,6 +231,7 @@ class LaporanProduksi extends Component
             'best' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
             'worst' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
         ];
+
         return view('livewire.dashboard.laporan-produksi', [
             'successProduction' => $successProduction,
             'failedProduction' => $failedProduction,

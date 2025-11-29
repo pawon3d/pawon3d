@@ -56,7 +56,7 @@ class Rincian extends Component
         $this->is_finish = (bool) $hitung->is_finish;
         $this->status = $hitung->status ?? 'Belum Diproses';
         $this->finish_date = $hitung->hitung_date_finish;
-        View::share('title', 'Rincian ' . $hitung->action);
+        View::share('title', 'Rincian '.$hitung->action);
         View::share('mainTitle', 'Inventori');
 
         if (session()->has('success')) {
@@ -73,7 +73,7 @@ class Rincian extends Component
             ->limit(50)
             ->get();
 
-        $this->activityLogs = $logs->map(fn($log) => [
+        $this->activityLogs = $logs->map(fn ($log) => [
             'description' => $log->description,
             'causer_name' => $log->causer->name ?? 'System',
             'created_at' => $log->created_at->format('d M Y H:i'),
@@ -167,7 +167,7 @@ class Rincian extends Component
         $hitung = Hitung::findOrFail($this->hitung_id);
         $hitung->update(['is_start' => $this->is_start, 'status' => $this->status]);
         unset($this->hitung); // Clear computed property cache
-        $this->alert('success', $hitung->action . ' berhasil dimulai.');
+        $this->alert('success', $hitung->action.' berhasil dimulai.');
     }
 
     public function finish()
@@ -222,7 +222,7 @@ class Rincian extends Component
         });
 
         unset($this->hitung); // Clear computed property cache
-        $this->alert('success', $hitung->action . ' berhasil diselesaikan.');
+        $this->alert('success', $hitung->action.' berhasil diselesaikan.');
     }
 
     public function render()

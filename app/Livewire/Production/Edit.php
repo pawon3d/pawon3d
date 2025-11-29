@@ -9,13 +9,28 @@ use Livewire\Component;
 class Edit extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $production_id;
+
     public $production_details = [];
+
     public $production;
+
     public $user_ids;
-    public $start_date = 'dd/mm/yyyy', $note, $time;
+
+    public $start_date = 'dd/mm/yyyy';
+
+    public $note;
+
+    public $time;
+
     public $method = 'pesanan-reguler';
-    public $current_stock_total = 0, $suggested_amount_total = 0, $quantity_plan_total = 0;
+
+    public $current_stock_total = 0;
+
+    public $suggested_amount_total = 0;
+
+    public $quantity_plan_total = 0;
 
     public function mount($id)
     {
@@ -30,7 +45,6 @@ class Edit extends Component
         $this->note = $production->note;
 
         $this->user_ids = $production->workers()->pluck('user_id')->toArray();
-
 
         $this->production_details = $production->details->map(function ($detail) {
             $product = \App\Models\Product::find($detail->product_id);
@@ -64,7 +78,8 @@ class Edit extends Component
                 }
 
                 $suggested_amount = $suggested ?: 0;
-            };
+            }
+
             return [
                 'product_id' => $detail->product_id,
                 'current_stock' => $stock,
@@ -83,11 +98,13 @@ class Edit extends Component
             'quantity_plan' => 0,
         ];
     }
+
     public function removeProduct($index)
     {
         unset($this->production_details[$index]);
         $this->production_details = array_values($this->production_details);
     }
+
     public function setProduct($index)
     {
         $productId = $this->production_details[$index]['product_id'] ?? null;
@@ -127,7 +144,6 @@ class Edit extends Component
             }
         }
 
-
         $this->calculateTotals();
     }
 
@@ -143,6 +159,7 @@ class Edit extends Component
         // }
         $this->calculateTotals();
     }
+
     public function calculateTotals()
     {
         $this->current_stock_total = 0;
@@ -168,6 +185,7 @@ class Edit extends Component
 
         if (empty($this->production_details) || $this->production_details[0]['product_id'] == '') {
             $this->alert('error', 'Belum ada produk yang ditambahkan.');
+
             return;
         }
         foreach ($this->production_details as $detail) {
@@ -183,7 +201,7 @@ class Edit extends Component
                     ->get();
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialBatches || $batchQty < $requiredQuantity) {
+                if (! $materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -194,8 +212,9 @@ class Edit extends Component
             }
         }
 
-        if (!empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
+        if (! empty($produkGagal)) {
+            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+
             return;
         }
 
@@ -206,8 +225,6 @@ class Edit extends Component
             'note' => $this->note,
             'status' => $production->status ? $production->status : 'Draft',
         ]);
-
-
 
         $production->workers()->delete();
         $production->details()->delete();
@@ -227,8 +244,10 @@ class Edit extends Component
         }
 
         session()->flash('success', 'Produksi berhasil diubah.');
+
         return redirect()->route('produksi.rincian', ['id' => $this->production_id]);
     }
+
     public function render()
     {
         return view('livewire.production.edit', [

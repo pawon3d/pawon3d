@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class ProductionWorker extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'production_workers';
+
     protected $guarded = [
         'id',
     ];
@@ -23,6 +27,7 @@ class ProductionWorker extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
     public static function boot()
     {
         parent::boot();

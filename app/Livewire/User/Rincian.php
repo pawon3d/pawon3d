@@ -2,22 +2,40 @@
 
 namespace App\Livewire\User;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 
 class Rincian extends Component
 {
-    use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
+    use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
-    public $name, $email, $password, $image, $role, $phone, $gender;
+    public $name;
+
+    public $email;
+
+    public $password;
+
+    public $image;
+
+    public $role;
+
+    public $phone;
+
+    public $gender;
+
     public $previewImage;
+
     public $roles;
+
     public $userId;
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public array $pin = ['', '', '', '', '', ''];
+
     public bool $showPin = true;
 
     protected $listeners = [
@@ -38,7 +56,7 @@ class Rincian extends Component
         $this->gender = $user->gender;
         $this->role = $user->getRoleNames()->first();
         if ($user->image) {
-            $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
+            $this->previewImage = env('APP_URL').'/storage/'.$user->image;
         } else {
             $this->previewImage = null;
         }
@@ -82,7 +100,7 @@ class Rincian extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->userId,
+            'email' => 'required|email|unique:users,email,'.$this->userId,
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Minimal 8 karakter, harus mengandung huruf dan angka
@@ -115,7 +133,7 @@ class Rincian extends Component
         if ($this->image) {
             // Hapus gambar lama jika ada
             if ($user->image) {
-                $oldImagePath = public_path('storage/' . $user->image);
+                $oldImagePath = public_path('storage/'.$user->image);
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
@@ -128,6 +146,7 @@ class Rincian extends Component
         $user->syncRoles([$this->role]);
 
         session()->flash('success', 'Pekerja berhasil diperbarui.');
+
         return redirect()->route('user');
     }
 
@@ -145,11 +164,12 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
         $user = \App\Models\User::findOrFail($this->userId);
         if ($user->image) {
-            $oldImagePath = public_path('storage/' . $user->image);
+            $oldImagePath = public_path('storage/'.$user->image);
             if (file_exists($oldImagePath)) {
                 unlink($oldImagePath);
             }
@@ -157,8 +177,10 @@ class Rincian extends Component
         $user->delete();
 
         session()->flash('success', 'Pekerja berhasil dihapus.');
+
         return redirect()->route('user');
     }
+
     public function render()
     {
         return view('livewire.user.rincian');

@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ProductCategory extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'product_categories';
+
     protected $guarded = [
         'id',
     ];
@@ -19,6 +23,7 @@ class ProductCategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
     public function product()
     {
         return $this->belongsTo(Product::class);

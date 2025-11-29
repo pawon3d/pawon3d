@@ -269,11 +269,20 @@
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
                     style="line-height: 1;">Rp{{ number_format($total, 0, ',', '.') }}</span>
             </div>
+            @if ($pointsUsed > 0)
+                <div class="flex items-center justify-between w-full">
+                    <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]"
+                        style="line-height: 1;">Diskon Poin ({{ number_format($pointsUsed, 0, ',', '.') }}
+                        poin)</span>
+                    <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]" style="line-height: 1;">-
+                        Rp{{ number_format($pointsUsed * 100, 0, ',', '.') }}</span>
+                </div>
+            @endif
             <div class="flex items-center justify-between w-full">
                 <span class="font-['Montserrat'] font-bold text-[16px] text-[#666666]" style="line-height: 1;">Total
                     Tagihan</span>
                 <span class="font-['Montserrat'] font-bold text-[16px] text-[#666666]"
-                    style="line-height: 1;">Rp{{ number_format($total, 0, ',', '.') }}</span>
+                    style="line-height: 1;">Rp{{ number_format($total - $pointsUsed * 100, 0, ',', '.') }}</span>
             </div>
         </div>
 
@@ -290,10 +299,13 @@
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#eb5757]" style="line-height: 1;">Sisa
                     Tagihan</span>
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#eb5757]" style="line-height: 1;">
-                    @if ($paidAmount >= $total)
+                    @php
+                        $totalAfterPoints = $total - $pointsUsed * 100;
+                    @endphp
+                    @if ($paidAmount >= $totalAfterPoints)
                         Rp0
                     @else
-                        Rp{{ number_format($total - $paidAmount, 0, ',', '.') }}
+                        Rp{{ number_format($totalAfterPoints - $paidAmount, 0, ',', '.') }}
                     @endif
                 </span>
             </div>
@@ -307,16 +319,17 @@
             </p>
             <div class="flex items-start justify-between w-full">
                 <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                    style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp100) yang dapat
+                    style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp 100) yang dapat
                     ditukarkan adalah kelipatan 10 poin.</p>
                 <div class="flex items-center gap-[2px] font-['Montserrat'] font-normal text-[14px] text-[#666666]"
                     style="line-height: 1;">
-                    <span>50</span>
+                    <span>{{ number_format($availablePoints, 0, ',', '.') }}</span>
                     <span>Poin</span>
                 </div>
             </div>
             <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                <input type="text" value="0" placeholder="0"
+                <input type="number" wire:model.live="pointsUsed" placeholder="0" min="0" step="10"
+                    {{ $availablePoints == 0 ? 'disabled' : '' }}
                     class="w-full font-['Montserrat'] font-normal text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                     style="line-height: 1;" />
             </div>

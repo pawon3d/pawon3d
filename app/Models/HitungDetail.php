@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class HitungDetail extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'hitung_details';
+
     protected $guarded = [
         'id',
     ];
@@ -19,14 +23,17 @@ class HitungDetail extends Model
     {
         return $this->belongsTo(Hitung::class, 'hitung_id', 'id');
     }
+
     public function material()
     {
         return $this->belongsTo(Material::class, 'material_id', 'id');
     }
+
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
+
     public function materialBatch()
     {
         return $this->belongsTo(MaterialBatch::class, 'material_batch_id', 'id');

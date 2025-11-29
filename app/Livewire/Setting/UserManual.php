@@ -12,6 +12,7 @@ class UserManual extends Component
         View::share('mainTitle', 'Pengaturan');
         View::share('title', 'Manual Pengguna');
     }
+
     public function render()
     {
         return view('livewire.setting.user-manual');

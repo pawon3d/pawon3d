@@ -11,19 +11,28 @@ class EditProduksiPesanan extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
     public $productionId;
+
     public $production;
+
     public $transaction;
+
     public $method;
+
     public $details = [];
+
     public $user_ids;
-    public $start_date = 'dd/mm/yyyy', $note, $time;
+
+    public $start_date = 'dd/mm/yyyy';
+
+    public $note;
+
+    public $time;
 
     public function mount($id)
     {
         $this->productionId = $id;
         $this->production = \App\Models\Production::with(['details.product', 'workers.worker'])->findOrFail($this->productionId);
         $this->transaction = \App\Models\Transaction::with(['details.product', 'user'])->findOrFail($this->production->transaction_id);
-
 
         if ($this->production->method == 'pesanan-reguler') {
             $this->method = 'Reguler';
@@ -35,7 +44,7 @@ class EditProduksiPesanan extends Component
         $this->note = $this->production->note ?? '';
         $this->user_ids = $this->production->workers->pluck('user_id')->toArray();
 
-        View::share('title', 'Rencana Produksi ' . $this->method);
+        View::share('title', 'Rencana Produksi '.$this->method);
         View::share('mainTitle', 'Produksi');
     }
 
@@ -61,7 +70,7 @@ class EditProduksiPesanan extends Component
                     ->get();
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialBatches || $batchQty < $requiredQuantity) {
+                if (! $materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -72,8 +81,9 @@ class EditProduksiPesanan extends Component
             }
         }
 
-        if (!empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
+        if (! empty($produkGagal)) {
+            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+
             return;
         }
         $production = \App\Models\Production::findOrFail($this->productionId);
@@ -102,8 +112,10 @@ class EditProduksiPesanan extends Component
         }
 
         session()->flash('success', 'Produksi berhasil diperbarui.');
+
         return redirect()->route('produksi.rincian', ['id' => $production->id]);
     }
+
     public function render()
     {
         return view('livewire.production.edit-produksi-pesanan', [

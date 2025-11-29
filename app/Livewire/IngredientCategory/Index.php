@@ -4,33 +4,54 @@ namespace App\Livewire\IngredientCategory;
 
 use App\Models\IngredientCategory;
 use Flux\Flux;
-use Livewire\Component;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $sortField = 'name';
+
     public $sortDirection = 'desc';
-    public $name, $is_active = true, $category_id, $products;
+
+    public $name;
+
+    public $is_active = true;
+
+    public $category_id;
+
+    public $products;
+
     public $showModal = false;
+
     public $showEditModal = false;
+
     public $sortByCategory = false;
+
     public $usageSearch = '';
+
     public $usageSortDirection = 'asc';
+
     public $jumlahPenggunaan = false;
+
     protected $listeners = [
         'delete',
         'cancelled',
     ];
+
     protected $rules = [
         'name' => 'required|min:3|unique:ingredient_categories,name',
     ];
@@ -69,16 +90,18 @@ class Index extends Component
         View::share('title', 'Kategori Persediaan');
         View::share('mainTitle', 'Inventori');
     }
+
     public function render()
     {
         $categories = IngredientCategory::when($this->search, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%');
+            return $query->where('name', 'like', '%'.$this->search.'%');
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
             })->with('details')->withCount('details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
+
         return view('livewire.ingredient-category.index', [
             'categories' => $categories,
             'usageMaterials' => $this->usageMaterials,
@@ -135,6 +158,7 @@ class Index extends Component
         $this->showEditModal = false;
         $this->resetForm();
     }
+
     public function confirmDelete(): void
     {
         // Konfirmasi menggunakan Livewire Alert
@@ -184,7 +208,7 @@ class Index extends Component
 
             // Apply search filter
             if ($this->usageSearch) {
-                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+                $query->where('name', 'like', '%'.$this->usageSearch.'%');
             }
 
             // Apply sorting

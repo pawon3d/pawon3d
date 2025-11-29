@@ -13,20 +13,27 @@ use Livewire\Component;
 #[Layout('components.layouts.auth')]
 class ReviewForm extends Component
 {
-
     use LivewireAlert;
 
     public $name;
-    public $ratings = [];
-    public $comments = [];
-    public $transaction;
-    public $showError = false;
-    public $showModal = false;
-    public $isLoading = false;
-    public $errorMessage = '';
-    public $prizeMessage;
-    public $prizeCode;
 
+    public $ratings = [];
+
+    public $comments = [];
+
+    public $transaction;
+
+    public $showError = false;
+
+    public $showModal = false;
+
+    public $isLoading = false;
+
+    public $errorMessage = '';
+
+    public $prizeMessage;
+
+    public $prizeCode;
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -45,7 +52,7 @@ class ReviewForm extends Component
         $this->transaction = Transaction::with(['details.product'])
             ->find($transaction_id);
 
-        if (!$this->transaction) {
+        if (! $this->transaction) {
             $this->errorMessage = 'Transaksi tidak ditemukan!';
             $this->showError = true;
         } else {
@@ -56,7 +63,6 @@ class ReviewForm extends Component
             }
         }
     }
-
 
     public function submit()
     {
@@ -99,7 +105,7 @@ class ReviewForm extends Component
         } elseif ($undian <= 20 && $prizes->isNotEmpty()) {
             $selectedPrize = $prizes->random();
             $selectedPrize->update(['is_get' => true]);
-            $this->prizeMessage = 'Selamat, Anda mendapatkan ' . $selectedPrize->product->name;
+            $this->prizeMessage = 'Selamat, Anda mendapatkan '.$selectedPrize->product->name;
             $this->prizeCode = $selectedPrize->code;
         } elseif ($undian > 20) {
             $this->prizeMessage = 'Maaf, Anda belum beruntung.';

@@ -2,35 +2,41 @@
 
 namespace App\Livewire\Transaction;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class Pos extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $activeTab = 'ready';
+
     public $cart = [];
+
     public $searchQuery = '';
+
     public $activeCategory = null;
+
     public $paymentMethod = '';
+
     public $paymentStatus = '';
+
     public $schedule;
+
     public $dp = 0;
+
     public $type = 'siap beli';
 
-
     public $printTransaction = null;
-    public $showPrintModal = false;
 
+    public $showPrintModal = false;
 
     protected $listeners = ['refreshProducts' => '$refresh'];
 
@@ -56,7 +62,7 @@ class Pos extends Component
                 $query->where('category_id', $this->activeCategory);
             })
             ->when($this->searchQuery, function ($query) {
-                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+                $query->where('name', 'like', '%'.$this->searchQuery.'%');
             })
             ->when($this->activeTab === 'ready', function ($query) {
                 $query->where('is_ready', true);
@@ -75,7 +81,9 @@ class Pos extends Component
     {
         $product = Product::find($productId);
 
-        if ($this->activeTab === 'ready' && $product->stock < 1) return;
+        if ($this->activeTab === 'ready' && $product->stock < 1) {
+            return;
+        }
 
         $existingItem = collect($this->cart)->firstWhere('product_id', $productId);
 
@@ -87,6 +95,7 @@ class Pos extends Component
                         $item['stock']--;
                     }
                 }
+
                 return $item;
             })->toArray();
         } else {
@@ -95,7 +104,7 @@ class Pos extends Component
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => 1,
-                'stock' => $this->activeTab === 'ready' ? $product->stock - 1 : $product->stock
+                'stock' => $this->activeTab === 'ready' ? $product->stock - 1 : $product->stock,
             ];
         }
     }
@@ -109,6 +118,7 @@ class Pos extends Component
                     $item['stock']++;
                 }
             }
+
             return $item;
         })->filter(function ($item) {
             return $item['quantity'] > 0;

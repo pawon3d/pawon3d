@@ -9,14 +9,19 @@ use Livewire\Component;
 class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $roleId;
+
     public $roleName;
+
     public $permissions = [];
+
     public $users;
 
     protected $listeners = [
         'delete',
     ];
+
     public function mount($id)
     {
         View::share('mainTitle', 'Pekerja');
@@ -32,7 +37,7 @@ class Rincian extends Component
     public function updateRole()
     {
         $this->validate([
-            'roleName' => 'required|unique:roles,name,' . $this->roleId,
+            'roleName' => 'required|unique:roles,name,'.$this->roleId,
         ]);
 
         $role = SpatieRole::findOrFail($this->roleId);
@@ -40,6 +45,7 @@ class Rincian extends Component
         $role->syncPermissions($this->permissions);
 
         session()->flash('success', 'Peran berhasil diperbarui!');
+
         return redirect()->route('role');
     }
 
@@ -57,6 +63,7 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
         $role = SpatieRole::find($this->roleId);
@@ -67,6 +74,7 @@ class Rincian extends Component
             return redirect()->intended(route('role'))->with('success', 'Peran berhasil dihapus.');
         }
     }
+
     public function render()
     {
         return view('livewire.peran.rincian');

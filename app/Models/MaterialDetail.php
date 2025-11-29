@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class MaterialDetail extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'material_details';
+
     protected $guarded = [
         'id',
     ];

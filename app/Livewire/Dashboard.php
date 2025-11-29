@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use Carbon\Carbon;
 use App\Models\Product;
-use Livewire\Component;
-use App\Models\Transaction;
 use App\Models\Production;
+use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class Dashboard extends Component
@@ -20,7 +20,6 @@ class Dashboard extends Component
     {
         View::share('title', 'Dashboard');
     }
-
 
     public function render()
     {
@@ -53,7 +52,7 @@ class Dashboard extends Component
                 'today_sales' => $today_sales + $today_sales_belum_lunas,
                 'monthly_revenue' => $monthly_revenue + $monthly_revenue_belum_lunas,
                 'pending_orders' => Transaction::where('status', 'Belum Diproses')->count(),
-                'completed_productions' => Production::where('status', 'Selesai')->count()
+                'completed_productions' => Production::where('status', 'Selesai')->count(),
             ],
             'transactions' => Transaction::latest()
                 ->with('user')
@@ -61,7 +60,7 @@ class Dashboard extends Component
             'transactions_chart' => $transactions->map(function ($item, $key) {
                 return [
                     'date' => $key,
-                    'total' => $item->sum('total_amount')
+                    'total' => $item->sum('total_amount'),
                 ];
             })->values()->toJson(),
             'productions' => Production::with('details.product')

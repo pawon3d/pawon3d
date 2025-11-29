@@ -158,7 +158,7 @@ class Form extends Component
         }
 
         // Set preview image
-        $this->previewImage = $product->product_image ? env('APP_URL') . '/storage/' . $product->product_image : null;
+        $this->previewImage = $product->product_image ? env('APP_URL').'/storage/'.$product->product_image : null;
     }
 
     public function riwayatPembaruan(): void
@@ -320,7 +320,7 @@ class Form extends Component
     protected function recalculateCapital(): void
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
@@ -427,7 +427,7 @@ class Form extends Component
         });
 
         return redirect()->intended(route('produk'))
-            ->with('success', 'Produk berhasil ' . ($this->product_id ? 'diperbarui' : 'ditambahkan') . '.');
+            ->with('success', 'Produk berhasil '.($this->product_id ? 'diperbarui' : 'ditambahkan').'.');
     }
 
     protected function createProduct(): void
@@ -552,12 +552,12 @@ class Form extends Component
 
     protected function categoryOptions(): Collection
     {
-        return once(fn() => Category::orderBy('name')->get(['id', 'name']));
+        return once(fn () => Category::orderBy('name')->get(['id', 'name']));
     }
 
     protected function recipeMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', false)
+        return once(fn () => Material::where('is_recipe', false)
             ->with(['material_details.unit'])
             ->orderBy('name')
             ->get());
@@ -565,7 +565,7 @@ class Form extends Component
 
     protected function readyMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', true)
+        return once(fn () => Material::where('is_recipe', true)
             ->with(['material_details.unit', 'batches.unit'])
             ->orderBy('name')
             ->get());
@@ -573,7 +573,7 @@ class Form extends Component
 
     protected function typeCostOptions(): Collection
     {
-        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+        return once(fn () => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
     }
 
     protected function resolveSoloInventory(): ?array

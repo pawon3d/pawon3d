@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentChannel extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'payment_channels';
+
     public static function boot()
     {
         parent::boot();
@@ -18,6 +22,7 @@ class PaymentChannel extends Model
             $model->id = \Illuminate\Support\Str::uuid();
         });
     }
+
     protected $guarded = [
         'id',
     ];

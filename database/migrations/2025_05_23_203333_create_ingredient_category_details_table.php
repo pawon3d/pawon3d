@@ -16,7 +16,6 @@ return new class extends Migration
             $table->uuid('ingredient_category_id')->nullable();
             $table->uuid('material_id')->nullable();
 
-
             $table->foreign('ingredient_category_id')
                 ->references('id')
                 ->on('ingredient_categories')

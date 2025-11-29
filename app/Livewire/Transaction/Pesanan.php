@@ -8,11 +8,17 @@ use Livewire\Component;
 class Pesanan extends Component
 {
     public $search = '';
+
     public $filterStatus = '';
+
     public $methodName = '';
+
     public $sortField = 'invoice_number';
+
     public $sortDirection = 'desc';
+
     public $method = 'pesanan-reguler';
+
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
     public function sortBy($field)
@@ -37,7 +43,7 @@ class Pesanan extends Component
         if ($method == 'pesanan-reguler') {
             $this->methodName = 'Pesanan Reguler';
             $this->method = 'pesanan-reguler';
-        } else if ($method == 'pesanan-kotak') {
+        } elseif ($method == 'pesanan-kotak') {
             $this->methodName = 'Pesanan Kotak';
             $this->method = 'pesanan-kotak';
         } elseif ($method == 'siap-beli') {
@@ -45,10 +51,11 @@ class Pesanan extends Component
             $this->method = 'siap-beli';
         }
     }
+
     public function render()
     {
         $query = \App\Models\Transaction::with(['details.product', 'user'])
-            ->where('transactions.invoice_number', 'like', '%' . $this->search . '%')
+            ->where('transactions.invoice_number', 'like', '%'.$this->search.'%')
             ->where('transactions.method', $this->method)
             ->whereNotIn('transactions.status', ['Gagal', 'Selesai', 'temp']);
 
@@ -64,6 +71,7 @@ class Pesanan extends Component
         }
 
         $transactions = $query->select('transactions.*')->distinct()->paginate(10);
+
         return view('livewire.transaction.pesanan', [
             'transactions' => $transactions,
         ]);

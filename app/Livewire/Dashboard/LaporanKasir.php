@@ -13,23 +13,35 @@ use Livewire\Component;
 class LaporanKasir extends Component
 {
     use \Livewire\WithPagination;
+
     public $currentPage = 1;
+
     public $perPage = 10;
 
     public $selectedYear;
+
     public $selectedMethod = 'semua';
+
     public $selectedChart = 'gross';
+
     public $transactions;
+
     public $prevTransactions;
+
     public $details;
 
     public $diffStats = [];
+
     public $topProductsChartData = [];
+
     public $paymentChartData = [];
+
     public $salesChartData = [];
+
     public $chartRevenue = [];
 
     protected $listeners = ['refreshCharts' => '$refresh', 'update-top-products'];
+
     protected $queryString = [
         'selectedMethod' => ['except' => 'semua'],
         'currentPage' => ['except' => 1],
@@ -47,7 +59,7 @@ class LaporanKasir extends Component
         $endDate = Carbon::create($this->selectedYear)->endOfYear();
 
         $this->transactions = Transaction::whereBetween('start_date', [$startDate, $endDate])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->get();
 
         $transactionIds = $this->transactions->pluck('id');
@@ -70,17 +82,20 @@ class LaporanKasir extends Component
     {
         $this->updatedSelectedMethod();
     }
+
     public function updatedSelectedChart()
     {
         $this->dispatch('update-charts', [
             'chartRevenue' => $this->chartRevenue,
         ]);
     }
+
     protected function updateChartData($transactions, $details)
     {
 
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
@@ -135,16 +150,17 @@ class LaporanKasir extends Component
         $monthlyReports = [];
         $chartRevenue = [];
         foreach (range(1, 12) as $month) {
-            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->date)->month === $month);
+            $monthTransactions = $transactions->filter(fn ($trx) => Carbon::parse($trx->date)->month === $month);
             $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
                 $trx = $transactions->firstWhere('id', $d->transaction_id);
+
                 return $trx && Carbon::parse($trx->date)->month === $month;
             });
 
             $penjualan = $monthTransactions->sum('total_amount');
             $refund = $monthTransactions->sum('total_refund');
             $diskon = $monthDetails->sum(function ($d) {
-                return ($d->price * $d->refund_quantity); // asumsi diskon dari quantity yang direfund
+                return $d->price * $d->refund_quantity; // asumsi diskon dari quantity yang direfund
             });
             $modal = $monthDetails->sum(function ($d) {
                 return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
@@ -166,6 +182,7 @@ class LaporanKasir extends Component
     {
         $diff = $current - $previous;
         $percentage = $previous > 0 ? round(($diff / $previous) * 100, 2) : ($current > 0 ? 100 : 0);
+
         return [
             'value' => $current,
             'diff' => $diff,
@@ -182,12 +199,12 @@ class LaporanKasir extends Component
         $prevEnd = $endDate->copy()->subYear();
 
         $this->transactions = Transaction::whereBetween('start_date', [$startDate, $endDate])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->get();
         $transactions = $this->transactions;
 
         $this->prevTransactions = Transaction::whereBetween('start_date', [$prevStart, $prevEnd])
-            ->when($this->selectedMethod !== 'semua', fn($q) => $q->where('method', $this->selectedMethod))
+            ->when($this->selectedMethod !== 'semua', fn ($q) => $q->where('method', $this->selectedMethod))
             ->get();
         $prevTransactions = $this->prevTransactions;
 
@@ -211,7 +228,8 @@ class LaporanKasir extends Component
         // $this->dispatch('update-top-products', $this->topProductsChartData);
 
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
@@ -224,23 +242,24 @@ class LaporanKasir extends Component
         $best = $sorted->first();
 
         $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $sessionCount = $transactions->unique('created_by_shift')->count();
         $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
@@ -251,8 +270,8 @@ class LaporanKasir extends Component
         $customerCount = $transactions->unique('phone')->count();
         $prevCustomerCount = $prevTransactions->unique('phone')->count();
 
-        $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
-        $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
+        $productSold = $details->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+        $prevProductSold = $prevDetails->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
         // Data untuk chart topProductsChart
         $topProductsChartData = [
@@ -318,16 +337,17 @@ class LaporanKasir extends Component
         $chartRevenue = [];
         $modalTemp = [];
         foreach (range(1, 12) as $month) {
-            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->date)->month === $month);
+            $monthTransactions = $transactions->filter(fn ($trx) => Carbon::parse($trx->date)->month === $month);
             $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
                 $trx = $transactions->firstWhere('id', $d->transaction_id);
+
                 return $trx && Carbon::parse($trx->date)->month === $month;
             });
 
             $penjualan = $monthTransactions->sum('total_amount');
             $refund = $monthTransactions->sum('total_refund');
             $diskon = $monthDetails->sum(function ($d) {
-                return ($d->price * $d->refund_quantity); // asumsi diskon dari quantity yang direfund
+                return $d->price * $d->refund_quantity; // asumsi diskon dari quantity yang direfund
             });
             $modal = $monthDetails->sum(function ($d) {
                 return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
@@ -343,9 +363,10 @@ class LaporanKasir extends Component
         // dd($monthlyReports, $modalTemp);
         $products = Product::all();
         $productSales = $products->map(function ($product) use ($details) {
-            $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $terjual = $details->where('product_id', $product->id)->sum(fn ($d) => $d->quantity - $d->refund_quantity);
             $tidakTerjual = $product->pcs > 0 ? max(0, $product->pcs - $terjual) : 0;
-            return (object)[
+
+            return (object) [
                 'name' => $product->name,
                 'sold' => $terjual,
                 'unsold' => $tidakTerjual,
@@ -364,7 +385,6 @@ class LaporanKasir extends Component
             'refund' => $this->calculateDiff($refundTotal, $prevRefundTotal),
             'netRevenue' => $this->calculateDiff($netRevenue, $prevNetRevenue),
         ];
-
 
         return view('livewire.dashboard.laporan-kasir', [
             'sessionCount' => $sessionCount,

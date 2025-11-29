@@ -12,15 +12,23 @@ use Livewire\WithPagination;
 class RingkasanProduksi extends Component
 {
     use WithPagination;
+
     public $currentMonth;
+
     public $currentYear;
+
     public $selectedDate;
+
     public $calendar = [];
+
     public $todayProductions = [];
+
     public $otherProductions = [];
 
     public $method = 'pesanan-reguler';
+
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -75,7 +83,7 @@ class RingkasanProduksi extends Component
 
         $productionDates = Production::whereBetween('start_date', [$start->toDateString(), $end->toDateString()])
             ->pluck('start_date')
-            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
             ->toArray();
         $calendar = [];
 
@@ -113,6 +121,7 @@ class RingkasanProduksi extends Component
         }
         $this->sortField = $field;
     }
+
     public function render()
     {
         $query = Production::with(['details.product', 'workers'])
@@ -135,6 +144,7 @@ class RingkasanProduksi extends Component
         }
 
         $productions = $query->select('productions.*')->distinct()->paginate(10);
+
         return view('livewire.dashboard.ringkasan-produksi', [
             'productions' => $productions,
         ]);

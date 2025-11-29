@@ -11,23 +11,61 @@ use Livewire\Component;
 class Receipt extends Component
 {
     public $transactionId;
+
     public $paymentImage;
+
     public $details = [];
+
     public $paymentChannels = [];
+
     public $production;
-    public $payments, $totalPayment = 0;
+
+    public $payments;
+
+    public $totalPayment = 0;
+
     public $paymentChannelId = '';
-    public $paymentMethod = '', $paymentBank = '', $paymentAccount = '', $paymentAccountNumber, $paymentAccountName, $image;
+
+    public $paymentMethod = '';
+
+    public $paymentBank = '';
+
+    public $paymentAccount = '';
+
+    public $paymentAccountNumber;
+
+    public $paymentAccountName;
+
+    public $image;
+
     public $totalAmount = 0;
+
     public $paidAmount = 0;
+
     public $transaction;
-    public $total_quantity_plan, $total_quantity_get, $percentage;
+
+    public $total_quantity_plan;
+
+    public $total_quantity_get;
+
+    public $percentage;
+
     public $showPrintModal = false;
+
     public $showStruk = false;
+
     public $showImage = false;
+
     public $phoneNumber = '';
 
-    public $pembayaranPertama, $pembayaranKedua, $sisaPembayaranPertama, $kembalian;
+    public $pembayaranPertama;
+
+    public $pembayaranKedua;
+
+    public $sisaPembayaranPertama;
+
+    public $kembalian;
+
     public function mount($id)
     {
         View::share('title', 'Cetak Struk Transaksi');
@@ -51,7 +89,7 @@ class Receipt extends Component
         }
 
         $this->transaction = $transaction;
-        $this->production = !empty($transaction->production) ? $transaction->production : null;
+        $this->production = ! empty($transaction->production) ? $transaction->production : null;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
                 return [
@@ -94,21 +132,31 @@ class Receipt extends Component
             }
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
+
             return redirect()->route('transaksi');
         }
     }
+
     public function getRemainingAmountProperty()
     {
-        if ($this->totalAmount <= 0) return 0;
+        if ($this->totalAmount <= 0) {
+            return 0;
+        }
+
         return max(0, $this->totalAmount - ($this->totalPayment ?? 0));
     }
+
     public function getChangeAmountProperty()
     {
-        if ($this->paymentMethod !== 'tunai') return 0;
+        if ($this->paymentMethod !== 'tunai') {
+            return 0;
+        }
 
         $sisaTagihan = $this->remainingAmount;
+
         return max(0, $this->paidAmount - $sisaTagihan);
     }
+
     public function send()
     {
         // 1. Generate PDF dan simpan ke public storage
@@ -117,22 +165,20 @@ class Receipt extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-' . $this->transaction->id . '.pdf';
-        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/' . $fileName);
-
+        $fileName = 'struk-'.$this->transaction->id.'.pdf';
+        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/'.$fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
-
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -145,15 +191,14 @@ class Receipt extends Component
         $message .= "\u{1F64F} Terima kasih telah berbelanja!\n\n"; // 🙏
         $message .= "\u{1F4C4} *Download Struk (PDF):*\n{$pdfUrl}"; // 📄
 
-
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -164,6 +209,7 @@ class Receipt extends Component
     {
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
+
     #[Layout('components.layouts.empty')]
     public function render()
     {

@@ -32,8 +32,8 @@ class PdfController extends Controller
         header('Cache-Control: private, max-age=0, must-revalidate');
         // Ambil filter dari request
         $startDate = $request->get('startDate');
-        $endDate   = $request->get('endDate');
-        $search    = $request->get('search');
+        $endDate = $request->get('endDate');
+        $search = $request->get('search');
         $typeFilter = $request->get('typeFilter');
         $paymentStatusFilter = $request->get('paymentStatusFilter');
 
@@ -41,7 +41,7 @@ class PdfController extends Controller
 
         if ($search) {
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%');
             });
         }
 
@@ -65,20 +65,20 @@ class PdfController extends Controller
 
         // Susun rentang tanggal untuk laporan
         if ($startDate && $endDate) {
-            $range = Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($endDate)->translatedFormat('d F Y');
-        } elseif (!$startDate && $endDate) {
+            $range = Carbon::parse($startDate)->translatedFormat('d F Y').' sampai '.Carbon::parse($endDate)->translatedFormat('d F Y');
+        } elseif (! $startDate && $endDate) {
             $earliest = Transaction::orderBy('created_at', 'asc')->value('created_at');
             $earliest = $earliest ? Carbon::parse($earliest)->translatedFormat('d F Y') : 'Tidak ada data';
-            $range = Carbon::parse($earliest)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($endDate)->translatedFormat('d F Y');
-        } elseif ($startDate && !$endDate) {
+            $range = Carbon::parse($earliest)->translatedFormat('d F Y').' sampai '.Carbon::parse($endDate)->translatedFormat('d F Y');
+        } elseif ($startDate && ! $endDate) {
             $today = Carbon::now()->translatedFormat('d F Y');
-            $range = Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . $today;
+            $range = Carbon::parse($startDate)->translatedFormat('d F Y').' sampai '.$today;
         } else {
             // Jika tidak ada filter tanggal, tampilkan seluruh rentang berdasarkan data
             $earliest = Transaction::orderBy('created_at', 'asc')->value('created_at');
             $earliest = $earliest ? Carbon::parse($earliest)->translatedFormat('d F Y') : 'Tidak ada data';
             $today = Carbon::now()->translatedFormat('d F Y');
-            $range = $earliest . ' sampai ' . $today;
+            $range = $earliest.' sampai '.$today;
         }
 
         // Data yang akan diteruskan ke view PDF
@@ -89,63 +89,68 @@ class PdfController extends Controller
 
         // Generate PDF dengan Dompdf
         $pdf = Pdf::loadView('pdf.transaction-report', $data);
+
         return $pdf->stream('laporan-transaksi.pdf');
     }
 
     public function generateCategoryPDF(Request $request)
     {
         $categories = Category::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('products')
             ->withCount('products')
             ->orderBy('products_count', 'desc')
             ->get();
 
         $pdf = PDF::loadView('pdf.category', compact('categories'));
+
         return $pdf->download('daftar-kategori.pdf');
     }
 
     public function generateIngredientCategoryPDF(Request $request)
     {
         $categories = IngredientCategory::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.ingredient-category', compact('categories'));
+
         return $pdf->download('daftar-kategori-persediaan.pdf');
     }
 
     public function generateProductPDF(Request $request)
     {
         $products = Product::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('category')->get();
 
         $pdf = PDF::loadView('pdf.product', compact('products'));
+
         return $pdf->download('daftar-produk.pdf');
     }
 
     public function generateSupplierPDF(Request $request)
     {
         $suppliers = Supplier::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.supplier', compact('suppliers'));
+
         return $pdf->download('daftar-toko-persediaan.pdf');
     }
 
     public function generateMaterialPDF(Request $request)
     {
         $materials = Material::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('material_details')->get();
 
         foreach ($materials as $material) {
             $material->supply_quantity = MaterialDetail::where('material_id', $material->id)
                 ->where('is_main', true)->with('unit')
                 ->first()
-                ?->supply_quantity ?? "Tidak Tersedia";
+                ?->supply_quantity ?? 'Tidak Tersedia';
             $material->unit_alias = MaterialDetail::where('material_id', $material->id)
                 ->where('is_main', true)
                 ->with('unit')
@@ -154,6 +159,7 @@ class PdfController extends Controller
         }
 
         $pdf = PDF::loadView('pdf.material', compact('materials'));
+
         return $pdf->download('daftar-bahan-persediaan.pdf');
     }
 
@@ -164,25 +170,28 @@ class PdfController extends Controller
             $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
                 ->where('is_finish', true)
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                    return $query->where('expense_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
             $pdf = PDF::loadView('pdf.expense', compact('expenses', 'status'));
+
             return $pdf->download('riwayat-belanja-persediaan.pdf');
         } elseif ($request->status === 'all') {
             $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                    return $query->where('expense_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
             $pdf = PDF::loadView('pdf.expense', compact('expenses', 'status'));
+
             return $pdf->download('daftar-belanja-persediaan.pdf');
         } else {
             return redirect()->route('belanja')->with('error', 'Status tidak valid.');
         }
     }
+
     public function generateExpenseDetailPDF($id)
     {
         $expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])
@@ -198,7 +207,8 @@ class PdfController extends Controller
 
         $pdf = PDF::loadView('pdf.expense-detail', compact('expense', 'logName', 'status', 'total_quantity_expect', 'total_quantity_get', 'percentage', 'expenseDetails'));
         $pdf->setPaper('A4', 'landscape');
-        return $pdf->download('rincian-belanja-persediaan-' . $expense->expense_number . '.pdf');
+
+        return $pdf->download('rincian-belanja-persediaan-'.$expense->expense_number.'.pdf');
     }
 
     public function generateHitungPDF(Request $request)
@@ -208,25 +218,28 @@ class PdfController extends Controller
             $hitungs = \App\Models\Hitung::with(['details'])
                 ->where('is_finish', true)
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
             $pdf = PDF::loadView('pdf.hitung', compact('hitungs', 'status'));
+
             return $pdf->download('riwayat-hitung-persediaan.pdf');
         } elseif ($request->status === 'all') {
             $hitungs = \App\Models\Hitung::with(['details'])
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
             $pdf = PDF::loadView('pdf.hitung', compact('hitungs', 'status'));
+
             return $pdf->download('daftar-hitung-persediaan.pdf');
         } else {
             return redirect()->route('hitung')->with('error', 'Status tidak valid.');
         }
     }
+
     public function generateHitungDetailPDF($id)
     {
         $hitung = \App\Models\Hitung::with(['details.material', 'details.unit'])
@@ -239,27 +252,29 @@ class PdfController extends Controller
 
         $pdf = PDF::loadView('pdf.hitung-detail', compact('hitung', 'logName', 'status', 'hitungDetails'));
         $pdf->setPaper('A4', 'landscape');
-        return $pdf->download('rincian-hitung-persediaan-' . $hitung->hitung_number . '.pdf');
-    }
 
+        return $pdf->download('rincian-hitung-persediaan-'.$hitung->hitung_number.'.pdf');
+    }
 
     public function generateUserPDF(Request $request)
     {
         $users = \App\Models\User::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('roles')->get();
 
         $pdf = PDF::loadView('pdf.user', compact('users'));
+
         return $pdf->download('daftar-pekerja.pdf');
     }
 
     public function generateRolePDF(Request $request)
     {
         $roles = \App\Models\SpatieRole::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.role', compact('roles'));
+
         return $pdf->download('daftar-peran.pdf');
     }
 }

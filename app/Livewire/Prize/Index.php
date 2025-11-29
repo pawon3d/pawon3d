@@ -10,12 +10,22 @@ use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
-    public $product_id, $prize_id, $code;
+    use LivewireAlert, WithPagination;
+
+    public $product_id;
+
+    public $prize_id;
+
+    public $code;
+
     public $editId = null;
+
     public $search_code = '';
+
     public $showModal = false;
+
     public $showEditModal = false;
+
     protected $listeners = [
         'delete',
         'productSelected' => 'handleProductSelected',
@@ -25,11 +35,12 @@ class Index extends Component
     {
         View::share('title', 'Kode Hadiah');
     }
+
     public function render()
     {
         return view('livewire.prize.index', [
             'prizes' => \App\Models\Prize::when($this->search_code, function ($query) {
-                return $query->where('code', 'like', '%' . $this->search_code . '%');
+                return $query->where('code', 'like', '%'.$this->search_code.'%');
             })->with('product')->latest()->paginate(5),
         ]);
     }

@@ -10,10 +10,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Category extends Model
 {
     use LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'categories';
+
     protected $guarded = [
         'id',
     ];

@@ -9,13 +9,24 @@ use Spatie\Activitylog\Models\Activity;
 class Mulai extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
-    public $expense_id;
-    public $expense;
-    public $expenseDetails = [], $errorInputs = [];
-    public $showHistoryModal = false;
-    public $activityLogs = [];
-    public $total_quantity_expect, $total_quantity_get, $percentage;
 
+    public $expense_id;
+
+    public $expense;
+
+    public $expenseDetails = [];
+
+    public $errorInputs = [];
+
+    public $showHistoryModal = false;
+
+    public $activityLogs = [];
+
+    public $total_quantity_expect;
+
+    public $total_quantity_get;
+
+    public $percentage;
 
     public function mount($id)
     {
@@ -31,7 +42,7 @@ class Mulai extends Component
                 'material_name' => $detail->material->name,
                 'quantity_expect' => $detail->quantity_expect,
                 'quantity_get' => $detail->quantity_get,
-                'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
+                'unit' => $detail->unit->name.' ('.$detail->unit->alias.')',
                 'quantity' => 0,
             ];
         })->toArray();
@@ -91,6 +102,7 @@ class Mulai extends Component
 
         if (count($this->errorInputs) > 0) {
             $this->alert('error', 'Masih ada input yang melebihi jumlah yang diharapkan.');
+
             return;
         }
 
@@ -114,7 +126,6 @@ class Mulai extends Component
                 ]);
             }
         }
-
 
         if ($this->expense->expenseDetails->sum('quantity_get') >= $this->expense->expenseDetails->sum('quantity_expect')) {
             $this->expense->update(['status' => 'Lengkap']);

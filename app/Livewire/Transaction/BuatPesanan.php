@@ -66,6 +66,10 @@ class BuatPesanan extends Component
 
     public $method;
 
+    public $pointsUsed = 0;
+
+    public $availablePoints = 0;
+
     protected $messages = [
         'name.required' => 'Nama harus diisi.',
         'phone.required' => 'Nomor telepon harus diisi.',
@@ -125,9 +129,54 @@ class BuatPesanan extends Component
         if ($customer) {
             $this->customer = $customer;
             $this->name = $customer->name;
+            $this->availablePoints = $customer->points;
+            $this->pointsUsed = 0;
         } else {
             $this->customer = null;
+            $this->availablePoints = 0;
+            $this->pointsUsed = 0;
         }
+    }
+
+    public function updatedPointsUsed($value)
+    {
+        // Pastikan nilai adalah angka
+        $value = (int) $value;
+
+        // Validasi: tidak boleh negatif
+        if ($value < 0) {
+            $this->pointsUsed = 0;
+            $this->alert('warning', 'Poin tidak boleh negatif.');
+
+            return;
+        }
+
+        // Validasi: tidak boleh melebihi poin yang tersedia
+        if ($value > $this->availablePoints) {
+            $this->pointsUsed = $this->availablePoints;
+            $this->alert('warning', 'Poin yang digunakan melebihi poin tersedia.');
+
+            return;
+        }
+
+        // Validasi: harus kelipatan 10
+        if ($value % 10 != 0) {
+            $this->pointsUsed = floor($value / 10) * 10;
+            $this->alert('warning', 'Poin harus kelipatan 10.');
+
+            return;
+        }
+
+        // Validasi: maksimal poin yang bisa dipakai = total tagihan / 100 (1 poin = Rp 100)
+        $maxPoints = floor($this->getTotalProperty() / 100);
+        if ($value > $maxPoints) {
+            $this->pointsUsed = floor($maxPoints / 10) * 10;
+            $this->alert('warning', 'Poin yang digunakan tidak boleh melebihi total tagihan.');
+
+            return;
+        }
+
+        $this->pointsUsed = $value;
     }
 
     public function incrementItem($itemId)
@@ -138,7 +187,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
                 }
             }
         }
@@ -211,7 +260,7 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
+            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -250,6 +299,7 @@ class BuatPesanan extends Component
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
             $transaction->update([
+                'customer_id' => $this->customer?->id,
                 'name' => $this->name,
                 'phone' => $this->phone,
                 'date' => $this->date ? \Carbon\Carbon::createFromFormat('d M Y', $this->date)->format('Y-m-d') : null,
@@ -259,6 +309,8 @@ class BuatPesanan extends Component
                 'method' => $this->method,
                 'status' => 'Draft',
                 'total_amount' => $this->getTotalProperty(),
+                'points_used' => $this->pointsUsed,
+                'points_discount' => $this->pointsUsed * 100, // 1 poin = Rp 100
             ]);
 
             foreach ($this->details as $detail) {
@@ -345,8 +397,9 @@ class BuatPesanan extends Component
             // sementara
         }
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
-            if ($this->paidAmount < 0.5 * $this->getTotalProperty()) {
-                $this->alert('warning', 'Jumlah pembayaran minimal 50% dari sisa.');
+            $totalAfterPoints = $this->getTotalProperty() - ($this->pointsUsed * 100);
+            if ($this->paidAmount < 0.5 * $totalAfterPoints) {
+                $this->alert('warning', 'Jumlah pembayaran minimal 50% dari total setelah diskon poin.');
 
                 return;
             }
@@ -354,7 +407,11 @@ class BuatPesanan extends Component
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
+            // Hitung total setelah diskon poin (1 poin = Rp 100)
+            $totalAfterPoints = $this->getTotalProperty() - ($this->pointsUsed * 100);
+
             $transaction->update([
+                'customer_id' => $this->customer?->id,
                 'name' => $this->name,
                 'phone' => $this->phone,
                 'date' => $this->date ? \Carbon\Carbon::createFromFormat('d M Y', $this->date)->format('Y-m-d') : null,
@@ -364,8 +421,15 @@ class BuatPesanan extends Component
                 'method' => $this->method,
                 'status' => 'Belum Diproses',
                 'total_amount' => $this->getTotalProperty(),
-                'payment_status' => $this->paidAmount >= $this->getTotalProperty() ? 'Lunas' : 'Belum Lunas',
+                'points_used' => $this->pointsUsed,
+                'points_discount' => $this->pointsUsed * 100, // 1 poin = Rp 100
+                'payment_status' => $this->paidAmount >= $totalAfterPoints ? 'Lunas' : 'Belum Lunas',
             ]);
+
+            // Kurangi poin customer jika menggunakan poin
+            if ($this->pointsUsed > 0 && $this->customer) {
+                $this->customer->decrement('points', $this->pointsUsed);
+            }
 
             if ($transaction->payment_status == 'Lunas' && $transaction->method == 'siap-beli') {
                 $transaction->update([
@@ -438,7 +502,7 @@ class BuatPesanan extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%'.$this->search.'%');
+                    $query->where('name', 'like', '%' . $this->search . '%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

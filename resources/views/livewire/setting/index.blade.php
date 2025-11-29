@@ -1,57 +1,110 @@
-<div class="max-h-96 overflow-y-auto ml-12">
-    <div class="flex items-center gap-4 mb-4 flex-row bg-white p-4 rounded-lg shadow-lg">
-        <div class="relative flex h-16 w-16 shrink-0 overflow-hidden rounded-full">
-            @if (auth()->user()->image)
-            <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"
-                class="h-full w-full object-cover rounded-full">
-            @else
-            <span class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black">
-                {{ auth()->user()->initials() }}
-            </span>
-            @endif
+<div class="flex flex-col gap-10">
+    <!-- Profile Card -->
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px] flex items-center justify-between">
+        <div class="flex gap-5 items-center">
+            <!-- Avatar -->
+            <div class="relative flex h-[53px] w-[53px] shrink-0 overflow-hidden rounded-full">
+                @if (auth()->user()->image)
+                    <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"
+                        class="h-full w-full object-cover rounded-full">
+                @else
+                    <span
+                        class="flex h-full w-full items-center justify-center rounded-full bg-[#c4c4c4] text-[#333333] font-medium text-lg">
+                        {{ auth()->user()->initials() }}
+                    </span>
+                @endif
+            </div>
+            <!-- User Info -->
+            <div class="flex flex-col gap-[5px]">
+                <div class="flex gap-[5px] items-center">
+                    <span class="text-xl font-medium text-[#333333]">{{ auth()->user()->name }}</span>
+                    <span
+                        class="text-base font-normal text-[#666666]">({{ auth()->user()->getRoleNames()->first() ?? 'User' }})</span>
+                </div>
+                <span class="text-base text-[#333333]">{{ auth()->user()->email }}</span>
+            </div>
         </div>
-        <div class="flex flex-col">
-            <h1 class="text-2xl font-semibold text-neutral-900">
-                {{ auth()->user()->name }} ({{ auth()->user()->getRoleNames()->first() ?? 'User' }})
-            </h1>
-            <p class="text-sm text-neutral-500 dark:text-neutral-400">
-                {{ auth()->user()->email }}
-            </p>
-        </div>
-        <div class="ml-auto">
-            <flux:modal.trigger name="logoutModal">
-                <flux:button type="button" icon="arrow-left-end-on-rectangle" variant="primary">
-                    Keluar
-                </flux:button>
-            </flux:modal.trigger>
-        </div>
+        <!-- Logout Button -->
+        <flux:modal.trigger name="logoutModal">
+            <flux:button type="button" icon="arrow-right-start-on-rectangle" variant="danger"
+                class="!px-[25px] !py-[10px] !rounded-[15px] !text-base !font-semibold">
+                Keluar
+            </flux:button>
+        </flux:modal.trigger>
     </div>
-    <div class="flex flex-col gap-4 mt-8">
-        <a href="{{ route('profil-saya', auth()->user()->id) }}"
-            class="flex flex-row items-center gap-4 hover:bg-gray-100 py-2 px-4 rounded-lg transition ease-in-out duration-150 border border-gray-200 bg-white">
-            <flux:icon.user class="w-6 h-6 text-gray-600" variant="solid" />
-            <span class="text-gray-800">Profil Saya</span>
-            <flux:icon.chevron-right class="ml-auto w-4 h-4 text-gray-400" />
+
+    <!-- Menu List -->
+    <div class="flex flex-col gap-5">
+        <!-- Profil Anda -->
+        <a href="{{ route('profil-saya', auth()->user()->id) }}" wire:navigate
+            class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+            <div class="flex-1 flex gap-[10px] items-center">
+                <div class="p-[5px]">
+                    <flux:icon.user class="size-5 text-[#666666]" />
+                </div>
+                <span class="text-lg text-[#333333]">Profil Anda</span>
+            </div>
+            <div class="flex items-center justify-center w-[42px] h-full">
+                <flux:icon.chevron-right class="size-5 text-[#666666]" />
+            </div>
         </a>
+
         @can('Manajemen Sistem')
-        <a href="{{ route('profil-usaha') }}"
-            class="flex flex-row items-center gap-4 hover:bg-gray-100 py-2 px-4 rounded-lg transition ease-in-out duration-150 border border-gray-200 bg-white">
-            <flux:icon.building-storefront class="w-6 h-6 text-gray-600" variant="solid" />
-            <span class="text-gray-800">Profil Usaha</span>
-            <flux:icon.chevron-right class="ml-auto w-4 h-4 text-gray-400" />
-        </a>
-        <a href="{{ route('metode-pembayaran') }}"
-            class="flex flex-row items-center gap-4 hover:bg-gray-100 py-2 px-4 rounded-lg transition ease-in-out duration-150 border border-gray-200 bg-white">
-            <flux:icon.wallet class="w-6 h-6 text-gray-600" variant="solid" />
-            <span class="text-gray-800">Metode Pembayaran</span>
-            <flux:icon.chevron-right class="ml-auto w-4 h-4 text-gray-400" />
-        </a>
+            <!-- Profil Usaha -->
+            <a href="{{ route('profil-usaha') }}" wire:navigate
+                class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+                <div class="flex-1 flex gap-[10px] items-center">
+                    <div class="p-[5px]">
+                        <flux:icon.building-storefront class="size-5 text-[#666666]" />
+                    </div>
+                    <span class="text-lg text-[#333333]">Profil Usaha</span>
+                </div>
+                <div class="flex items-center justify-center w-[42px] h-full">
+                    <flux:icon.chevron-right class="size-5 text-[#666666]" />
+                </div>
+            </a>
+
+            <!-- Metode Pembayaran -->
+            <a href="{{ route('metode-pembayaran') }}" wire:navigate
+                class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+                <div class="flex-1 flex gap-[10px] items-center">
+                    <div class="p-[5px]">
+                        <flux:icon.wallet class="size-5 text-[#666666]" />
+                    </div>
+                    <span class="text-lg text-[#333333]">Metode Pembayaran</span>
+                </div>
+                <div class="flex items-center justify-center w-[42px] h-full">
+                    <flux:icon.chevron-right class="size-5 text-[#666666]" />
+                </div>
+            </a>
+
+            <!-- Notifikasi -->
+            <a href="{{ route('notifikasi') }}" wire:navigate
+                class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+                <div class="flex-1 flex gap-[10px] items-center">
+                    <div class="p-[5px]">
+                        <flux:icon.bell class="size-5 text-[#666666]" />
+                    </div>
+                    <span class="text-lg text-[#333333]">Notifikasi</span>
+                </div>
+                <div class="flex items-center justify-center w-[42px] h-full">
+                    <flux:icon.chevron-right class="size-5 text-[#666666]" />
+                </div>
+            </a>
         @endcan
-        <a href="{{ route('panduan-pengguna') }}"
-            class="flex flex-row items-center gap-4 hover:bg-gray-100 py-2 px-4 rounded-lg transition ease-in-out duration-150 border border-gray-200 bg-white">
-            <flux:icon.exclamation-circle class="w-6 h-6 text-gray-600" variant="solid" />
-            <span class="text-gray-800">Panduan Pengguna</span>
-            <flux:icon.chevron-right class="ml-auto w-4 h-4 text-gray-400" />
-        </a>
+
+        <!-- Panduan Pengguna -->
+        {{-- <a href="{{ route('panduan-pengguna') }}" wire:navigate
+            class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+            <div class="flex-1 flex gap-[10px] items-center">
+                <div class="p-[5px]">
+                    <flux:icon.question-mark-circle class="size-5 text-[#666666]" />
+                </div>
+                <span class="text-lg text-[#333333]">Panduan Pengguna</span>
+            </div>
+            <div class="flex items-center justify-center w-[42px] h-full">
+                <flux:icon.chevron-right class="size-5 text-[#666666]" />
+            </div>
+        </a> --}}
     </div>
 </div>

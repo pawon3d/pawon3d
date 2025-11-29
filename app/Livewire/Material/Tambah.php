@@ -11,15 +11,39 @@ class Tambah extends Component
 {
     use \Livewire\WithFileUploads;
 
-    public $name, $description, $expiry_date = '00/00/0000', $status = 'Kosong', $category_ids, $minimum = 0, $is_active = false,
-        $is_recipe = false;
-    public $main_unit_id, $main_unit_alias, $main_unit_name;
+    public $name;
+
+    public $description;
+
+    public $expiry_date = '00/00/0000';
+
+    public $status = 'Kosong';
+
+    public $category_ids;
+
+    public $minimum = 0;
+
+    public $is_active = false;
+
+    public $is_recipe = false;
+
+    public $main_unit_id;
+
+    public $main_unit_alias;
+
+    public $main_unit_name;
+
     public $previewImage;
+
     public $image;
+
     public $material_details = [];
+
     public $ingredient_category_details = [];
+
     public $supply_quantity_main = [];
-    public $supply_price_total =  [];
+
+    public $supply_price_total = [];
 
     protected $messages = [
         'name.required' => 'Nama bahan baku tidak boleh kosong.',
@@ -33,12 +57,12 @@ class Tambah extends Component
         \Illuminate\Support\Facades\View::share('title', 'Tambah Bahan Baku');
         View::share('mainTitle', 'Inventori');
 
-
         $this->material_details = [[
             'unit_id' => '',
             'quantity' => 1,
         ]];
     }
+
     public function updatedImage(): void
     {
         $this->validate([
@@ -47,6 +71,7 @@ class Tambah extends Component
 
         $this->previewImage = $this->image->temporaryUrl();
     }
+
     public function removeImage(): void
     {
         $this->reset('image', 'previewImage');
@@ -62,6 +87,7 @@ class Tambah extends Component
             'is_main' => false,
         ];
     }
+
     public function removeUnit($index): void
     {
         if (count($this->material_details) > 1) {
@@ -72,13 +98,13 @@ class Tambah extends Component
 
     public function setUnit($index, $unitId): void
     {
-        if (!$unitId) {
+        if (! $unitId) {
             return;
         }
 
         $unit = Unit::find($unitId);
 
-        if (!$unit) {
+        if (! $unit) {
             return;
         }
 
@@ -109,7 +135,7 @@ class Tambah extends Component
         }, $this->material_details);
         $this->supply_quantity_main = collect($this->material_details)
             ->sum(function ($detail) {
-                return ($detail['quantity'] ?? 0);
+                return $detail['quantity'] ?? 0;
             });
         $this->supply_price_total = collect($this->material_details)
             ->sum(function ($detail) {
@@ -155,8 +181,8 @@ class Tambah extends Component
             }
 
             // Create material details
-            if (!empty($this->material_details[0]['unit_id'])) {
-                $detailsData = collect($this->material_details)->map(fn($detail) => [
+            if (! empty($this->material_details[0]['unit_id'])) {
+                $detailsData = collect($this->material_details)->map(fn ($detail) => [
                     'unit_id' => $detail['unit_id'] ?? null,
                     'quantity' => $detail['quantity'] ?? 0,
                     'is_main' => $detail['is_main'] ?? false,

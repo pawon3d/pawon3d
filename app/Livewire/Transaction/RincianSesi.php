@@ -142,17 +142,21 @@ class RincianSesi extends Component
 
         // Calculate received cash
         $receivedCash = Transaction::where('created_by_shift', $shift->id)
-            ->whereHas('payments', fn ($q) => $q->where('payment_method', 'tunai'))
-            ->with(['payments' => fn ($q) => $q->where('payment_method', 'tunai')])
+            ->whereHas('payments', fn($q) => $q->where('payment_method', 'tunai'))
+            ->with(['payments' => fn($q) => $q->where('payment_method', 'tunai')])
             ->get()
-            ->sum(fn ($t) => $t->payments->sum('paid_amount'));
+            ->sum(fn($t) => $t->payments->sum('paid_amount'));
 
         // Calculate received non-cash
         $receivedNonCash = Transaction::where('created_by_shift', $shift->id)
-            ->whereHas('payments', fn ($q) => $q->where('payment_method', '!=', 'tunai'))
-            ->with(['payments' => fn ($q) => $q->where('payment_method', '!=', 'tunai')])
+            ->whereHas('payments', fn($q) => $q->where('payment_method', '!=', 'tunai'))
+            ->with(['payments' => fn($q) => $q->where('payment_method', '!=', 'tunai')])
             ->get()
-            ->sum(fn ($t) => $t->payments->sum('paid_amount'));
+            ->sum(fn($t) => $t->payments->sum('paid_amount'));
+
+        // Calculate total points discount for this shift
+        $pointsDiscount = Transaction::where('created_by_shift', $shift->id)
+            ->sum('points_discount');
 
         // Calculate refund totals
         $refundTotal = Transaction::where('refund_by_shift', $shift->id)->sum('total_refund');
@@ -178,8 +182,8 @@ class RincianSesi extends Component
         $this->detailRefundTotal = $refundTotal;
         $this->detailRefundCash = $refundCash;
         $this->detailRefundNonCash = $refundNonCash;
-        $this->detailDiscountToday = 0;
-        $this->detailExpectedCash = $shift->initial_cash + $receivedCash - $refundCash;
+        $this->detailDiscountToday = $pointsDiscount;
+        $this->detailExpectedCash = $shift->initial_cash + $receivedCash - $refundCash - $pointsDiscount;
 
         $this->showDetailShiftModal = true;
     }
@@ -191,11 +195,11 @@ class RincianSesi extends Component
 
     public function showNonCashDetails($shiftId)
     {
-        $this->nonCashDetails = \App\Models\Payment::whereHas('transaction', fn ($q) => $q->where('created_by_shift', $shiftId))
+        $this->nonCashDetails = \App\Models\Payment::whereHas('transaction', fn($q) => $q->where('created_by_shift', $shiftId))
             ->where('payment_method', '!=', 'tunai')
             ->with(['transaction', 'channel'])
             ->get()
-            ->map(fn ($p) => [
+            ->map(fn($p) => [
                 'receipt_number' => $p->receipt_number,
                 'invoice_number' => $p->transaction->invoice_number,
                 'bank_name' => $p->channel->bank_name ?? '-',
@@ -223,11 +227,11 @@ class RincianSesi extends Component
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('id', 'like', '%'.$this->search.'%')
-                    ->orWhere('invoice_number', 'like', '%'.$this->search.'%')
-                    ->orWhere('name', 'like', '%'.$this->search.'%')
+                $q->where('id', 'like', '%' . $this->search . '%')
+                    ->orWhere('invoice_number', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
                     ->orWhereHas('payments', function ($query) {
-                        $query->where('receipt_number', 'like', '%'.$this->search.'%');
+                        $query->where('receipt_number', 'like', '%' . $this->search . '%');
                     });
             });
         }

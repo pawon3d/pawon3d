@@ -8,9 +8,20 @@ use Livewire\Component;
 class Edit extends Component
 {
     public $supplier_id = '';
+
     public $expense_id;
-    public $expense_date = 'dd/mm/yyyy', $note, $grand_total_expect;
-    public $expense_details = [], $prevInputs = [], $prevPrice = [];
+
+    public $expense_date = 'dd/mm/yyyy';
+
+    public $note;
+
+    public $grand_total_expect;
+
+    public $expense_details = [];
+
+    public $prevInputs = [];
+
+    public $prevPrice = [];
 
     public function mount($id)
     {
@@ -33,7 +44,7 @@ class Edit extends Component
         $this->expense_details = $expense->expenseDetails->map(function ($detail, $index) use ($today, &$prevInputs, &$prevPrice) {
             $material = $detail->material ?? \App\Models\Material::with(['material_details.unit', 'batches.unit'])->find($detail->material_id);
 
-            if (!$material) {
+            if (! $material) {
                 return [
                     'material_id' => '',
                     'material_quantity' => '0 (satuan)',
@@ -73,7 +84,7 @@ class Edit extends Component
 
             return [
                 'material_id' => $detail->material_id,
-                'material_quantity' => $batchQty . ' (' . $alias . ')',
+                'material_quantity' => $batchQty.' ('.$alias.')',
                 'quantity_expect' => $detail->quantity_expect,
                 'unit_id' => $detail->unit_id,
                 'price_expect' => $detail->price_expect,
@@ -134,7 +145,7 @@ class Edit extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $satuan?->unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -145,7 +156,7 @@ class Edit extends Component
                 $batchItem = $persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
                 $batchQty = $batchItem?->batch_quantity ?? 0;
                 $alias = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
             $this->expense_details[$index]['price_expect'] = 0;
@@ -180,7 +191,7 @@ class Edit extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -201,6 +212,7 @@ class Edit extends Component
             if (isset($detail['material_id']) && isset($detail['unit_id']) && $detail['material_id'] && $detail['unit_id']) {
                 $detail['detail_total_expect'] = $detail['quantity_expect'] * $detail['price_expect'];
             }
+
             return $detail;
         }, $this->expense_details);
         $this->grand_total_expect = array_sum(array_column($this->expense_details, 'detail_total_expect'));
@@ -210,6 +222,7 @@ class Edit extends Component
     {
         $this->supplier_id = $value;
     }
+
     public function update()
     {
         $this->validate([
@@ -246,6 +259,7 @@ class Edit extends Component
 
         return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Daftar belanja berhasil diperbarui.');
     }
+
     public function render()
     {
         return view('livewire.expense.edit', [

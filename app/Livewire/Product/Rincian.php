@@ -3,32 +3,66 @@
 namespace App\Livewire\Product;
 
 use App\Models\Material;
+use App\Models\MaterialDetail;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\MaterialDetail;
-use Livewire\Component;
-use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use Livewire\Component;
 use Livewire\WithFileUploads;
+use Spatie\Activitylog\Models\Activity;
 
 class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
-    public $product_image, $name, $description, $is_recipe = false, $is_active = false, $is_recommended = false, $is_other = false, $pcs = 1, $capital = 0, $pcs_capital = 0;
+    public $product_image;
+
+    public $name;
+
+    public $description;
+
+    public $is_recipe = false;
+
+    public $is_active = false;
+
+    public $is_recommended = false;
+
+    public $is_other = false;
+
+    public $pcs = 1;
+
+    public $capital = 0;
+
+    public $pcs_capital = 0;
+
     public $product_compositions = [];
+
     public $other_costs = [];
+
     public $category_ids = [];
 
-    public $price = 0, $total = 0;
+    public $price = 0;
+
+    public $total = 0;
+
     public $stock = 0;
+
     public $product_id;
+
     public $previewImage = null;
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $selectedMethods = [];
-    public $suhu_ruangan = 0, $suhu_dingin = 0, $suhu_beku = 0;
+
+    public $suhu_ruangan = 0;
+
+    public $suhu_dingin = 0;
+
+    public $suhu_beku = 0;
 
     protected $listeners = [
         'delete',
@@ -75,6 +109,7 @@ class Rincian extends Component
             } else {
                 $composition->material_price = 0;
             }
+
             // Mengembalikan data komposisi dengan harga material
             return [
                 'material_id' => $composition->material_id,
@@ -102,7 +137,7 @@ class Rincian extends Component
         $this->stock = $product->stock;
         $this->selectedMethods = $product->method ? $product->method : [];
         if ($product->product_image) {
-            $this->previewImage = env('APP_URL') . '/storage/' . $product->product_image;
+            $this->previewImage = env('APP_URL').'/storage/'.$product->product_image;
         } else {
             $this->previewImage = null;
         }
@@ -165,7 +200,7 @@ class Rincian extends Component
 
     public function setMaterial($index, $materialId)
     {
-        if (!array_key_exists($index, $this->product_compositions)) {
+        if (! array_key_exists($index, $this->product_compositions)) {
             return;
         }
 
@@ -190,7 +225,7 @@ class Rincian extends Component
 
     public function setUnit($index, $unitId)
     {
-        if (!array_key_exists($index, $this->product_compositions)) {
+        if (! array_key_exists($index, $this->product_compositions)) {
             return;
         }
 
@@ -236,7 +271,7 @@ class Rincian extends Component
 
             if ($this->product_image) {
                 if ($product->product_image) {
-                    $oldImagePath = public_path('storage/' . $product->product_image);
+                    $oldImagePath = public_path('storage/'.$product->product_image);
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
@@ -256,7 +291,7 @@ class Rincian extends Component
     protected function recalculateCapital()
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
@@ -268,7 +303,7 @@ class Rincian extends Component
     {
         $this->resetErrorBag('price');
 
-        if (!is_numeric($value)) {
+        if (! is_numeric($value)) {
             return;
         }
 
@@ -282,6 +317,7 @@ class Rincian extends Component
             $this->addError('price', 'Harga jual tidak boleh kurang dari total modal.');
         }
     }
+
     protected function recalculatePcsCapital()
     {
         if ($this->pcs < 1) {
@@ -304,11 +340,10 @@ class Rincian extends Component
         $this->recalculatePcsCapital();
     }
 
-
     public function updatedProductCompositions()
     {
         $this->product_compositions = array_map(function ($composition) {
-            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn($value) => $value !== null));
+            $normalized = array_merge($this->defaultCompositionRow(), array_filter($composition, fn ($value) => $value !== null));
 
             return [
                 'material_id' => $normalized['material_id'] ?? '',
@@ -335,6 +370,7 @@ class Rincian extends Component
             'timer' => null,
         ]);
     }
+
     public function delete()
     {
         $product = Product::find($this->product_id);
@@ -343,7 +379,7 @@ class Rincian extends Component
             $product->delete();
             // Hapus gambar produk jika ada
             if ($product->product_image) {
-                $oldImagePath = public_path('storage/' . $product->product_image);
+                $oldImagePath = public_path('storage/'.$product->product_image);
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
@@ -352,7 +388,6 @@ class Rincian extends Component
             return redirect()->intended(route('produk'))->with('success', 'Produk berhasil dihapus.');
         }
     }
-
 
     protected function resetRecipeState(bool $isRecipe): void
     {
@@ -463,12 +498,12 @@ class Rincian extends Component
 
     protected function categoryOptions()
     {
-        return once(fn() => \App\Models\Category::orderBy('name')->get(['id', 'name']));
+        return once(fn () => \App\Models\Category::orderBy('name')->get(['id', 'name']));
     }
 
     protected function recipeMaterials()
     {
-        return once(fn() => Material::where('is_recipe', false)
+        return once(fn () => Material::where('is_recipe', false)
             ->with(['material_details.unit'])
             ->orderBy('name')
             ->get());
@@ -476,7 +511,7 @@ class Rincian extends Component
 
     protected function readyMaterials()
     {
-        return once(fn() => Material::where('is_recipe', true)
+        return once(fn () => Material::where('is_recipe', true)
             ->with(['material_details.unit', 'batches.unit'])
             ->orderBy('name')
             ->get());
@@ -484,20 +519,20 @@ class Rincian extends Component
 
     protected function typeCostOptions()
     {
-        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+        return once(fn () => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
     }
 
     protected function resolveSoloInventory(): ?array
     {
         $materialId = $this->product_compositions[0]['material_id'] ?? null;
 
-        if (!$materialId) {
+        if (! $materialId) {
             return null;
         }
 
         $material = $this->readyMaterials()->firstWhere('id', $materialId);
 
-        if (!$material) {
+        if (! $material) {
             return null;
         }
 

@@ -13,34 +13,60 @@ use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
+
     public $search = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $filterStatus = '';
+
     public $sortField = 'group';
+
     public $sortDirection = 'asc';
-    public $name, $alias, $unit_id, $materials, $group;
+
+    public $name;
+
+    public $alias;
+
+    public $unit_id;
+
+    public $materials;
+
+    public $group;
+
     public $showModal = false;
+
     public $showEditModal = false;
+
     public $sortByCategory = false;
+
     public $showUsageModal = false;
+
     public $usageSearch = '';
+
     public $usageMaterials = [];
+
     public $usageSummary = [
         'from' => 0,
         'to' => 0,
         'total' => 0,
         'pages' => 1,
     ];
+
     public $usagePage = 1;
+
     public $usagePerPage = 2;
+
     public $usageSortDirection = 'asc';
 
     protected $listeners = [
         'delete',
         'cancelled',
     ];
+
     protected $rules = [
         'name' => 'required|min:3|unique:units,name',
         'alias' => 'required|min:1',
@@ -84,13 +110,15 @@ class Index extends Component
         View::share('title', 'Satuan Ukur');
         View::share('mainTitle', 'Inventori');
     }
+
     public function render()
     {
         $units = \App\Models\Unit::when($this->search, function ($query) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%');
         })->with('material_details')->withCount('material_details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
+
         return view('livewire.unit.index', compact('units'));
     }
 
@@ -153,7 +181,7 @@ class Index extends Component
     {
         if ($this->unit_id) {
             $this->usageMaterials = \App\Models\Material::when($this->usageSearch, function ($query) {
-                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+                $query->where('name', 'like', '%'.$this->usageSearch.'%');
             })->whereHas('material_details', function ($query) {
                 $query->where('unit_id', $this->unit_id);
             })->with(['material_details' => function ($query) {
@@ -196,7 +224,7 @@ class Index extends Component
 
     protected function refreshUsageList()
     {
-        if (!$this->unit_id) {
+        if (! $this->unit_id) {
             $this->usageMaterials = [];
             $this->usageSummary = [
                 'from' => 0,
@@ -204,12 +232,13 @@ class Index extends Component
                 'total' => 0,
                 'pages' => 1,
             ];
+
             return;
         }
 
         $unit = \App\Models\Unit::find($this->unit_id);
 
-        if (!$unit) {
+        if (! $unit) {
             $this->usageMaterials = [];
             $this->usageSummary = [
                 'from' => 0,
@@ -219,12 +248,14 @@ class Index extends Component
             ];
             $this->showUsageModal = false;
             $this->alert('error', 'Satuan tidak ditemukan');
+
             return;
         }
 
         $materials = \App\Models\Material::when($this->usageSearch, function ($query) {
             $term = trim($this->usageSearch);
-            return $query->where('name', 'like', '%' . $term . '%');
+
+            return $query->where('name', 'like', '%'.$term.'%');
         })->whereHas('material_details', function ($query) {
             $query->where('unit_id', $this->unit_id);
         })->with(['material_details' => function ($query) {
@@ -241,7 +272,7 @@ class Index extends Component
         $current = $materials
             ->slice($offset, $this->usagePerPage)
             ->values()
-            ->map(fn($material) => [
+            ->map(fn ($material) => [
                 'id' => $material->id,
                 'name' => $material->name,
                 'unit_alias' => $material->material_details->where('unit_id', $this->unit_id)->first() ? $material->material_details->where('unit_id', $this->unit_id)->first()->unit->alias : '-',
@@ -279,6 +310,7 @@ class Index extends Component
         $this->showEditModal = false;
         $this->resetForm();
     }
+
     public function confirmDelete()
     {
         // Konfirmasi menggunakan Livewire Alert
@@ -307,6 +339,7 @@ class Index extends Component
 
             if ($usageCount > 0) {
                 $this->alert('error', 'Satuan tidak dapat dihapus karena masih digunakan!');
+
                 return;
             }
 
@@ -319,7 +352,6 @@ class Index extends Component
             $this->alert('error', 'Satuan tidak ditemukan!');
         }
     }
-
 
     public function resetForm()
     {

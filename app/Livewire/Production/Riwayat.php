@@ -42,14 +42,14 @@ class Riwayat extends Component
         } elseif ($method == 'siap-beli') {
             $this->methodName = 'Siap Beli';
         }
-        View::share('title', 'Riwayat Produksi ' . $this->methodName);
+        View::share('title', 'Riwayat Produksi '.$this->methodName);
         View::share('mainTitle', 'Produksi');
     }
 
     public function render()
     {
         $query = Production::with(['details.product', 'workers'])
-            ->where('productions.production_number', 'like', '%' . $this->search . '%')
+            ->where('productions.production_number', 'like', '%'.$this->search.'%')
             ->where('productions.is_finish', true)
             ->where('productions.method', $this->method);
 

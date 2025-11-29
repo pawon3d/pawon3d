@@ -10,14 +10,16 @@ use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $selectedTransaction = null;
+
     public $showDetailModal = false;
+
     public $delete_id;
 
     protected $listeners = [
-        'delete'
+        'delete',
     ];
 
     public function mount()
@@ -30,8 +32,9 @@ class Index extends Component
         $transactions = Transaction::where('reviews_count', '>', 0)->withCount('reviews')->with(['reviews'])
             ->latest()
             ->paginate(10);
+
         return view('livewire.review.index', [
-            'transactions' => $transactions
+            'transactions' => $transactions,
         ]);
     }
 
@@ -39,10 +42,11 @@ class Index extends Component
     {
         $review = \App\Models\Review::find($reviewId);
         $review->update([
-            'visible' => !$review->visible
+            'visible' => ! $review->visible,
         ]);
         $this->alert('success', 'Ulasan berhasil diperbarui');
     }
+
     public function showDetail($transactionId)
     {
         $this->selectedTransaction = Transaction::with(['reviews'])

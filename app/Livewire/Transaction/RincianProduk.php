@@ -21,7 +21,7 @@ class RincianProduk extends Component
         if (! $this->product) {
             abort(404, 'Product not found');
         }
-        View::share('title', 'Rincian Produk: ' . $this->product->name);
+        View::share('title', 'Rincian Produk: '.$this->product->name);
         View::share('mainTitle', 'Kasir');
 
         $this->loadRelatedProducts();

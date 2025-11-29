@@ -3,19 +3,24 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Production extends Model
 {
     use LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'productions';
+
     protected $guarded = [
         'id',
     ];
@@ -45,10 +50,12 @@ class Production extends Model
     {
         return $this->hasMany(ProductionDetail::class);
     }
+
     public function workers()
     {
         return $this->hasMany(ProductionWorker::class);
     }
+
     public function transaction()
     {
         return $this->belongsTo(Transaction::class);
@@ -74,12 +81,12 @@ class Production extends Model
                 $method = $model->method ?? 'default';
                 $basePrefix = $prefixMap[$method] ?? 'PS'; // fallback ke 'PS' kalau tidak cocok
 
-                $prefix = $basePrefix . '-' . $today;
+                $prefix = $basePrefix.'-'.$today;
 
                 // Cari nomor terakhir untuk kombinasi metode + tanggal
                 $lastProduction = DB::table('productions')
                     ->lockForUpdate()
-                    ->where('production_number', 'like', $prefix . '-%')
+                    ->where('production_number', 'like', $prefix.'-%')
                     ->orderByDesc('production_number')
                     ->first();
 
@@ -89,7 +96,7 @@ class Production extends Model
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->production_number = $prefix . '-' . $nextNumber;
+                $model->production_number = $prefix.'-'.$nextNumber;
             });
         });
     }

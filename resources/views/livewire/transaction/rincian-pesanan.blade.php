@@ -359,13 +359,17 @@
                         Rp{{ number_format($totalAmount, 0, ',', '.') }}
                     </p>
                 </div>
-                <div class="flex flex-row justify-between w-full" style="padding: 10px 0;">
-                    <p style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
-                        Tukar 0 Poin</p>
-                    <p style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
-                        -Rp0
-                    </p>
-                </div>
+                @if ($transaction->points_used > 0)
+                    <div class="flex flex-row justify-between w-full" style="padding: 10px 0;">
+                        <p
+                            style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #27ae60;">
+                            Tukar {{ number_format($transaction->points_used, 0, ',', '.') }} Poin</p>
+                        <p
+                            style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #27ae60;">
+                            -Rp{{ number_format($transaction->points_discount, 0, ',', '.') }}
+                        </p>
+                    </div>
+                @endif
                 <div class="flex flex-row justify-between w-full"
                     style="padding: 10px 0; border-top: 1px solid #d4d4d4; margin-top: 10px; padding-top: 20px;">
                     <p
@@ -373,7 +377,7 @@
                         Total Tagihan</p>
                     <p
                         style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666; font-weight: 600;">
-                        Rp{{ number_format($totalAmount, 0, ',', '.') }}
+                        Rp{{ number_format($totalAmount - $transaction->points_discount, 0, ',', '.') }}
                     </p>
                 </div>
             </div>
@@ -500,6 +504,50 @@
                 </div>
             </div>
         </div>
+
+        @if ($transaction->payment_status != 'Lunas' && $transactionStatus && $customer)
+            {{-- Tukar Poin Section --}}
+            <div class="w-full flex flex-col gap-4 bg-white border-gray-300 rounded-lg p-4"
+                style="background-color: #fafafa; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <div class="flex flex-col gap-[15px]">
+                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                        Tukar Poin
+                    </p>
+                    <div class="flex items-start justify-between w-full">
+                        <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
+                            style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp 100)
+                            yang dapat
+                            ditukarkan adalah kelipatan 10 poin.</p>
+                        <div class="flex items-center gap-[2px] font-['Montserrat'] font-normal text-[14px] text-[#666666]"
+                            style="line-height: 1;">
+                            <span>{{ number_format($availablePoints, 0, ',', '.') }}</span>
+                            <span>Poin</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-end">
+                        <div class="flex-1">
+                            <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
+                                <input type="number" wire:model.live="pointsUsed" placeholder="0" min="0"
+                                    step="10" {{ $availablePoints == 0 ? 'disabled' : '' }}
+                                    class="w-full font-['Montserrat'] font-normal text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
+                                    style="line-height: 1;" />
+                            </div>
+                        </div>
+                        <button type="button" wire:click="applyPoints"
+                            class="bg-[#3f4e4f] hover:bg-[#2d3738] px-6 py-2.5 rounded-[15px] text-white font-semibold"
+                            style="font-family: Montserrat, sans-serif;">
+                            Terapkan
+                        </button>
+                    </div>
+                    @if ($pointsUsed > 0)
+                        <p class="font-['Montserrat'] font-normal text-[14px] text-[#27ae60]" style="line-height: 1;">
+                            Diskon: Rp{{ number_format($pointsUsed * 100, 0, ',', '.') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         @if ($transaction->payment_status != 'Lunas' && $transactionStatus)
             <div class="w-full flex flex-col gap-4">
                 <flux:label>Metode Pembayaran</flux:label>
@@ -815,18 +863,24 @@
                                             <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between w-full text-black">
-                                        <div class="flex gap-[4px] items-center font-normal">
-                                            <p class="whitespace-nowrap">Tukar 0 Poin</p>
+                                    @if ($transaction->points_used > 0)
+                                        <div class="flex items-center justify-between w-full text-green-600">
+                                            <div class="flex gap-[4px] items-center font-normal">
+                                                <p class="whitespace-nowrap">Tukar
+                                                    {{ number_format($transaction->points_used, 0, ',', '.') }} Poin
+                                                </p>
+                                            </div>
+                                            <p class="font-medium whitespace-nowrap">
+                                                -Rp{{ number_format($transaction->points_discount, 0, ',', '.') }}</p>
                                         </div>
-                                        <p class="font-medium whitespace-nowrap">-Rp0</p>
-                                    </div>
+                                    @endif
                                     <div class="flex items-start justify-between w-full text-black">
                                         <div class="font-normal whitespace-nowrap">
                                             <p>Total Tagihan</p>
                                         </div>
                                         <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                                            <p>Rp{{ number_format($subtotal - $transaction->points_discount, 0, ',', '.') }}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -9,11 +9,17 @@ use Livewire\Component;
 class TambahProduksiPesanan extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $transactionId;
+
     public $transaction;
+
     public $method;
+
     public $details = [];
+
     public $user_ids;
+
     public $note;
 
     public function mount($id)
@@ -29,7 +35,7 @@ class TambahProduksiPesanan extends Component
 
         $this->details = $this->transaction->details;
 
-        View::share('title', 'Rencana Produksi ' . $this->method);
+        View::share('title', 'Rencana Produksi '.$this->method);
         View::share('mainTitle', 'Produksi');
     }
 
@@ -55,7 +61,7 @@ class TambahProduksiPesanan extends Component
                     ->get();
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialBatches || $batchQty < $requiredQuantity) {
+                if (! $materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -66,8 +72,9 @@ class TambahProduksiPesanan extends Component
             }
         }
 
-        if (!empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
+        if (! empty($produkGagal)) {
+            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+
             return;
         }
 
@@ -100,8 +107,10 @@ class TambahProduksiPesanan extends Component
         }
 
         session()->flash('success', 'Produksi berhasil dimulai.');
+
         return redirect()->route('produksi.rincian', ['id' => $production->id]);
     }
+
     public function render()
     {
         return view('livewire.production.tambah-produksi-pesanan', [

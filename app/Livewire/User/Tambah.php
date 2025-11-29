@@ -8,13 +8,30 @@ use Livewire\Component;
 
 class Tambah extends Component
 {
-    use \Livewire\WithFileUploads, \Jantinnerezo\LivewireAlert\LivewireAlert;
+    use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
-    public $name, $email, $password, $image, $role, $phone, $gender;
+    public $name;
+
+    public $email;
+
+    public $password;
+
+    public $image;
+
+    public $role;
+
+    public $phone;
+
+    public $gender;
+
     public $previewImage;
+
     public $roles;
+
     public array $pin = ['', '', '', '', '', ''];
+
     public bool $showPin = true;
+
     public function mount()
     {
         View::share('title', 'Tambah Pekerja');
@@ -65,7 +82,7 @@ class Tambah extends Component
             'gender' => 'required',
         ]);
 
-        $user = new \App\Models\User();
+        $user = new \App\Models\User;
         $user->name = $this->name;
         $user->email = $this->email;
         $user->password = bcrypt($this->password);
@@ -80,6 +97,7 @@ class Tambah extends Component
         $user->assignRole($this->role);
 
         session()->flash('success', 'Pekerja berhasil ditambahkan.');
+
         return redirect()->route('user');
     }
 

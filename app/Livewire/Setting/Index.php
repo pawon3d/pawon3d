@@ -13,6 +13,7 @@ class Index extends Component
         View::share('title', 'Pengaturan');
         View::share('mainTitle', 'Pengaturan');
     }
+
     public function render()
     {
         return view('livewire.setting.index');

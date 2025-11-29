@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Prize extends Model
 {
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'prizes';
+
     protected $guarded = [
         'id',
     ];
@@ -27,7 +31,7 @@ class Prize extends Model
         static::creating(function ($model) {
             $model->id = Str::uuid();
             $randomString = Str::random(7);
-            $model->code = 'PRZ' . $randomString;
+            $model->code = 'PRZ'.$randomString;
         });
     }
 }

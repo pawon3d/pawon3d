@@ -3,30 +3,37 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Expense;
-use Carbon\Carbon;
-use App\Models\Product;
-use Livewire\Component;
 use App\Models\ExpenseDetail;
 use App\Models\Material;
-use App\Models\MaterialDetail;
+use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
+use Livewire\Component;
 
 class LaporanInventori extends Component
 {
     use \Livewire\WithPagination;
+
     public $currentPage = 1;
+
     public $perPage = 10;
 
     public $selectedYear;
+
     public $selectedMethod = 'semua';
+
     public $expenses;
+
     public $prevExpenses;
+
     public $details;
 
     public $diffStats = [];
+
     public $topMaterialChartData = [];
 
     protected $listeners = ['refreshCharts' => '$refresh', 'update-top-products'];
+
     protected $queryString = [
         'selectedMethod' => ['except' => 'semua'],
         'currentPage' => ['except' => 1],
@@ -43,12 +50,14 @@ class LaporanInventori extends Component
     {
         $diff = $current - $previous;
         $percentage = $previous > 0 ? round(($diff / $previous) * 100, 2) : ($current > 0 ? 100 : 0);
+
         return [
             'value' => $current,
             'diff' => $diff,
             'percentage' => $percentage,
         ];
     }
+
     public function render()
     {
         $startDate = Carbon::create($this->selectedYear)->startOfYear();
@@ -79,6 +88,7 @@ class LaporanInventori extends Component
 
         $groupedProducts = $details->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
@@ -90,22 +100,23 @@ class LaporanInventori extends Component
 
         $prevBest = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
+
             return [
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $totalExpense = $expenses->count();
         $prevTotalExpense = $prevExpenses->count();
@@ -187,7 +198,6 @@ class LaporanInventori extends Component
 
         $grandTotal = $remainGrandTotal + $usedGrandTotal;
 
-
         $materialTables = $materials->map(function ($material) use ($groupProductByMaterial) {
             $remainQty = 0;
             $remainValue = 0;
@@ -199,7 +209,7 @@ class LaporanInventori extends Component
                 $remainValue += $qty * $detail->supply_price;
 
                 // Ambil alias dari unit untuk remain
-                if (!$remainUnitAlias && $qty > 0 && $detail->unit) {
+                if (! $remainUnitAlias && $qty > 0 && $detail->unit) {
                     $remainUnitAlias = $detail->unit->alias;
                 }
             }
@@ -212,7 +222,9 @@ class LaporanInventori extends Component
             foreach ($compositions as $composition) {
                 $productId = $composition['product_id'];
                 $pcs = $composition['pcs'];
-                if ($pcs <= 0) continue;
+                if ($pcs <= 0) {
+                    continue;
+                }
 
                 $productionDetails = \App\Models\ProductionDetail::where('product_id', $productId)->get();
                 $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
@@ -224,12 +236,12 @@ class LaporanInventori extends Component
                 $usedValue += $totalMaterialQuantity * $materialPrice;
                 $usedQty += $totalMaterialQuantity;
 
-                if (!$usedUnitAlias && $materialDetail && $materialDetail->unit) {
+                if (! $usedUnitAlias && $materialDetail && $materialDetail->unit) {
                     $usedUnitAlias = $materialDetail->unit->alias;
                 }
             }
 
-            return (object)[
+            return (object) [
                 'name' => $material->name,
                 'total' => $usedQty + $remainQty,
                 'total_alias' => $usedUnitAlias ?? $remainUnitAlias,
@@ -245,8 +257,6 @@ class LaporanInventori extends Component
             ];
         })->sortByDesc('total')->values();
 
-
-
         $this->diffStats = [
             'totalExpense' => $this->calculateDiff($totalExpense, $prevTotalExpense),
             'grandTotal' => $this->calculateDiff($grandTotal, $grandTotal),
@@ -255,6 +265,7 @@ class LaporanInventori extends Component
             'best' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
             'worst' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
         ];
+
         return view('livewire.dashboard.laporan-inventori', [
             'grandTotal' => $grandTotal,
             'usedGrandTotal' => $usedGrandTotal,

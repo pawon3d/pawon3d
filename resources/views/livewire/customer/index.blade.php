@@ -42,9 +42,9 @@
                 <flux:dropdown>
                     <flux:button variant="ghost">
                         @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+                            {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
                         @else
-                        Semua Pelanggan
+                            Semua Pelanggan
                         @endif
                         ({{ $customers->total() }})
                         <flux:icon.chevron-down variant="mini" />
@@ -101,8 +101,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                 wire:click="sortBy('totalTransaction')">
                                 Total Transaksi
-                                <span>{{ $sortField === 'totalTransaction' && $sortDirection === 'asc' ? '↑' : '↓'
-                                    }}</span>
+                                <span>{{ $sortField === 'totalTransaction' && $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                                 wire:click="sortBy('points')">
@@ -113,31 +112,30 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($customers as $customer)
-                        <tr wire:click="showCustomerDetail('{{ $customer->id }}')"
-                            class="hover:bg-gray-100 cursor-pointer transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {{ $customer->phone }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}
-                            </td>
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $customer->transactions()->latest()->first() ?
-                                \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->translatedFormat('d
-                                F Y H:i')
-                                : '-'
-                                }}
-                            </td>
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $customer->transactions()->count() ?? 0 }}
-                            </td>
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $customer->points ?? 0 }}
-                            </td>
-                        </tr>
+                            <tr wire:click="showCustomerDetail('{{ $customer->id }}')"
+                                class="hover:bg-gray-100 cursor-pointer transition-colors duration-200">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ $customer->phone }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $customer->name }}
+                                </td>
+                                <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                    {{ $customer->transactions()->latest()->first()
+                                        ? \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->translatedFormat('d
+                                                                    F Y H:i')
+                                        : '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                    {{ $customer->transactions()->count() ?? 0 }}
+                                </td>
+                                <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
+                                    {{ $customer->points ?? 0 }}
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -158,13 +156,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
@@ -182,7 +180,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('phone')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
@@ -191,7 +189,7 @@
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         required />
                     @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -222,7 +220,7 @@
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             required />
                         @error('phone')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
                     <div>
@@ -231,17 +229,16 @@
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             required />
                         @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="flex flex-row justify-between items-center">
                         <p class="text-xs text-gray-500">Transaksi Terbaru</p>
                         <p class="text-xs text-gray-500">
-                            {{ $lastTransaction ?
-                            \Carbon\Carbon::parse($lastTransaction)->translatedFormat('d
-                            F Y H:i')
-                            : '-'
-                            }}
+                            {{ $lastTransaction
+                                ? \Carbon\Carbon::parse($lastTransaction)->translatedFormat('d
+                                                        F Y H:i')
+                                : '-' }}
                         </p>
                     </div>
                     <div class="flex flex-row justify-between items-center">
@@ -261,50 +258,53 @@
                     <flux:label>Riwayat Poin</flux:label>
                     <div class="overflow-y-auto max-h-64 bg-white rounded-lg shadow p-4">
                         @if (!$histories)
-                        <p class="text-gray-500 text-sm">Tidak ada riwayat poin.</p>
+                            <p class="text-gray-500 text-sm">Tidak ada riwayat poin.</p>
                         @else
-                        <div class="bg-white rounded-xl border-0">
-                            <!-- Table -->
-                            <div class="overflow-x-auto overflow-y-auto rounded-xl">
-                                <table class="w-full text-xs text-gray-500">
-                                    <thead class="bg-gray-200">
-                                        <tr>
-                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
-                                                wire:click="sortBy('action_id')">
-                                                ID Aksi
-                                                {{ $sortDirection === 'asc' && $sortField === 'action_id' ? '↑' : '↓' }}
-                                            </th>
-                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
-                                                wire:click="sortBy('action')">
-                                                Aksi
-                                                {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
-                                            </th>
-                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
-                                                wire:click="sortBy('points')">
-                                                Poin
-                                                {{ $sortDirection === 'asc' && $sortField === 'points' ? '↑' : '↓' }}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @forelse($histories as $history)
-                                        <tr>
-                                            <td class="px-3 py-2 whitespace-nowrap">{{ $history->action_id }}</td>
-                                            <td class="px-3 py-2 whitespace-nowrap">{{ $history->action }}</td>
-                                            <td class="px-3 py-2 text-right whitespace-nowrap">{{ $history->points ?? 0
-                                                }}</td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="3" class="px-3 py-2 text-center text-sm text-gray-500">Tidak
-                                                ada data.</td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                            <div class="bg-white rounded-xl border-0">
+                                <!-- Table -->
+                                <div class="overflow-x-auto overflow-y-auto rounded-xl">
+                                    <table class="w-full text-xs text-gray-500">
+                                        <thead class="bg-gray-200">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
+                                                    wire:click="sortBy('action_id')">
+                                                    ID Aksi
+                                                    {{ $sortDirection === 'asc' && $sortField === 'action_id' ? '↑' : '↓' }}
+                                                </th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
+                                                    wire:click="sortBy('action')">
+                                                    Aksi
+                                                    {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
+                                                </th>
+                                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer whitespace-nowrap"
+                                                    wire:click="sortBy('points')">
+                                                    Poin
+                                                    {{ $sortDirection === 'asc' && $sortField === 'points' ? '↑' : '↓' }}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            @forelse($histories as $history)
+                                                <tr>
+                                                    <td class="px-3 py-2 whitespace-nowrap">{{ $history->action_id }}
+                                                    </td>
+                                                    <td class="px-3 py-2 whitespace-nowrap">{{ $history->action }}
+                                                    </td>
+                                                    <td class="px-3 py-2 text-right whitespace-nowrap">
+                                                        {{ $history->points ?? 0 }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3"
+                                                        class="px-3 py-2 text-center text-sm text-gray-500">Tidak
+                                                        ada data.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
 
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                 </div>
@@ -338,7 +338,7 @@
                 <flux:modal.close>
                     <flux:button type="button" icon="x-mark">Batal</flux:button>
                 </flux:modal.close>
-                <flux:button type="button" icon="save" variant="primary" wire:click="addCustomer">Simpan
+                <flux:button type="button" icon="save" variant="primary" wire:click="update">Simpan
                 </flux:button>
             </div>
         </div>
@@ -356,25 +356,25 @@
                         <label
                             class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4 text-xs text-center">
                             Unggah Bukti
-                            <input type="file" wire:model.live="ig_image" accept="image/jpeg, image/png, image/jpg"
-                                class="hidden" />
+                            <input type="file" wire:model.live="ig_image"
+                                accept="image/jpeg, image/png, image/jpg" class="hidden" />
                         </label>
 
                         @if ($ig_image)
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="{{ is_string($ig_image) ? basename($ig_image) : $ig_image->getClientOriginalName() }}"
-                            readonly wire:loading.remove wire:target="ig_image">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="ig_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="{{ is_string($ig_image) ? basename($ig_image) : $ig_image->getClientOriginalName() }}"
+                                readonly wire:loading.remove wire:target="ig_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload File..." readonly wire:loading wire:target="ig_image">
                         @else
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="File Belum Dipilih" readonly wire:loading.remove wire:target="ig_image">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="ig_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="ig_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload File..." readonly wire:loading wire:target="ig_image">
                         @endif
                     </div>
                 </div>
@@ -385,25 +385,25 @@
                         <label
                             class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4 text-xs text-center">
                             Unggah Bukti
-                            <input type="file" wire:model.live="gmaps_image" accept="image/jpeg, image/png, image/jpg"
-                                class="hidden" />
+                            <input type="file" wire:model.live="gmaps_image"
+                                accept="image/jpeg, image/png, image/jpg" class="hidden" />
                         </label>
 
                         @if ($gmaps_image)
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="{{ is_string($gmaps_image) ? basename($gmaps_image) : $gmaps_image->getClientOriginalName() }}"
-                            readonly wire:loading.remove wire:target="gmaps_image">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="gmaps_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="{{ is_string($gmaps_image) ? basename($gmaps_image) : $gmaps_image->getClientOriginalName() }}"
+                                readonly wire:loading.remove wire:target="gmaps_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload File..." readonly wire:loading wire:target="gmaps_image">
                         @else
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="File Belum Dipilih" readonly wire:loading.remove wire:target="gmaps_image">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="gmaps_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="gmaps_image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload File..." readonly wire:loading wire:target="gmaps_image">
                         @endif
                     </div>
                 </div>

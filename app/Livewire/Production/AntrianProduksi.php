@@ -46,9 +46,9 @@ class AntrianProduksi extends Component
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('productions.id', 'like', '%' . $this->search . '%')
+                $q->where('productions.id', 'like', '%'.$this->search.'%')
                     ->orWhereHas('details.product', function ($q) {
-                        $q->where('name', 'like', '%' . $this->search . '%');
+                        $q->where('name', 'like', '%'.$this->search.'%');
                     });
             });
         }

@@ -54,7 +54,7 @@ class Produk extends Component
                 $query->whereJsonContains('method', $this->method);
             })
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%'.$this->search.'%');
             });
 
         $totalProducts = $query->count();

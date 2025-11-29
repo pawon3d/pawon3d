@@ -11,15 +11,23 @@ use Livewire\WithPagination;
 class RingkasanKasir extends Component
 {
     use WithPagination;
+
     public $currentMonth;
+
     public $currentYear;
+
     public $selectedDate;
+
     public $calendar = [];
+
     public $todayTransactions = [];
+
     public $otherTransactions = [];
 
     public $method = 'pesanan-reguler';
+
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -74,7 +82,7 @@ class RingkasanKasir extends Component
 
         $transactionDates = Transaction::whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->pluck('date')
-            ->map(fn($date) => Carbon::parse($date)->toDateString())
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
             ->toArray();
         $calendar = [];
 
@@ -117,6 +125,7 @@ class RingkasanKasir extends Component
         }
         $this->sortField = $field;
     }
+
     public function render()
     {
         $query = \App\Models\Transaction::with(['details.product', 'user'])

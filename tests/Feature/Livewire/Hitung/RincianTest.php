@@ -31,7 +31,7 @@ beforeEach(function () {
     $this->batch = MaterialBatch::create([
         'material_id' => $this->material->id,
         'unit_id' => $this->unit->id,
-        'batch_number' => 'B-' . now()->format('ymd'),
+        'batch_number' => 'B-'.now()->format('ymd'),
         'date' => now(),
         'batch_quantity' => 100,
     ]);
@@ -39,7 +39,7 @@ beforeEach(function () {
 
 test('rincian page is accessible', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'HP-' . now()->format('ymd') . '-0001',
+        'hitung_number' => 'HP-'.now()->format('ymd').'-0001',
         'action' => 'Hitung Persediaan',
         'hitung_date' => now(),
         'note' => 'Test note',
@@ -57,7 +57,7 @@ test('rincian page is accessible', function () {
 
 test('rincian shows hitung persediaan data', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'HP-' . now()->format('ymd') . '-0002',
+        'hitung_number' => 'HP-'.now()->format('ymd').'-0002',
         'action' => 'Hitung Persediaan',
         'hitung_date' => now(),
         'note' => 'Rencana hitung test',
@@ -77,7 +77,7 @@ test('rincian shows hitung persediaan data', function () {
 
 test('rincian shows catat persediaan rusak data', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'CPR-' . now()->format('ymd') . '-0001',
+        'hitung_number' => 'CPR-'.now()->format('ymd').'-0001',
         'action' => 'Catat Persediaan Rusak',
         'hitung_date' => now(),
         'note' => 'Barang rusak',
@@ -97,7 +97,7 @@ test('rincian shows catat persediaan rusak data', function () {
 
 test('rincian shows catat persediaan hilang data', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'CPH-' . now()->format('ymd') . '-0001',
+        'hitung_number' => 'CPH-'.now()->format('ymd').'-0001',
         'action' => 'Catat Persediaan Hilang',
         'hitung_date' => now(),
         'note' => 'Barang hilang',
@@ -117,7 +117,7 @@ test('rincian shows catat persediaan hilang data', function () {
 
 test('finish hitung persediaan updates batch quantity to actual count', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'HP-' . now()->format('ymd') . '-0010',
+        'hitung_number' => 'HP-'.now()->format('ymd').'-0010',
         'action' => 'Hitung Persediaan',
         'hitung_date' => now(),
         'status' => 'Sedang Diproses',
@@ -154,7 +154,7 @@ test('finish hitung persediaan updates batch quantity to actual count', function
 
 test('finish catat rusak reduces batch quantity by damaged amount', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'CPR-' . now()->format('ymd') . '-0010',
+        'hitung_number' => 'CPR-'.now()->format('ymd').'-0010',
         'action' => 'Catat Persediaan Rusak',
         'hitung_date' => now(),
         'status' => 'Sedang Diproses',
@@ -191,7 +191,7 @@ test('finish catat rusak reduces batch quantity by damaged amount', function () 
 
 test('finish catat hilang reduces batch quantity by lost amount', function () {
     $hitung = Hitung::create([
-        'hitung_number' => 'CPH-' . now()->format('ymd') . '-0010',
+        'hitung_number' => 'CPH-'.now()->format('ymd').'-0010',
         'action' => 'Catat Persediaan Hilang',
         'hitung_date' => now(),
         'status' => 'Sedang Diproses',
@@ -238,13 +238,13 @@ test('finish catat rusak deletes expired batch when quantity becomes zero', func
     $expiredBatch = MaterialBatch::create([
         'material_id' => $material->id,
         'unit_id' => $this->unit->id,
-        'batch_number' => 'B-EXP-' . now()->format('ymd'),
+        'batch_number' => 'B-EXP-'.now()->format('ymd'),
         'date' => now()->subDays(10), // Batch date 10 hari lalu (expired)
         'batch_quantity' => 50,
     ]);
 
     $hitung = Hitung::create([
-        'hitung_number' => 'CPR-' . now()->format('ymd') . '-0020',
+        'hitung_number' => 'CPR-'.now()->format('ymd').'-0020',
         'action' => 'Catat Persediaan Rusak',
         'hitung_date' => now(),
         'status' => 'Sedang Diproses',
@@ -291,13 +291,13 @@ test('finish catat rusak keeps non-expired batch when quantity becomes zero', fu
     $nonExpiredBatch = MaterialBatch::create([
         'material_id' => $material->id,
         'unit_id' => $this->unit->id,
-        'batch_number' => 'B-NEXP-' . now()->format('ymd'),
+        'batch_number' => 'B-NEXP-'.now()->format('ymd'),
         'date' => now()->addDays(5), // Batch date 5 hari ke depan (belum expired)
         'batch_quantity' => 30,
     ]);
 
     $hitung = Hitung::create([
-        'hitung_number' => 'CPR-' . now()->format('ymd') . '-0021',
+        'hitung_number' => 'CPR-'.now()->format('ymd').'-0021',
         'action' => 'Catat Persediaan Rusak',
         'hitung_date' => now(),
         'status' => 'Sedang Diproses',

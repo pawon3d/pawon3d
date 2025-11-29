@@ -90,7 +90,7 @@ class Index extends Component
     public function render()
     {
         $query = Production::with(['details.product', 'workers'])
-            ->where('productions.production_number', 'like', '%' . $this->search . '%')
+            ->where('productions.production_number', 'like', '%'.$this->search.'%')
             ->where('productions.method', $this->method)
             ->whereIn('productions.status', ['Sedang Diproses']);
 

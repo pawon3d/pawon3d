@@ -149,7 +149,10 @@ class Index extends Component
             $this->finalCash = $todayShift->final_cash;
             $this->receivedCash = $transaction ?? 0;
             $this->receivedNonCash = $nonCash ?? 0;
-            $this->discountToday = 0;
+            // Calculate total points discount for this shift
+            $pointsDiscount = \App\Models\Transaction::where('created_by_shift', $todayShift->id)
+                ->sum('points_discount');
+            $this->discountToday = $pointsDiscount;
             $this->refundTotal = $transactionShift;
             $this->refundCash = $refundCash;
             $this->refundNonCash = $refundNonCash;
@@ -176,13 +179,18 @@ class Index extends Component
         foreach ($previousDayOpenShifts as $shift) {
             // Calculate final cash for the shift
             $receivedCash = \App\Models\Transaction::where('created_by_shift', $shift->id)
-                ->whereHas('payments', fn ($q) => $q->where('payment_method', 'tunai'))
-                ->with(['payments' => fn ($q) => $q->where('payment_method', 'tunai')])
+                ->whereHas('payments', fn($q) => $q->where('payment_method', 'tunai'))
+                ->with(['payments' => fn($q) => $q->where('payment_method', 'tunai')])
                 ->get()
-                ->sum(fn ($t) => $t->payments->sum('paid_amount'));
+                ->sum(fn($t) => $t->payments->sum('paid_amount'));
 
             $refundTotal = \App\Models\Transaction::where('refund_by_shift', $shift->id)->sum('total_refund');
-            $finalCash = $shift->initial_cash + $receivedCash - $refundTotal;
+
+            // Calculate points discount for the shift
+            $pointsDiscount = \App\Models\Transaction::where('created_by_shift', $shift->id)
+                ->sum('points_discount');
+
+            $finalCash = $shift->initial_cash + $receivedCash - $refundTotal - $pointsDiscount;
 
             // Set end_time to 23:59:59 of the start_time date
             $endTime = \Carbon\Carbon::parse($shift->start_time)->endOfDay();
@@ -302,7 +310,7 @@ class Index extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
                     $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
-                    $this->alert('warning', 'Stok produk ini hanya tersisa '.$this->cart[$itemId]['stock'].' buah!');
+                    $this->alert('warning', 'Stok produk ini hanya tersisa ' . $this->cart[$itemId]['stock'] . ' buah!');
                 }
             }
         }
@@ -358,7 +366,7 @@ class Index extends Component
     // Perhitungan total
     protected function getTotalProperty()
     {
-        return collect($this->cart)->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
+        return collect($this->cart)->reduce(fn($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
     }
 
     public function checkout()
@@ -397,7 +405,7 @@ class Index extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })
-                ->when($this->search, fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
+                ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->paginate(10),
         ]);
     }

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Production;
 
-use App\Models\MaterialDetail;
 use App\Models\Product;
 use App\Models\ProductionWorker;
 use Illuminate\Support\Facades\View;
@@ -11,11 +10,24 @@ use Livewire\Component;
 class Tambah extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
+
     public $production_details = [];
+
     public $user_ids;
-    public $start_date = 'dd/mm/yyyy', $note, $time;
+
+    public $start_date = 'dd/mm/yyyy';
+
+    public $note;
+
+    public $time;
+
     public $method = 'pesanan-reguler';
-    public $current_stock_total = 0, $suggested_amount_total = 0, $quantity_plan_total = 0;
+
+    public $current_stock_total = 0;
+
+    public $suggested_amount_total = 0;
+
+    public $quantity_plan_total = 0;
 
     public function mount($method)
     {
@@ -41,6 +53,7 @@ class Tambah extends Component
             'quantity_plan' => 0,
         ];
     }
+
     public function removeProduct($index)
     {
         unset($this->production_details[$index]);
@@ -91,10 +104,8 @@ class Tambah extends Component
             }
         }
 
-
         $this->calculateTotals();
     }
-
 
     public function updatedProductionDetails()
     {
@@ -108,6 +119,7 @@ class Tambah extends Component
         // }
         $this->calculateTotals();
     }
+
     public function calculateTotals()
     {
         $this->current_stock_total = 0;
@@ -141,6 +153,7 @@ class Tambah extends Component
 
         if (empty($this->production_details) || $this->production_details[0]['product_id'] == '') {
             $this->alert('error', 'Belum ada produk yang ditambahkan.');
+
             return;
         }
         foreach ($this->production_details as $detail) {
@@ -156,7 +169,7 @@ class Tambah extends Component
                     ->get();
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialBatches || $batchQty < $requiredQuantity) {
+                if (! $materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -167,8 +180,9 @@ class Tambah extends Component
             }
         }
 
-        if (!empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
+        if (! empty($produkGagal)) {
+            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+
             return;
         }
 
@@ -195,6 +209,7 @@ class Tambah extends Component
         }
 
         session()->flash('success', 'Produksi berhasil ditambahkan.');
+
         return redirect()->route('produksi');
     }
 
@@ -221,7 +236,7 @@ class Tambah extends Component
                     ->get();
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                if (!$materialBatches || $batchQty < $requiredQuantity) {
+                if (! $materialBatches || $batchQty < $requiredQuantity) {
                     $kurang = true;
                     break;
                 }
@@ -232,8 +247,9 @@ class Tambah extends Component
             }
         }
 
-        if (!empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
+        if (! empty($produkGagal)) {
+            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+
             return;
         }
 
@@ -272,8 +288,10 @@ class Tambah extends Component
         // });
 
         session()->flash('success', 'Produksi berhasil dimulai.');
+
         return redirect()->route('produksi.rincian', ['id' => $production->id]);
     }
+
     public function render()
     {
         return view('livewire.production.tambah', [
