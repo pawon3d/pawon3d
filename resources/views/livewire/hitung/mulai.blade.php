@@ -1,168 +1,188 @@
 <div>
-    <div class="mb-4 flex justify-between items-center">
-        <div class="flex gap-2 items-center">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex gap-4 items-center">
             <a href="{{ route('hitung.rincian', $hitung_id) }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
+                class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
+                <flux:icon.arrow-left class="size-5" />
                 Kembali
             </a>
-            <h1 class="text-2xl">{{ $hitung->action }}</h1>
+            <h1 class="text-xl font-semibold text-[#666666]">{{ $hitungAction }}</h1>
         </div>
-        <div class="flex gap-2 items-center">
-            <!-- Tombol Riwayat Pembaruan -->
+        <div class="flex gap-2.5 items-center">
             <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                class="px-6 py-2.5 bg-[#525252] border border-[#666666] rounded-[15px] text-white text-sm font-medium">
                 Riwayat Pembaruan
             </button>
         </div>
     </div>
-    <div class="flex items-center border border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Sed pharetra netus gravida non curabitur fermentum etiam. Lorem
-                orci auctor adipiscing vel blandit. In in integer viverra proin risus eu eleifend.
-            </p>
+
+    <!-- Info Box -->
+    <div class="bg-[#3F4E4F] rounded-[15px] px-6 py-4 mb-8 flex items-start gap-4">
+        <div class="flex-shrink-0 bg-[#F8F4E1] rounded-lg p-2">
+            <flux:icon.megaphone class="size-6 text-[#3F4E4F]" />
         </div>
+        <p class="text-sm text-[#F8F4E1] leading-relaxed">
+            <strong>{{ $hitungAction }}.</strong> Masukkan hasil hitung secara bertahap dan jika terjadi kesalahan
+            dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus (-)
+        </p>
     </div>
 
-
-    <div class="w-full mt-8 flex items-center flex-col gap-4">
-        <div class="w-full flex items-center justify-between gap-4 flex-row">
-            <h2 class="text-lg font-semibold">Daftar Persediaan</h2>
-            <flux:button type="button" variant="primary" wire:click="markAllReceived">
+    <!-- Daftar Persediaan Card -->
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-6 mb-8">
+        <div class="flex justify-between items-center mb-5">
+            <p class="text-base font-medium text-[#666666]">Daftar Persediaan</p>
+            <button type="button" wire:click="markAllAs"
+                class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm text-[#F8F4E1] font-semibold text-sm">
                 Tandai
-                @if ($hitung->action === 'Hitung Persediaan')
+                @if ($hitungAction === 'Hitung Persediaan')
                     Hitung
-                @elseif ($hitung->action === 'Catat Persediaan Rusak')
+                @elseif ($hitungAction === 'Catat Persediaan Rusak')
                     Rusak
-                @elseif ($hitung->action === 'Catat Persediaan Hilang')
+                @elseif ($hitungAction === 'Catat Persediaan Hilang')
                     Hilang
                 @endif
                 Semua
-            </flux:button>
+            </button>
         </div>
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th class="text-left px-6 py-3 text-nowrap">Barang Persediaan</th>
-                        <th class="text-right px-6 py-3">Jumlah Diharapkan</th>
-                        <th class="text-right px-6 py-3">
-                            Jumlah
-                            @if ($hitung->action === 'Hitung Persediaan')
-                                Terhitung
-                            @elseif ($hitung->action === 'Catat Persediaan Rusak')
-                                Rusak
-                            @elseif ($hitung->action === 'Catat Persediaan Hilang')
-                                Hilang
-                            @endif
-                        </th>
-                        <th class="text-right px-6 py-3">
-                            @if ($hitung->action === 'Hitung Persediaan')
-                                Selisih Jumlah
-                            @else
-                                Jumlah Sebenarnya
-                            @endif
-                        </th>
-                        <th class="text-right px-6 py-3">Satuan Ukur</th>
-                        <th class="text-right px-6 py-3">
-                            Barang
-                            @if ($hitung->action === 'Hitung Persediaan')
-                                Terhitung
-                            @elseif ($hitung->action === 'Catat Persediaan Rusak')
-                                Rusak
-                            @elseif ($hitung->action === 'Catat Persediaan Hilang')
-                                Hilang
-                            @endif
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($hitungDetails as $index => $detail)
-                        <tr>
-                            <td class="px-6 py-3 text-nowrap">
-                                <span class="text-sm">
-                                    {{ $detail['material_name'] ?? 'Barang Tidak Ditemukan' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm">
-                                    {{ $detail['quantity_expect'] }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm">
-                                    {{ $detail['quantity_actual'] ? $detail['quantity_actual'] : 0 }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm">
-                                    @if ($hitung->action === 'Hitung Persediaan')
-                                        {{ $detail['quantity_actual'] - $detail['quantity_expect'] }}
-                                    @else
-                                        {{ $detail['quantity_expect'] - $detail['quantity_actual'] }}
-                                    @endif
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <span class="text-sm">
-                                    {{ $detail['unit'] }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <input type="number" placeholder="0"
-                                    wire:model.number.live="hitungDetails.{{ $index }}.quantity"
-                                    class="w-full border-gray-300
-                                {{ isset($errorInputs[$index]) ? 'border-red-500' : 'border-gray-300' }}
-                                focus:outline-none focus:ring-0 rounded text-right" />
-                                @if (isset($errorInputs[$index]))
-                                    <span class="text-xs text-red-500">Nilai melebihi jumlah yang ada</span>
-                                @endif
 
-                            </td>
+        <div class="w-full">
+            <!-- Table Header -->
+            <div class="flex w-full rounded-t-[15px] overflow-hidden">
+                <div class="bg-[#3F4E4F] px-6 py-5 min-w-[180px] w-[180px]">
+                    <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Barang<br>Persediaan</span>
+                </div>
+                <div class="bg-[#3F4E4F] px-6 py-5 min-w-[100px] w-[100px]">
+                    <span class="text-sm font-bold text-[#F8F4E1]">Batch</span>
+                </div>
+                <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-right">
+                    <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Jumlah<br>Diharapkan</span>
+                </div>
+                @if ($hitungAction === 'Hitung Persediaan')
+                    <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-right">
+                        <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Selisih<br>Didapatkan</span>
+                    </div>
+                @else
+                    <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-right">
+                        <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Jumlah<br>Sebenarnya</span>
+                    </div>
+                @endif
+                <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-center">
+                    <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Barang<br>
+                        @if ($hitungAction === 'Hitung Persediaan')
+                            Terhitung
+                        @elseif ($hitungAction === 'Catat Persediaan Rusak')
+                            Rusak
+                        @else
+                            Hilang
+                        @endif
+                    </span>
+                </div>
+                <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-center">
+                    <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Satuan<br>Ukur</span>
+                </div>
+                <div class="bg-[#3F4E4F] px-6 py-5 flex-1 min-w-[100px] text-right">
+                    <span class="text-sm font-bold text-[#F8F4E1] leading-tight block">Jumlah<br>
+                        @if ($hitungAction === 'Hitung Persediaan')
+                            Terhitung
+                        @elseif ($hitungAction === 'Catat Persediaan Rusak')
+                            Rusak
+                        @else
+                            Hilang
+                        @endif
+                    </span>
+                </div>
+            </div>
 
-                        </tr>
-                    @endforeach
-
-                </tbody>
-
-            </table>
+            <!-- Table Body -->
+            @foreach ($hitungDetails as $index => $detail)
+                <div class="flex w-full border-b border-[#d4d4d4]">
+                    <div class="bg-[#fafafa] px-6 py-4 min-w-[180px] w-[180px] flex items-center">
+                        <span class="text-sm font-medium text-[#666666]">{{ $detail['material_name'] }}</span>
+                    </div>
+                    <div class="bg-[#fafafa] px-6 py-4 min-w-[100px] w-[100px] flex items-center">
+                        <span class="text-sm font-medium text-[#666666]">{{ $detail['batch_number'] }}</span>
+                    </div>
+                    <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-end">
+                        <span class="text-sm font-medium text-[#666666]">
+                            {{ $detail['quantity_expect'] }} {{ $detail['unit_alias'] }}
+                        </span>
+                    </div>
+                    @if ($hitungAction === 'Hitung Persediaan')
+                        <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-end">
+                            @php
+                                $selisih = $detail['selisih_didapatkan'];
+                            @endphp
+                            <span class="text-sm font-medium text-[#666666]">
+                                {{ $selisih > 0 ? '+' : '' }}{{ $selisih }} {{ $detail['unit_alias'] }}
+                            </span>
+                        </div>
+                    @else
+                        <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-end">
+                            <span class="text-sm font-medium text-[#666666]">
+                                {{ $detail['jumlah_sebenarnya'] }} {{ $detail['unit_alias'] }}
+                            </span>
+                        </div>
+                    @endif
+                    <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-center">
+                        <input type="number" placeholder="0" step="any"
+                            wire:model.number.live.debounce.300ms="hitungDetails.{{ $index }}.quantity_input"
+                            class="w-24 px-3 py-2 border rounded-lg text-center text-sm
+                            {{ isset($errorInputs[$index]) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-[#d4d4d4] focus:ring-[#3F4E4F] focus:border-[#3F4E4F]' }}" />
+                    </div>
+                    <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-center">
+                        <div class="flex items-center gap-1 px-3 py-2 border border-[#d4d4d4] rounded-lg bg-white">
+                            <span class="text-sm text-[#666666]">{{ $detail['unit_alias'] }}</span>
+                            <flux:icon.chevron-down class="size-4 text-[#666666]" />
+                        </div>
+                    </div>
+                    <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex flex-col items-end justify-center">
+                        @php
+                            $totalTerhitung = ($detail['quantity_actual'] ?? 0) + ($detail['quantity_input'] ?? 0);
+                        @endphp
+                        <span class="text-sm font-medium text-[#666666]">
+                            {{ $totalTerhitung }} {{ $detail['unit_alias'] }}
+                        </span>
+                        @if (isset($errorInputs[$index]))
+                            <span class="text-xs text-red-500 mt-1">{{ $errorInputs[$index] }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 
-
-
-    <div class="flex justify-end mt-16 gap-4">
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-4">
         <a href="{{ route('hitung.rincian', $hitung_id) }}"
-            class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
-            <flux:icon.x-mark class="w-4 h-4 mr-2" />
+            class="px-6 py-2.5 bg-[#666666] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
+            <flux:icon.x-mark class="size-4" />
             Batal
         </a>
-        <flux:button icon="save" type="button" variant="primary" wire:click="save">
+        <button type="button" wire:click="save"
+            class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-semibold">
+            <flux:icon.bookmark class="size-4" />
             Simpan
-        </flux:button>
+        </button>
     </div>
-
-
-
 
     <!-- Modal Riwayat Pembaruan -->
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
         <div class="space-y-6">
             <div>
-                <h1 size="lg">Riwayat Pembaruan {{ $hitung->hitung_number }}</h1>
+                <flux:heading size="lg">Riwayat Pembaruan {{ $hitungNumber }}</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
+                @forelse ($activityLogs as $log)
+                    <div class="border-b border-[#d4d4d4] py-3">
+                        <div class="text-sm font-medium text-[#666666]">{{ $log['description'] }}</div>
+                        <div class="text-xs text-[#999999]">
+                            {{ $log['causer_name'] }} - {{ $log['created_at'] }}
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-sm text-[#999999]">Belum ada riwayat pembaruan.</p>
+                @endforelse
             </div>
         </div>
     </flux:modal>

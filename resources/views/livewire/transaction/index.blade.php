@@ -111,8 +111,11 @@
             <div class="flex gap-[20px] @if (count($cart) > 0) justify-between @endif">
                 {{-- Product Grid --}}
                 <div class="@if (count($cart) > 0) flex-1 @else w-full @endif">
-                    <div
-                        class="grid @if (count($cart) > 0) grid-cols-3 @else grid-cols-5 @endif gap-8 max-h-[530px] overflow-y-auto pr-2">
+                    <div @class([
+                        'grid gap-8 max-h-[530px] overflow-y-auto pr-2',
+                        'grid-cols-3' => count($cart) > 0,
+                        'grid-cols-5' => count($cart) === 0,
+                    ])>
                         @forelse ($products as $product)
                             <div class="flex flex-col gap-5 pb-6">
                                 {{-- Product Image --}}
@@ -191,8 +194,11 @@
                                 @endif
                             </div>
                         @empty
-                            <div
-                                class="@if (count($cart) > 0) col-span-3 @else col-span-5 @endif bg-[#eaeaea] rounded-[15px] p-8 text-center min-h-[385px] flex flex-col items-center justify-center">
+                            <div @class([
+                                'bg-[#eaeaea] rounded-[15px] p-8 text-center min-h-[385px] flex flex-col items-center justify-center',
+                                'col-span-3' => count($cart) > 0,
+                                'col-span-5' => count($cart) === 0,
+                            ])>
                                 <p class="text-[#666666] font-semibold text-base mb-2"
                                     style="font-family: 'Montserrat', sans-serif;">
                                     Belum ada produk

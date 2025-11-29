@@ -8,8 +8,11 @@ use Livewire\Component;
 class Riwayat extends Component
 {
     public $search = '';
+
     public $filterStatus = '';
+
     public $sortField = 'hitung_number';
+
     public $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
@@ -23,6 +26,7 @@ class Riwayat extends Component
         }
         $this->sortField = $field;
     }
+
     public function mount()
     {
         View::share('title', 'Riwayat Hitung dan Catat Persediaan');
@@ -36,15 +40,16 @@ class Riwayat extends Component
             'status' => 'history',
         ]);
     }
+
     public function render()
     {
         return view('livewire.hitung.riwayat', [
-            'hitungs' => \App\Models\Hitung::with(['details'])
+            'hitungs' => \App\Models\Hitung::with(['details.material', 'user'])
                 ->when($this->search, function ($query) {
-                    $query->where('hitung_number', 'like', '%' . $this->search . '%');
+                    $query->where('hitung_number', 'like', '%'.$this->search.'%');
                 })->where('is_finish', true)
                 ->orderBy("hitungs.{$this->sortField}", $this->sortDirection)
-                ->paginate(10)
+                ->paginate(10),
         ]);
     }
 }

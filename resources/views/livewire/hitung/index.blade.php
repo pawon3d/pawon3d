@@ -1,167 +1,98 @@
 <div>
+    <!-- Header -->
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Hitung dan Catat Persediaan</h1>
-        <div class="flex gap-2 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Riwayat Pembaruan
-            </button>
-        </div>
+        <h1 class="text-xl font-semibold text-[#666666]">Hitung dan catat Persediaan</h1>
+        <flux:button variant="filled" class="!bg-[#525252] !text-white hover:!bg-[#424242]" wire:click="riwayatPembaruan">
+            Riwayat Pembaruan
+        </flux:button>
     </div>
 
-    <div class="flex items-center border bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Demi menjaga akurasi data persediaan dan mencegah terjadinya selisih jumlah, penting untuk melakukan
-                pengecekan secara berkala terhadap jumlah dan kondisi barang, sehingga catatan fisik dan sistem selalu
-                terkini, akurat, dan dapat dipertanggungjawabkan. Hitung untuk menghitung jumlah persediaan dan hitung
-                untuk mencatat persediaan yang rusak atau hilang.
-            </p>
-        </div>
-    </div>
+    <!-- Info Box -->
+    <x-alert.info>
+        Hitung dan Catat Persediaan. Penting untuk melakukan pengecekan terhadap jumlah dan kondisi barang secara
+        berkala, sehingga catatan fisik dan sistem selalu akurat dan dapat dipertanggungjawabkan. Hitung untuk
+        menghitung jumlah persediaan dan catat untuk mencatat persediaan yang rusak atau hilang.
+    </x-alert.info>
 
-    <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
-        <div class="flex justify-between items-center mb-2">
-            <!-- Search Input -->
-            <div class="p-4 flex">
-                <input wire:model.live="search" placeholder="Cari..."
-                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <flux:button :loading="false" class="ml-2" variant="ghost">
-                    <flux:icon.funnel variant="mini" />
-                    <span>Filter</span>
+    <!-- Table Card -->
+    <div class="bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] rounded-[15px] p-6">
+        <!-- Search & Actions Row -->
+        <div class="flex justify-between items-center mb-5">
+            <!-- Search & Filter -->
+            <div class="flex items-center gap-4 flex-1">
+                <div class="flex-1 max-w-md bg-white border border-[#666666] rounded-[20px] flex items-center px-4 py-0">
+                    <flux:icon.magnifying-glass class="size-[20px] text-[#666666]" />
+                    <input wire:model.live="search" placeholder="Cari Rencana Hitung atau Catat"
+                        class="w-full px-3 py-2.5 text-base text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 placeholder:text-[#959595]" />
+                </div>
+                <button type="button" class="flex items-center gap-1 text-[#666666]">
+                    <flux:icon.funnel class="size-[20px]" />
+                    <span class="text-base font-medium">Filter</span>
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-4">
+                <flux:button variant="primary" href="{{ route('hitung.rencana') }}" wire:navigate>
+                    <flux:icon.list-bullet class="size-5 mr-2" />
+                    Rencana Aksi
+                </flux:button>
+                <flux:button variant="primary" href="{{ route('hitung.riwayat') }}" wire:navigate>
+                    <flux:icon.clock class="size-5" />
                 </flux:button>
             </div>
-            <div class="p-4 flex gap-4">
-                <div class="flex gap-2 items-center">
-                    <a href="{{ route('hitung.riwayat') }}"
-                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                        wire:navigate>
-                        <flux:icon.history class="mr-2" />
-                        Riwayat Aksi
-                    </a>
-                </div>
-                <div class="flex gap-2 items-center">
-                    <a href="{{ route('hitung.tambah') }}"
-                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                        wire:navigate>
-                        <flux:icon.plus class="mr-2" />
-                        Tambah Aksi
-                    </a>
-                </div>
-            </div>
         </div>
-        <div class="flex justify-between items-center mb-3">
-            <div class="p-4 flex">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
+
+        <!-- Table -->
+        <x-table.paginated :headers="[
+            ['label' => 'ID Aksi', 'sortable' => true, 'sort-by' => 'hitung_number'],
+            ['label' => 'Tanggal Aksi', 'sortable' => true, 'sort-by' => 'hitung_date'],
+            ['label' => 'Aksi', 'sortable' => true, 'sort-by' => 'action'],
+            ['label' => 'Persediaan'],
+            ['label' => 'Inventaris', 'sortable' => true, 'sort-by' => 'user_id'],
+            ['label' => 'Status'],
+        ]" :paginator="$hitungs" headerBg="#3F4E4F" headerText="#F8F4E1"
+            emptyMessage="Belum Ada Aksi. Tekan tombol 'Rencana Aksi' untuk menambahkan aksi.">
+            @foreach ($hitungs as $hitung)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
+                        <a href="{{ route('hitung.rincian', $hitung->id) }}" class="hover:underline" wire:navigate>
+                            {{ $hitung->hitung_number }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
+                        {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d M Y') : '-' }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
+                        {{ $hitung->action ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
+                        @if ($hitung->details && $hitung->details->count() > 0)
+                            {{ $hitung->details->pluck('material.name')->filter()->implode(', ') ?: '-' }}
                         @else
-                        Semua Aksi
+                            -
                         @endif
-                        ({{ $hitungs->total() }})
-                        <flux:icon.chevron-down variant="mini" />
-                    </flux:button>
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model.live="filterStatus">
-                            <flux:menu.radio value="">Semua Aksi</flux:menu.radio>
-                            <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                            <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
-            <div class="flex gap-2 items-center">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        Urutkan Aksi
-                        <flux:icon.chevron-down variant="mini" />
-
-                    </flux:button>
-
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model="sortByCategory">
-                            <flux:menu.radio value="name">Nama</flux:menu.radio>
-                            <flux:menu.radio value="status">Status</flux:menu.radio>
-                            <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
-        </div>
-
-        @if ($hitungs->isEmpty())
-        <div class="col-span-7 text-center bg-gray-300 p-4 rounded-2xl flex flex-col items-center justify-center">
-            <p class="text-gray-700 font-semibold">Belum Ada Aksi.</p>
-            <p class="text-gray-700">Tekan tombol “Tambah Aksi” untuk menambahkan aksi.</p>
-        </div>
-        @else
-        <div class="bg-white rounded-xl border">
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('hitung_number')">
-                                ID Aksi
-                                {{ $sortDirection === 'asc' && $sortField === 'hitung_number' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('hitung_date')">
-                                Tanggal Dibuat
-                                {{ $sortDirection === 'asc' && $sortField === 'hitung_date' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('action')">
-                                Aksi
-                                {{ $sortDirection === 'asc' && $sortField === 'action' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('status')">
-                                Status
-                                {{ $sortDirection === 'asc' && $sortField === 'status' ? '↑' : '↓' }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($hitungs as $hitung)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('hitung.rincian', $hitung->id) }}"
-                                    class="hover:bg-gray-50 cursor-pointer">
-                                    {{ $hitung->hitung_number }}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d/m/Y') :
-                                '-' }}
-                            </td>
-                            <td class="px-6 py-4 text-left whitespace-nowrap">
-                                {{ $hitung->action ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 text-left whitespace-nowrap">
-                                {{ $hitung->status ?? '-' }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $hitungs->links() }}
-            </div>
-        </div>
-        @endif
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
+                        {{ $hitung->user->name ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 border-b border-[#d4d4d4]">
+                        @php
+                            $statusColors = [
+                                'Sedang Diproses' => 'bg-[#FFC400] text-white',
+                                'Selesai' => 'bg-green-500 text-white',
+                                'Dibatalkan' => 'bg-red-500 text-white',
+                            ];
+                            $statusClass = $statusColors[$hitung->status] ?? 'bg-gray-400 text-white';
+                        @endphp
+                        <span
+                            class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-bold rounded-[15px] min-w-[90px] {{ $statusClass }}">
+                            {{ $hitung->status ?? '-' }}
+                        </span>
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->
@@ -171,15 +102,17 @@
                 <flux:heading size="lg">Riwayat Pembaruan Hitung dan Catat Persediaan</flux:heading>
             </div>
             <div class="max-h-96 overflow-y-auto">
-                @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                @forelse ($activityLogs as $log)
+                    <div class="border-b py-2">
+                        <div class="text-sm font-medium">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->causer->name ?? 'System' }} -
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
                     </div>
-                </div>
-                @endforeach
+                @empty
+                    <p class="text-gray-500 text-center py-4">Tidak ada riwayat pembaruan.</p>
+                @endforelse
             </div>
         </div>
     </flux:modal>

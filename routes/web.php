@@ -129,8 +129,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/belanja/cetak/{id}', [PdfController::class, 'generateExpenseDetailPDF'])
             ->name('rincian-belanja.pdf');
         Route::get('/hitung', App\Livewire\Hitung\Index::class)->name('hitung');
-        Route::get('/hitung/tambah', App\Livewire\Hitung\Tambah::class)->name('hitung.tambah');
-        Route::get('/hitung/{id}/edit', App\Livewire\Hitung\Edit::class)->name('hitung.edit');
+        Route::get('/hitung/rencana', App\Livewire\Hitung\Rencana::class)->name('hitung.rencana');
+        Route::get('/hitung/tambah', App\Livewire\Hitung\Form::class)->name('hitung.tambah');
+        Route::get('/hitung/{id}/edit', App\Livewire\Hitung\Form::class)->name('hitung.edit');
         Route::get('/hitung/{id}/rincian', App\Livewire\Hitung\Rincian::class)->name('hitung.rincian');
         Route::get('/hitung/{id}/mulai-aksi', App\Livewire\Hitung\Mulai::class)->name('hitung.mulai');
         Route::get('/hitung/riwayat', App\Livewire\Hitung\Riwayat::class)->name('hitung.riwayat');
@@ -206,4 +207,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

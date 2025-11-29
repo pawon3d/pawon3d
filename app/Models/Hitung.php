@@ -3,19 +3,24 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Hitung extends Model
 {
     use LogsActivity;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $table = 'hitungs';
+
     protected $guarded = [
         'id',
     ];
@@ -46,6 +51,11 @@ class Hitung extends Model
         return $this->hasMany(HitungDetail::class, 'hitung_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public static function boot()
     {
         parent::boot();
@@ -54,12 +64,12 @@ class Hitung extends Model
             $model->id = Str::uuid();
             DB::transaction(function () use ($model) {
                 $today = Carbon::now()->format('ymd'); // YYMMDD
-                $prefix = 'HC-' . $today;
+                $prefix = 'HC-'.$today;
 
                 // Ambil produksi terakhir untuk hari ini
                 $lastHitung = DB::table('hitungs')
                     ->lockForUpdate()
-                    ->where('hitung_number', 'like', $prefix . '-%')
+                    ->where('hitung_number', 'like', $prefix.'-%')
                     ->orderByDesc('hitung_number')
                     ->first();
 
@@ -71,7 +81,7 @@ class Hitung extends Model
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->hitung_number = $prefix . '-' . $nextNumber;
+                $model->hitung_number = $prefix.'-'.$nextNumber;
             });
         });
     }

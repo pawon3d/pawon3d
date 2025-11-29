@@ -10,13 +10,18 @@ use Spatie\Activitylog\Models\Activity;
 
 class Index extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
     public $search = '';
+
     public $filterStatus = '';
+
     public $showHistoryModal = false;
+
     public $activityLogs = [];
+
     public $sortField = 'hitung_number';
+
     public $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
@@ -57,15 +62,17 @@ class Index extends Component
             'status' => 'all',
         ]);
     }
+
     public function render()
     {
         return view('livewire.hitung.index', [
-            'hitungs' => \App\Models\Hitung::with(['details'])
+            'hitungs' => \App\Models\Hitung::with(['details.material', 'user'])
                 ->when($this->search, function ($query) {
-                    $query->where('hitung_number', 'like', '%' . $this->search . '%');
-                })
+                    $query->where('hitung_number', 'like', '%'.$this->search.'%')
+                        ->orWhere('action', 'like', '%'.$this->search.'%');
+                })->where('status', 'Sedang Diproses')
                 ->orderBy($this->sortField, $this->sortDirection)
-                ->paginate(10)
+                ->paginate(10),
         ]);
     }
 }
