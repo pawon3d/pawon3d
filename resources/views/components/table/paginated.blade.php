@@ -53,8 +53,7 @@
                     @endforeach
                 </tr>
             </thead>
-            <tbody class="{{ $bodyBgClass }} {{ $bodyTextClass }}" style="{{ $bodyBgStyle }} {{ $bodyTextStyle }}"
-                <tbody class="{{ $bodyBgClass }} {{ $bodyTextClass }}"
+            <tbody class="{{ $bodyBgClass }} {{ $bodyTextClass }}"
                 style="{{ $bodyBgStyle }} {{ $bodyTextStyle }}">
                 @if ($paginator && $paginator->count() > 0)
                     {{ $slot }}

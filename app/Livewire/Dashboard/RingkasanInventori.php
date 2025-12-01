@@ -28,6 +28,8 @@ class RingkasanInventori extends Component
 
     public $sortDirection = 'desc';
 
+    public $selectedSection = 'inventori';
+
     protected $queryString = [
         'sortField' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
@@ -42,6 +44,17 @@ class RingkasanInventori extends Component
         $this->fetchExpenses();
         View::share('title', 'Ringkasan Umum');
         View::share('mainTitle', 'Dashboard');
+    }
+
+    public function updatedSelectedSection()
+    {
+        if ($this->selectedSection == 'kasir') {
+            $this->redirectIntended(default: route('ringkasan-kasir', absolute: false), navigate: true);
+        } elseif ($this->selectedSection == 'produksi') {
+            $this->redirectIntended(default: route('ringkasan-produksi', absolute: false), navigate: true);
+        } else {
+            // tetap di inventori
+        }
     }
 
     public function previousMonth()
@@ -138,6 +151,10 @@ class RingkasanInventori extends Component
         $expenses = $query->select('expenses.*')
             ->distinct()
             ->paginate(10);
+
+        $hitungs = \App\Models\Hitung::orderBy('created_at', 'desc')
+            ->paginate(7, ['*'], 'hitung_page');
+
         $materials = \App\Models\Material::with(['material_details', 'batches'])
             ->get();
         $filteredMaterials = $materials->filter(function ($material) {
@@ -148,6 +165,7 @@ class RingkasanInventori extends Component
 
         return view('livewire.dashboard.ringkasan-inventori', [
             'expenses' => $expenses,
+            'hitungs' => $hitungs,
             'materials' => $filteredMaterials,
             'materialB' => $materials,
         ]);

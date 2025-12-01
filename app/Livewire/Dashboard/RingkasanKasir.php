@@ -30,10 +30,15 @@ class RingkasanKasir extends Component
 
     public $sortDirection = 'desc';
 
+    public $search = '';
+
+    public $selectedSection = 'kasir';
+
     protected $queryString = [
         'method' => ['except' => 'pesanan-reguler'],
         'sortField' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
+        'search' => ['except' => ''],
     ];
 
     public function mount()
@@ -45,6 +50,17 @@ class RingkasanKasir extends Component
         $this->fetchTransactions();
         View::share('title', 'Ringkasan Umum');
         View::share('mainTitle', 'Dashboard');
+    }
+
+    public function updatedSelectedSection()
+    {
+        if ($this->selectedSection == 'produksi') {
+            $this->redirectIntended(default: route('ringkasan-produksi', absolute: false), navigate: true);
+        } elseif ($this->selectedSection == 'inventori') {
+            $this->redirectIntended(default: route('ringkasan-inventori', absolute: false), navigate: true);
+        } else {
+            // tetap di kasir
+        }
     }
 
     public function previousMonth()
@@ -131,10 +147,21 @@ class RingkasanKasir extends Component
         $query = \App\Models\Transaction::with(['details.product', 'user'])
             ->where('transactions.method', $this->method)
             ->whereNotIn('transactions.status', ['Gagal', 'Selesai', 'temp']);
+
         if ($this->method != 'siap-beli') {
             $query->where('transactions.date', '>=', now());
         } else {
             $query->where('transactions.start_date', '>=', now());
+        }
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('transactions.invoice_number', 'like', "%{$this->search}%")
+                    ->orWhere('transactions.name', 'like', "%{$this->search}%")
+                    ->orWhereHas('user', function ($userQuery) {
+                        $userQuery->where('name', 'like', "%{$this->search}%");
+                    });
+            });
         }
 
         if ($this->sortField === 'product_name') {
@@ -147,12 +174,19 @@ class RingkasanKasir extends Component
         } else {
             $query->orderBy("transactions.{$this->sortField}", $this->sortDirection);
         }
-        $transactions = $query->select('transactions.*')->distinct()->paginate(10);
+
+        $transactions = $query->select('transactions.*')->distinct()->paginate(7, ['*'], 'pesanan_page');
+
+        $readyProducts = \App\Models\Product::where('is_ready', true)
+            ->where('stock', '>', 0)
+            ->with('productCategory')
+            ->paginate(7, ['*'], 'ready_page');
 
         return view(
             'livewire.dashboard.ringkasan-kasir',
             [
                 'transactions' => $transactions,
+                'readyProducts' => $readyProducts,
             ]
         );
     }

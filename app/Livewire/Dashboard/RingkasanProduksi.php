@@ -4,7 +4,6 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Production;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -31,10 +30,15 @@ class RingkasanProduksi extends Component
 
     public $sortDirection = 'desc';
 
+    public $search = '';
+
+    public $selectedSection = 'produksi';
+
     protected $queryString = [
         'method' => ['except' => 'pesanan-reguler'],
         'sortField' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
+        'search' => ['except' => ''],
     ];
 
     public function mount()
@@ -46,6 +50,17 @@ class RingkasanProduksi extends Component
         $this->fetchProductions();
         View::share('title', 'Ringkasan Umum');
         View::share('mainTitle', 'Dashboard');
+    }
+
+    public function updatedSelectedSection()
+    {
+        if ($this->selectedSection == 'kasir') {
+            $this->redirectIntended(default: route('ringkasan-kasir', absolute: false), navigate: true);
+        } elseif ($this->selectedSection == 'inventori') {
+            $this->redirectIntended(default: route('ringkasan-inventori', absolute: false), navigate: true);
+        } else {
+            // tetap di produksi
+        }
     }
 
     public function previousMonth()
@@ -124,29 +139,45 @@ class RingkasanProduksi extends Component
 
     public function render()
     {
-        $query = Production::with(['details.product', 'workers'])
-            ->where('productions.method', $this->method)
-            // ->where('productions.start_date', '>=', now())
-            ->whereHas('workers', function ($q) {
-                $q->where('user_id', Auth::id());
+        // Show productions that are scheduled in the near future (7-day window based on selectedDate).
+        // Include productions that may not have a transaction (e.g. 'siap-beli').
+        $startDate = Carbon::parse($this->selectedDate)->toDateString();
+        $endDate = Carbon::parse($this->selectedDate)->addDays(6)->toDateString();
+        $nearestQuery = Production::with(['details.product', 'workers', 'transaction'])
+            ->whereNotIn('productions.status', ['Selesai', 'Gagal'])
+            ->whereBetween('productions.start_date', [$startDate, $endDate]);
+
+        if ($this->search) {
+            $nearestQuery->where(function ($q) {
+                $q->where('productions.production_number', 'like', "%{$this->search}%")
+                    ->orWhereHas('transaction', function ($transactionQuery) {
+                        $transactionQuery->where('invoice_number', 'like', "%{$this->search}%");
+                    });
             });
+        }
 
         if ($this->sortField === 'product_name') {
-            $query->join('production_details', 'productions.id', '=', 'production_details.production_id')
+            $nearestQuery->join('production_details', 'productions.id', '=', 'production_details.production_id')
                 ->join('products', 'production_details.product_id', '=', 'products.id')
                 ->orderBy('products.name', $this->sortDirection);
         } elseif ($this->sortField === 'worker_name') {
-            $query->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
+            $nearestQuery->join('production_workers', 'productions.id', '=', 'production_workers.production_id')
                 ->join('users', 'production_workers.user_id', '=', 'users.id')
                 ->orderBy('users.name', $this->sortDirection);
         } else {
-            $query->orderBy("productions.{$this->sortField}", $this->sortDirection);
+            $nearestQuery->orderBy("productions.{$this->sortField}", $this->sortDirection);
         }
 
-        $productions = $query->select('productions.*')->distinct()->paginate(10);
+        $nearestProductions = $nearestQuery->select('productions.*')->distinct()->paginate(6, ['*'], 'nearest_page');
+
+        $ongoingProductions = Production::with(['details.product', 'workers', 'transaction'])
+            ->where('productions.status', 'Sedang Diproses')
+            ->orderBy('start_date', 'asc')
+            ->paginate(6, ['*'], 'ongoing_page');
 
         return view('livewire.dashboard.ringkasan-produksi', [
-            'productions' => $productions,
+            'nearestProductions' => $nearestProductions,
+            'ongoingProductions' => $ongoingProductions,
         ]);
     }
 }
