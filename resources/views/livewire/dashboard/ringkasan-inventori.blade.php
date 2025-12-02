@@ -7,15 +7,17 @@
     {{-- Dropdown Section Selector --}}
     <div class="mb-6">
         <flux:select wire:model.live="selectedSection" class="w-full max-w-full">
-            @can('Kasir')
+            @canany(['kasir.pesanan.kelola', 'kasir.laporan.kelola'])
                 <option value="kasir">Kasir</option>
-            @endcan
-            @can('Produksi')
+            @endcanany
+            @canany(['produksi.rencana.kelola', 'produksi.mulai', 'produksi.laporan.kelola'])
                 <option value="produksi">Produksi</option>
-            @endcan
-            @can('Inventori')
+            @endcanany
+            @canany(['inventori.persediaan.kelola', 'inventori.produk.kelola', 'inventori.belanja.rencana.kelola',
+                'inventori.hitung.kelola', 'inventori.satuan.kelola', 'inventori.kategori.kelola',
+                'inventori.tipe-biaya.kelola', 'inventori.laporan.kelola'])
                 <option value="inventori" selected>Inventori</option>
-            @endcan
+            @endcanany
         </flux:select>
     </div>
     {{-- Calendar and Today's Expenses Section --}}

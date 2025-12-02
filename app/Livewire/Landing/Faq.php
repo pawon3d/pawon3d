@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Landing;
 
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -62,6 +63,8 @@ class Faq extends Component
                 'answer' => 'Cukup hubungi Pawon3D dan akun pelanggan Anda akan dihapus sesuai permintaan.',
             ],
         ];
+
+        View::share('title', 'FAQ - Pawon3D');
     }
 
     public function render()

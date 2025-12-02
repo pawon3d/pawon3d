@@ -23,25 +23,25 @@ Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');
 Route::get('/ringkasan-kasir', App\Livewire\Dashboard\RingkasanKasir::class)
-    ->middleware(['auth', 'permission:Kasir'])
+    ->middleware(['auth', 'permission:kasir.pesanan.kelola|kasir.laporan.kelola'])
     ->name('ringkasan-kasir');
 Route::get('/ringkasan-produksi', App\Livewire\Dashboard\RingkasanProduksi::class)
-    ->middleware(['auth', 'permission:Produksi'])
+    ->middleware(['auth', 'permission:produksi.rencana.kelola|produksi.mulai|produksi.laporan.kelola'])
     ->name('ringkasan-produksi');
 Route::get('/ringkasan-inventori', App\Livewire\Dashboard\RingkasanInventori::class)
-    ->middleware(['auth', 'permission:Inventori'])
+    ->middleware(['auth', 'permission:inventori.produk.kelola|inventori.persediaan.kelola|inventori.belanja.rencana.kelola|inventori.toko.kelola|inventori.belanja.mulai|inventori.hitung.kelola|inventori.alur.lihat|inventori.laporan.kelola'])
     ->name('ringkasan-inventori');
 Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
     ->middleware('auth')
     ->name('ringkasan-umum');
 Route::get('/laporan-kasir', App\Livewire\Dashboard\LaporanKasir::class)
-    ->middleware(['auth', 'permission:Kasir'])
+    ->middleware(['auth', 'permission:kasir.laporan.kelola'])
     ->name('laporan-kasir');
 Route::get('/laporan-produksi', App\Livewire\Dashboard\LaporanProduksi::class)
-    ->middleware(['auth', 'permission:Produksi'])
+    ->middleware(['auth', 'permission:produksi.laporan.kelola'])
     ->name('laporan-produksi');
 Route::get('/laporan-inventori', App\Livewire\Dashboard\LaporanInventori::class)
-    ->middleware(['auth', 'permission:Inventori'])
+    ->middleware(['auth', 'permission:inventori.laporan.kelola'])
     ->name('laporan-inventori');
 
 Route::get('/ulasan/{transaction_id}', ReviewForm::class)
@@ -54,19 +54,26 @@ Route::middleware(['auth'])->group(function () {
     // Volt::route('settings/password', 'settings.password')->name('settings.password');
     // Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 
-    Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
+    // Pekerja routes
+    Route::middleware(['permission:manajemen.pekerja.kelola'])->group(function () {
         Route::get('/pekerja', Index::class)->name('user');
-        Route::get('/pekerja/tambah', App\Livewire\User\Tambah::class)->name('user.tambah');
-        Route::get('/pekerja/{id}/rincian', App\Livewire\User\Rincian::class)->name('user.edit');
-        Route::get('/pekerja/cetak', [PdfController::class, 'generateUserPDF'])
-            ->name('user.pdf');
+        Route::get('/pekerja/tambah', App\Livewire\User\Form::class)->name('user.tambah');
+        Route::get('/pekerja/{id}/rincian', App\Livewire\User\Form::class)->name('user.edit');
+        Route::get('/pekerja/cetak', [PdfController::class, 'generateUserPDF'])->name('user.pdf');
+    });
 
+    // Peran routes
+    Route::middleware(['permission:manajemen.peran.kelola'])->group(function () {
         Route::get('/peran', App\Livewire\Peran\Index::class)->name('role');
-        Route::get('/peran/tambah', App\Livewire\Peran\Tambah::class)->name('role.tambah');
-        Route::get('/peran/{id}/rincian', App\Livewire\Peran\Rincian::class)->name('role.edit');
-        Route::get('/peran/cetak', [PdfController::class, 'generateRolePDF'])
-            ->name('role.pdf');
+        Route::get('/peran/tambah', App\Livewire\Peran\Form::class)->name('role.tambah');
+        Route::get('/peran/{id}/rincian', App\Livewire\Peran\Form::class)->name('role.edit');
+        Route::get('/peran/cetak', [PdfController::class, 'generateRolePDF'])->name('role.pdf');
+    });
+
+    // Pelanggan routes
+    Route::middleware(['permission:manajemen.pelanggan.kelola'])->group(function () {
         Route::get('/pelanggan', App\Livewire\Customer\Index::class)->name('customer');
+        Route::get('/pelanggan/{id}/rincian', App\Livewire\Customer\Show::class)->name('customer.show');
     });
 
     Route::post('/read-notification/{id}', function ($id) {
@@ -85,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/notifikasi', App\Livewire\Notification\Index::class)->name('notifikasi');
 
-    Route::group(['middleware' => ['permission:Inventori']], function () {
+    Route::group(['middleware' => ['permission:inventori.produk.kelola|inventori.persediaan.kelola|inventori.belanja.rencana.kelola|inventori.toko.kelola|inventori.belanja.mulai|inventori.hitung.kelola|inventori.alur.lihat|inventori.laporan.kelola']], function () {
         Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
         // Route::get('/kategori/tambah', App\Livewire\Category\Tambah::class)->name('kategori.tambah');
         // Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
@@ -139,9 +146,10 @@ Route::middleware(['auth'])->group(function () {
             ->name('hitung.pdf');
         Route::get('/hitung/cetak/{id}', [PdfController::class, 'generateHitungDetailPDF'])
             ->name('rincian-hitung.pdf');
+        Route::get('/alur-persediaan', App\Livewire\Alur\Index::class)->name('alur-persediaan');
     });
 
-    Route::group(['middleware' => ['permission:Kasir']], function () {
+    Route::group(['middleware' => ['permission:kasir.pesanan.kelola|kasir.laporan.kelola']], function () {
         Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
         Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
         Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
@@ -164,7 +172,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/cetak-struk/{id}', App\Livewire\Receipt::class)->name('cetak-struk');
     });
 
-    Route::group(['middleware' => ['permission:Produksi']], function () {
+    Route::group(['middleware' => ['permission:produksi.rencana.kelola|produksi.mulai|produksi.laporan.kelola']], function () {
         Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
         Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
         Route::get('/produksi/tambah-siap-beli', App\Livewire\Production\TambahSiapBeli::class)->name('produksi.tambah-siap-beli');
@@ -197,8 +205,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
     Route::get('/profil-saya/{id}', App\Livewire\Setting\MyProfile::class)->name('profil-saya');
 
-    Route::group(['middleware' => ['permission:Manajemen Sistem']], function () {
+    // Profil Usaha
+    Route::middleware(['permission:manajemen.profil_usaha.kelola'])->group(function () {
         Route::get('/profil-usaha', App\Livewire\Setting\StoreProfile::class)->name('profil-usaha');
+    });
+
+    // Metode Pembayaran
+    Route::middleware(['permission:manajemen.pembayaran.kelola'])->group(function () {
         Route::get('/metode-pembayaran', App\Livewire\Setting\PaymentMethod::class)->name('metode-pembayaran');
     });
 
@@ -207,4 +220,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

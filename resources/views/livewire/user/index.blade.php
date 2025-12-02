@@ -1,151 +1,81 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Daftar Pekerja</h1>
-        <div class="flex gap-2 items-center">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-semibold text-[#666666]">Daftar Pekerja</h1>
+        <div class="flex gap-2.5">
             <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                class="bg-[#525252] hover:bg-[#666666] border border-[#666666] px-6 py-2.5 rounded-[15px] font-medium text-sm text-white transition-colors cursor-pointer">
                 Cetak Informasi
             </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
             <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                class="bg-[#525252] hover:bg-[#666666] border border-[#666666] px-6 py-2.5 rounded-[15px] font-medium text-sm text-white transition-colors cursor-pointer">
                 Riwayat Pembaruan
             </button>
         </div>
     </div>
 
-    <div class="flex items-center bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. In semper nisi proin malesuada. Vehicula vestibulum consequat
-                volutpat vel sagittis mi interdum. Tellus egestas lorem arcu sed auctor vestibulum mauris id fames. Amet
-                enim magna mi nisl magna.
-            </p>
-        </div>
-    </div>
-    <div class="bg-white rounded-lg p-4 shadow mt-4">
-        <div class="flex justify-between items-center">
-            <!-- Search Input -->
-            <div class="p-4 flex">
-                <input wire:model.live="search" placeholder="Cari pekerja..."
-                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <flux:button :loading="false" class="ml-2" variant="ghost">
-                    <flux:icon.funnel variant="mini" />
-                    <span>Filter</span>
-                </flux:button>
-            </div>
-            <div class="flex gap-2 items-center">
-                <a href="{{ route('user.tambah') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                    wire:navigate>
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    <!-- Info Box -->
+    <x-alert.info>
+        Pekerja. Pekerja adalah orang yang telah didaftarkan sebagai pekerja sehingga memiliki hak untuk menggunakan
+        atau mengakses sistem sesuai peran. Setiap pekerja hanya memiliki satu peran.
+    </x-alert.info>
+
+    <!-- Main Content Card -->
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
+        <!-- Search and Add Button -->
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-4 flex-1">
+                <div
+                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full max-w-[545px]">
+                    <svg class="w-[30px] h-[30px] text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
                     </svg>
-                    Tambah Pekerja
-                </a>
+                    <input wire:model.live.debounce.300ms="search" placeholder="Cari Pekerja"
+                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none" />
+                </div>
+                <button class="flex items-center gap-2 text-[#666666] font-medium text-base">
+                    <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Filter
+                </button>
             </div>
-        </div>
-        <div class="flex justify-between items-center mb-2">
-            <div class="p-4 flex">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                        @else
-                        Semua Pekerja
-                        @endif
-                        ({{ $users->total() }})
-                        <flux:icon.chevron-down variant="mini" />
-                    </flux:button>
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model.live="filterStatus">
-                            <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
-                            <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                            <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
-            <div class="flex gap-2 items-center">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        Urutkan Pekerja
-                        <flux:icon.chevron-down variant="mini" />
-
-                    </flux:button>
-
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model="sortByCategory">
-                            <flux:menu.radio value="name">Nama</flux:menu.radio>
-                            <flux:menu.radio value="status">Status</flux:menu.radio>
-                            <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
+            <flux:button variant="primary" icon="plus" href="{{ route('user.tambah') }}" wire:navigate>
+                Tambah Pekerja
+            </flux:button>
         </div>
 
-        <div class="bg-white rounded-xl border-0">
-            <!-- Table -->
-            <div class="overflow-x-auto rounded-xl">
-                <table class="min-w-full">
-                    <thead class="bg-gray-200">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('name')">
-                                Pekerja
-                                {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('email')">
-                                Email
-                                {{ $sortDirection === 'asc' && $sortField === 'email' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('phone')">
-                                Nomor Telepon
-                                {{ $sortDirection === 'asc' && $sortField === 'phone' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click="sortBy('role_name')">
-                                Peran
-                                <span>{{ $sortField === 'role_name' && $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($users as $user)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('user.edit', $user->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                    {{ $user->name }}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}
-                            </td>
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $user->phone ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $user->role_name ?? 'Tidak ada peran' }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center">Tidak ada data.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $users->links() }}
-            </div>
-        </div>
+        <!-- Table -->
+        <x-table.paginated :headers="[
+            ['label' => 'Pekerja', 'sortable' => true, 'sort-by' => 'name'],
+            ['label' => 'Email', 'sortable' => true, 'sort-by' => 'email'],
+            ['label' => 'No. Telepon', 'sortable' => false],
+            ['label' => 'Peran', 'sortable' => false],
+        ]" :paginator="$users" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
+            bodyText="#666666" emptyMessage="Tidak ada data pekerja.">
+            @foreach ($users as $user)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        <a href="{{ route('user.edit', ['id' => $user->id]) }}" class="hover:underline" wire:navigate>
+                            {{ $user->name }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $user->email }}
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $user->phone ?? '-' }}
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $user->role_name ?? 'Tidak ada peran' }}
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->
@@ -156,13 +86,50 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b border-gray-200 py-3">
+                        <div class="flex justify-between items-start">
+                            <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ $log->created_at->format('d M Y H:i') }}
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            Oleh: {{ $log->causer->name ?? 'System' }}
+                        </div>
+
+                        {{-- Tampilkan detail perubahan untuk event 'updated' --}}
+                        @if ($log->event === 'updated' && $log->properties)
+                            @php
+                                $old = $log->properties['old'] ?? [];
+                                $attributes = $log->properties['attributes'] ?? [];
+                                $fieldLabels = [
+                                    'name' => 'Nama',
+                                    'email' => 'Email',
+                                    'phone' => 'No. Telepon',
+                                    'gender' => 'Jenis Kelamin',
+                                    'image' => 'Foto',
+                                    'password' => 'Kata Sandi',
+                                ];
+                            @endphp
+                            <div class="mt-2 text-xs space-y-1 bg-gray-50 rounded p-2">
+                                @foreach ($attributes as $field => $newValue)
+                                    @if (isset($fieldLabels[$field]))
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="font-medium text-[#666666]">{{ $fieldLabels[$field] }}:</span>
+                                            @if (in_array($field, ['password', 'image']))
+                                                <span class="text-green-600">diperbarui</span>
+                                            @else
+                                                <span
+                                                    class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
+                                                <span class="text-gray-400">→</span>
+                                                <span class="text-green-600">{{ $newValue ?? '-' }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

@@ -16,7 +16,7 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 
     // Create permission if not exists
-    $permission = Permission::firstOrCreate(['name' => 'Inventori']);
+    $permission = Permission::firstOrCreate(['name' => 'inventori.hitung.kelola']);
     $this->user->givePermissionTo($permission);
 
     $this->actingAs($this->user);

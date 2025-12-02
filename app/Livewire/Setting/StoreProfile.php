@@ -2,28 +2,38 @@
 
 namespace App\Livewire\Setting;
 
+use App\Models\StoreDocument;
+use App\Models\StoreProfile as StoreProfileModel;
 use Flux\Flux;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class StoreProfile extends Component
 {
-    use LivewireAlert, WithFileUploads;
+    use LivewireAlert, WithFileUploads, WithPagination;
 
+    // Image previews
     public $previewLogoImage;
 
     public $previewBannerImage;
 
+    public $previewProductImage;
+
     public $previewBuildingImage;
 
+    // File uploads
     public $logo;
 
     public $banner;
 
+    public $productImage;
+
     public $building;
 
+    // Profile info
     public $name;
 
     public $tagline;
@@ -34,6 +44,7 @@ class StoreProfile extends Component
 
     public $description;
 
+    // Address & Contact
     public $location;
 
     public $address;
@@ -44,59 +55,14 @@ class StoreProfile extends Component
 
     public $website;
 
-    public $is_senin;
-
-    public $open_senin;
-
-    public $close_senin;
-
-    public $is_selasa;
-
-    public $open_selasa;
-
-    public $close_selasa;
-
-    public $is_rabu;
-
-    public $open_rabu;
-
-    public $close_rabu;
-
-    public $is_kamis;
-
-    public $open_kamis;
-
-    public $close_kamis;
-
-    public $is_jumat;
-
-    public $open_jumat;
-
-    public $close_jumat;
-
-    public $is_sabtu;
-
-    public $open_sabtu;
-
-    public $close_sabtu;
-
-    public $is_minggu;
-
-    public $open_minggu;
-
-    public $close_minggu;
-
+    // Social media
     public $social_instagram;
 
     public $social_facebook;
 
     public $social_whatsapp;
 
-    public $sortDirection = 'desc';
-
-    public $sortField = 'created_at';
-
-    public $storeDocuments = [];
+    // Document modal
 
     public $documentName;
 
@@ -116,16 +82,16 @@ class StoreProfile extends Component
 
     public function mount()
     {
-        View::share('title', 'Profil Toko');
+        View::share('title', 'Profil Usaha');
         View::share('mainTitle', 'Pengaturan');
-        $storeProfile = \App\Models\StoreProfile::first();
+
         if (session()->has('success')) {
             $this->alert('success', session('success'));
         }
+
+        $storeProfile = StoreProfileModel::first();
+
         if ($storeProfile) {
-            // $this->logo = $storeProfile->logo;
-            // $this->banner = $storeProfile->banner;
-            // $this->building = $storeProfile->building;
             $this->name = $storeProfile->name;
             $this->tagline = $storeProfile->tagline;
             $this->type = $storeProfile->type;
@@ -137,41 +103,6 @@ class StoreProfile extends Component
             $this->email = $storeProfile->email;
             $this->website = $storeProfile->website;
 
-            // Jam buka tutup
-            $this->is_senin = (bool) $storeProfile->is_senin;
-            $this->open_senin = $storeProfile->open_senin;
-            $this->close_senin = $storeProfile->close_senin;
-
-            // Selasa
-            $this->is_selasa = (bool) $storeProfile->is_selasa;
-            $this->open_selasa = $storeProfile->open_selasa;
-            $this->close_selasa = $storeProfile->close_selasa;
-
-            // Rabu
-            $this->is_rabu = (bool) $storeProfile->is_rabu;
-            $this->open_rabu = $storeProfile->open_rabu;
-            $this->close_rabu = $storeProfile->close_rabu;
-
-            // Kamis
-            $this->is_kamis = (bool) $storeProfile->is_kamis;
-            $this->open_kamis = $storeProfile->open_kamis;
-            $this->close_kamis = $storeProfile->close_kamis;
-
-            // Jumat
-            $this->is_jumat = (bool) $storeProfile->is_jumat;
-            $this->open_jumat = $storeProfile->open_jumat;
-            $this->close_jumat = $storeProfile->close_jumat;
-
-            // Sabtu
-            $this->is_sabtu = (bool) $storeProfile->is_sabtu;
-            $this->open_sabtu = $storeProfile->open_sabtu;
-            $this->close_sabtu = $storeProfile->close_sabtu;
-
-            // Minggu
-            $this->is_minggu = (bool) $storeProfile->is_minggu;
-            $this->open_minggu = $storeProfile->open_minggu;
-            $this->close_minggu = $storeProfile->close_minggu;
-
             // Sosial media
             $this->social_instagram = $storeProfile->social_instagram;
             $this->social_facebook = $storeProfile->social_facebook;
@@ -180,40 +111,26 @@ class StoreProfile extends Component
             // Preview images
             $this->previewLogoImage = $storeProfile->logo ? env('APP_URL').'/storage/'.$storeProfile->logo : null;
             $this->previewBannerImage = $storeProfile->banner ? env('APP_URL').'/storage/'.$storeProfile->banner : null;
+            $this->previewProductImage = $storeProfile->product_image ? env('APP_URL').'/storage/'.$storeProfile->product_image : null;
             $this->previewBuildingImage = $storeProfile->building ? env('APP_URL').'/storage/'.$storeProfile->building : null;
         } else {
             $this->previewLogoImage = null;
             $this->previewBannerImage = null;
+            $this->previewProductImage = null;
             $this->previewBuildingImage = null;
-        }
-        $storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
-        if ($storeDocuments->count() > 0) {
-            $this->storeDocuments = $storeDocuments;
-        } else {
-            $this->storeDocuments = [];
-        }
-    }
-
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
         }
     }
 
     public function addModal()
     {
-        $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
+        $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit', 'documentId']);
         $this->showModal = true;
     }
 
     public function editModal($id)
     {
         $this->edit = true;
-        $document = \App\Models\StoreDocument::findOrFail($id);
+        $document = StoreDocument::findOrFail($id);
         $this->documentId = $document->id;
         $this->documentName = $document->document_name;
         $this->documentFile = $document->document_file;
@@ -225,7 +142,7 @@ class StoreProfile extends Component
 
     public function delete()
     {
-        $document = \App\Models\StoreDocument::findOrFail($this->documentId);
+        $document = StoreDocument::findOrFail($this->documentId);
         if ($document->document_file) {
             $oldFilePath = public_path('storage/'.$document->document_file);
             if (file_exists($oldFilePath)) {
@@ -237,11 +154,9 @@ class StoreProfile extends Component
             'position' => 'top-end',
             'timer' => 3000,
             'toast' => true,
-            'showConfirmButton' => false,
         ]);
         Flux::modals()->close();
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
-        $this->storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
     }
 
     public function storeDocument()
@@ -254,20 +169,13 @@ class StoreProfile extends Component
             'validUntil' => 'nullable|date|after_or_equal:validFrom',
         ]);
 
-        $storeDocument = new \App\Models\StoreDocument;
+        $storeDocument = new StoreDocument;
         $storeDocument->document_name = $this->documentName;
         $storeDocument->document_number = $this->documentNumber;
         $storeDocument->valid_from = $this->validFrom;
         $storeDocument->valid_until = $this->validUntil;
 
         if ($this->documentFile) {
-            // Hapus file lama jika ada
-            if ($storeDocument->document_file) {
-                $oldFilePath = public_path('storage/'.$storeDocument->document_file);
-                if (file_exists($oldFilePath)) {
-                    unlink($oldFilePath);
-                }
-            }
             $storeDocument->document_file = $this->documentFile->store('store_documents', 'public');
         }
 
@@ -276,12 +184,9 @@ class StoreProfile extends Component
             'position' => 'top-end',
             'timer' => 3000,
             'toast' => true,
-            'showConfirmButton' => false,
         ]);
         $this->showModal = false;
-
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
-        $this->storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
     }
 
     public function updateDocument()
@@ -294,7 +199,7 @@ class StoreProfile extends Component
             'validUntil' => 'nullable|date|after_or_equal:validFrom',
         ]);
 
-        $storeDocument = \App\Models\StoreDocument::findOrFail($this->documentId);
+        $storeDocument = StoreDocument::findOrFail($this->documentId);
         $storeDocument->document_name = $this->documentName;
         $storeDocument->document_number = $this->documentNumber;
         $storeDocument->valid_from = $this->validFrom;
@@ -316,20 +221,16 @@ class StoreProfile extends Component
             'position' => 'top-end',
             'timer' => 3000,
             'toast' => true,
-            'showConfirmButton' => false,
         ]);
         $this->showModal = false;
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
-        $this->storeDocuments = \App\Models\StoreDocument::orderBy($this->sortField, $this->sortDirection)->get();
     }
 
     public function updatedLogo()
     {
         $this->validate([
-            'logo' => 'image|max:2048|mimes:jpg,jpeg,png',
+            'logo' => 'image|max:2048|mimes:png',
         ]);
-
-        // Untuk preview langsung setelah upload
         $this->previewLogoImage = $this->logo->temporaryUrl();
     }
 
@@ -338,9 +239,15 @@ class StoreProfile extends Component
         $this->validate([
             'banner' => 'image|max:2048|mimes:jpg,jpeg,png',
         ]);
-
-        // Untuk preview langsung setelah upload
         $this->previewBannerImage = $this->banner->temporaryUrl();
+    }
+
+    public function updatedProductImage()
+    {
+        $this->validate([
+            'productImage' => 'image|max:2048|mimes:jpg,jpeg,png',
+        ]);
+        $this->previewProductImage = $this->productImage->temporaryUrl();
     }
 
     public function updatedBuilding()
@@ -348,14 +255,12 @@ class StoreProfile extends Component
         $this->validate([
             'building' => 'image|max:2048|mimes:jpg,jpeg,png',
         ]);
-
-        // Untuk preview langsung setelah upload
         $this->previewBuildingImage = $this->building->temporaryUrl();
     }
 
     public function updateStore()
     {
-        \App\Models\StoreProfile::updateOrCreate(
+        StoreProfileModel::updateOrCreate(
             [],
             [
                 'name' => $this->name,
@@ -368,85 +273,78 @@ class StoreProfile extends Component
                 'contact' => $this->contact,
                 'email' => $this->email,
                 'website' => $this->website,
-
-                // Jam buka tutup
-                'is_senin' => (bool) $this->is_senin,
-                'open_senin' => $this->open_senin,
-                'close_senin' => $this->close_senin,
-
-                // Selasa
-                'is_selasa' => (bool) $this->is_selasa,
-                'open_selasa' => $this->open_selasa,
-                'close_selasa' => $this->close_selasa,
-
-                // Rabu
-                'is_rabu' => (bool) $this->is_rabu,
-                'open_rabu' => $this->open_rabu,
-                'close_rabu' => $this->close_rabu,
-
-                // Kamis
-                'is_kamis' => (bool) $this->is_kamis,
-                'open_kamis' => $this->open_kamis,
-                'close_kamis' => $this->close_kamis,
-
-                // Jumat
-                'is_jumat' => (bool) $this->is_jumat,
-                'open_jumat' => $this->open_jumat,
-                'close_jumat' => $this->close_jumat,
-                // Sabtu
-                'is_sabtu' => (bool) $this->is_sabtu,
-                'open_sabtu' => $this->open_sabtu,
-                'close_sabtu' => $this->close_sabtu,
-                // Minggu
-                'is_minggu' => (bool) $this->is_minggu,
-                'open_minggu' => $this->open_minggu,
-                'close_minggu' => $this->close_minggu,
-                // Sosial media
                 'social_instagram' => $this->social_instagram,
                 'social_facebook' => $this->social_facebook,
                 'social_whatsapp' => $this->social_whatsapp,
             ]
         );
-        // Hapus gambar lama jika ada
-        $storeProfile = \App\Models\StoreProfile::first();
+
+        // Handle image uploads
+        $storeProfile = StoreProfileModel::first();
+
         if ($storeProfile) {
-            if ($this->logo && $storeProfile->logo) {
-                $oldLogoPath = public_path('storage/'.$storeProfile->logo);
-                if (file_exists($oldLogoPath)) {
-                    unlink($oldLogoPath);
+            // Logo
+            if ($this->logo) {
+                if ($storeProfile->logo) {
+                    $oldPath = public_path('storage/'.$storeProfile->logo);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
+                $storeProfile->logo = $this->logo->store('store_profiles', 'public');
             }
-            if ($this->banner && $storeProfile->banner) {
-                $oldBannerPath = public_path('storage/'.$storeProfile->banner);
-                if (file_exists($oldBannerPath)) {
-                    unlink($oldBannerPath);
+
+            // Banner
+            if ($this->banner) {
+                if ($storeProfile->banner) {
+                    $oldPath = public_path('storage/'.$storeProfile->banner);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
+                $storeProfile->banner = $this->banner->store('store_profiles', 'public');
             }
-            if ($this->building && $storeProfile->building) {
-                $oldBuildingPath = public_path('storage/'.$storeProfile->building);
-                if (file_exists($oldBuildingPath)) {
-                    unlink($oldBuildingPath);
+
+            // Product Image
+            if ($this->productImage) {
+                if ($storeProfile->product_image) {
+                    $oldPath = public_path('storage/'.$storeProfile->product_image);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
+                $storeProfile->product_image = $this->productImage->store('store_profiles', 'public');
             }
-            $storeProfile->banner = $this->banner ? $this->banner->store('store_profiles', 'public') : $storeProfile->banner;
-            $storeProfile->building = $this->building ? $this->building->store('store_profiles', 'public') : $storeProfile->building;
-            $storeProfile->logo = $this->logo ? $this->logo->store('store_profiles', 'public') : $storeProfile->logo;
+
+            // Building
+            if ($this->building) {
+                if ($storeProfile->building) {
+                    $oldPath = public_path('storage/'.$storeProfile->building);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+                $storeProfile->building = $this->building->store('store_profiles', 'public');
+            }
+
             $storeProfile->save();
         }
-        if ($this->logo) {
-            return redirect()->route('profil-usaha')->with('success', 'Profil Toko berhasil diperbarui!');
-        } else {
-            $this->alert('success', 'Profil Toko berhasil diperbarui!', [
-                'position' => 'top-end',
-                'timer' => 3000,
-                'toast' => true,
-                'showConfirmButton' => false,
-            ]);
+
+        if ($this->logo || $this->banner || $this->productImage || $this->building) {
+            return redirect()->route('profil-usaha')->with('success', 'Profil Usaha berhasil diperbarui!');
         }
+
+        $this->alert('success', 'Profil Usaha berhasil diperbarui!', [
+            'position' => 'top-end',
+            'timer' => 3000,
+            'toast' => true,
+        ]);
     }
 
     public function render()
     {
-        return view('livewire.setting.store-profile');
+        return view('livewire.setting.store-profile', [
+            'storeDocuments' => StoreDocument::orderBy('created_at', 'desc')->paginate(10),
+        ]);
     }
 }

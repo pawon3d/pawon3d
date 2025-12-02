@@ -1,146 +1,77 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Daftar Peran</h1>
-        <div class="flex gap-2 items-center">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-semibold text-[#666666]">Daftar Peran</h1>
+        <div class="flex gap-2.5">
             <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                class="bg-[#525252] hover:bg-[#666666] border border-[#666666] px-6 py-2.5 rounded-[15px] font-medium text-sm text-white transition-colors cursor-pointer">
                 Cetak Informasi
             </button>
-
-            <!-- Tombol Riwayat Pembaruan -->
             <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+                class="bg-[#525252] hover:bg-[#666666] border border-[#666666] px-6 py-2.5 rounded-[15px] font-medium text-sm text-white transition-colors cursor-pointer">
                 Riwayat Pembaruan
             </button>
         </div>
     </div>
 
-    <div class="flex items-center border bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. In semper nisi proin malesuada. Vehicula vestibulum consequat
-                volutpat vel sagittis mi interdum. Tellus egestas lorem arcu sed auctor vestibulum mauris id fames. Amet
-                enim magna mi nisl magna.
-            </p>
-        </div>
-    </div>
-    <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
-        <div class="flex justify-between items-center mb-7">
-            <!-- Search Input -->
-            <div class="p-4 flex">
-                <input wire:model.live="search" placeholder="Cari..."
-                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <flux:button :loading="false" class="ml-2" variant="ghost">
-                    <flux:icon.funnel variant="mini" />
-                    <span>Filter</span>
-                </flux:button>
-            </div>
-            <div class="flex gap-2 items-center">
-                <a href="{{ route('role.tambah') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150"
-                    wire:navigate>
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    <!-- Info Box -->
+    <x-alert.info>
+        Peran. Peran adalah bentuk perwakilan dari sekumpulan hak dalam menggunakan atau menjalankan sistem. Setiap
+        peran dapat memiliki banyak akses dan pekerja.
+    </x-alert.info>
+
+    <!-- Main Content Card -->
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
+        <!-- Search and Add Button -->
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-4 flex-1">
+                <div
+                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full max-w-[545px]">
+                    <svg class="w-[30px] h-[30px] text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                            clip-rule="evenodd" />
                     </svg>
-                    Tambah Peran
-                </a>
+                    <input wire:model.live.debounce.300ms="search" placeholder="Cari Peran"
+                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none" />
+                </div>
+                <button class="flex items-center gap-2 text-[#666666] font-medium text-base">
+                    <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Filter
+                </button>
             </div>
-        </div>
-        <div class="flex justify-between items-center mb-7">
-            <div class="p-4 flex">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        @if ($filterStatus)
-                        {{ $filterStatus === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                        @else
-                        Semua Peran
-                        @endif
-                        ({{ $roles->total() }})
-                        <flux:icon.chevron-down variant="mini" />
-                    </flux:button>
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model.live="filterStatus">
-                            <flux:menu.radio value="">Semua Kategori</flux:menu.radio>
-                            <flux:menu.radio value="aktif">Aktif</flux:menu.radio>
-                            <flux:menu.radio value="nonaktif">Tidak Aktif</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
-            <div class="flex gap-2 items-center">
-                <flux:dropdown>
-                    <flux:button variant="ghost">
-                        Urutkan Peran
-                        <flux:icon.chevron-down variant="mini" />
-
-                    </flux:button>
-
-                    <flux:menu>
-                        <flux:menu.radio.group wire:model="sortByCategory">
-                            <flux:menu.radio value="name">Nama</flux:menu.radio>
-                            <flux:menu.radio value="status">Status</flux:menu.radio>
-                            <flux:menu.radio value="product" checked>Jenis Produk</flux:menu.radio>
-                        </flux:menu.radio.group>
-                    </flux:menu>
-                </flux:dropdown>
-            </div>
+            <flux:button variant="primary" icon="plus" href="{{ route('role.tambah') }}" wire:navigate>
+                Tambah Peran
+            </flux:button>
         </div>
 
-        <div class="bg-white rounded-xl border">
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("name")'>
-                                Peran
-                                {{ $sortDirection === 'asc' && $sortField === 'name' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("permissions_count")'>
-                                Akses
-                                {{ $sortDirection === 'asc' && $sortField === 'permissions_count' ? '↑' : '↓' }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                                wire:click='sortBy("users_count")'>
-                                Jumlah Pekerja
-                                {{ $sortDirection === 'asc' && $sortField === 'users_count' ? '↑' : '↓' }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($roles as $role)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('role.edit', $role->id) }}" class="hover:bg-gray-50 cursor-pointer">
-                                    {{ $role->name }}
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {{ $role->permissions_count > 0 ? $role->permissions->pluck('name')->implode(', ') :
-                                'Tidak ada akses' }}
-                            </td>
-
-                            <td class="px-6 py-4 text-left space-x-2 whitespace-nowrap">
-                                {{ $role->users_count }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="3" class="px-6 py-4 text-center">Tidak ada data.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="p-4">
-                {{ $roles->links() }}
-            </div>
-        </div>
+        <!-- Table -->
+        <x-table.paginated :headers="[
+            ['label' => 'Peran', 'sortable' => true, 'sort-by' => 'name'],
+            ['label' => 'Akses', 'sortable' => false],
+            ['label' => 'Jumlah Pekerja', 'sortable' => true, 'sort-by' => 'users_count', 'align' => 'right'],
+        ]" :paginator="$roles" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
+            bodyText="#666666" emptyMessage="Tidak ada data peran.">
+            @foreach ($roles as $role)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        <a href="{{ route('role.edit', $role->id) }}" class="hover:underline" wire:navigate>
+                            {{ $role->name }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        {{ $this->getReadableAccessLabels($role) }}
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm text-right">
+                        {{ $role->users_count }}
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->
@@ -151,13 +82,41 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                <div class="border-b py-2">
-                    <div class="text-sm font-medium">{{ $log->description }}</div>
-                    <div class="text-xs text-gray-500">
-                        {{ $log->causer->name ?? 'System' }} -
-                        {{ $log->created_at->format('d M Y H:i') }}
+                    <div class="border-b border-gray-200 py-3">
+                        <div class="flex justify-between items-start">
+                            <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ $log->created_at->format('d M Y H:i') }}
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            Oleh: {{ $log->causer->name ?? 'System' }}
+                        </div>
+
+                        {{-- Tampilkan detail perubahan untuk event 'updated' --}}
+                        @if ($log->event === 'updated' && $log->properties)
+                            @php
+                                $old = $log->properties['old'] ?? [];
+                                $attributes = $log->properties['attributes'] ?? [];
+                                $fieldLabels = [
+                                    'name' => 'Nama Peran',
+                                    'guard_name' => 'Guard',
+                                ];
+                            @endphp
+                            <div class="mt-2 text-xs space-y-1 bg-gray-50 rounded p-2">
+                                @foreach ($attributes as $field => $newValue)
+                                    @if (isset($fieldLabels[$field]))
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="font-medium text-[#666666]">{{ $fieldLabels[$field] }}:</span>
+                                            <span class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
+                                            <span class="text-gray-400">→</span>
+                                            <span class="text-green-600">{{ $newValue ?? '-' }}</span>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>

@@ -1,4 +1,5 @@
 <div>
+    {{-- Header --}}
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center">
             <a href="{{ route('pengaturan') }}"
@@ -9,792 +10,490 @@
             <h1 class="text-2xl hidden md:block">Profil Usaha</h1>
         </div>
     </div>
-    <div class="flex items-center bg-white shadow-lg rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div>
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Bibendum sit in habitant id. Quis aenean placerat aliquet
-                laoreet ac arcu posuere leo in. Ultricies consequat quis sollicitudin etiam. Luctus feugiat ac orci
-                netus dolor sapien.
-            </p>
+
+    {{-- Info Banner --}}
+    <x-alert.info>
+        <p>
+            Lengkapi profil usaha Anda untuk memberikan informasi yang jelas kepada pelanggan. Pastikan semua data
+            yang diisi akurat dan terkini.
+        </p>
+    </x-alert.info>
+
+    {{-- Section 1: Informasi Profil Usaha --}}
+    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-gray-800 mb-6">
+            Informasi Profil Usaha
+        </h4>
+
+        {{-- Text Fields --}}
+        <div class="flex flex-col gap-4">
+            <flux:field>
+                <flux:label>Nama Usaha</flux:label>
+                <flux:input placeholder="Contoh: Pawon3D" wire:model="name" />
+                <flux:error name="name" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Tagline Usaha</flux:label>
+                <flux:input placeholder="Contoh: Kue Rumahan Lezat, Sehangat Pelukan Ibu" wire:model="tagline" />
+                <flux:error name="tagline" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Jenis Usaha</flux:label>
+                <flux:input placeholder="Contoh: Usaha Mikro Kecil (UMK)" wire:model="type" />
+                <flux:error name="type" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Jenis Produksi</flux:label>
+                <flux:input placeholder="Contoh: Kue" wire:model="product" />
+                <flux:error name="product" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Deskripsi Usaha</flux:label>
+                <flux:textarea rows="3"
+                    placeholder="Contoh: Pawon3D hadir sebagai destinasi kuliner kue pilihan yang mengusung konsep unik. Perpaduan antara adorasi tradisional Nusantara dengan sentuhan gaya modern dan inovasi rasa."
+                    wire:model="description" />
+                <flux:error name="description" />
+            </flux:field>
         </div>
-    </div>
 
-    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-4">
-        <div class="w-full mt-8 ">
-            <h4 class="text-lg font-semibold text-gray-800">
-                Informasi Umum
-            </h4>
-            <div class="w-full flex md:flex-row flex-col gap-8 mt-2">
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+        {{-- Image Uploads: Logo, Banner, Contoh Produk --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            {{-- Logo Usaha --}}
+            <div class="flex flex-col gap-4">
+                <flux:field>
                     <flux:label>Logo Usaha</flux:label>
-                    <div class="flex flex-col w-full max-w-xs space-y-4">
-                        <!-- Dropzone Area -->
-                        <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
-                            wire:ignore
-                            ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
-                            ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
-                            ondrop="handleDropLogo(event)" id="dropzone-logo-container">
+                </flux:field>
+                <div class="flex flex-col w-full space-y-4">
+                    <div class="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                        wire:ignore
+                        ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
+                        ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
+                        ondrop="handleDropLogo(event)" id="dropzone-logo-container">
 
-                            <label for="dropzone-logo-file"
-                                class="w-full h-full cursor-pointer flex items-center justify-center">
-                                <div id="preview-logo-container" class="w-full h-full">
-                                    @if ($previewLogoImage)
-                                    <!-- Image Preview -->
+                        <label for="dropzone-logo-file"
+                            class="w-full h-full cursor-pointer flex items-center justify-center">
+                            <div id="preview-logo-container" class="w-full h-full">
+                                @if ($previewLogoImage)
                                     <img src="{{ $previewLogoImage }}" alt="Preview" class="object-cover w-full h-full"
                                         id="logo-image-preview" />
-                                    @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
+                                @else
+                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                                class="font-semibold">2mb</span></p>
+                                        <p class="text-xs text-gray-500"><span class="font-semibold">PNG</span></p>
                                     </div>
-                                    @endif
-                                </div>
-                            </label>
-                        </div>
+                                @endif
+                            </div>
+                        </label>
+                    </div>
 
-                        <!-- Hidden File Input -->
-                        <input id="dropzone-logo-file" type="file" wire:model="logo" class="hidden"
-                            accept="image/jpeg, image/png, image/jpg" onchange="previewLogoImage(this)" />
+                    <input id="dropzone-logo-file" type="file" wire:model="logo" class="hidden" accept="image/png"
+                        onchange="previewLogoImage(this)" />
 
-                        <!-- Upload Button -->
-                        <flux:button variant="primary" type="button"
-                            onclick="document.getElementById('dropzone-logo-file').click()" class="w-full">
-                            Pilih Gambar
-                        </flux:button>
+                    <flux:button variant="primary" type="button"
+                        onclick="document.getElementById('dropzone-logo-file').click()" class="w-full">
+                        Pilih Foto
+                    </flux:button>
 
-                        <!-- Error Message -->
-                        @error('logo')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
-                        @enderror
+                    @error('logo')
+                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    @enderror
 
-                        <!-- Loading Indicator -->
-                        <div wire:loading wire:target="logo"
-                            class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
-                            Mengupload gambar...
-                        </div>
+                    <div wire:loading wire:target="logo"
+                        class="w-full p-2 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                        Mengupload gambar...
                     </div>
                 </div>
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-                    <flux:label>Nama Usaha</flux:label>
-                    <flux:input placeholder="Contoh: Pawon3D" wire:model.defer="name" />
-                    <flux:error name="name" />
-                    <flux:label>Tagline Usaha</flux:label>
-                    <flux:input placeholder="Contoh: Kue Rumahan Lezat, Sehangat Pelukan Ibu"
-                        wire:model.defer="tagline" />
-                    <flux:error name="tagline" />
-                    <flux:label>Jenis Usaha</flux:label>
-                    <flux:input placeholder="Contoh: Usaha Mikro Kecil (UMK)" wire:model.defer="type" />
-                    <flux:error name="type" />
-                </div>
             </div>
-        </div>
 
-        <div class="w-full mt-8 ">
-            <div class="w-full flex md:flex-row flex-col gap-8 mt-2">
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+            {{-- Banner Utama --}}
+            <div class="flex flex-col gap-4">
+                <flux:field>
                     <flux:label>Banner Utama</flux:label>
-                    <div class="flex flex-col w-full max-w-md space-y-4">
-                        <!-- Dropzone Area -->
-                        <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
-                            wire:ignore
-                            ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
-                            ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
-                            ondrop="handleDropBanner(event)" id="dropzone-banner-container">
+                </flux:field>
+                <div class="flex flex-col w-full space-y-4">
+                    <div class="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                        wire:ignore
+                        ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
+                        ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
+                        ondrop="handleDropBanner(event)" id="dropzone-banner-container">
 
-                            <label for="dropzone-banner-file"
-                                class="w-full h-full cursor-pointer flex items-center justify-center">
-                                <div id="preview-banner-container" class="w-full h-full">
-                                    @if ($previewBannerImage)
-                                    <!-- Image Preview -->
+                        <label for="dropzone-banner-file"
+                            class="w-full h-full cursor-pointer flex items-center justify-center">
+                            <div id="preview-banner-container" class="w-full h-full">
+                                @if ($previewBannerImage)
                                     <img src="{{ $previewBannerImage }}" alt="Preview"
                                         class="object-cover w-full h-full" id="banner-image-preview" />
-                                    @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
+                                @else
+                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                                class="font-semibold">2mb</span></p>
+                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
                                             <span class="font-semibold">PNG</span>
                                         </p>
                                     </div>
-                                    @endif
-                                </div>
-                            </label>
-                        </div>
+                                @endif
+                            </div>
+                        </label>
+                    </div>
 
-                        <!-- Hidden File Input -->
-                        <input id="dropzone-banner-file" type="file" wire:model="banner" class="hidden"
-                            accept="image/jpeg, image/png, image/jpg" onchange="previewBannerImage(this)" />
+                    <input id="dropzone-banner-file" type="file" wire:model="banner" class="hidden"
+                        accept="image/jpeg, image/png, image/jpg" onchange="previewBannerImage(this)" />
 
-                        <!-- Upload Button -->
-                        <flux:button variant="primary" type="button"
-                            onclick="document.getElementById('dropzone-banner-file').click()" class="w-full">
-                            Pilih Gambar
-                        </flux:button>
+                    <flux:button variant="primary" type="button"
+                        onclick="document.getElementById('dropzone-banner-file').click()" class="w-full">
+                        Pilih Foto
+                    </flux:button>
 
-                        <!-- Error Message -->
-                        @error('banner')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
-                        @enderror
+                    @error('banner')
+                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    @enderror
 
-                        <!-- Loading Indicator -->
-                        <div wire:loading wire:target="banner"
-                            class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
-                            Mengupload gambar...
-                        </div>
+                    <div wire:loading wire:target="banner"
+                        class="w-full p-2 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                        Mengupload gambar...
                     </div>
                 </div>
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-                    <flux:label>Jenis Produksi</flux:label>
-                    <flux:input placeholder="Contoh: Kue" wire:model.defer="product" />
-                    <flux:error name="product" />
-                    <flux:label>Deskripsi Usaha</flux:label>
-                    <flux:textarea rows="7"
-                        placeholder="Contoh: Pawon3D hadir sebagai destinasi kuliner kue pilihan yang mengusung konsep unik. Perpaduan antara resep tradisional Nusantara dengan sentuhan gaya modern dan inovasi rasa."
-                        wire:model.defer="description" />
-                    <flux:error name="description" />
+            </div>
+
+            {{-- Contoh Produk --}}
+            <div class="flex flex-col gap-4">
+                <flux:field>
+                    <flux:label>Contoh Produk</flux:label>
+                </flux:field>
+                <div class="flex flex-col w-full space-y-4">
+                    <div class="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                        wire:ignore
+                        ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
+                        ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
+                        ondrop="handleDropProductImage(event)" id="dropzone-product-container">
+
+                        <label for="dropzone-product-file"
+                            class="w-full h-full cursor-pointer flex items-center justify-center">
+                            <div id="preview-product-container" class="w-full h-full">
+                                @if ($previewProductImage)
+                                    <img src="{{ $previewProductImage }}" alt="Preview"
+                                        class="object-cover w-full h-full" id="product-image-preview" />
+                                @else
+                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                                class="font-semibold">2mb</span></p>
+                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
+                                            <span class="font-semibold">PNG</span>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        </label>
+                    </div>
+
+                    <input id="dropzone-product-file" type="file" wire:model="productImage" class="hidden"
+                        accept="image/jpeg, image/png, image/jpg" onchange="previewProductImage(this)" />
+
+                    <flux:button variant="primary" type="button"
+                        onclick="document.getElementById('dropzone-product-file').click()" class="w-full">
+                        Pilih Foto
+                    </flux:button>
+
+                    @error('productImage')
+                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    @enderror
+
+                    <div wire:loading wire:target="productImage"
+                        class="w-full p-2 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                        Mengupload gambar...
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="w-full mt-8 ">
-            <h4 class="text-lg font-semibold text-gray-800">
-                Informasi Alamat dan Kontak Usaha
-            </h4>
-            <div class="w-full flex md:flex-row flex-col gap-8 mt-2">
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
+    {{-- Section 2: Alamat dan Kontak --}}
+    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-gray-800 mb-6">
+            Informasi Alamat dan Kontak Usaha
+        </h4>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {{-- Left Column: Foto Tempat Usaha --}}
+            <div class="flex flex-col gap-4">
+                <flux:field>
                     <flux:label>Foto Tempat Usaha</flux:label>
-                    <div class="flex flex-col w-full max-w-md space-y-4">
-                        <!-- Dropzone Area -->
-                        <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
-                            wire:ignore
-                            ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
-                            ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
-                            ondrop="handleDropBuilding(event)" id="dropzone-building-container">
+                </flux:field>
+                <div class="flex flex-col w-full space-y-4">
+                    <div class="relative w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
+                        wire:ignore
+                        ondragover="event.preventDefault(); this.classList.add('border-blue-500', 'bg-gray-100');"
+                        ondragleave="this.classList.remove('border-blue-500', 'bg-gray-100');"
+                        ondrop="handleDropBuilding(event)" id="dropzone-building-container">
 
-                            <label for="dropzone-building-file"
-                                class="w-full h-full cursor-pointer flex items-center justify-center">
-                                <div id="preview-building-container" class="w-full h-full">
-                                    @if ($previewBuildingImage)
-                                    <!-- Image Preview -->
+                        <label for="dropzone-building-file"
+                            class="w-full h-full cursor-pointer flex items-center justify-center">
+                            <div id="preview-building-container" class="w-full h-full">
+                                @if ($previewBuildingImage)
                                     <img src="{{ $previewBuildingImage }}" alt="Preview"
                                         class="object-cover w-full h-full" id="building-image-preview" />
-                                    @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                        <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-2 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
+                                @else
+                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                                class="font-semibold">2mb</span></p>
+                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
                                             <span class="font-semibold">PNG</span>
                                         </p>
                                     </div>
-                                    @endif
-                                </div>
-                            </label>
-                        </div>
+                                @endif
+                            </div>
+                        </label>
+                    </div>
 
-                        <!-- Hidden File Input -->
-                        <input id="dropzone-building-file" type="file" wire:model="building" class="hidden"
-                            accept="image/jpeg, image/png, image/jpg" onchange="previewBuildingImage(this)" />
+                    <input id="dropzone-building-file" type="file" wire:model="building" class="hidden"
+                        accept="image/jpeg, image/png, image/jpg" onchange="previewBuildingImage(this)" />
 
-                        <!-- Upload Button -->
-                        <flux:button variant="primary" type="button"
-                            onclick="document.getElementById('dropzone-building-file').click()" class="w-full">
-                            Pilih Gambar
-                        </flux:button>
+                    <flux:button variant="primary" type="button"
+                        onclick="document.getElementById('dropzone-building-file').click()" class="w-full">
+                        Pilih Foto
+                    </flux:button>
 
-                        <!-- Error Message -->
-                        @error('building')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
-                        @enderror
+                    @error('building')
+                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    @enderror
 
-                        <!-- Loading Indicator -->
-                        <div wire:loading wire:target="building"
-                            class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
-                            Mengupload gambar...
-                        </div>
+                    <div wire:loading wire:target="building"
+                        class="w-full p-2 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                        Mengupload gambar...
                     </div>
                 </div>
-                <div class="md:w-1/2 flex flex-col gap-4 mt-4">
-                    <flux:label>Titik Lokasi (Google Maps)</flux:label>
-                    <flux:input placeholder="Contoh :  https://maps.app.goo.gl/socTAnFbJXJ3mUFw9"
-                        wire:model.defer="location" />
+            </div>
+
+            {{-- Right Column: Location, Address, Contact, Email, Website --}}
+            <div class="flex flex-col gap-4">
+                <flux:field>
+                    <flux:label>Titik Google Maps</flux:label>
+                    <flux:input placeholder="Contoh: https://maps.app.goo.gl/socTAnFbJXJ3mUFw9"
+                        wire:model="location" />
                     <flux:error name="location" />
+                </flux:field>
+
+                <flux:field>
                     <flux:label>Alamat</flux:label>
                     <flux:textarea rows="2"
-                        placeholder="Contoh : Jl. Jenderal Sudirman KM.3, RT.25 RW.07, Kel. Muara Bulian, Kec. Muara Bulian, Kab. Batang Hari, Jambi"
-                        wire:model.defer="address" />
+                        placeholder="Contoh: Jl. Jenderal Sudirman KM.3, RT.25 RW.07, Kel. Muara Bulian, Kec. Muara Bulian, Kab. Batang Hari, Jambi"
+                        wire:model="address" />
                     <flux:error name="address" />
-                    <flux:label>Nomor Telepon</flux:label>
-                    <flux:input placeholder="Contoh :  08123456789" wire:model.defer="contact" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>No. Telepon</flux:label>
+                    <flux:input placeholder="Contoh: 08123456789" wire:model="contact" />
                     <flux:error name="contact" />
-                    <flux:label>Alamat Email</flux:label>
-                    <flux:input placeholder="Contoh :  tokokue@gmail.com" wire:model.defer="email" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Email</flux:label>
+                    <flux:input type="email" placeholder="Contoh: tokokue@gmail.com" wire:model="email" />
                     <flux:error name="email" />
+                </flux:field>
+
+                <flux:field>
                     <flux:label>Website</flux:label>
-                    <flux:input placeholder="Contoh :  www.pawon3d.my.id" wire:model.defer="website" />
+                    <flux:input placeholder="Contoh: www.pawon3d.my.id" wire:model="website" />
                     <flux:error name="website" />
-                </div>
+                </flux:field>
             </div>
         </div>
     </div>
-    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-4">
-        <div class="w-full mt-8 ">
-            <h4 class="text-lg font-semibold text-gray-800">
-                Informasi Jam Operasional
-            </h4>
-            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Senin</flux:label>
-                        <flux:switch wire:model.live="is_senin" :checked="$is_senin ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_senin, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_senin = dateStr;
-                                @this.set('open_senin', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_senin" wire:model='open_senin' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_senin, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_senin = dateStr;
-                                @this.set('close_senin', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_senin" wire:model='close_senin' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Selasa</flux:label>
-                        <flux:switch wire:model.live="is_selasa" :checked="$is_selasa ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_selasa, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_selasa = dateStr;
-                                @this.set('open_selasa', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_selasa" wire:model='open_selasa' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_selasa, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_selasa = dateStr;
-                                @this.set('close_selasa', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_selasa" wire:model='close_selasa' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Rabu</flux:label>
-                        <flux:switch wire:model.live="is_rabu" :checked="$is_rabu ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_rabu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_rabu = dateStr;
-                                @this.set('open_rabu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_rabu" wire:model='open_rabu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_rabu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_rabu = dateStr;
-                                @this.set('close_rabu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_rabu" wire:model='close_rabu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Kamis</flux:label>
-                        <flux:switch wire:model.live="is_kamis" :checked="$is_kamis ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_kamis, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_kamis = dateStr;
-                                @this.set('open_kamis', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_kamis" wire:model='open_kamis' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_kamis, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_kamis = dateStr;
-                                @this.set('close_kamis', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_kamis" wire:model='close_kamis' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Jumat</flux:label>
-                        <flux:switch wire:model.live="is_jumat" :checked="$is_jumat ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_jumat, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_jumat = dateStr;
-                                @this.set('open_jumat', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_jumat" wire:model='open_jumat' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_jumat, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_jumat = dateStr;
-                                @this.set('close_jumat', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_jumat" wire:model='close_jumat' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Sabtu</flux:label>
-                        <flux:switch wire:model.live="is_sabtu" :checked="$is_sabtu ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_sabtu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_sabtu = dateStr;
-                                @this.set('open_sabtu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_sabtu" wire:model='open_sabtu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_sabtu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_sabtu = dateStr;
-                                @this.set('close_sabtu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_sabtu" wire:model='close_sabtu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="w-full grid grid-cols-1 gap-4 mt-2">
-                <div class="border border-gray-300 rounded-lg p-4 flex flex-col gap-4 bg-white">
-                    <div class="flex flex-row items-center justify-between">
-                        <flux:label>Minggu</flux:label>
-                        <flux:switch wire:model.live="is_minggu" :checked="$is_minggu ? true : false"
-                            class="data-checked:bg-green-500" />
-                    </div>
-                    <div class="flex flex-row w-full items-center justify-between">
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Buka</flux:label>
-                            <div x-init="flatpickr($refs.open_minggu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                open_minggu = dateStr;
-                                @this.set('open_minggu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="open_minggu" wire:model='open_minggu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                        <div class="flex flex-col w-1/3 gap-3 border border-gray-300 rounded-lg p-2">
-                            <flux:label>Tutup</flux:label>
-                            <div x-init="flatpickr($refs.close_minggu, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            onChange: function(selectedDates, dateStr) {
-                                close_minggu = dateStr;
-                                @this.set('close_minggu', dateStr);
-                            }
-                        });" class="relative">
-                                <input x-ref="close_minggu" wire:model='close_minggu' type="text"
-                                    class="w-full text-gray-600 text-sm font-semibold border-0 focus:outline-none focus:ring-0 cursor-pointer"
-                                    placeholder="hh:mm" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+    {{-- Section 3: Sosial Media --}}
+    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-gray-800 mb-6">
+            Informasi Sosial Media
+        </h4>
+
+        <div class="flex flex-col gap-4">
+            <flux:field>
+                <flux:label>Instagram</flux:label>
+                <flux:input placeholder="Contoh: @pawon3d" wire:model="social_instagram" />
+                <flux:error name="social_instagram" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>Facebook</flux:label>
+                <flux:input placeholder="Contoh: @pawon3d" wire:model="social_facebook" />
+                <flux:error name="social_facebook" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label>WhatsApp</flux:label>
+                <flux:input placeholder="Contoh: 08123456789" wire:model="social_whatsapp" />
+                <flux:error name="social_whatsapp" />
+            </flux:field>
         </div>
     </div>
-    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-4">
-        <div class="w-full mt-8 ">
-            <h4 class="text-lg font-semibold text-gray-800">
-                Informasi Sosial Media
-            </h4>
-            <div class="w-full flex flex-col gap-8 mt-2">
-                <div class="w-full flex flex-col gap-4 mt-4">
-                    <flux:label>Instagram</flux:label>
-                    <flux:input placeholder="Contoh : @pawon3d" wire:model.defer="social_instagram" />
-                    <flux:error name="social_instagram" />
-                    <flux:label>Facebook</flux:label>
-                    <flux:input placeholder="Contoh : @pawon3d" wire:model.defer="social_facebook" />
-                    <flux:error name="social_facebook" />
-                    <flux:label>Whatsapp</flux:label>
-                    <flux:input placeholder="Contoh : 08123456789" wire:model.defer="social_whatsapp" />
-                    <flux:error name="social_whatsapp" />
-                </div>
-            </div>
+
+    {{-- Section 4: Legalitas Usaha --}}
+    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-gray-800 mb-6">
+            Informasi Legalitas Usaha
+        </h4>
+
+        <div class="flex flex-row items-center justify-between mb-4">
+            <flux:text class="text-gray-600">Daftar Dokumen</flux:text>
+            <flux:button type="button" variant="primary" icon="plus" wire:click='addModal'>
+                Tambah Dokumen
+            </flux:button>
         </div>
+
+        <x-table.paginated :paginator="$storeDocuments" :headers="[
+            ['label' => 'Dokumen Legalitas', 'class' => 'bg-[#3F4E4F] text-white'],
+            ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white'],
+            ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white'],
+            ['label' => 'Berlaku Hingga', 'class' => 'bg-[#3F4E4F] text-white'],
+        ]"
+            emptyMessage="Tidak ada dokumen legalitas yang tersedia.">
+            @foreach ($storeDocuments as $document)
+                <tr class="hover:bg-gray-100 border-b border-gray-200" wire:key="document-{{ $document->id }}">
+                    <td class="px-6 py-4 cursor-pointer hover:text-black"
+                        wire:click="editModal('{{ $document->id }}')">
+                        {{ $document->document_name }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $document->document_number ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->format('d/m/Y') : '-' }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->format('d/m/Y') : 'Tidak Terbatas' }}
+                    </td>
+                </tr>
+            @endforeach
+        </x-table.paginated>
     </div>
-    <div class="w-full mt-8 bg-white shadow-lg rounded-lg p-4">
-        <div class="w-full mt-8 ">
-            <h4 class="text-lg font-semibold text-gray-800">
-                Informasi Legalitas Usaha
-            </h4>
-            <div class="flex flex-row items-center justify-between mt-4">
-                <flux:label>Daftar Dokumen</flux:label>
-                <flux:button type="button" variant="primary" icon="plus" wire:click='addModal'>Tambah Dokumen
-                </flux:button>
-            </div>
-            <div class="bg-white rounded-xl border shadow-sm mt-4">
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left">
-                        <thead class="bg-gray-100 text-gray-700">
-                            <tr>
-                                <th class="px-6 py-3 font-semibold cursor-pointer" wire:click="sortBy('document_name')">
-                                    Dokumen Legalitas
-                                    <span>{{ $sortDirection === 'asc' && $sortField === 'document_name' ? '↑' : '↓'
-                                        }}</span>
-                                </th>
-                                <th class="px-6 py-3 font-semibold cursor-pointer"
-                                    wire:click="sortBy('document_number')">
-                                    Nomor Dokumen
-                                    <span>{{ $sortDirection === 'asc' && $sortField === 'document_number' ? '↑' : '↓'
-                                        }}</span>
-                                </th>
-                                <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("valid_from")'>
-                                    Tanggal Terbit
-                                    <span>{{ $sortDirection === 'asc' && $sortField === 'valid_from' ? '↑' : '↓'
-                                        }}</span>
-                                </th>
-                                <th class="px-6 py-3 font-semibold cursor-pointer" wire:click='sortBy("valid_until")'>
-                                    Berlaku Hingga
-                                    <span>{{ $sortDirection === 'asc' && $sortField === 'valid_until' ? '↑' : '↓'
-                                        }}</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 text-gray-900">
-                            @foreach ($storeDocuments as $document)
-                            <tr class="hover:bg-gray-100">
-                                <td class="px-6 py-4 hover:text-black cursor-pointer"
-                                    wire:click="editModal('{{ $document->id }}')">
-                                    {{ $document->document_name }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->document_number }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->valid_from ?
-                                    \Carbon\Carbon::parse($document->valid_from)->format('d/m/Y')
-                                    : '-' }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    {{ $document->valid_until ?
-                                    \Carbon\Carbon::parse($document->valid_until)->format('d/m/Y') : 'Tidak Terbatas' }}
-                                </td>
-                            </tr>
-                            @endforeach
-                            @if (!$storeDocuments)
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                    Tidak ada dokumen legalitas yang tersedia.
-                                </td>
-                            </tr>
-                            @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="flex justify-end gap-8 mt-4">
+
+    {{-- Action Buttons --}}
+    <div class="flex justify-end gap-4 mt-6">
         <flux:button href="{{ route('pengaturan') }}" icon="x-mark">Batal</flux:button>
         <flux:button wire:click="updateStore" icon="save" variant="primary">Simpan</flux:button>
     </div>
 
+    {{-- Document Modal --}}
     <flux:modal name="document" class="w-full max-w-md" wire:model="showModal">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ $edit ? 'Rincian' : 'Tambah' }} Dokumen</flux:heading>
             </div>
             <div class="space-y-4">
-                <div>
-                    <label for="documentName" class="block text-sm font-medium text-gray-700">Nama Dokumen</label>
-                    <input type="text" id="documentName" wire:model.lazy="documentName"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        required />
-                    @error('documentName')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label for="documentNumber" class="block text-sm font-medium text-gray-700">Nomor Dokumen</label>
-                    <input type="text" id="documentNumber" wire:model.lazy="documentNumber"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    @error('documentNumber')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-                <div>
-                    <label for="validFrom" class="block text-sm font-medium text-gray-700">Tanggal Terbit</label>
+                <flux:field>
+                    <flux:label>Nama Dokumen</flux:label>
+                    <flux:input wire:model="documentName" placeholder="Masukkan nama dokumen" />
+                    <flux:error name="documentName" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Nomor Dokumen</flux:label>
+                    <flux:input wire:model="documentNumber" placeholder="Masukkan nomor dokumen" />
+                    <flux:error name="documentNumber" />
+                </flux:field>
+
+                <flux:field>
+                    <flux:label>Tanggal Terbit</flux:label>
                     <input type="date" class="tanggal" onclick="this.showPicker()"
                         data-date="{{ $validFrom ? \Carbon\Carbon::parse($validFrom)->format('d/m/Y') : 'dd/mm/yyyy' }}"
-                        wire:model.live="validFrom" id="validFrom" placeholder="dd/mm/yyyy" />
-                </div>
-                @error('validFrom')
-                <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+                        wire:model.live="validFrom" id="validFrom" />
+                    <flux:error name="validFrom" />
+                </flux:field>
 
-                <div>
-                    <label for="documentNumber" class="block text-sm font-medium text-gray-700">Tanggal Berlaku
-                        Sampai</label>
+                <flux:field>
+                    <flux:label>Tanggal Berlaku Sampai</flux:label>
                     <input type="date" class="tanggal" onclick="this.showPicker()"
                         data-date="{{ $validUntil ? \Carbon\Carbon::parse($validUntil)->format('d/m/Y') : 'dd/mm/yyyy' }}"
-                        wire:model.live="validUntil" id="validUntil" placeholder="dd/mm/yyyy" />
-                </div>
+                        wire:model.live="validUntil" id="validUntil" />
+                    <flux:error name="validUntil" />
+                </flux:field>
+
                 <div class="mb-5 w-full">
+                    <flux:label class="mb-2">File Dokumen</flux:label>
                     <div class="flex flex-row items-center gap-4">
                         <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4">
+                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap h-10 text-sm rounded-lg px-4 inline-flex bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow w-1/4">
                             Pilih File
                             <input type="file" wire:model.live="documentFile"
                                 accept="image/jpeg, image/png, image/jpg, application/pdf" class="hidden" />
                         </label>
 
                         @if ($documentFile)
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
-                            readonly wire:loading.remove wire:target="documentFile">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="documentFile">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
+                                readonly wire:loading.remove wire:target="documentFile">
                         @else
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                            value="Mengupload File..." readonly wire:loading wire:target="documentFile">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
                         @endif
-
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 hidden"
+                            value="Mengupload File..." readonly wire:loading.class.remove="hidden"
+                            wire:target="documentFile">
                     </div>
+                    <flux:error name="documentFile" />
                 </div>
-                <flux:error name="documentFile" />
             </div>
-            <div class="mt-6 flex justify-end space-x-2">
+
+            <div class="flex justify-end gap-2">
                 @if ($edit)
-                <flux:modal.trigger name="delete-document" class="mr-4">
-                    <flux:button variant="ghost" icon="trash" />
-                </flux:modal.trigger>
-                <flux:modal name="delete-document" class="min-w-[22rem]">
-                    <div class="space-y-6">
-                        <div>
-                            <flux:heading size="lg">Hapus Dokumen</flux:heading>
-
-                            <flux:text class="mt-2">
-                                <p>Apakah Anda yakin ingin menghapus dokumen ini?</p>
-                            </flux:text>
-                        </div>
-
-                        <div class="flex gap-2">
-                            <flux:spacer />
-
-                            <flux:modal.close>
-                                <flux:button variant="ghost">Batal</flux:button>
-                            </flux:modal.close>
-
-                            <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
-                        </div>
-                    </div>
-                </flux:modal>
+                    <flux:modal.trigger name="delete-document" class="mr-auto">
+                        <flux:button variant="ghost" icon="trash" />
+                    </flux:modal.trigger>
                 @endif
-                <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)">Batal
-                </flux:button>
+                <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)">Batal</flux:button>
                 @if ($edit)
-                <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
-                </flux:button>
+                    <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
+                    </flux:button>
                 @else
-                <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
-                </flux:button>
+                    <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
+                    </flux:button>
                 @endif
             </div>
         </div>
     </flux:modal>
 
+    {{-- Delete Document Modal --}}
+    <flux:modal name="delete-document" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Hapus Dokumen</flux:heading>
+                <flux:text class="mt-2">
+                    Apakah Anda yakin ingin menghapus dokumen ini?
+                </flux:text>
+            </div>
+            <div class="flex gap-2 justify-end">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Batal</flux:button>
+                </flux:modal.close>
+                <flux:button type="button" variant="danger" wire:click="delete">Hapus</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    {{-- JavaScript for Image Previews --}}
     <script>
         function handleDropLogo(event) {
             event.preventDefault();
             const container = event.currentTarget;
             container.classList.remove('border-blue-500', 'bg-gray-100');
-
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 const input = document.getElementById('dropzone-logo-file');
@@ -807,12 +506,9 @@
         function previewLogoImage(input) {
             const previewContainer = document.getElementById('preview-logo-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    // Update preview image
                     let previewImg = document.getElementById('logo-image-preview');
                     if (!previewImg) {
                         previewImg = document.createElement('img');
@@ -821,21 +517,16 @@
                         previewContainer.appendChild(previewImg);
                     }
                     previewImg.src = e.target.result;
-
-                    // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
-
                 reader.readAsDataURL(input.files[0]);
             }
         }
-    </script>
-    <script>
+
         function handleDropBanner(event) {
             event.preventDefault();
             const container = event.currentTarget;
             container.classList.remove('border-blue-500', 'bg-gray-100');
-
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 const input = document.getElementById('dropzone-banner-file');
@@ -848,12 +539,9 @@
         function previewBannerImage(input) {
             const previewContainer = document.getElementById('preview-banner-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    // Update preview image
                     let previewImg = document.getElementById('banner-image-preview');
                     if (!previewImg) {
                         previewImg = document.createElement('img');
@@ -862,21 +550,53 @@
                         previewContainer.appendChild(previewImg);
                     }
                     previewImg.src = e.target.result;
-
-                    // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
-
                 reader.readAsDataURL(input.files[0]);
             }
         }
-    </script>
-    <script>
+
+        function handleDropProductImage(event) {
+            event.preventDefault();
+            const container = event.currentTarget;
+            container.classList.remove('border-blue-500', 'bg-gray-100');
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const input = document.getElementById('dropzone-product-file');
+                input.files = files;
+                previewProductImageHandler(input);
+                input.dispatchEvent(new Event('change'));
+            }
+        }
+
+        function previewProductImage(input) {
+            previewProductImageHandler(input);
+        }
+
+        function previewProductImageHandler(input) {
+            const previewContainer = document.getElementById('preview-product-container');
+            const defaultContent = previewContainer.querySelector('.flex-col');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let previewImg = document.getElementById('product-image-preview');
+                    if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.id = 'product-image-preview';
+                        previewImg.className = 'object-cover w-full h-full';
+                        previewContainer.appendChild(previewImg);
+                    }
+                    previewImg.src = e.target.result;
+                    if (defaultContent) defaultContent.style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         function handleDropBuilding(event) {
             event.preventDefault();
             const container = event.currentTarget;
             container.classList.remove('border-blue-500', 'bg-gray-100');
-
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 const input = document.getElementById('dropzone-building-file');
@@ -889,12 +609,9 @@
         function previewBuildingImage(input) {
             const previewContainer = document.getElementById('preview-building-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    // Update preview image
                     let previewImg = document.getElementById('building-image-preview');
                     if (!previewImg) {
                         previewImg = document.createElement('img');
@@ -903,67 +620,55 @@
                         previewContainer.appendChild(previewImg);
                     }
                     previewImg.src = e.target.result;
-
-                    // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
-
                 reader.readAsDataURL(input.files[0]);
             }
         }
     </script>
+
     @section('css')
-    <style>
-        .tanggal {
-            position: relative;
-            width: 100%;
-            height: 2.5rem;
-            /* Sesuaikan tinggi input */
-            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-            /* Biar ada ruang untuk teks dan ikon */
-            color: transparent;
-            /* Sembunyikan teks aslinya */
-            background-color: #f9fafb;
-            /* gray-50 */
-            border: 1px solid #d1d5db;
-            /* gray-300 */
-            border-radius: 0.5rem;
-            /* rounded-lg */
-            font-size: 0.875rem;
-            /* text-sm */
-            outline: none;
-        }
+        <style>
+            .tanggal {
+                position: relative;
+                width: 100%;
+                height: 2.5rem;
+                padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+                color: transparent;
+                background-color: #f9fafb;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                outline: none;
+            }
 
-        .tanggal:before {
-            position: absolute;
-            top: 50%;
-            left: 0.75rem;
-            transform: translateY(-50%);
-            content: attr(data-date);
-            display: inline-block;
-            color: #111827;
-            /* gray-900 */
-            pointer-events: none;
-            font-size: 0.875rem;
-            /* text-sm */
-        }
+            .tanggal:before {
+                position: absolute;
+                top: 50%;
+                left: 0.75rem;
+                transform: translateY(-50%);
+                content: attr(data-date);
+                display: inline-block;
+                color: #111827;
+                pointer-events: none;
+                font-size: 0.875rem;
+            }
 
-        .tanggal::-webkit-datetime-edit,
-        .tanggal::-webkit-inner-spin-button,
-        .tanggal::-webkit-clear-button {
-            display: none;
-        }
+            .tanggal::-webkit-datetime-edit,
+            .tanggal::-webkit-inner-spin-button,
+            .tanggal::-webkit-clear-button {
+                display: none;
+            }
 
-        .tanggal::-webkit-calendar-picker-indicator {
-            position: absolute;
-            top: 50%;
-            right: 0.75rem;
-            transform: translateY(-50%);
-            opacity: 1;
-            color: #6b7280;
-            /* gray-500 */
-            cursor: pointer;
-        }
-    </style>
+            .tanggal::-webkit-calendar-picker-indicator {
+                position: absolute;
+                top: 50%;
+                right: 0.75rem;
+                transform: translateY(-50%);
+                opacity: 1;
+                color: #6b7280;
+                cursor: pointer;
+            }
+        </style>
     @endsection
 </div>

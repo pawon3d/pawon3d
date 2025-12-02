@@ -26,6 +26,45 @@ class Index extends Component
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
+    /**
+     * Mapping dari prefix permission ke label kategori yang readable.
+     */
+    protected array $categoryLabels = [
+        'kasir' => 'Kasir',
+        'produksi' => 'Produksi (Koki)',
+        'inventori' => 'Inventori (Inventaris)',
+        'manajemen' => 'Manajemen',
+    ];
+
+    /**
+     * Mengkonversi array permission names ke string kategori yang readable.
+     */
+    public function getReadableAccessLabels(Role $role): string
+    {
+        $permissionNames = $role->permissions->pluck('name')->toArray();
+
+        if (empty($permissionNames)) {
+            return 'Tidak ada akses';
+        }
+
+        $activeCategories = [];
+
+        foreach ($this->categoryLabels as $prefix => $label) {
+            foreach ($permissionNames as $permission) {
+                if (str_starts_with($permission, $prefix.'.')) {
+                    $activeCategories[$prefix] = $label;
+                    break;
+                }
+            }
+        }
+
+        if (empty($activeCategories)) {
+            return 'Tidak ada akses';
+        }
+
+        return implode(', ', $activeCategories);
+    }
+
     public function sortBy($field)
     {
         if ($this->sortField === $field) {

@@ -3,7 +3,7 @@
     <section class="relative w-full h-[800px] bg-[#333333] overflow-hidden">
         <!-- Background overlay -->
         <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 z-10"
-            style="background-image: url('/img/apem.png');">
+            style="background-image: url('{{ $storeProfile->banner ? asset('storage/' . $storeProfile->banner) : asset('img/apem.png') }}');">
         </div>
 
         <!-- Hero Content -->
@@ -15,11 +15,12 @@
                 </p>
 
                 <h1 class="text-[64px] leading-[85px] pacifico-regular text-white mb-12">
-                    {{ $storeProfile->tagline ?? 'Kue Rumahan Lezat, Sehangat Pelukan Ibu' }}
+                    {{ $storeProfile->tagline != '' ? $storeProfile->tagline : 'Kue Rumahan Lezat, Sehangat Pelukan Ibu' }}
                 </h1>
 
                 <div class="flex flex-col md:flex-row gap-6 items-start">
-                    <a href="https://wa.me/{{ $storeProfile->contact ?? '628123456789' }}" target="_blank"
+                    <a href="https://wa.me/{{ $storeProfile->contact != '' ? $storeProfile->contact : '628123456789' }}"
+                        target="_blank"
                         class="px-9 py-6 bg-[#e9bd8c] rounded-[15px] montserrat-bold text-[20px] text-[#74512d] hover:bg-[#d4a876] transition-all inline-block">
                         Pesan Sekarang
                     </a>
@@ -274,10 +275,17 @@
                 </div>
 
                 <div class="w-full md:w-[585px] h-[346px] rounded-[10px] overflow-hidden">
-                    <a href="https://maps.google.com/?q=-1.729048731821646,103.2726813742673" target="_blank"
-                        rel="noopener noreferrer">
-                        <img src="{{ asset('img/lokasi.png') }}" alt="Lokasi Toko Pawon3D"
-                            class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+                    <a href="{{ $storeProfile->location != '' ? $storeProfile->location : 'https://maps.app.goo.gl/sC1y1x1BraBVEu117' }}"
+                        target="_blank" rel="noopener noreferrer">
+                        @if ($storeProfile->building)
+                            <img src="{{ asset('storage/' . $storeProfile->building) }}"
+                                alt="Lokasi Toko {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+                        @else
+                            <img src="{{ asset('img/lokasi.png') }}"
+                                alt="Lokasi Toko {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+                        @endif
                     </a>
                 </div>
 
@@ -294,7 +302,7 @@
             <div class="text-center">
                 <h3 class="text-[18px] montserrat-bold text-white mb-[17px]">Lokasi Toko</h3>
                 <p class="text-[16px] montserrat-medium text-[#c4c4c4] max-w-[561px] mx-auto">
-                    Jl. Jenderal Sudirman Km.3, Muara Bulian, Batang Hari, Jambi. sebelah Puskesmas Muara Bulian
+                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3, Muara Bulian, Batang Hari, Jambi' }}
                 </p>
             </div>
         </div>
@@ -534,37 +542,63 @@
             <div class="flex gap-[40px] items-start justify-center">
                 <div class="flex flex-col gap-[40px] w-[275px]">
                     <div class="h-[239px] w-[276px] rounded-[10px] overflow-hidden">
-                        <img src="{{ asset('img/lokasi.png') }}" alt="Toko Pawon3D"
-                            class="w-full h-full object-cover">
+                        @if ($storeProfile->building)
+                            <img src="{{ asset('storage/' . $storeProfile->building) }}"
+                                alt="Toko {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover">
+                        @else
+                            <img src="{{ asset('img/lokasi.png') }}"
+                                alt="Toko {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover">
+                        @endif
                     </div>
                     <div class="h-[183px] w-[275px] rounded-[10px] overflow-hidden">
-                        <img src="{{ asset('img/about.png') }}" alt="Produk Pawon3D"
-                            class="w-full h-full object-cover">
+                        @if ($storeProfile->product_image)
+                            <img src="{{ asset('storage/' . $storeProfile->product_image) }}"
+                                alt="Produk {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover">
+                        @else
+                            <img src="{{ asset('img/about.png') }}"
+                                alt="Produk {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}"
+                                class="w-full h-full object-cover">
+                        @endif
                     </div>
                 </div>
 
                 <div class="bg-[#333333] rounded-[20px] px-[20px] py-[30px] w-[644px] text-white text-center">
                     <div class="mb-[30px]">
-                        <p class="text-[30px] montserrat-semibold mb-[10px]">Pawon3D</p>
-                        <p class="text-[16px] montserrat-medium leading-[30px]">(NIB: 2701230008955)</p>
+                        <p class="text-[30px] montserrat-semibold mb-[10px]">
+                            {{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}
+                        </p>
+                        <p class="text-[16px] montserrat-medium leading-[30px]">
+                            ({{ $storeProfile->type != '' ? $storeProfile->type : 'NIB: 2701230008955' }})</p>
                     </div>
 
                     <div class="text-[16px] montserrat-medium leading-[30px]">
-                        <p class="mb-4">
-                            <span class="montserrat-bold">Pawon3D</span> adalah toko kue yang menghadirkan cita rasa
-                            manis dan kehangatan keluarga dari rumah sejak tahun 2001. Pemilik yang beragama <span
-                                class="montserrat-bold">Islam</span> memastikan setiap produk yang dibuat berasal dari
-                            bahan yang <span class="montserrat-bold">halal, segar, dan aman dikonsumsi</span>, <span
-                                class="montserrat-bold">tanpa pengawet maupun pewarna berbahaya</span>.
-                        </p>
+                        @if ($storeProfile->description)
+                            <p>{!! nl2br(e($storeProfile->description)) !!}</p>
+                        @else
+                            <p class="mb-4">
+                                <span class="montserrat-bold">Pawon3D</span> adalah toko kue yang menghadirkan cita
+                                rasa
+                                manis dan kehangatan keluarga dari rumah sejak tahun 2001. Pemilik yang beragama <span
+                                    class="montserrat-bold">Islam</span> memastikan setiap produk yang dibuat berasal
+                                dari
+                                bahan yang <span class="montserrat-bold">halal, segar, dan aman dikonsumsi</span>,
+                                <span class="montserrat-bold">tanpa pengawet maupun pewarna berbahaya</span>.
+                            </p>
 
-                        <p>
-                            <span class="montserrat-bold">Kue tradisional</span> adalah produk unggulan kami, Pawon3D
-                            percaya diri bahwa kue tradisional yang dibuat termasuk yang <span
-                                class="montserrat-bold">terbaik</span> di kelasnya. Kami percaya, kebahagiaan sejati
-                            dimulai dari kue yang dibuat dengan <span class="montserrat-bold">cinta, kebersihan, dan
-                                kejujuran</span>.
-                        </p>
+                            <p>
+                                <span class="montserrat-bold">Kue tradisional</span> adalah produk unggulan kami,
+                                Pawon3D
+                                percaya diri bahwa kue tradisional yang dibuat termasuk yang <span
+                                    class="montserrat-bold">terbaik</span> di kelasnya. Kami percaya, kebahagiaan
+                                sejati
+                                dimulai dari kue yang dibuat dengan <span class="montserrat-bold">cinta, kebersihan,
+                                    dan
+                                    kejujuran</span>.
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>

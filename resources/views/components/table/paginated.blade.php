@@ -8,6 +8,7 @@
     'bodyBg' => 'bg-white dark:bg-gray-900',
     'bodyText' => 'text-gray-900 dark:text-gray-100',
     'wrapperClass' => '',
+    'pageName' => 'page',
 ])
 
 @php
@@ -76,14 +77,14 @@
                     {{ $paginator->total() }} baris data</span>
             </div>
             <div class="flex items-center gap-2">
-                <button type="button" wire:click="previousPage" @disabled($paginator->onFirstPage())
+                <button type="button" wire:click="previousPage('{{ $pageName }}')" @disabled($paginator->onFirstPage())
                     class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $paginator->onFirstPage() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#f0f0f0]' }}">
                     <flux:icon.chevron-left class="size-[17px] text-[#666666]" />
                 </button>
                 <div class="bg-[#666666] min-w-[30px] px-3 py-1 rounded-[5px] text-center">
                     <span class="text-sm text-white font-medium">{{ $paginator->currentPage() }}</span>
                 </div>
-                <button type="button" wire:click="nextPage" @disabled(!$paginator->hasMorePages())
+                <button type="button" wire:click="nextPage('{{ $pageName }}')" @disabled(!$paginator->hasMorePages())
                     class="bg-[#fafafa] border border-[#666666] min-w-[30px] px-2.5 py-1 rounded-[5px] {{ $paginator->hasMorePages() ? 'hover:bg-[#f0f0f0]' : 'opacity-50 cursor-not-allowed' }}">
                     <flux:icon.chevron-right class="size-[17px] text-[#666666]" />
                 </button>

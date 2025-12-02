@@ -11,15 +11,24 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $permissionRoutes = [
-            'Manajemen Sistem' => 'ringkasan-kasir',
-            'Kasir' => 'ringkasan-kasir',
-            'Produksi' => 'ringkasan-produksi',
-            'Inventori' => 'ringkasan-inventori',
+        // Check permissions in order of priority
+        $permissionGroups = [
+            'ringkasan-kasir' => ['kasir.pesanan.kelola', 'kasir.laporan.kelola'],
+            'ringkasan-produksi' => ['produksi.rencana.kelola', 'produksi.mulai', 'produksi.laporan.kelola'],
+            'ringkasan-inventori' => [
+                'inventori.produk.kelola',
+                'inventori.persediaan.kelola',
+                'inventori.belanja.rencana.kelola',
+                'inventori.toko.kelola',
+                'inventori.belanja.mulai',
+                'inventori.hitung.kelola',
+                'inventori.alur.lihat',
+                'inventori.laporan.kelola',
+            ],
         ];
 
-        foreach ($permissionRoutes as $permission => $routeName) {
-            if ($user->hasPermissionTo($permission)) {
+        foreach ($permissionGroups as $routeName => $permissions) {
+            if ($user->hasAnyPermission($permissions)) {
                 return redirect()->route($routeName);
             }
         }

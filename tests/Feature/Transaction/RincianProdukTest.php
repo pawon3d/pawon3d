@@ -8,9 +8,10 @@ use Spatie\Permission\Models\Role;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
-    // Create Kasir permission and role
-    Permission::create(['name' => 'Kasir']);
-    $role = Role::create(['name' => 'Kasir'])->givePermissionTo(['Kasir']);
+    // Create kasir permission and role
+    Permission::firstOrCreate(['name' => 'kasir.pesanan.kelola']);
+    $role = Role::firstOrCreate(['name' => 'Kasir']);
+    $role->givePermissionTo(['kasir.pesanan.kelola']);
 
     $this->user = User::factory()->create();
     $this->user->assignRole($role);

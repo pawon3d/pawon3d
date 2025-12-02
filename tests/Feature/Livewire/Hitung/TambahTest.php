@@ -6,7 +6,7 @@ use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
-    $permission = Permission::firstOrCreate(['name' => 'Inventori']);
+    $permission = Permission::firstOrCreate(['name' => 'inventori.hitung.kelola']);
     $user = User::factory()->create();
     $user->givePermissionTo($permission);
     $this->actingAs($user);

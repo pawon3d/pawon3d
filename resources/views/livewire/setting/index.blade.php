@@ -49,7 +49,7 @@
             </div>
         </a>
 
-        @can('Manajemen Sistem')
+        @can('manajemen.profil_usaha.kelola')
             <!-- Profil Usaha -->
             <a href="{{ route('profil-usaha') }}" wire:navigate
                 class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
@@ -63,7 +63,9 @@
                     <flux:icon.chevron-right class="size-5 text-[#666666]" />
                 </div>
             </a>
+        @endcan
 
+        @can('manajemen.pembayaran.kelola')
             <!-- Metode Pembayaran -->
             <a href="{{ route('metode-pembayaran') }}" wire:navigate
                 class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
@@ -77,7 +79,9 @@
                     <flux:icon.chevron-right class="size-5 text-[#666666]" />
                 </div>
             </a>
+        @endcan
 
+        @canany(['manajemen.profil_usaha.kelola', 'manajemen.pembayaran.kelola'])
             <!-- Notifikasi -->
             <a href="{{ route('notifikasi') }}" wire:navigate
                 class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
@@ -91,7 +95,7 @@
                     <flux:icon.chevron-right class="size-5 text-[#666666]" />
                 </div>
             </a>
-        @endcan
+        @endcanany
 
         <!-- Panduan Pengguna -->
         {{-- <a href="{{ route('panduan-pengguna') }}" wire:navigate
