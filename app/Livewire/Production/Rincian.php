@@ -4,6 +4,7 @@ namespace App\Livewire\Production;
 
 use App\Models\Product;
 use App\Models\Production;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
@@ -136,7 +137,11 @@ class Rincian extends Component
 
         $production = \App\Models\Production::findOrFail($this->production_id);
         if ($production) {
+            $productionNumber = $production->production_number;
             $production->delete();
+
+            // Kirim notifikasi produksi dibatalkan
+            NotificationService::productionCancelled($productionNumber);
 
             return redirect()->intended(route('produksi'))->with('success', 'Produksi berhasil dihapus!');
         } else {
@@ -161,6 +166,10 @@ class Rincian extends Component
         //         'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
         //     ]);
         // });
+
+        // Kirim notifikasi produksi diproses
+        NotificationService::productionProcessing($production->production_number);
+
         $this->alert('success', 'Produksi berhasil dimulai.');
     }
 
@@ -175,9 +184,17 @@ class Rincian extends Component
             'status' => 'Selesai',
             'end_date' => $this->end_date,
         ]);
+
+        // Kirim notifikasi produksi selesai
+        NotificationService::productionCompleted($production->production_number);
+
         if ($production->method != 'siap-beli') {
             if ($production->details->sum('quantity_get') >= $production->details->sum('quantity_plan')) {
                 $production->transaction->update(['status' => 'Dapat Diambil']);
+
+                // Kirim notifikasi pesanan dapat diambil
+                NotificationService::orderReadyForPickup($production->transaction->invoice_number);
+                NotificationService::orderProductionCompleted($production->transaction->invoice_number);
             }
             $this->handleExcessProduction($production);
         }

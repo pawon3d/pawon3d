@@ -63,4 +63,14 @@ class PointsHistory extends Model
             });
         });
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'phone', 'phone');
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
 }

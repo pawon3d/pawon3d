@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Expense;
 
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
@@ -190,6 +191,9 @@ class Tambah extends Component
             }
         }
 
+        // Kirim notifikasi rencana belanja dibuat
+        NotificationService::shoppingPlanCreated($expense->expense_number);
+
         return redirect()->route('belanja.rencana')->with('success', 'Daftar belanja berhasil ditambahkan.');
     }
 
@@ -233,6 +237,9 @@ class Tambah extends Component
                 ]);
             }
         }
+
+        // Kirim notifikasi belanja dimulai
+        NotificationService::shoppingStarted($expense->expense_number);
 
         return redirect()->route('belanja.rincian', ['id' => $expense->id])->with('success', 'Belanja berhasil Dimulai');
     }

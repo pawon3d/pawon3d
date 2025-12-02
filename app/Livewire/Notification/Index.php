@@ -10,6 +10,8 @@ class Index extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
+    public string $filter = 'kasir';
+
     public function mount()
     {
         View::share('title', 'Notifikasi');

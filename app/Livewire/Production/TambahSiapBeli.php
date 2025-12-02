@@ -3,6 +3,7 @@
 namespace App\Livewire\Production;
 
 use App\Models\Product;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -215,6 +216,9 @@ class TambahSiapBeli extends Component
                     'quantity_plan' => $detail['quantity_plan'],
                 ]);
             }
+
+            // Kirim notifikasi produksi direncanakan
+            NotificationService::productionPlanned($production->production_number);
 
             $this->alert('success', 'Rencana produksi berhasil ditambahkan!');
         }

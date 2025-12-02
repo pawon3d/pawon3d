@@ -3,6 +3,7 @@
 namespace App\Livewire\Hitung;
 
 use App\Models\Hitung;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -124,7 +125,11 @@ class Rincian extends Component
     {
         $hitung = Hitung::findOrFail($this->hitung_id);
         if ($hitung) {
+            $hitungNumber = $hitung->hitung_number;
             $hitung->delete();
+
+            // Kirim notifikasi penghitungan dibatalkan
+            NotificationService::stockCountCancelled($hitungNumber);
 
             return redirect()->intended(route('hitung'))->with('success', 'Aksi berhasil dihapus!');
         } else {
@@ -154,6 +159,9 @@ class Rincian extends Component
         if ($hitung) {
             $hitung->update(['is_start' => true, 'is_finish' => true, 'status' => 'Dibatalkan', 'hitung_date_finish' => null]);
 
+            // Kirim notifikasi penghitungan dibatalkan
+            NotificationService::stockCountCancelled($hitung->hitung_number);
+
             return redirect()->intended(route('hitung'))->with('success', 'Aksi berhasil dibatalkan!');
         } else {
             $this->alert('error', 'Aksi tidak ditemukan!');
@@ -166,6 +174,10 @@ class Rincian extends Component
         $this->status = 'Sedang Diproses';
         $hitung = Hitung::findOrFail($this->hitung_id);
         $hitung->update(['is_start' => $this->is_start, 'status' => $this->status]);
+
+        // Kirim notifikasi penghitungan dimulai
+        NotificationService::stockCountStarted($hitung->hitung_number);
+
         unset($this->hitung); // Clear computed property cache
         $this->alert('success', $hitung->action.' berhasil dimulai.');
     }
@@ -222,6 +234,10 @@ class Rincian extends Component
         });
 
         unset($this->hitung); // Clear computed property cache
+
+        // Kirim notifikasi penghitungan selesai
+        NotificationService::stockCountCompleted($hitung->hitung_number);
+
         $this->alert('success', $hitung->action.' berhasil diselesaikan.');
     }
 

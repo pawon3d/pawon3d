@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -187,7 +188,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
                 }
             }
         }
@@ -260,7 +261,7 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -471,7 +472,17 @@ class BuatPesanan extends Component
                     $path = $this->image->store('payments', 'public');
                     $payment->update(['image' => $path]);
                 }
+
+                // Kirim notifikasi pembayaran
+                if ($transaction->payment_status === 'Lunas') {
+                    NotificationService::paymentCompleted($transaction->invoice_number, $this->paidAmount);
+                } else {
+                    NotificationService::paymentDownPayment($transaction->invoice_number, $this->paidAmount);
+                }
             }
+
+            // Kirim notifikasi pesanan masuk antrian
+            NotificationService::orderQueued($transaction->invoice_number);
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
             session()->flash('print', true);
@@ -486,7 +497,13 @@ class BuatPesanan extends Component
     {
         $transaction = Transaction::find($this->transactionId);
         if ($transaction) {
+            $invoiceNumber = $transaction->invoice_number;
+            $paymentStatus = $transaction->payment_status ?? 'Belum Lunas';
             $transaction->delete();
+
+            // Kirim notifikasi pesanan dibatalkan
+            NotificationService::orderCancelled($invoiceNumber, $paymentStatus);
+
             session()->flash('success', 'Transaksi berhasil dibatalkan.');
 
             return redirect()->route('transaksi');
@@ -502,7 +519,7 @@ class BuatPesanan extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

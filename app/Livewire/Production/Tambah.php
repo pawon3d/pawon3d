@@ -4,6 +4,7 @@ namespace App\Livewire\Production;
 
 use App\Models\Product;
 use App\Models\ProductionWorker;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
@@ -208,6 +209,9 @@ class Tambah extends Component
             ]);
         }
 
+        // Kirim notifikasi produksi direncanakan
+        NotificationService::productionPlanned($production->production_number);
+
         session()->flash('success', 'Produksi berhasil ditambahkan.');
 
         return redirect()->route('produksi');
@@ -286,6 +290,9 @@ class Tambah extends Component
         //         'supply_quantity' => $materialDetail->supply_quantity - ($detail->quantity_plan / $productComposition->product->pcs * $productComposition->material_quantity),
         //     ]);
         // });
+
+        // Kirim notifikasi produksi diproses
+        NotificationService::productionProcessing($production->production_number);
 
         session()->flash('success', 'Produksi berhasil dimulai.');
 

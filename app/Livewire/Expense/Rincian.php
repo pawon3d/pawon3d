@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Expense;
 
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -143,7 +144,11 @@ class Rincian extends Component
 
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         if ($expense) {
+            $expenseNumber = $expense->expense_number;
             $expense->delete();
+
+            // Kirim notifikasi belanja dibatalkan
+            NotificationService::shoppingCancelled($expenseNumber);
 
             return redirect()->intended(route('belanja'))->with('success', 'Daftar belanja berhasil dihapus!');
         } else {
@@ -157,6 +162,10 @@ class Rincian extends Component
         $this->status = 'Dimulai';
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         $expense->update(['is_start' => $this->is_start, 'status' => $this->status]);
+
+        // Kirim notifikasi belanja dimulai
+        NotificationService::shoppingStarted($expense->expense_number);
+
         $this->alert('success', 'Belanja berhasil dimulai.');
     }
 
@@ -223,6 +232,11 @@ class Rincian extends Component
             $this->expense->update(['status' => 'Gagal']);
             $this->status = 'Gagal';
         }
+
+        // Kirim notifikasi belanja selesai
+        NotificationService::shoppingCompleted($this->expense->expense_number);
+        NotificationService::purchaseReceived($this->expense->expense_number);
+
         $this->alert('success', 'Belanja berhasil diselesaikan.');
     }
 

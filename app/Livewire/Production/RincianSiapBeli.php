@@ -4,6 +4,7 @@ namespace App\Livewire\Production;
 
 use App\Models\Production;
 use App\Models\ProductionWorker;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -128,6 +129,9 @@ class RincianSiapBeli extends Component
             'is_finish' => true,
         ]);
 
+        // Kirim notifikasi produksi selesai
+        NotificationService::productionCompleted($production->production_number);
+
         $this->alert('success', 'Produksi berhasil diselesaikan!');
 
         return redirect()->route('produksi', ['method' => 'siap-beli'])->with('success', 'Produksi berhasil diselesaikan!');
@@ -157,7 +161,11 @@ class RincianSiapBeli extends Component
     {
         $production = Production::findOrFail($this->production_id);
         if ($production) {
+            $productionNumber = $production->production_number;
             $production->delete();
+
+            // Kirim notifikasi produksi dibatalkan
+            NotificationService::productionCancelled($productionNumber);
 
             return redirect()->route('produksi.antrian-produksi')->with('success', 'Rencana produksi berhasil dihapus!');
         } else {
@@ -177,6 +185,9 @@ class RincianSiapBeli extends Component
             'production_id' => $this->production_id,
             'user_id' => Auth::user()->id,
         ]);
+
+        // Kirim notifikasi produksi diproses
+        NotificationService::productionProcessing($production->production_number);
 
         $this->status = 'Sedang Diproses';
         $this->production = $production;

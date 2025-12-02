@@ -4,6 +4,7 @@ namespace App\Livewire\Hitung;
 
 use App\Models\Hitung;
 use App\Models\Material;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -262,6 +263,9 @@ class Form extends Component
             ->event('created')
             ->withProperties(['action' => $hitung->action, 'status' => 'Belum Diproses'])
             ->log('Membuat rencana aksi '.$hitung->action);
+
+        // Kirim notifikasi penghitungan direncanakan
+        NotificationService::stockCountPlanned($hitung->hitung_number);
 
         return redirect()->route('hitung.rencana')->with('success', 'Rencana aksi berhasil dibuat.');
     }

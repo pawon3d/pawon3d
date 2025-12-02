@@ -1,63 +1,98 @@
 <div>
-    <div class="mb-4 flex items-center justify-between">
-        <div class="flex items-center">
-            <a href="{{ $_SERVER['HTTP_REFERER'] && $_SERVER['HTTP_REFERER'] != url()->current() ? url()->previous() : route('pengaturan') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
-                <flux:icon.arrow-left variant="mini" class="mr-2" />
-                Kembali
+    {{-- Header --}}
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-5">
+            <a href="{{ route('pengaturan') }}" wire:navigate
+                class="flex items-center gap-[5px] px-[25px] py-[10px] bg-[#313131] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#252324] transition-colors"
+                style="font-family: Montserrat, sans-serif;">
+                <flux:icon.arrow-left class="size-5" />
+                <span class="font-semibold text-[16px]">Kembali</span>
             </a>
-            <h1 class="text-2xl hidden md:block">Notifikasi</h1>
+            <h1 class="text-[20px] font-semibold text-[#666666] hidden md:block"
+                style="font-family: Montserrat, sans-serif;">Notifikasi</h1>
         </div>
-    </div>
-    <div class="w-full flex flex-col gap-6 mt-4 bg-white p-4 rounded-lg shadow-md">
-        <div class="flex justify-end">
-            <button id="mark-all-read"
-                class="text-blue-600 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
-                wire:click="markAllAsRead">
-                Tandai semua sudah dibaca
+
+        {{-- Filter Tabs --}}
+        <div class="flex items-center gap-[10px]">
+            <button wire:click="$set('filter', 'kasir')"
+                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'kasir' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                style="font-family: Montserrat, sans-serif;">
+                Kasir
+            </button>
+            <button wire:click="$set('filter', 'produksi')"
+                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'produksi' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                style="font-family: Montserrat, sans-serif;">
+                Produksi
+            </button>
+            <button wire:click="$set('filter', 'inventori')"
+                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'inventori' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                style="font-family: Montserrat, sans-serif;">
+                Inventori
             </button>
         </div>
-        @php
-            $groupedNotifications = auth()
-                ->user()
-                ->notifications->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->locale('id')->translatedFormat('d F Y');
-                });
-        @endphp
-
-        @forelse ($groupedNotifications as $date => $notifications)
-            <div class="flex flex-col gap-2">
-                <p class="text-sm font-semibold text-gray-500">{{ $date }}</p>
-
-                @foreach ($notifications as $notification)
-                    <div class="flex items-center flex-row gap-3 {{ $notification->is_read ? 'bg-gray-50' : 'bg-blue-100 hover:bg-blue-50 cursor-pointer' }} border border-gray-200 rounded-lg px-4 py-3 shadow-sm"
-                        wire:click="markAsRead('{{ $notification->id }}')">
-                        <div class="mt-1">
-                            <flux:icon icon="cashier" class="text-gray-500 w-5 h-5" />
-                        </div>
-                        <div class="flex flex-row items-center justify-between w-full">
-                            <p class="text-sm text-gray-700">
-                                <span class="font-bold">{{ $notification->title }}</span>
-
-                                <span @class([
-                                    'text-red-500' => $notification->status == 0,
-                                    'text-yellow-500' => $notification->status == 1,
-                                    'text-green-500' => $notification->status == 2,
-                                    'font-semibold',
-                                ])>
-                                    {{ $notification->body }}
-                                </span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-1">
-                                {{ $notification->created_at->locale('id')->diffForHumans() }}
-                            </p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @empty
-            <p class="text-gray-500 text-sm">Tidak ada notifikasi.</p>
-        @endforelse
     </div>
 
+    {{-- Notification Container --}}
+    <div class="w-full flex flex-col gap-[30px] bg-[#fafafa] px-[30px] py-[25px] rounded-[15px]"
+        style="font-family: Montserrat, sans-serif;">
+
+        @php
+            $notifications = auth()
+                ->user()
+                ->notifications()
+                ->when($filter, function ($query) use ($filter) {
+                    return $query->where('type', $filter);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $groupedNotifications = $notifications->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->locale('id')->translatedFormat('d F Y');
+            });
+        @endphp
+
+        @forelse ($groupedNotifications as $date => $dateNotifications)
+            <div class="flex flex-col gap-[25px]">
+                {{-- Date Header --}}
+                <div class="flex flex-col gap-[19px]">
+                    <p class="text-[14px] font-semibold text-[#666666]">{{ $date }}</p>
+
+                    {{-- Notifications for this date --}}
+                    <div class="flex flex-col gap-[15px]">
+                        @foreach ($dateNotifications as $notification)
+                            @php
+                                $icon = match ($notification->type) {
+                                    'kasir' => 'shopping-cart',
+                                    'produksi' => 'fire',
+                                    'inventori' => 'archive-box',
+                                    default => 'bell',
+                                };
+                            @endphp
+                            <div wire:click="markAsRead('{{ $notification->id }}')"
+                                class="flex items-center justify-between pl-[10px] pr-[20px] py-[8px] border border-[#d4d4d4] rounded-[15px] cursor-pointer transition-colors {{ $notification->is_read ? 'bg-[#fafafa]' : 'bg-blue-50 hover:bg-blue-100' }}">
+                                <div class="flex items-center gap-[5px] flex-1 max-w-[800px]">
+                                    {{-- Icon --}}
+                                    <div class="flex items-center justify-center size-[40px]">
+                                        <flux:icon :icon="$icon" class="size-[18px] text-[#666666]" />
+                                    </div>
+                                    {{-- Message --}}
+                                    <p class="text-[14px] font-medium text-[#666666]">
+                                        {!! $notification->body !!}
+                                    </p>
+                                </div>
+                                {{-- Time --}}
+                                <p class="text-[14px] font-medium text-[#adadad]">
+                                    {{ $notification->created_at->locale('id')->diffForHumans() }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="flex items-center justify-center py-10">
+                <p class="text-[14px] text-[#adadad]">Tidak ada notifikasi.</p>
+            </div>
+        @endforelse
+    </div>
 </div>

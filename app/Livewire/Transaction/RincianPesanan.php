@@ -2,9 +2,12 @@
 
 namespace App\Livewire\Transaction;
 
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\PaymentChannel;
+use App\Models\PointsHistory;
 use App\Models\Transaction;
+use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -230,7 +233,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
             }
         }
     }
@@ -371,7 +374,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -442,7 +445,7 @@ class RincianPesanan extends Component
                 $transaction->details()->each(function ($detail) {
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($detail->product->stock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
 
                         return;
                     }
@@ -474,6 +477,18 @@ class RincianPesanan extends Component
                     $path = $this->image->store('payments', 'public');
                     $payment->update(['image' => $path]);
                 }
+
+                // Kirim notifikasi pembayaran
+                if ($status === 'Lunas') {
+                    NotificationService::paymentCompleted($transaction->invoice_number, $this->paidAmount);
+                } else {
+                    NotificationService::paymentDownPayment($transaction->invoice_number, $this->paidAmount);
+                }
+            }
+
+            // Kirim notifikasi pesanan masuk antrian
+            if ($this->transaction->status === 'Draft' || $this->transaction->status === 'temp') {
+                NotificationService::orderQueued($transaction->invoice_number);
             }
 
             session()->flash('success', 'Pesanan berhasil dibuat.');
@@ -493,20 +508,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-' . $this->transaction->id . '.pdf';
-        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/' . $fileName);
+        $fileName = 'struk-'.$this->transaction->id.'.pdf';
+        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/'.$fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -522,11 +537,11 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -540,12 +555,19 @@ class RincianPesanan extends Component
 
     public function finish()
     {
-        $transaction = \App\Models\Transaction::find($this->transactionId);
+        $transaction = Transaction::find($this->transactionId);
         if ($transaction->payment_status == 'Lunas') {
             $transaction->update([
                 'status' => 'Selesai',
                 'end_date' => now(),
             ]);
+
+            // Tambahkan poin ke customer yang terdaftar
+            $this->addPointsToCustomer($transaction);
+
+            // Kirim notifikasi pesanan selesai
+            NotificationService::orderCompleted($transaction->invoice_number);
+
             session()->flash('success', 'Pesanan telah selesai.');
         } elseif ($transaction->payment_status == 'Belum Lunas') {
             $transaction->update([
@@ -556,6 +578,55 @@ class RincianPesanan extends Component
         }
 
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
+    /**
+     * Tambahkan poin ke customer berdasarkan total belanja.
+     * 1 poin untuk setiap kelipatan Rp 10.000.
+     */
+    private function addPointsToCustomer(Transaction $transaction): void
+    {
+        // Cek apakah customer terdaftar (memiliki customer_id atau phone yang cocok dengan customer)
+        $customer = null;
+
+        if ($transaction->customer_id) {
+            $customer = Customer::find($transaction->customer_id);
+        } elseif ($transaction->phone) {
+            $customer = Customer::where('phone', $transaction->phone)->first();
+        }
+
+        if (! $customer) {
+            return;
+        }
+
+        // Hitung total belanja (setelah diskon poin jika ada)
+        $totalAmount = $transaction->total_amount - ($transaction->points_discount ?? 0);
+
+        // Hitung poin: 1 poin per kelipatan Rp 10.000
+        $pointsEarned = (int) floor($totalAmount / 10000);
+
+        if ($pointsEarned <= 0) {
+            return;
+        }
+
+        // Tentukan action berdasarkan method transaksi
+        $actionMap = [
+            'pesanan-reguler' => 'Pesanan Reguler',
+            'pesanan-kotak' => 'Pesanan Kotak',
+            'siap-beli' => 'Siap Saji',
+        ];
+        $action = $actionMap[$transaction->method] ?? 'Pesanan Reguler';
+
+        // Buat history poin
+        PointsHistory::create([
+            'phone' => $customer->phone,
+            'action' => $action,
+            'points' => $pointsEarned,
+            'transaction_id' => $transaction->id,
+        ]);
+
+        // Update total poin customer
+        $customer->increment('points', $pointsEarned);
     }
 
     public function delete()
@@ -577,6 +648,9 @@ class RincianPesanan extends Component
     {
         $transaction = Transaction::find($this->transactionId);
         if ($transaction) {
+            $invoiceNumber = $transaction->invoice_number;
+            $paymentStatus = $transaction->payment_status;
+
             $transaction->delete();
             if (! empty($transaction->payments)) {
                 $payment = Payment::where('transaction_id', $this->transactionId)->get();
@@ -587,6 +661,10 @@ class RincianPesanan extends Component
                     $p->delete();
                 });
             }
+
+            // Kirim notifikasi pesanan dibatalkan
+            NotificationService::orderCancelled($invoiceNumber, $paymentStatus ?? 'Belum Lunas');
+
             session()->flash('success', 'Transaksi berhasil dihapus.');
 
             return redirect()->route('transaksi');
@@ -637,13 +715,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/' . $payment->image);
+        $path = storage_path('app/public/'.$payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }
@@ -775,6 +853,9 @@ class RincianPesanan extends Component
             'total_refund' => $totalRefund,
             'refund_by_shift' => $currentShift?->id,
         ]);
+
+        // Kirim notifikasi refund
+        NotificationService::refundProcessed($this->transaction->invoice_number, $totalRefund);
 
         $this->refundModal = false;
         $this->alert('success', 'Refund berhasil diproses.');
