@@ -1,1 +1,2 @@
-<img src="{{ $storeProfile->logo != '' ? $storeProfile->logo : asset('assets/bakery-logo.png') }}" alt="">
+<img src="{{ $storeProfile?->logo ? asset('storage/' . $storeProfile->logo) : asset('assets/bakery-logo.png') }}"
+    alt="">

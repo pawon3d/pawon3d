@@ -15,10 +15,6 @@ Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
 
-Route::get('/tes', function () {
-    return view('tes');
-});
-
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth'])
     ->name('dashboard');

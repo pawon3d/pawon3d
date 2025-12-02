@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Production;
 
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -76,7 +77,7 @@ class RincianPesanan extends Component
         }
 
         if (! empty($produkGagal)) {
-            $this->alert('error', 'Bahan baku tidak cukup untuk: '.implode(', ', $produkGagal));
+            $this->alert('error', 'Bahan baku tidak cukup untuk: ' . implode(', ', $produkGagal));
 
             return;
         }
@@ -107,6 +108,9 @@ class RincianPesanan extends Component
                 'quantity_plan' => $detail->quantity,
             ]);
         }
+
+        // Notifikasi: pesanan masuk ke produksi
+        NotificationService::orderInProduction($this->transaction->transaction_number);
 
         session()->flash('success', 'Produksi berhasil dimulai.');
 
