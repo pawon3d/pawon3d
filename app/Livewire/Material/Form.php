@@ -74,6 +74,11 @@ class Form extends Component
 
     public $material;
 
+    // Untuk tracking satuan yang bisa auto-convert
+    public $mainUnitHasConversion = false;
+
+    public $unitsWithAutoConversion = [];
+
     protected $listeners = [
         'delete',
         'recalculateSupplies',
@@ -134,6 +139,11 @@ class Form extends Component
             $this->main_unit_name = $firstDetail->unit->name ?? '';
             $this->main_supply_quantity = $firstDetail->supply_quantity ?? 0;
 
+            // Check if main unit has conversion ladder
+            if ($firstDetail->unit) {
+                $this->mainUnitHasConversion = $firstDetail->unit->hasConversionLadder();
+            }
+
             $this->material_details = $material->material_details->map(function ($detail) {
                 return [
                     'unit_id' => $detail->unit_id,
@@ -146,21 +156,49 @@ class Form extends Component
                 ];
             })->toArray();
 
+            // Check auto-conversion status for secondary units
+            $this->checkAutoConversionStatus();
+
             // Calculate totals
             $this->calculateTotals();
         }
 
         // Set preview image
-        $this->previewImage = $material->image ? env('APP_URL').'/storage/'.$material->image : null;
+        $this->previewImage = $material->image ? env('APP_URL') . '/storage/' . $material->image : null;
+    }
+
+    protected function checkAutoConversionStatus(): void
+    {
+        if (! $this->main_unit_id) {
+            return;
+        }
+
+        $mainUnit = Unit::find($this->main_unit_id);
+        if (! $mainUnit) {
+            return;
+        }
+
+        foreach ($this->material_details as $index => $detail) {
+            if ($index == 0 || empty($detail['unit_id'])) {
+                continue;
+            }
+
+            $secondaryUnit = Unit::find($detail['unit_id']);
+            if ($secondaryUnit && $mainUnit->canAutoConvertTo($secondaryUnit)) {
+                $this->unitsWithAutoConversion[$index] = true;
+            } else {
+                $this->unitsWithAutoConversion[$index] = false;
+            }
+        }
     }
 
     protected function calculateTotals(): void
     {
         $details = collect($this->material_details);
         $this->supply_quantity_main = $details->sum('quantity');
-        $this->supply_price_total = $details->sum(fn ($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
-        $this->supply_quantity_total = $details->sum(fn ($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
-        $this->supply_quantity_modal = $details->sum(fn ($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+        $this->supply_price_total = $details->sum(fn($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
+        $this->supply_quantity_total = $details->sum(fn($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+        $this->supply_quantity_modal = $details->sum(fn($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
     }
 
     public function riwayatPembaruan(): void
@@ -223,11 +261,59 @@ class Form extends Component
             $this->main_unit_alias = $unit->alias;
             $this->main_unit_name = $unit->name;
             $this->material_details[$index]['is_main'] = true;
+            $this->mainUnitHasConversion = $unit->hasConversionLadder();
+
+            // Recalculate auto-conversion for all existing secondary units
+            $this->recalculateAutoConversions();
         }
 
         $this->material_details[$index]['unit_id'] = $unitId;
         $this->material_details[$index]['unit'] = $unit->alias;
         $this->material_details[$index]['unit_name'] = $unit->name;
+
+        // Check auto-conversion for secondary units (index > 0)
+        if ($index > 0 && $this->main_unit_id) {
+            $mainUnit = Unit::find($this->main_unit_id);
+            if ($mainUnit && $unit->canAutoConvertTo($mainUnit)) {
+                // Auto-calculate conversion factor: 1 [satuan tambahan] = X [satuan utama]
+                // Contoh: 1 gram = 0.001 kilogram
+                $conversionFactor = $unit->getConversionFactorTo($mainUnit);
+                $this->material_details[$index]['quantity'] = $conversionFactor;
+                $this->unitsWithAutoConversion[$index] = true;
+            } else {
+                $this->unitsWithAutoConversion[$index] = false;
+            }
+        }
+
+        $this->calculateTotals();
+    }
+
+    public function recalculateAutoConversions(): void
+    {
+        if (! $this->main_unit_id) {
+            return;
+        }
+
+        $mainUnit = Unit::find($this->main_unit_id);
+        if (! $mainUnit) {
+            return;
+        }
+
+        foreach ($this->material_details as $index => $detail) {
+            if ($index == 0 || empty($detail['unit_id'])) {
+                continue;
+            }
+
+            $secondaryUnit = Unit::find($detail['unit_id']);
+            if ($secondaryUnit && $secondaryUnit->canAutoConvertTo($mainUnit)) {
+                // 1 [satuan tambahan] = X [satuan utama]
+                $conversionFactor = $secondaryUnit->getConversionFactorTo($mainUnit);
+                $this->material_details[$index]['quantity'] = $conversionFactor;
+                $this->unitsWithAutoConversion[$index] = true;
+            } else {
+                $this->unitsWithAutoConversion[$index] = false;
+            }
+        }
     }
 
     public function updatedMaterialDetails(): void
@@ -306,7 +392,7 @@ class Form extends Component
         });
 
         return redirect()->intended(route('bahan-baku'))
-            ->with('success', 'Bahan Baku berhasil '.($this->material_id ? 'diperbarui' : 'ditambahkan').'.');
+            ->with('success', 'Bahan Baku berhasil ' . ($this->material_id ? 'diperbarui' : 'ditambahkan') . '.');
     }
 
     protected function createMaterial(): void
@@ -331,7 +417,7 @@ class Form extends Component
         $material = Material::with('batches')->findOrFail($this->material_id);
 
         // Calculate status based on batches
-        $hasExpiredBatch = $material->batches->contains(fn ($batch) => $batch->date < now()->format('Y-m-d'));
+        $hasExpiredBatch = $material->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
         $totalQuantity = $material->batches->sum('batch_quantity');
 
         if ($hasExpiredBatch) {
@@ -389,7 +475,7 @@ class Form extends Component
     protected function saveMaterialDetails($material): void
     {
         if (! empty($this->material_details[0]['unit_id'])) {
-            $detailsData = collect($this->material_details)->map(fn ($detail) => [
+            $detailsData = collect($this->material_details)->map(fn($detail) => [
                 'unit_id' => $detail['unit_id'] ?? null,
                 'quantity' => $detail['quantity'] ?? 0,
                 'is_main' => $detail['is_main'] ?? false,

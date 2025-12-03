@@ -218,6 +218,12 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                                @if (!empty($unitsWithAutoConversion[$index]))
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                        Auto
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
                                         <td class="px-6 text-right text-[#666666] font-medium">1
@@ -227,7 +233,8 @@
                                                 <input type="number"
                                                     wire:model.number.live="material_details.{{ $index }}.quantity"
                                                     placeholder="0" min="0"
-                                                    class="w-full max-w-[190px] px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                                    @if (!empty($unitsWithAutoConversion[$index])) readonly @endif
+                                                    class="w-full max-w-[190px] px-2.5 py-1.5 border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D] {{ !empty($unitsWithAutoConversion[$index]) ? 'bg-green-50 cursor-not-allowed' : 'bg-[#FAFAFA]' }}" />
                                                 @if ($main_unit_alias)
                                                     <span
                                                         class="text-[#959595] font-medium">{{ $main_unit_alias }}</span>

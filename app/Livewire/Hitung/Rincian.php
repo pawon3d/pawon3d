@@ -57,7 +57,7 @@ class Rincian extends Component
         $this->is_finish = (bool) $hitung->is_finish;
         $this->status = $hitung->status ?? 'Belum Diproses';
         $this->finish_date = $hitung->hitung_date_finish;
-        View::share('title', 'Rincian '.$hitung->action);
+        View::share('title', 'Rincian ' . $hitung->action);
         View::share('mainTitle', 'Inventori');
 
         if (session()->has('success')) {
@@ -74,7 +74,7 @@ class Rincian extends Component
             ->limit(50)
             ->get();
 
-        $this->activityLogs = $logs->map(fn ($log) => [
+        $this->activityLogs = $logs->map(fn($log) => [
             'description' => $log->description,
             'causer_name' => $log->causer->name ?? 'System',
             'created_at' => $log->created_at->format('d M Y H:i'),
@@ -179,7 +179,7 @@ class Rincian extends Component
         NotificationService::stockCountStarted($hitung->hitung_number);
 
         unset($this->hitung); // Clear computed property cache
-        $this->alert('success', $hitung->action.' berhasil dimulai.');
+        $this->alert('success', $hitung->action . ' berhasil dimulai.');
     }
 
     public function finish()
@@ -197,11 +197,16 @@ class Rincian extends Component
         ]);
 
         // Update MaterialBatch berdasarkan action type
-        $hitung->details->each(function ($detail) use ($hitung) {
+        $affectedMaterialIds = collect();
+
+        $hitung->details->each(function ($detail) use ($hitung, $affectedMaterialIds) {
             $batch = $detail->materialBatch;
             if (! $batch) {
                 return;
             }
+
+            // Track material yang terpengaruh
+            $affectedMaterialIds->push($batch->material_id);
 
             if ($hitung->action === 'Hitung Persediaan') {
                 // Untuk Hitung Persediaan:
@@ -233,12 +238,20 @@ class Rincian extends Component
             }
         });
 
+        // Recalculate status for all affected materials
+        $affectedMaterialIds->unique()->each(function ($materialId) {
+            $material = \App\Models\Material::find($materialId);
+            if ($material) {
+                $material->recalculateStatus();
+            }
+        });
+
         unset($this->hitung); // Clear computed property cache
 
         // Kirim notifikasi penghitungan selesai
         NotificationService::stockCountCompleted($hitung->hitung_number);
 
-        $this->alert('success', $hitung->action.' berhasil diselesaikan.');
+        $this->alert('success', $hitung->action . ' berhasil diselesaikan.');
     }
 
     public function render()

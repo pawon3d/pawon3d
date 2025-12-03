@@ -64,6 +64,33 @@ class Material extends Model
         return $this->hasMany(MaterialBatch::class, 'material_id', 'id');
     }
 
+    /**
+     * Recalculate and update material status based on batches
+     */
+    public function recalculateStatus(): void
+    {
+        $this->load('batches');
+
+        $hasExpiredBatch = $this->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
+        $totalQuantity = $this->batches->sum('batch_quantity');
+
+        if ($hasExpiredBatch) {
+            $status = 'Expired';
+        } elseif ($totalQuantity <= 0) {
+            $status = 'Kosong';
+        } elseif ($totalQuantity <= $this->minimum) {
+            $status = 'Habis';
+        } elseif ($totalQuantity > $this->minimum * 2) {
+            $status = 'Tersedia';
+        } else {
+            $status = 'Hampir Habis';
+        }
+
+        if ($this->status !== $status) {
+            $this->update(['status' => $status]);
+        }
+    }
+
     public static function boot()
     {
         parent::boot();

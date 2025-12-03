@@ -117,7 +117,7 @@ class MulaiSiapBeli extends Component
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $parsed * $productComposition->material_quantity;
                 if ($batchQty < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk '.$productionDetail->product->name.' tidak cukup untuk produksi ini.');
+                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
 
                     return;
                 }
@@ -141,6 +141,9 @@ class MulaiSiapBeli extends Component
                         $batch->save();
                     }
                 }
+
+                // Recalculate material status after batch quantity changes
+                $productComposition->material->recalculateStatus();
                 // Update detail belanja
                 $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
                 $productionDetail->update([

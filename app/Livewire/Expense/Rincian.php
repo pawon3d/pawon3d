@@ -180,7 +180,10 @@ class Rincian extends Component
             'status' => 'Selesai',
             'end_date' => Carbon::now()->toDateTimeString(),
         ]);
-        $expense->expenseDetails->each(function ($detail) {
+
+        $affectedMaterialIds = collect();
+
+        $expense->expenseDetails->each(function ($detail) use ($affectedMaterialIds) {
             $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
                 ->where('unit_id', $detail->unit_id)
                 ->first();
@@ -189,8 +192,12 @@ class Rincian extends Component
                     'supply_quantity' => $materialDetail->supply_quantity + $detail->quantity_get,
                 ]);
             }
+
+            // Track material yang terpengaruh
+            $affectedMaterialIds->push($detail->material_id);
+
             // Generate a batch number if not present in detail
-            $batchNumber = 'B-'.Carbon::parse($detail->expiry_date)->format('ymd');
+            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
 
             // Cek apakah sudah ada batch dengan batch_number dan unit_id yang sama
             $materialBatch = \App\Models\MaterialBatch::where('batch_number', $batchNumber)
@@ -214,6 +221,15 @@ class Rincian extends Component
                 ]);
             }
         });
+
+        // Recalculate status for all affected materials
+        $affectedMaterialIds->unique()->each(function ($materialId) {
+            $material = \App\Models\Material::find($materialId);
+            if ($material) {
+                $material->recalculateStatus();
+            }
+        });
+
         if ($this->expense->expenseDetails->sum('quantity_get') > 0) {
             if ($this->expense->expenseDetails->sum('quantity_get') >= $this->expense->expenseDetails->sum('quantity_expect')) {
                 $this->expense->update(['status' => 'Lengkap']);
