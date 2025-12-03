@@ -1,0 +1,114 @@
+@startuml Sequence Diagram - Mengelola Satuan
+
+title Sequence Diagram: Mengelola Satuan
+
+actor Inventori as I
+participant "Halaman Satuan" as H
+participant "UnitIndex\nComponent" as U
+participant "Unit\nModel" as M
+database "Database" as DB
+
+== Melihat Daftar Satuan ==
+
+I -> H: Akses halaman satuan
+activate H
+H -> U: mount()
+activate U
+U -> M: Unit::withCount('materials')->get()
+activate M
+M -> DB: SELECT * FROM units
+M -> DB: SELECT COUNT materials
+DB --> M: Data satuan
+M --> U: Collection satuan
+deactivate M
+U --> H: Render daftar
+deactivate U
+H --> I: Tampilkan halaman
+deactivate H
+
+== Menambah Satuan ==
+
+I -> H: Klik tombol Tambah
+H --> I: Tampilkan modal form
+I -> U: set('name', 'Kilogram')
+I -> U: set('alias', 'kg')
+I -> U: save()
+activate U
+U -> U: validate()
+U -> M: Unit::where('name', ?)->exists()
+activate M
+M -> DB: SELECT * FROM units WHERE name = ?
+DB --> M: false
+M --> U: Tidak ada duplikat
+deactivate M
+
+U -> M: Unit::create([...])
+activate M
+M -> DB: INSERT INTO units
+DB --> M: Success
+M --> U: Satuan baru
+deactivate M
+U --> H: Tutup modal
+U --> H: Flash message sukses
+deactivate U
+
+== Mengedit Satuan ==
+
+I -> H: Klik tombol Edit
+H -> U: edit(unit)
+activate U
+U --> H: Tampilkan form edit
+deactivate U
+
+note right
+  Form terisi dengan:
+  - Nama: Kilogram
+  - Alias: kg
+end note
+
+I -> U: set('alias', 'Kg')
+I -> U: update()
+activate U
+U -> U: validate()
+U -> M: unit->update([...])
+activate M
+M -> DB: UPDATE units SET alias = 'Kg'
+DB --> M: Success
+M --> U: Updated
+deactivate M
+U --> H: Flash message sukses
+deactivate U
+
+== Menghapus Satuan ==
+
+I -> H: Klik tombol Hapus
+H --> I: Konfirmasi hapus
+I -> U: delete(unit)
+activate U
+U -> M: unit->materials()->count()
+activate M
+M -> DB: SELECT COUNT FROM materials WHERE unit_id = ?
+DB --> M: count
+M --> U: jumlah bahan
+deactivate M
+
+alt Tidak ada bahan menggunakan satuan ini
+    U -> M: unit->delete()
+    activate M
+    M -> DB: DELETE FROM units
+    DB --> M: Success
+    M --> U: Deleted
+    deactivate M
+    U --> H: Flash message sukses
+else Ada bahan menggunakan satuan
+    U --> H: Error: Satuan digunakan oleh bahan
+    note right
+      Tampilkan pesan:
+      "Satuan ini digunakan oleh X bahan.
+      Ubah satuan bahan tersebut terlebih dahulu."
+    end note
+end
+
+deactivate U
+
+@enduml

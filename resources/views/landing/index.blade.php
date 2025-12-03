@@ -220,19 +220,6 @@
                             </div>
                             <div class="text-center">
                                 <h3 class="text-lg montserrat-regular font-semibold mb-2">{{ $product->name }}</h3>
-                                <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                                    @if ($product->reviews->count() > 0)
-                                        {{ number_format($product->reviews->avg('rating'), 1) }}
-                                        <i class="bi bi-star-fill text-yellow-500"></i>
-                                    @else
-                                        Belum ada penilaian
-                                    @endif
-                                    @if ($product->reviews->count() > 10)
-                                        ({{ $product->reviews->count() }}+ Penilai)
-                                    @else
-                                        ({{ $product->reviews->count() }} Penilai)
-                                    @endif
-                                </p>
                                 <p class="text-gray-600 mb-4 text-sm montserrat-regular">Rp
                                     {{ number_format($product->price, 0, ',', '.') }}</p>
                             </div>

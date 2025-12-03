@@ -16,7 +16,7 @@ class NotificationService
      */
     public static function orderQueued(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> telah masuk ke <span class="font-bold text-[#3fa2f7]">Antrian Pesanan</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> telah masuk ke <span class="font-bold text-[#3fa2f7]">Antrian Pesanan</span>.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -26,7 +26,7 @@ class NotificationService
      */
     public static function orderProcessing(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> <span class="font-bold text-[#ffc400]">sedang diproses</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> <span class="font-bold text-[#ffc400]">sedang diproses</span>.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -36,7 +36,7 @@ class NotificationService
      */
     public static function orderReadyForPickup(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> <span class="font-bold text-[#6f42c1]">dapat diambil</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> <span class="font-bold text-[#6f42c1]">dapat diambil</span>.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -46,7 +46,7 @@ class NotificationService
      */
     public static function orderCompleted(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> telah <span class="font-bold text-[#56c568]">Selesai</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> telah <span class="font-bold text-[#56c568]">Selesai</span>.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -57,7 +57,7 @@ class NotificationService
     public static function orderCancelled(string $invoiceNumber, string $paymentStatus): void
     {
         $statusClass = $paymentStatus === 'Lunas' ? 'text-[#56c568]' : 'text-[#ffc400]';
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span> dengan status <span class="font-bold '.$statusClass.'">'.$paymentStatus.'</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span> dengan status <span class="font-bold ' . $statusClass . '">' . $paymentStatus . '</span>.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -67,7 +67,7 @@ class NotificationService
      */
     public static function paymentDownPayment(string $invoiceNumber, int $amount): void
     {
-        $body = 'Transaksi <span class="font-bold text-[#ffc400]">Uang Muka</span> sebesar <span class="font-bold">Rp'.number_format($amount, 0, ',', '.').'</span> untuk pesanan <span class="font-bold">'.$invoiceNumber.'</span> diterima.';
+        $body = 'Transaksi <span class="font-bold text-[#ffc400]">Uang Muka</span> sebesar <span class="font-bold">Rp' . number_format($amount, 0, ',', '.') . '</span> untuk pesanan <span class="font-bold">' . $invoiceNumber . '</span> diterima.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -77,7 +77,7 @@ class NotificationService
      */
     public static function paymentCompleted(string $invoiceNumber, int $amount): void
     {
-        $body = 'Transaksi <span class="font-bold text-[#56c568]">Lunas</span> sebesar <span class="font-bold">Rp'.number_format($amount, 0, ',', '.').'</span> untuk pesanan <span class="font-bold">'.$invoiceNumber.'</span> diterima.';
+        $body = 'Transaksi <span class="font-bold text-[#56c568]">Lunas</span> sebesar <span class="font-bold">Rp' . number_format($amount, 0, ',', '.') . '</span> untuk pesanan <span class="font-bold">' . $invoiceNumber . '</span> diterima.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -87,7 +87,7 @@ class NotificationService
      */
     public static function refundProcessed(string $invoiceNumber, int $amount): void
     {
-        $body = 'Transaksi <span class="font-bold text-[#eb5757]">Refund</span> sebesar <span class="font-bold">Rp'.number_format($amount, 0, ',', '.').'</span> dari pesanan <span class="font-bold">'.$invoiceNumber.'</span> diserahkan.';
+        $body = 'Transaksi <span class="font-bold text-[#eb5757]">Refund</span> sebesar <span class="font-bold">Rp' . number_format($amount, 0, ',', '.') . '</span> dari pesanan <span class="font-bold">' . $invoiceNumber . '</span> diserahkan.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -97,7 +97,7 @@ class NotificationService
      */
     public static function receiptPrinted(string $receiptNumber, string $invoiceNumber): void
     {
-        $body = 'Struk <span class="font-bold">'.$receiptNumber.'</span> dari pesanan <span class="font-bold">'.$invoiceNumber.'</span> berhasil dicetak.';
+        $body = 'Struk <span class="font-bold">' . $receiptNumber . '</span> dari pesanan <span class="font-bold">' . $invoiceNumber . '</span> berhasil dicetak.';
 
         self::createForPermission($body, 'kasir', 'kasir.pesanan.kelola');
     }
@@ -111,7 +111,7 @@ class NotificationService
      */
     public static function productionPlanned(string $productionNumber): void
     {
-        $body = 'Produksi <span class="font-bold">'.$productionNumber.'</span> telah <span class="font-bold text-[#3fa2f7]">direncanakan</span>.';
+        $body = 'Produksi <span class="font-bold">' . $productionNumber . '</span> telah <span class="font-bold text-[#3fa2f7]">direncanakan</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.rencana.kelola');
     }
@@ -121,7 +121,7 @@ class NotificationService
      */
     public static function productionProcessing(string $productionNumber): void
     {
-        $body = 'Produksi <span class="font-bold">'.$productionNumber.'</span> sedang <span class="font-bold text-[#ffc400]">diproses</span>.';
+        $body = 'Produksi <span class="font-bold">' . $productionNumber . '</span> sedang <span class="font-bold text-[#ffc400]">diproses</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.mulai');
     }
@@ -131,7 +131,7 @@ class NotificationService
      */
     public static function productionCompleted(string $productionNumber): void
     {
-        $body = 'Produksi <span class="font-bold">'.$productionNumber.'</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
+        $body = 'Produksi <span class="font-bold">' . $productionNumber . '</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.mulai');
     }
@@ -141,7 +141,7 @@ class NotificationService
      */
     public static function productionCancelled(string $productionNumber): void
     {
-        $body = 'Produksi <span class="font-bold">'.$productionNumber.'</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
+        $body = 'Produksi <span class="font-bold">' . $productionNumber . '</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.rencana.kelola');
     }
@@ -151,7 +151,7 @@ class NotificationService
      */
     public static function orderInProductionQueue(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> masuk ke <span class="font-bold text-[#3fa2f7]">antrian pesanan</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> masuk ke <span class="font-bold text-[#3fa2f7]">antrian pesanan</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.rencana.kelola');
     }
@@ -161,7 +161,7 @@ class NotificationService
      */
     public static function orderInProduction(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> sedang <span class="font-bold text-[#ffc400]">diproses</span>.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> sedang <span class="font-bold text-[#ffc400]">diproses</span>.';
 
         self::createForPermission($body, 'produksi', 'produksi.mulai');
     }
@@ -171,7 +171,7 @@ class NotificationService
      */
     public static function orderProductionCompleted(string $invoiceNumber): void
     {
-        $body = 'Pesanan <span class="font-bold">'.$invoiceNumber.'</span> telah <span class="font-bold text-[#56c568]">selesai</span> dan dapat diambil.';
+        $body = 'Pesanan <span class="font-bold">' . $invoiceNumber . '</span> telah <span class="font-bold text-[#56c568]">selesai</span> dan dapat diambil.';
 
         self::createForPermission($body, 'produksi', 'produksi.mulai');
     }
@@ -181,7 +181,7 @@ class NotificationService
      */
     public static function orderDeadlineReminder(string $invoiceNumber, int $daysRemaining): void
     {
-        $body = 'Tanggal pengambilan pesanan <span class="font-bold">'.$invoiceNumber.'</span> tersisa <span class="font-bold text-[#eb5757]">'.$daysRemaining.' hari lagi</span>. Ayo mulai produksi!';
+        $body = 'Tanggal pengambilan pesanan <span class="font-bold">' . $invoiceNumber . '</span> tersisa <span class="font-bold text-[#eb5757]">' . $daysRemaining . ' hari lagi</span>. Ayo mulai produksi!';
 
         self::createForPermission($body, 'produksi', 'produksi.rencana.kelola');
     }
@@ -193,9 +193,10 @@ class NotificationService
     /**
      * Notifikasi: Stok hampir habis
      */
-    public static function stockLow(string $materialName, string $quantity, string $unit): void
+    public static function stockLow(string $materialName, int|float $currentStock, int|float $minimum, string $unit = ''): void
     {
-        $body = 'Stok <span class="font-bold">'.$materialName.'</span> <span class="font-bold text-[#eb5757]">hampir habis</span>. Sisa '.$quantity.' '.$unit.'.';
+        $unitText = $unit ? ' ' . $unit : '';
+        $body = 'Stok <span class="font-bold">' . $materialName . '</span> <span class="font-bold text-[#eb5757]">hampir habis</span>. Sisa <span class="font-bold">' . number_format($currentStock, 0, ',', '.') . $unitText . '</span> (minimum: ' . number_format($minimum, 0, ',', '.') . ').';
 
         self::createForPermission($body, 'inventori', 'inventori.persediaan.kelola');
     }
@@ -205,7 +206,7 @@ class NotificationService
      */
     public static function stockAdded(string $materialName, string $quantity, string $unit): void
     {
-        $body = 'Stok <span class="font-bold">'.$materialName.'</span> telah <span class="font-bold text-[#56c568]">ditambahkan</span> sebanyak '.$quantity.' '.$unit.'.';
+        $body = 'Stok <span class="font-bold">' . $materialName . '</span> telah <span class="font-bold text-[#56c568]">ditambahkan</span> sebanyak ' . $quantity . ' ' . $unit . '.';
 
         self::createForPermission($body, 'inventori', 'inventori.persediaan.kelola');
     }
@@ -215,7 +216,7 @@ class NotificationService
      */
     public static function purchaseReceived(string $purchaseNumber): void
     {
-        $body = 'Pembelian bahan baku <span class="font-bold">'.$purchaseNumber.'</span> telah <span class="font-bold text-[#56c568]">diterima</span>.';
+        $body = 'Pembelian bahan baku <span class="font-bold">' . $purchaseNumber . '</span> telah <span class="font-bold text-[#56c568]">diterima</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.belanja.mulai');
     }
@@ -225,7 +226,7 @@ class NotificationService
      */
     public static function stockCountCompleted(string $countNumber): void
     {
-        $body = 'Penghitungan stok <span class="font-bold">'.$countNumber.'</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
+        $body = 'Penghitungan stok <span class="font-bold">' . $countNumber . '</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.hitung.kelola');
     }
@@ -235,7 +236,7 @@ class NotificationService
      */
     public static function materialExpiringSoon(string $materialName, int $daysRemaining): void
     {
-        $body = 'Bahan baku <span class="font-bold">'.$materialName.'</span> akan <span class="font-bold text-[#ffc400]">kadaluarsa</span> dalam '.$daysRemaining.' hari.';
+        $body = 'Bahan baku <span class="font-bold">' . $materialName . '</span> akan <span class="font-bold text-[#ffc400]">kadaluarsa</span> dalam ' . $daysRemaining . ' hari.';
 
         self::createForPermission($body, 'inventori', 'inventori.persediaan.kelola');
     }
@@ -245,7 +246,7 @@ class NotificationService
      */
     public static function shoppingPlanCreated(string $planNumber): void
     {
-        $body = 'Rencana belanja <span class="font-bold">'.$planNumber.'</span> telah <span class="font-bold text-[#3fa2f7]">dibuat</span>.';
+        $body = 'Rencana belanja <span class="font-bold">' . $planNumber . '</span> telah <span class="font-bold text-[#3fa2f7]">dibuat</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.belanja.rencana.kelola');
     }
@@ -255,7 +256,7 @@ class NotificationService
      */
     public static function shoppingStarted(string $expenseNumber): void
     {
-        $body = 'Belanja <span class="font-bold">'.$expenseNumber.'</span> <span class="font-bold text-[#ffc400]">sedang berlangsung</span>.';
+        $body = 'Belanja <span class="font-bold">' . $expenseNumber . '</span> <span class="font-bold text-[#ffc400]">sedang berlangsung</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.belanja.mulai');
     }
@@ -265,7 +266,7 @@ class NotificationService
      */
     public static function shoppingCompleted(string $expenseNumber): void
     {
-        $body = 'Belanja <span class="font-bold">'.$expenseNumber.'</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
+        $body = 'Belanja <span class="font-bold">' . $expenseNumber . '</span> telah <span class="font-bold text-[#56c568]">selesai</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.belanja.mulai');
     }
@@ -275,7 +276,7 @@ class NotificationService
      */
     public static function shoppingCancelled(string $expenseNumber): void
     {
-        $body = 'Belanja <span class="font-bold">'.$expenseNumber.'</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
+        $body = 'Belanja <span class="font-bold">' . $expenseNumber . '</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.belanja.rencana.kelola');
     }
@@ -285,7 +286,7 @@ class NotificationService
      */
     public static function stockCountPlanned(string $countNumber): void
     {
-        $body = 'Penghitungan stok <span class="font-bold">'.$countNumber.'</span> telah <span class="font-bold text-[#3fa2f7]">direncanakan</span>.';
+        $body = 'Penghitungan stok <span class="font-bold">' . $countNumber . '</span> telah <span class="font-bold text-[#3fa2f7]">direncanakan</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.hitung.kelola');
     }
@@ -295,7 +296,7 @@ class NotificationService
      */
     public static function stockCountStarted(string $countNumber): void
     {
-        $body = 'Penghitungan stok <span class="font-bold">'.$countNumber.'</span> <span class="font-bold text-[#ffc400]">sedang berlangsung</span>.';
+        $body = 'Penghitungan stok <span class="font-bold">' . $countNumber . '</span> <span class="font-bold text-[#ffc400]">sedang berlangsung</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.hitung.kelola');
     }
@@ -305,7 +306,7 @@ class NotificationService
      */
     public static function stockCountCancelled(string $countNumber): void
     {
-        $body = 'Penghitungan stok <span class="font-bold">'.$countNumber.'</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
+        $body = 'Penghitungan stok <span class="font-bold">' . $countNumber . '</span> telah <span class="font-bold text-[#eb5757]">dibatalkan</span>.';
 
         self::createForPermission($body, 'inventori', 'inventori.hitung.kelola');
     }

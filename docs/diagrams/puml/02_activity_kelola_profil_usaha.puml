@@ -1,0 +1,89 @@
+@startuml Activity Diagram - Proses Mengelola Profil Usaha
+
+|Pemilik|
+start
+:Membuka halaman Profil Usaha;
+
+|Sistem|
+:Menampilkan data profil saat ini;
+note right
+  Data profil:
+  - Nama toko
+  - Alamat
+  - Nomor telepon
+  - Email
+  - Logo toko
+  - Deskripsi
+  - Jam operasional
+end note
+
+|Pemilik|
+if (Aksi?) then (Edit Informasi Dasar)
+    :Mengubah nama toko;
+    :Mengubah alamat;
+    :Mengubah nomor telepon;
+    :Mengubah email;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi data;
+    
+    if (Data valid?) then (Ya)
+        :Update data profil;
+        :Menampilkan pesan sukses;
+    else (Tidak)
+        :Menampilkan pesan error;
+    endif
+    
+else if (Aksi?) then (Ubah Logo)
+    |Pemilik|
+    :Klik tombol ubah logo;
+    :Memilih file gambar;
+    
+    |Sistem|
+    :Validasi format file;
+    note right
+      Format yang didukung:
+      - JPG/JPEG
+      - PNG
+      - Max 2MB
+    end note
+    
+    if (Format valid?) then (Ya)
+        :Resize gambar;
+        :Simpan ke storage;
+        :Hapus logo lama (jika ada);
+        :Update path logo di database;
+        :Menampilkan preview logo baru;
+    else (Tidak)
+        :Menampilkan pesan error;
+    endif
+    
+else if (Aksi?) then (Atur Jam Operasional)
+    |Pemilik|
+    :Mengatur jam buka;
+    :Mengatur jam tutup;
+    :Memilih hari operasional;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi jam;
+    :Update jam operasional;
+    :Menampilkan pesan sukses;
+    
+else (Ubah Deskripsi)
+    |Pemilik|
+    :Mengubah deskripsi toko;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Update deskripsi;
+    :Menampilkan pesan sukses;
+endif
+
+|Sistem|
+:Refresh tampilan profil;
+
+stop
+
+@enduml

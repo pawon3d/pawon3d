@@ -1,0 +1,152 @@
+@startuml Sequence Diagram - Mengelola Profil Usaha
+
+title Sequence Diagram: Mengelola Profil Usaha
+
+actor Pemilik as P
+participant "Halaman Profil\nUsaha" as H
+participant "StoreProfile\nComponent" as S
+participant "StoreProfile\nModel" as M
+database "Database" as DB
+participant "Storage" as ST
+
+== Melihat Profil Usaha ==
+
+P -> H: Akses halaman profil usaha
+activate H
+H -> S: mount()
+activate S
+S -> M: StoreProfile::first()
+activate M
+M -> DB: SELECT * FROM store_profiles LIMIT 1
+DB --> M: Data profil
+M --> S: StoreProfile instance
+deactivate M
+S --> H: Render data profil
+deactivate S
+H --> P: Tampilkan halaman profil
+deactivate H
+
+note right
+  Menampilkan:
+  - Nama toko
+  - Alamat, telepon, email
+  - Logo
+  - Deskripsi
+  - Jam operasional
+end note
+
+== Mengubah Informasi Dasar ==
+
+P -> H: Klik tombol Edit
+H -> S: showEditForm()
+activate S
+S --> H: Tampilkan form edit
+deactivate S
+
+P -> S: set('name', 'Pawon Kue')
+P -> S: set('address', 'Jl. Mawar No. 10')
+P -> S: set('phone', '08123456789')
+P -> S: set('email', 'info@pawonkue.com')
+P -> S: save()
+activate S
+S -> S: validate()
+
+alt Validasi berhasil
+    S -> M: storeProfile->update([...])
+    activate M
+    M -> DB: UPDATE store_profiles SET ...
+    DB --> M: Success
+    M --> S: Updated
+    deactivate M
+    S --> H: Flash message sukses
+else Validasi gagal
+    S --> H: Tampilkan error validasi
+end
+
+deactivate S
+
+== Mengubah Logo ==
+
+P -> H: Klik ubah logo
+P -> S: Upload file gambar
+activate S
+S -> S: validateImage()
+
+note right
+  Validasi:
+  - Format: jpg, jpeg, png
+  - Max size: 2MB
+end note
+
+alt File valid
+    S -> ST: store('logos', file)
+    activate ST
+    ST --> S: path logo baru
+    deactivate ST
+    
+    S -> M: storeProfile->logo (get old path)
+    activate M
+    M --> S: old logo path
+    deactivate M
+    
+    alt Ada logo lama
+        S -> ST: delete(old logo path)
+        activate ST
+        ST --> S: Deleted
+        deactivate ST
+    end
+    
+    S -> M: storeProfile->update(['logo' => new path])
+    activate M
+    M -> DB: UPDATE store_profiles SET logo = ?
+    DB --> M: Success
+    M --> S: Updated
+    deactivate M
+    
+    S --> H: Tampilkan logo baru
+    S --> H: Flash message sukses
+else File tidak valid
+    S --> H: Error: Format/ukuran tidak valid
+end
+
+deactivate S
+
+== Mengatur Jam Operasional ==
+
+P -> H: Klik atur jam operasional
+H -> S: showScheduleForm()
+activate S
+S --> H: Tampilkan form jadwal
+deactivate S
+
+P -> S: set('opening_hour', '08:00')
+P -> S: set('closing_hour', '21:00')
+P -> S: set('operating_days', ['Senin', 'Selasa', ...])
+P -> S: saveSchedule()
+activate S
+S -> S: validate()
+S -> M: storeProfile->update([...])
+activate M
+M -> DB: UPDATE store_profiles SET opening_hour = ?, closing_hour = ?
+DB --> M: Success
+M --> S: Updated
+deactivate M
+S --> H: Flash message sukses
+deactivate S
+
+== Mengubah Deskripsi ==
+
+P -> H: Edit deskripsi
+P -> S: set('description', 'Toko kue tradisional...')
+P -> S: saveDescription()
+activate S
+S -> M: storeProfile->update(['description' => ?])
+activate M
+M -> DB: UPDATE store_profiles SET description = ?
+DB --> M: Success
+M --> S: Updated
+deactivate M
+S --> H: Flash message sukses
+deactivate S
+
+@enduml

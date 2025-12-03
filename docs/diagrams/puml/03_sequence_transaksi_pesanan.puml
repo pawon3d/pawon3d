@@ -1,0 +1,73 @@
+@startuml Sequence Diagram - Transaksi Pesanan
+
+actor Kasir
+participant "Transaction Page\n(Livewire)" as TxPage
+participant "Transaction\nModel" as Transaction
+participant "TransactionDetail\nModel" as TxDetail
+participant "Production\nModel" as Production
+participant "ProductionDetail\nModel" as ProdDetail
+participant "Customer\nModel" as Customer
+participant "Payment\nModel" as Payment
+participant "NotificationService" as Notif
+database Database as DB
+
+== Membuat Pesanan ==
+Kasir -> TxPage: Pilih metode (pesanan-reguler/pesanan-kotak)
+Kasir -> TxPage: Pilih produk dan jumlah
+Kasir -> TxPage: Masukkan jadwal pengambilan
+Kasir -> TxPage: Masukkan data pelanggan
+
+TxPage -> Customer: firstOrCreate(['phone' => phone])
+Customer --> TxPage: customer
+
+Kasir -> TxPage: processOrder()
+
+== Simpan Transaksi ==
+TxPage -> Transaction: create(data)
+note right
+  Status: 'Antrian'
+  Method: 'pesanan-reguler'/'pesanan-kotak'
+end note
+Transaction -> DB: INSERT INTO transactions
+DB --> Transaction: transaction
+
+TxPage -> TxDetail: createMany(items)
+TxDetail -> DB: INSERT INTO transaction_details
+DB --> TxDetail: details
+
+== Buat Record Produksi ==
+TxPage -> Production: create(data)
+note right
+  production_number: auto-generate
+  transaction_id: link ke transaksi
+  method: sama dengan transaksi
+  status: 'Antrian'
+end note
+Production -> DB: INSERT INTO productions
+DB --> Production: production
+
+TxPage -> ProdDetail: createMany(items)
+loop Untuk setiap item
+    ProdDetail -> DB: INSERT INTO production_details
+end
+DB --> ProdDetail: details
+
+== Proses Pembayaran (DP/Lunas) ==
+alt Bayar DP
+    TxPage -> Payment: create(dp_data)
+    Payment -> DB: INSERT INTO payments
+    TxPage -> Notif: paymentDownPayment(invoice, amount)
+else Bayar Lunas
+    TxPage -> Payment: create(full_data)
+    Payment -> DB: INSERT INTO payments
+    TxPage -> Notif: paymentCompleted(invoice, amount)
+end
+
+== Kirim Notifikasi ==
+TxPage -> Notif: orderQueued(invoice_number)
+Notif -> DB: INSERT INTO notifications (untuk kasir)
+Notif -> DB: INSERT INTO notifications (untuk produksi)
+
+TxPage --> Kasir: Pesanan berhasil dibuat\nMasuk antrian produksi
+
+@enduml

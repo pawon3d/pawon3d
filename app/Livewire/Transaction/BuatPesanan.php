@@ -188,7 +188,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
                 }
             }
         }
@@ -261,7 +261,7 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
+            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -515,11 +515,11 @@ class BuatPesanan extends Component
     public function render()
     {
         return view('livewire.transaction.buat-pesanan', [
-            'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
+            'products' => Product::with(['product_categories', 'product_compositions'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%'.$this->search.'%');
+                    $query->where('name', 'like', '%' . $this->search . '%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

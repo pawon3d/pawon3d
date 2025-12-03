@@ -424,15 +424,6 @@ entity "store_profiles" as store_profiles {
     updated_at : timestamp
 }
 
-entity "store_settings" as store_settings {
-    primary_key(id) : uuid
-    --
-    not_null(key) : varchar(255)
-    value : text
-    created_at : timestamp
-    updated_at : timestamp
-}
-
 entity "store_documents" as store_documents {
     primary_key(id) : uuid
     --
@@ -579,8 +570,7 @@ hitungs ||--o{ hitung_details : "contains"
 | 13  | other_costs           | Biaya tambahan produk  |
 | 14  | ingredient_categories | Kategori bahan         |
 | 15  | store_profiles        | Profil toko            |
-| 16  | store_settings        | Pengaturan toko        |
-| 17  | store_documents       | Dokumen toko           |
+| 16  | store_documents       | Dokumen toko           |
 
 ---
 

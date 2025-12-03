@@ -120,9 +120,7 @@ class Index extends Component
         $productsQuery = $this->applyStatusFilter(clone $baseQuery);
 
         $products = $productsQuery
-            ->with(['product_categories', 'product_compositions', 'reviews'])
-            ->withAvg('reviews', 'rating')
-            ->withCount('reviews')
+            ->with(['product_categories', 'product_compositions'])
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 
@@ -140,7 +138,7 @@ class Index extends Component
                 $query->whereJsonContains('method', $this->method);
             })
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%'.trim($this->search).'%');
+                $query->where('name', 'like', '%' . trim($this->search) . '%');
             });
     }
 
@@ -150,9 +148,9 @@ class Index extends Component
             return $query;
         }
 
-        return $query->when($this->filterStatus === 'active', fn ($q) => $q->where('is_active', true))
-            ->when($this->filterStatus === 'inactive', fn ($q) => $q->where('is_active', false))
-            ->when($this->filterStatus === 'recommended', fn ($q) => $q->where('is_recommended', true));
+        return $query->when($this->filterStatus === 'active', fn($q) => $q->where('is_active', true))
+            ->when($this->filterStatus === 'inactive', fn($q) => $q->where('is_active', false))
+            ->when($this->filterStatus === 'recommended', fn($q) => $q->where('is_recommended', true));
     }
 
     protected function buildStatusSummary($query)

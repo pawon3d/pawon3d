@@ -103,7 +103,7 @@ class Edit extends Component
             $this->paymentBank = $transaction->payment ? $transaction->payment->channel->bank_name : '';
             $this->paymentAccountNumber = $transaction->payment ? $transaction->payment->channel->account_number : '';
             $this->paymentAccountName = $transaction->payment ? $transaction->payment->channel->account_name : '';
-            $this->paymentAccount = $this->paymentAccountName.' - '.$this->paymentAccountNumber;
+            $this->paymentAccount = $this->paymentAccountName . ' - ' . $this->paymentAccountNumber;
             $customer = Customer::where('phone', $this->phone)->first();
             if ($customer) {
                 $this->customer = $customer;
@@ -156,7 +156,7 @@ class Edit extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
                 }
             }
         }
@@ -230,7 +230,7 @@ class Edit extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
+            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -299,11 +299,11 @@ class Edit extends Component
     public function render()
     {
         return view('livewire.transaction.edit', [
-            'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
+            'products' => Product::with(['product_categories', 'product_compositions'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%'.$this->search.'%');
+                    $query->where('name', 'like', '%' . $this->search . '%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

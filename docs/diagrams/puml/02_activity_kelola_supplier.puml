@@ -1,0 +1,71 @@
+@startuml Activity Diagram - Proses Mengelola Supplier
+
+|Inventori|
+start
+:Membuka halaman Supplier;
+
+if (Aksi?) then (Tambah)
+    :Klik tombol Tambah Supplier;
+    :Mengisi form supplier;
+    note right
+      Data supplier:
+      - Nama supplier/toko
+      - Nomor telepon
+      - Alamat
+    end note
+    
+    :Menyimpan supplier;
+    
+    |Sistem|
+    :Validasi data;
+    
+    if (Data valid?) then (Ya)
+        :Menyimpan ke database;
+        :Menampilkan pesan sukses;
+    else (Tidak)
+        :Menampilkan pesan error;
+    endif
+    
+else if (Aksi?) then (Edit)
+    |Inventori|
+    :Memilih supplier yang akan diedit;
+    :Mengubah data supplier;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi data;
+    :Update data supplier;
+    :Menampilkan pesan sukses;
+    
+else if (Aksi?) then (Lihat Riwayat)
+    |Inventori|
+    :Memilih supplier;
+    
+    |Sistem|
+    :Menampilkan riwayat belanja;
+    note right
+      Riwayat belanja:
+      - Nomor belanja
+      - Tanggal
+      - Total belanja
+      - Status
+    end note
+    
+else (Hapus)
+    |Inventori|
+    :Memilih supplier yang akan dihapus;
+    :Konfirmasi penghapusan;
+    
+    |Sistem|
+    if (Supplier punya riwayat belanja?) then (Ya)
+        :Menampilkan peringatan;
+        :Supplier tidak bisa dihapus;
+    else (Tidak)
+        :Hapus supplier;
+        :Menampilkan pesan sukses;
+    endif
+endif
+
+stop
+
+@enduml

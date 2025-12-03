@@ -421,13 +421,6 @@ package "Store Settings" #MintCream {
         --
     }
 
-    class StoreSetting {
-        - id: uuid <<PK>>
-        - key: string
-        - value: text
-        --
-    }
-
     class StoreDocument {
         - id: uuid <<PK>>
         - name: string
@@ -577,7 +570,6 @@ Hitung "1" --> "*" HitungDetail : contains
 | Class             | Deskripsi                         |
 | ----------------- | --------------------------------- |
 | **StoreProfile**  | Profil toko (nama, alamat, logo). |
-| **StoreSetting**  | Pengaturan key-value.             |
 | **StoreDocument** | Dokumen toko (izin usaha, dll).   |
 
 ---

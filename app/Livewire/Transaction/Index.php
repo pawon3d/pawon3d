@@ -401,7 +401,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.transaction.index', [
-            'products' => Product::with(['product_categories', 'product_compositions', 'reviews'])
+            'products' => Product::with(['product_categories', 'product_compositions'])
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })

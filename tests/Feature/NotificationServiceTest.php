@@ -92,7 +92,7 @@ test('inventory notification is created for users with inventory permission', fu
     $user = User::factory()->create();
     $user->assignRole($role);
 
-    NotificationService::stockLow('Tepung Terigu', '2', 'kg');
+    NotificationService::stockLow('Tepung Terigu', 2, 10, 'kg');
 
     expect(Notification::count())->toBe(1);
     expect(Notification::first()->type)->toBe('inventori');

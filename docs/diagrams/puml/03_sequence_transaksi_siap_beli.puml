@@ -1,0 +1,89 @@
+@startuml Sequence Diagram - Transaksi Siap Beli
+
+actor Kasir
+participant "POS Page\n(Livewire)" as POS
+participant "Transaction\nModel" as Transaction
+participant "TransactionDetail\nModel" as TxDetail
+participant "Product\nModel" as Product
+participant "Customer\nModel" as Customer
+participant "Payment\nModel" as Payment
+participant "PointsHistory\nModel" as Points
+participant "NotificationService" as Notif
+database Database as DB
+
+== Memilih Produk ==
+Kasir -> POS: Pilih produk
+POS -> Product: query()->where('is_ready', true)
+Product -> DB: SELECT * FROM products
+DB --> Product: products data
+Product --> POS: filtered products
+POS --> Kasir: Tampilkan produk tersedia
+
+Kasir -> POS: addToCart(productId)
+POS -> Product: find(productId)
+Product --> POS: product data
+POS -> POS: Tambah ke cart array
+POS --> Kasir: Update tampilan cart
+
+== Memproses Pembayaran ==
+Kasir -> POS: Masukkan data pelanggan (phone)
+POS -> Customer: firstOrCreate(['phone' => phone])
+Customer -> DB: SELECT/INSERT customers
+DB --> Customer: customer data
+Customer --> POS: customer
+
+Kasir -> POS: Pilih metode pembayaran
+Kasir -> POS: Masukkan jumlah bayar
+Kasir -> POS: processPayment()
+
+== Menyimpan Transaksi ==
+POS -> Transaction: create(data)
+Transaction -> DB: INSERT INTO transactions
+note right
+  Data transaksi:
+  - invoice_number (auto-generate)
+  - user_id
+  - customer_id
+  - total_amount
+  - payment_status
+  - status: 'Selesai'
+end note
+DB --> Transaction: transaction created
+
+POS -> TxDetail: createMany(cart items)
+loop Untuk setiap item di cart
+    TxDetail -> DB: INSERT INTO transaction_details
+end
+DB --> TxDetail: details created
+
+== Update Stok Produk ==
+loop Untuk setiap item
+    POS -> Product: decrement('stock', quantity)
+    Product -> DB: UPDATE products SET stock = stock - qty
+    DB --> Product: updated
+end
+
+== Menyimpan Pembayaran ==
+POS -> Payment: create(payment data)
+Payment -> DB: INSERT INTO payments
+DB --> Payment: payment created
+
+== Menambah Poin (jika Lunas) ==
+alt Pembayaran Lunas
+    POS -> Customer: increment('points', earned)
+    Customer -> DB: UPDATE customers SET points = points + earned
+    DB --> Customer: updated
+    
+    POS -> Points: create(history)
+    Points -> DB: INSERT INTO points_histories
+    DB --> Points: history created
+end
+
+== Kirim Notifikasi ==
+POS -> Notif: orderCompleted(invoice_number)
+Notif -> DB: INSERT INTO notifications
+DB --> Notif: notification created
+
+POS --> Kasir: Tampilkan konfirmasi\ndan opsi cetak struk
+
+@enduml

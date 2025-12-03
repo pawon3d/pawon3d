@@ -242,7 +242,7 @@
                                             'text-yellow-500' => $notification->status == 1,
                                             'text-green-500' => $notification->status == 2,
                                         ])>
-                                            {{ $notification->body }}
+                                            {!! $notification->body !!}
                                         </span>
                                     </p>
                                     <span class="text-xs text-right text-gray-500">

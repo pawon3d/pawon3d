@@ -105,7 +105,7 @@ class CheckInventoryAlerts extends Command
     {
         $count = 0;
 
-        $materials = Material::with('batches')->get();
+        $materials = Material::with(['batches.unit'])->get();
 
         foreach ($materials as $material) {
             // Hitung total stok dari semua batch
@@ -113,10 +113,14 @@ class CheckInventoryAlerts extends Command
 
             // Jika stok di bawah minimum, kirim notifikasi
             if ($material->minimum && $totalStock < $material->minimum) {
+                // Ambil unit dari batch pertama yang memiliki unit
+                $unit = $material->batches->first()?->unit?->alias ?? $material->batches->first()?->unit?->name ?? '';
+
                 NotificationService::stockLow(
                     $material->name,
-                    (int) $totalStock,
-                    (int) $material->minimum
+                    $totalStock,
+                    $material->minimum,
+                    $unit
                 );
                 $count++;
                 $this->line("  [Notifikasi] {$material->name}: stok {$totalStock} < minimum {$material->minimum}");

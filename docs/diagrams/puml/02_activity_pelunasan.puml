@@ -1,0 +1,72 @@
+@startuml Activity Diagram - Proses Pelunasan Pembayaran
+
+|Kasir|
+start
+:Membuka halaman Transaksi;
+:Filter status: Uang Muka;
+
+:Memilih transaksi yang akan dilunasi;
+:Klik tombol Lunasi;
+
+|Sistem|
+:Menampilkan detail transaksi;
+note right
+  Info transaksi:
+  - Nomor invoice
+  - Nama pelanggan
+  - Total tagihan
+  - Sudah dibayar (DP)
+  - Sisa tagihan
+end note
+
+|Kasir|
+:Memilih metode pembayaran;
+
+if (Metode?) then (Tunai)
+    :Memasukkan jumlah uang diterima;
+    
+    |Sistem|
+    if (Uang >= sisa tagihan?) then (Ya)
+        :Menghitung kembalian;
+    else (Tidak)
+        :Menampilkan pesan kurang bayar;
+        stop
+    endif
+    
+else (Non-Tunai)
+    |Kasir|
+    :Memilih channel pembayaran;
+    note right
+      Channel: QRIS, Transfer, dll
+    end note
+endif
+
+|Kasir|
+:Konfirmasi pelunasan;
+
+|Sistem|
+:Menyimpan data pembayaran;
+:Update status transaksi: Lunas;
+
+if (Pelanggan terdaftar?) then (Ya)
+    :Menghitung poin yang didapat;
+    note right
+      Poin = Total / 10.000
+      (1 poin per Rp 10.000)
+    end note
+    :Menambah poin pelanggan;
+    :Catat riwayat poin;
+else (Tidak)
+endif
+
+:Kirim notifikasi (Pelunasan berhasil);
+
+|Kasir|
+if (Cetak struk?) then (Ya)
+    :Mencetak struk pelunasan;
+else (Tidak)
+endif
+
+stop
+
+@enduml

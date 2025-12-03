@@ -1,0 +1,112 @@
+@startuml Activity Diagram - Proses Mengelola Pekerja
+
+|Pemilik|
+start
+:Membuka halaman Pekerja;
+
+if (Aksi?) then (Tambah)
+    :Klik tombol Tambah Pekerja;
+    :Mengisi form pekerja;
+    note right
+      Data pekerja:
+      - Nama
+      - Email (unik)
+      - Nomor telepon
+      - Password
+      - Jenis kelamin
+      - Foto (opsional)
+    end note
+    
+    :Memilih peran (role);
+    note right
+      Peran tersedia:
+      - Kasir
+      - Produksi
+      - Inventori
+      - (atau custom role)
+    end note
+    
+    :Menyimpan pekerja;
+    
+    |Sistem|
+    :Validasi data;
+    
+    if (Email sudah terdaftar?) then (Ya)
+        :Menampilkan pesan error;
+    else (Tidak)
+        :Hash password;
+        :Menyimpan ke database;
+        :Assign role ke user;
+        :Menampilkan pesan sukses;
+    endif
+    
+else if (Aksi?) then (Edit)
+    |Pemilik|
+    :Memilih pekerja yang akan diedit;
+    :Mengubah data pekerja;
+    
+    if (Ubah password?) then (Ya)
+        :Memasukkan password baru;
+    else (Tidak)
+    endif
+    
+    :Mengubah peran (opsional);
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi data;
+    :Update data pekerja;
+    
+    if (Role berubah?) then (Ya)
+        :Sync role baru;
+        :Hapus role lama;
+    else (Tidak)
+    endif
+    
+    :Menampilkan pesan sukses;
+    
+else if (Aksi?) then (Lihat Detail)
+    |Pemilik|
+    :Memilih pekerja;
+    
+    |Sistem|
+    :Menampilkan detail pekerja;
+    :Menampilkan role & permission;
+    :Menampilkan riwayat aktivitas;
+    note right
+      Aktivitas:
+      - Transaksi yang dibuat
+      - Produksi yang dikerjakan
+      - Login terakhir
+    end note
+    
+else if (Aksi?) then (Reset Password)
+    |Pemilik|
+    :Memilih pekerja;
+    :Klik Reset Password;
+    :Memasukkan password baru;
+    :Konfirmasi password;
+    
+    |Sistem|
+    :Hash password baru;
+    :Update password pekerja;
+    :Menampilkan pesan sukses;
+    
+else (Hapus)
+    |Pemilik|
+    :Memilih pekerja yang akan dihapus;
+    :Konfirmasi penghapusan;
+    
+    |Sistem|
+    if (Pekerja punya transaksi/produksi?) then (Ya)
+        :Menampilkan peringatan;
+        :Nonaktifkan pekerja (soft delete);
+    else (Tidak)
+        :Hapus pekerja permanen;
+    endif
+    :Menampilkan pesan sukses;
+endif
+
+stop
+
+@enduml

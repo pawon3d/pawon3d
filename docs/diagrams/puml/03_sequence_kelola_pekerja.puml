@@ -1,0 +1,146 @@
+@startuml Sequence Diagram - Mengelola Pekerja
+
+actor Pemilik
+participant "User Page\n(Livewire)" as Page
+participant "User\nModel" as User
+participant "SpatieRole\nModel" as Role
+participant "Hash\nFacade" as Hash
+database Database as DB
+
+== Menambah Pekerja ==
+Pemilik -> Page: Klik "Tambah Pekerja"
+
+Page -> Role: all()
+Role -> DB: SELECT * FROM roles
+DB --> Role: roles list
+Role --> Page: available roles
+
+Page --> Pemilik: Tampilkan form dengan pilihan role
+
+Pemilik -> Page: Isi data pekerja
+note right
+  - Nama
+  - Email
+  - Nomor telepon
+  - Password
+  - Jenis kelamin
+  - Foto (opsional)
+end note
+
+Pemilik -> Page: Pilih role
+Pemilik -> Page: Simpan
+
+Page -> User: where('email', email)->exists()
+User -> DB: SELECT * FROM users WHERE email = ?
+DB --> User: exists check
+
+alt Email sudah terdaftar
+    Page --> Pemilik: Error: Email sudah digunakan
+else Email baru
+    Page -> Hash: make(password)
+    Hash --> Page: hashed password
+    
+    Page -> User: create(userData)
+    User -> DB: INSERT INTO users
+    DB --> User: user created
+    
+    Page -> User: assignRole(selectedRole)
+    User -> DB: INSERT INTO model_has_roles
+    DB --> User: role assigned
+    
+    Page --> Pemilik: Pekerja berhasil ditambahkan
+end
+
+== Melihat Detail Pekerja ==
+Pemilik -> Page: Pilih pekerja
+Page -> User: find(id)->with('roles')
+User -> DB: SELECT dengan relasi roles
+DB --> User: user with roles
+
+Page -> Role: getPermissions()
+Role -> DB: SELECT permissions via role_has_permissions
+DB --> Role: permissions list
+
+Page --> Pemilik: Tampilkan detail pekerja
+note right
+  - Info pekerja
+  - Role yang dimiliki
+  - Permission yang didapat
+  - Riwayat aktivitas
+end note
+
+== Mengedit Pekerja ==
+Pemilik -> Page: Pilih edit
+Page -> User: find(id)->with('roles')
+User --> Page: user data
+Page --> Pemilik: Tampilkan form edit
+
+Pemilik -> Page: Ubah data
+
+alt Ubah password
+    Pemilik -> Page: Masukkan password baru
+    Page -> Hash: make(newPassword)
+    Hash --> Page: hashed password
+end
+
+Pemilik -> Page: Ubah role (opsional)
+Pemilik -> Page: Simpan
+
+Page -> User: update(data)
+User -> DB: UPDATE users
+DB --> User: updated
+
+alt Role berubah
+    Page -> User: syncRoles([newRole])
+    User -> DB: DELETE FROM model_has_roles WHERE model_id = ?
+    User -> DB: INSERT INTO model_has_roles
+    DB --> User: role synced
+end
+
+Page --> Pemilik: Pekerja berhasil diupdate
+
+== Reset Password ==
+Pemilik -> Page: Pilih "Reset Password"
+Page --> Pemilik: Form reset password
+
+Pemilik -> Page: Masukkan password baru
+Pemilik -> Page: Konfirmasi password
+Pemilik -> Page: Simpan
+
+Page -> Page: Validasi password match
+
+alt Password tidak sama
+    Page --> Pemilik: Error: Password tidak cocok
+else Password cocok
+    Page -> Hash: make(newPassword)
+    Hash --> Page: hashed password
+    
+    Page -> User: update(['password' => hashedPassword])
+    User -> DB: UPDATE users SET password = ?
+    DB --> User: updated
+    
+    Page --> Pemilik: Password berhasil direset
+end
+
+== Menghapus Pekerja ==
+Pemilik -> Page: Pilih hapus
+Page --> Pemilik: Konfirmasi hapus?
+Pemilik -> Page: Konfirmasi
+
+Page -> User: checkUsage(id)
+User -> DB: SELECT FROM transactions WHERE user_id = ?
+User -> DB: SELECT FROM productions WHERE user involves
+
+alt Pekerja punya aktivitas
+    Page --> Pemilik: Peringatan: Akan dinonaktifkan
+    Page -> User: update(['is_active' => false])
+    User -> DB: UPDATE users SET is_active = false
+else Tidak ada aktivitas
+    Page -> User: delete(id)
+    User -> DB: DELETE FROM users
+    User -> DB: DELETE FROM model_has_roles WHERE model_id = ?
+end
+
+Page --> Pemilik: Pekerja berhasil dihapus
+
+@enduml

@@ -1,0 +1,100 @@
+@startuml Activity Diagram - Proses Mengelola Produk
+
+|Inventori|
+start
+:Membuka halaman Produk;
+
+if (Aksi?) then (Tambah)
+    :Klik tombol Tambah Produk;
+    :Mengisi form produk;
+    note right
+      Data produk:
+      - Nama produk
+      - Kategori
+      - Harga jual
+      - Deskripsi
+      - Gambar produk
+      - Masa simpan (suhu)
+    end note
+    
+    :Menentukan jenis produk;
+    
+    if (Produk dengan resep?) then (Ya)
+        :Menambahkan komposisi bahan;
+        
+        while (Tambah bahan lagi?) is (Ya)
+            :Pilih bahan baku;
+            :Masukkan jumlah;
+            :Pilih satuan;
+        endwhile (Tidak)
+        
+        :Menambahkan biaya tambahan (opsional);
+        
+        while (Tambah biaya lagi?) is (Ya)
+            :Pilih jenis biaya;
+            :Masukkan nominal;
+        endwhile (Tidak)
+        
+        |Sistem|
+        :Menghitung modal produk;
+        note right
+          Modal = Σ(harga bahan × qty)
+                + Σ(biaya tambahan)
+        end note
+        
+    else (Tidak)
+        :Produk tanpa resep;
+    endif
+    
+    |Inventori|
+    :Menyimpan produk;
+    
+    |Sistem|
+    :Validasi data produk;
+    
+    if (Data valid?) then (Ya)
+        :Menyimpan ke database;
+        :Menampilkan pesan sukses;
+    else (Tidak)
+        :Menampilkan pesan error;
+    endif
+    
+else if (Aksi?) then (Edit)
+    |Inventori|
+    :Memilih produk yang akan diedit;
+    :Mengubah data produk;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi data;
+    :Update data produk;
+    :Menampilkan pesan sukses;
+    
+else if (Aksi?) then (Hapus)
+    |Inventori|
+    :Memilih produk yang akan dihapus;
+    :Konfirmasi penghapusan;
+    
+    |Sistem|
+    if (Produk pernah di transaksi?) then (Ya)
+        :Menampilkan peringatan;
+        :Soft delete produk;
+    else (Tidak)
+        :Hapus produk permanen;
+    endif
+    :Menampilkan pesan sukses;
+    
+else (Lihat Detail)
+    |Inventori|
+    :Memilih produk;
+    
+    |Sistem|
+    :Menampilkan detail produk;
+    :Menampilkan komposisi bahan;
+    :Menampilkan biaya tambahan;
+    :Menampilkan riwayat produksi;
+endif
+
+stop
+
+@enduml

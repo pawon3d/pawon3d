@@ -1,0 +1,88 @@
+@startuml Activity Diagram - Proses Mengelola Peran
+
+|Pemilik|
+start
+:Membuka halaman Peran & Hak Akses;
+
+if (Aksi?) then (Tambah)
+    :Klik tombol Tambah Peran;
+    :Mengisi nama peran;
+    
+    :Memilih hak akses (permission);
+    note right
+      Grup permission:
+      - Kasir (pesanan, pembayaran, struk)
+      - Produksi (antrian, mulai, selesai)
+      - Inventori (produk, bahan, belanja)
+      - Manajemen (pekerja, pelanggan, setting)
+    end note
+    
+    while (Pilih permission lagi?) is (Ya)
+        :Centang permission yang diinginkan;
+    endwhile (Tidak)
+    
+    :Menyimpan peran;
+    
+    |Sistem|
+    :Validasi nama peran;
+    
+    if (Nama sudah ada?) then (Ya)
+        :Menampilkan pesan error;
+    else (Tidak)
+        :Menyimpan peran ke database;
+        :Menyimpan relasi permission;
+        :Menampilkan pesan sukses;
+    endif
+    
+else if (Aksi?) then (Edit)
+    |Pemilik|
+    :Memilih peran yang akan diedit;
+    
+    |Sistem|
+    :Menampilkan form dengan permission saat ini;
+    
+    |Pemilik|
+    :Mengubah nama peran (opsional);
+    :Mengubah permission;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Update data peran;
+    :Sync permission baru;
+    :Menampilkan pesan sukses;
+    
+    note right
+      Perubahan permission
+      langsung berlaku untuk
+      semua user dengan peran ini
+    end note
+    
+else if (Aksi?) then (Lihat Detail)
+    |Pemilik|
+    :Memilih peran;
+    
+    |Sistem|
+    :Menampilkan detail peran;
+    :Menampilkan daftar permission;
+    :Menampilkan user yang memiliki peran ini;
+    
+else (Hapus)
+    |Pemilik|
+    :Memilih peran yang akan dihapus;
+    :Konfirmasi penghapusan;
+    
+    |Sistem|
+    if (Peran digunakan oleh user?) then (Ya)
+        :Menampilkan peringatan;
+        :Peran tidak bisa dihapus;
+        :Tampilkan daftar user yang menggunakan;
+    else (Tidak)
+        :Hapus relasi permission;
+        :Hapus peran;
+        :Menampilkan pesan sukses;
+    endif
+endif
+
+stop
+
+@enduml

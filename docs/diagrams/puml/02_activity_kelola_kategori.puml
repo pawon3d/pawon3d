@@ -1,0 +1,59 @@
+@startuml Activity Diagram - Proses Mengelola Kategori Produk
+
+|Inventori|
+start
+:Membuka halaman Kategori Produk;
+
+if (Aksi?) then (Tambah)
+    :Klik tombol Tambah Kategori;
+    :Mengisi nama kategori;
+    :Mengisi deskripsi (opsional);
+    :Menyimpan kategori;
+    
+    |Sistem|
+    :Validasi nama kategori;
+    
+    if (Nama sudah ada?) then (Ya)
+        :Menampilkan pesan error;
+    else (Tidak)
+        :Menyimpan ke database;
+        :Menampilkan pesan sukses;
+    endif
+    
+else if (Aksi?) then (Edit)
+    |Inventori|
+    :Memilih kategori yang akan diedit;
+    :Mengubah data kategori;
+    :Menyimpan perubahan;
+    
+    |Sistem|
+    :Validasi data;
+    :Update data kategori;
+    :Menampilkan pesan sukses;
+    
+else if (Aksi?) then (Lihat Produk)
+    |Inventori|
+    :Memilih kategori;
+    
+    |Sistem|
+    :Menampilkan daftar produk dalam kategori;
+    :Menampilkan jumlah produk;
+    
+else (Hapus)
+    |Inventori|
+    :Memilih kategori yang akan dihapus;
+    :Konfirmasi penghapusan;
+    
+    |Sistem|
+    if (Kategori memiliki produk?) then (Ya)
+        :Menampilkan peringatan;
+        :Kategori tidak bisa dihapus;
+    else (Tidak)
+        :Hapus kategori;
+        :Menampilkan pesan sukses;
+    endif
+endif
+
+stop
+
+@enduml

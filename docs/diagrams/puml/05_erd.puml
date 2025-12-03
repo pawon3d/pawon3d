@@ -415,15 +415,6 @@ entity "store_profiles" as store_profiles {
     updated_at : timestamp
 }
 
-entity "store_settings" as store_settings {
-    primary_key(id) : uuid
-    --
-    not_null(key) : varchar(255)
-    value : text
-    created_at : timestamp
-    updated_at : timestamp
-}
-
 entity "store_documents" as store_documents {
     primary_key(id) : uuid
     --

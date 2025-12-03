@@ -241,7 +241,6 @@ package "Transaction" #LightPink {
         + customer(): BelongsTo
         + details(): HasMany
         + production(): HasOne
-        + reviews(): HasMany
         + payments(): HasMany
         + refund(): HasOne
     }
@@ -410,13 +409,6 @@ package "Store Settings" #MintCream {
         - phone: string
         - email: string
         - logo: string
-        --
-    }
-    
-    class StoreSetting {
-        - id: uuid <<PK>>
-        - key: string
-        - value: text
         --
     }
     
