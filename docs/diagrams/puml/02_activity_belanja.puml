@@ -59,6 +59,12 @@ if (Mulai belanja?) then (Ya)
       - Harga beli
     end note
     :Menambah stok bahan baku;
+    :Recalculate status bahan otomatis;
+    note right
+      Status berubah menjadi:
+      - Tersedia (jika stok cukup)
+      - Hampir Habis / Habis (jika masih kurang)
+    end note
     :Menghitung grand total aktual;
     :Update status: Selesai;
     :Mencatat log inventori;

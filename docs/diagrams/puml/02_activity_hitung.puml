@@ -79,13 +79,14 @@ endif
 
 |Sistem|
 :Update status hitung: Selesai;
-:Update status bahan baku (jika perlu);
+:Recalculate status bahan otomatis;
 note right
-  Status bahan:
-  - Tersedia
-  - Hampir Habis
-  - Kosong
-  - Expired
+  Status bahan berubah berdasarkan:
+  - Expired: ada batch expired
+  - Kosong: stok = 0
+  - Habis: stok <= minimum
+  - Hampir Habis: stok rendah
+  - Tersedia: stok cukup
 end note
 :Kirim notifikasi (Hitung selesai);
 

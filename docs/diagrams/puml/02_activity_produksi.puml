@@ -23,7 +23,16 @@ if (Ada produksi menunggu?) then (Ya)
         :Mengurangi stok bahan baku;
         note right
           Pengurangan berdasarkan
-          komposisi produk
+          komposisi produk (FIFO)
+        end note
+        :Update status bahan otomatis;
+        note right
+          Status berubah berdasarkan:
+          - Expired: ada batch expired
+          - Kosong: stok = 0
+          - Habis: stok <= minimum
+          - Hampir Habis: stok rendah
+          - Tersedia: stok cukup
         end note
         :Mencatat log inventori;
         :Update status: Proses;

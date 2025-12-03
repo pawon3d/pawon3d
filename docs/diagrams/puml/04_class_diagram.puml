@@ -187,9 +187,19 @@ package "Material & Inventory" #LightCoral {
     class Unit {
         - id: uuid <<PK>>
         - name: string
-        - symbol: string
+        - alias: string
+        - group: string
+        - base_unit_id: uuid <<FK>>
+        - conversion_factor: decimal
         --
         + materialDetails(): HasMany
+        + baseUnit(): BelongsTo
+        + derivedUnits(): HasMany
+        + hasConversionLadder(): bool
+        + canAutoConvertTo(Unit): bool
+        + convertTo(float, Unit): float
+        + getConversionFactorTo(Unit): float
+        + isBaseUnit(): bool
     }
     
     class IngredientCategory {
@@ -447,6 +457,8 @@ Product "1" --> "*" ProductionDetail : produced in
 Material "1" --> "*" MaterialBatch : has
 Material "1" --> "*" MaterialDetail : has
 MaterialDetail "*" --> "1" Unit : uses
+MaterialBatch "*" --> "1" Unit : measured in
+Unit "0..1" --> "*" Unit : base unit of
 Material "1" --> "*" IngredientCategoryDetail : belongs to
 IngredientCategoryDetail "*" --> "1" IngredientCategory : categorized by
 Material "1" --> "*" ExpenseDetail : purchased in

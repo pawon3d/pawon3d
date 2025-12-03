@@ -195,7 +195,10 @@ entity "units" as units {
     primary_key(id) : uuid
     --
     not_null(name) : varchar(255)
-    symbol : varchar(20)
+    alias : varchar(20)
+    group : varchar(50)
+    foreign_key(base_unit_id) : uuid
+    conversion_factor : decimal(20,10)
     created_at : timestamp
     updated_at : timestamp
 }
@@ -468,6 +471,8 @@ products ||--o{ production_details : "produced in"
 materials ||--o{ material_batches : "has"
 materials ||--o{ material_details : "has"
 units ||--o{ material_details : "measured in"
+units ||--o{ material_batches : "measured in"
+units ||--o| units : "derived from (base_unit)"
 ingredient_categories ||--o{ ingredient_category_details : "contains"
 materials ||--o{ ingredient_category_details : "categorized in"
 materials ||--o{ inventory_logs : "tracked in"

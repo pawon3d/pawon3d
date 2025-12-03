@@ -20,7 +20,23 @@ if (Aksi?) then (Tambah)
     
     while (Tambah satuan lagi?) is (Ya)
         :Pilih satuan (unit);
-        :Masukkan kuantitas dasar;
+        
+        |Sistem|
+        if (Satuan dalam grup konversi yang sama?) then (Ya)
+            :Hitung konversi otomatis;
+            note right
+              Contoh:
+              Satuan utama: kg
+              Satuan tambahan: g
+              Konversi: 1 g = 0.001 kg
+              (otomatis dari grup "Berat")
+            end note
+        else (Tidak)
+            |Inventori|
+            :Masukkan kuantitas konversi manual;
+        endif
+        
+        |Inventori|
         :Tandai sebagai satuan utama (opsional);
     endwhile (Tidak)
     

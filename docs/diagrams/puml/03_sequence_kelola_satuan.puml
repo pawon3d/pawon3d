@@ -32,6 +32,9 @@ I -> H: Klik tombol Tambah
 H --> I: Tampilkan modal form
 I -> U: set('name', 'Kilogram')
 I -> U: set('alias', 'kg')
+I -> U: set('group', 'Berat')
+I -> U: set('base_unit_id', null)
+I -> U: set('conversion_factor', 1)
 I -> U: save()
 activate U
 U -> U: validate()
@@ -64,6 +67,9 @@ note right
   Form terisi dengan:
   - Nama: Kilogram
   - Alias: kg
+  - Grup: Berat
+  - Satuan Dasar: -
+  - Faktor Konversi: 1
 end note
 
 I -> U: set('alias', 'Kg')

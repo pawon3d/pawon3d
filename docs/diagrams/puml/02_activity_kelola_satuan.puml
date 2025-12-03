@@ -10,7 +10,10 @@ if (Aksi?) then (Tambah)
     note right
       Data satuan:
       - Nama satuan (Kilogram, Liter, dll)
-      - Simbol/Alias (kg, L, pcs)
+      - Alias (kg, L, pcs)
+      - Grup konversi (Berat, Volume, dll)
+      - Satuan dasar (opsional)
+      - Faktor konversi (opsional)
     end note
     
     :Menyimpan satuan;
