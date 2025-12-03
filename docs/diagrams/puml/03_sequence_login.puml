@@ -1,0 +1,71 @@
+@startuml Sequence Diagram - Login
+
+actor User
+participant "Login Page\n(Blade)" as Login
+participant "LoginRequest\nController" as LoginReq
+participant "Auth\nFacade" as Auth
+participant "User\nModel" as UserModel
+participant "Session" as Session
+database Database as DB
+
+== Akses Halaman Login ==
+User -> Login: GET /login
+Login --> User: Tampilkan form login
+
+== Submit Login ==
+User -> Login: POST (email, password)
+Login -> LoginReq: authenticate()
+
+LoginReq -> LoginReq: validate()
+note right
+  Validasi:
+  - email: required, email
+  - password: required
+end note
+
+alt Validasi Gagal
+    LoginReq --> Login: ValidationException
+    Login --> User: Tampilkan error validasi
+end
+
+LoginReq -> Auth: attempt(['email' => $email, 'password' => $password])
+
+Auth -> UserModel: where('email', email)->first()
+UserModel -> DB: SELECT * FROM users WHERE email = ?
+DB --> UserModel: user data
+
+alt User Tidak Ditemukan
+    Auth --> LoginReq: false
+    LoginReq -> LoginReq: RateLimiter::hit()
+    LoginReq --> Login: throw ValidationException
+    Login --> User: Email atau password salah
+end
+
+Auth -> Auth: Hash::check(password, user.password)
+
+alt Password Salah
+    Auth --> LoginReq: false
+    LoginReq -> LoginReq: RateLimiter::hit()
+    LoginReq --> Login: throw ValidationException
+    Login --> User: Email atau password salah
+end
+
+Auth -> Session: regenerate()
+Session --> Auth: new session id
+
+Auth -> Session: store(user_id)
+Auth --> LoginReq: true
+
+LoginReq -> LoginReq: RateLimiter::clear()
+
+== Redirect ke Dashboard ==
+LoginReq --> Login: redirect('/dashboard')
+Login -> User: GET /dashboard
+
+note right of User
+  Middleware 'auth' memeriksa session
+  Middleware 'permission:*' memeriksa
+  roles/permissions untuk akses menu
+end note
+
+@enduml

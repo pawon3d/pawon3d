@@ -1,0 +1,59 @@
+@startuml Activity Diagram - Pembatalan Pesanan dengan Refund
+
+|Kasir|
+start
+:Membuka halaman Transaksi;
+:Memilih pesanan yang akan dibatalkan;
+:Menekan tombol Batalkan;
+
+|Sistem|
+:Memeriksa status pesanan;
+
+if (Status pesanan?) then (Antrian/Proses)
+    if (Ada produksi terkait?) then (Ya)
+        :Mengecek status produksi;
+        
+        if (Produksi sudah dimulai?) then (Ya)
+            :Membatalkan produksi;
+            :Mengembalikan stok bahan baku;
+        else (Belum)
+            :Menghapus record produksi;
+        endif
+    else (Tidak)
+    endif
+    
+    :Memeriksa pembayaran;
+    
+    if (Ada pembayaran?) then (Ya)
+        :Menghitung total yang harus direfund;
+        
+        |Kasir|
+        :Mengkonfirmasi refund;
+        :Memproses pengembalian uang;
+        
+        |Sistem|
+        :Membuat record refund;
+        :Mencatat jumlah refund;
+        
+        if (Pelanggan dapat poin dari transaksi ini?) then (Ya)
+            :Mengurangi poin pelanggan;
+            :Mencatat riwayat poin (pengurangan);
+        else (Tidak)
+        endif
+        
+    else (Tidak)
+        :Tidak ada refund;
+    endif
+    
+    :Update status transaksi: Dibatalkan;
+    :Kirim notifikasi (Pesanan dibatalkan);
+    
+elseif (Status pesanan?) then (Selesai)
+    :Menampilkan error "Pesanan sudah selesai";
+else (Dibatalkan)
+    :Menampilkan error "Pesanan sudah dibatalkan";
+endif
+
+stop
+
+@enduml

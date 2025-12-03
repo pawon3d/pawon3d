@@ -1,0 +1,57 @@
+@startuml Activity Diagram - Sesi Penjualan (Shift)
+
+|Kasir|
+start
+:Membuka halaman Transaksi;
+
+if (Ada sesi aktif?) then (Tidak)
+    :Menekan tombol "Buka Sesi";
+    :Memasukkan modal awal (kas);
+    :Mengkonfirmasi buka sesi;
+    
+    |Sistem|
+    :Generate nomor shift;
+    :Menyimpan shift baru;
+    note right
+      Data shift:
+      - opened_by
+      - initial_cash
+      - status: Buka
+    end note
+    :Kirim notifikasi (Sesi dibuka);
+    
+    |Kasir|
+    :Memulai transaksi;
+    
+    while (Selama sesi aktif) is (Ya)
+        :Melakukan transaksi;
+        
+        |Sistem|
+        :Mencatat transaksi dalam sesi;
+    endwhile (Tutup sesi)
+    
+    |Kasir|
+    :Menekan tombol "Tutup Sesi";
+    
+    |Sistem|
+    :Menghitung total penjualan;
+    :Menghitung total cash;
+    :Menghitung total non-cash;
+    
+    |Kasir|
+    :Memasukkan kas akhir aktual;
+    :Mengkonfirmasi tutup sesi;
+    
+    |Sistem|
+    :Menghitung selisih (expected vs actual);
+    :Update shift (closed_by, final_cash);
+    :Update status: Tutup;
+    :Kirim notifikasi (Sesi ditutup);
+    
+else (Ya)
+    :Melanjutkan transaksi di sesi aktif;
+endif
+
+stop
+
+@enduml

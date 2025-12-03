@@ -1,0 +1,148 @@
+@startuml Use Case Diagram - Sistem Manajemen Toko Kue
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+' === AKTOR ===
+actor "Pemilik" as owner
+actor "Kasir" as cashier
+actor "Produksi" as production
+actor "Inventori" as inventory
+actor "Pelanggan" as customer
+
+' === SISTEM ===
+rectangle "Sistem Informasi Manajemen Toko Kue" {
+
+    ' --- MODUL KASIR ---
+    package "Modul Kasir" {
+        usecase "Mengelola Pesanan" as UC_ORDER
+        usecase "Membuat Pesanan Reguler" as UC_ORDER_REG
+        usecase "Membuat Pesanan Kotak" as UC_ORDER_BOX
+        usecase "Membuat Pesanan Siap Beli" as UC_ORDER_READY
+        usecase "Memproses Pembayaran" as UC_PAYMENT
+        usecase "Mencetak Struk" as UC_RECEIPT
+        usecase "Membatalkan Pesanan" as UC_CANCEL_ORDER
+        usecase "Mengelola Sesi Penjualan" as UC_SHIFT
+        usecase "Melihat Laporan Kasir" as UC_REPORT_CASHIER
+    }
+
+    ' --- MODUL PRODUKSI ---
+    package "Modul Produksi" {
+        usecase "Merencanakan Produksi" as UC_PLAN_PROD
+        usecase "Memulai Produksi" as UC_START_PROD
+        usecase "Menyelesaikan Produksi" as UC_FINISH_PROD
+        usecase "Membatalkan Produksi" as UC_CANCEL_PROD
+        usecase "Melihat Antrian Produksi" as UC_QUEUE_PROD
+        usecase "Melihat Laporan Produksi" as UC_REPORT_PROD
+    }
+
+    ' --- MODUL INVENTORI ---
+    package "Modul Inventori" {
+        usecase "Mengelola Produk" as UC_PRODUCT
+        usecase "Mengelola Bahan Baku" as UC_MATERIAL
+        usecase "Mengelola Belanja" as UC_EXPENSE
+        usecase "Merencanakan Belanja" as UC_PLAN_EXP
+        usecase "Memulai Belanja" as UC_START_EXP
+        usecase "Menyelesaikan Belanja" as UC_FINISH_EXP
+        usecase "Mengelola Stok Hitung" as UC_STOCK_COUNT
+        usecase "Melihat Alur Persediaan" as UC_INVENTORY_FLOW
+        usecase "Melihat Laporan Inventori" as UC_REPORT_INV
+        usecase "Mengelola Kategori Persediaan" as UC_CAT_INV
+        usecase "Mengelola Supplier" as UC_SUPPLIER
+    }
+
+    ' --- MODUL MANAJEMEN ---
+    package "Modul Manajemen" {
+        usecase "Mengelola Pekerja" as UC_WORKER
+        usecase "Mengelola Peran & Hak Akses" as UC_ROLE
+        usecase "Mengelola Pelanggan" as UC_CUSTOMER
+        usecase "Mengelola Profil Usaha" as UC_STORE_PROFILE
+        usecase "Mengelola Metode Pembayaran" as UC_PAYMENT_METHOD
+    }
+
+    ' --- MODUL NOTIFIKASI ---
+    package "Modul Notifikasi" {
+        usecase "Melihat Notifikasi" as UC_NOTIF
+        usecase "Menerima Alert Stok Rendah" as UC_LOW_STOCK
+        usecase "Menerima Alert Expired" as UC_EXPIRED
+    }
+
+    ' --- MODUL LANDING PAGE ---
+    package "Modul Landing Page" {
+        usecase "Melihat Katalog Produk" as UC_CATALOG
+        usecase "Melihat Cara Pemesanan" as UC_HOW_ORDER
+        usecase "Melihat FAQ" as UC_FAQ
+    }
+}
+
+' === RELASI AKTOR - USE CASE ===
+
+' Pemilik - akses penuh
+owner --> UC_REPORT_CASHIER
+owner --> UC_REPORT_PROD
+owner --> UC_REPORT_INV
+owner --> UC_WORKER
+owner --> UC_ROLE
+owner --> UC_CUSTOMER
+owner --> UC_STORE_PROFILE
+owner --> UC_PAYMENT_METHOD
+owner --> UC_NOTIF
+
+' Kasir
+cashier --> UC_ORDER
+cashier --> UC_PAYMENT
+cashier --> UC_RECEIPT
+cashier --> UC_CANCEL_ORDER
+cashier --> UC_SHIFT
+cashier --> UC_REPORT_CASHIER
+cashier --> UC_NOTIF
+
+' Produksi
+production --> UC_PLAN_PROD
+production --> UC_START_PROD
+production --> UC_FINISH_PROD
+production --> UC_CANCEL_PROD
+production --> UC_QUEUE_PROD
+production --> UC_REPORT_PROD
+production --> UC_NOTIF
+
+' Inventori
+inventory --> UC_PRODUCT
+inventory --> UC_MATERIAL
+inventory --> UC_EXPENSE
+inventory --> UC_STOCK_COUNT
+inventory --> UC_INVENTORY_FLOW
+inventory --> UC_REPORT_INV
+inventory --> UC_CAT_INV
+inventory --> UC_SUPPLIER
+inventory --> UC_NOTIF
+inventory --> UC_LOW_STOCK
+inventory --> UC_EXPIRED
+
+' Pelanggan (publik)
+customer --> UC_CATALOG
+customer --> UC_HOW_ORDER
+customer --> UC_FAQ
+
+' === RELASI EXTEND & INCLUDE ===
+
+' Mengelola Pesanan extends
+UC_ORDER <|-- UC_ORDER_REG : <<extend>>
+UC_ORDER <|-- UC_ORDER_BOX : <<extend>>
+UC_ORDER <|-- UC_ORDER_READY : <<extend>>
+
+' Mengelola Belanja extends
+UC_EXPENSE <|-- UC_PLAN_EXP : <<extend>>
+UC_EXPENSE <|-- UC_START_EXP : <<extend>>
+UC_EXPENSE <|-- UC_FINISH_EXP : <<extend>>
+
+' Include relationships
+UC_ORDER ..> UC_PAYMENT : <<include>>
+UC_ORDER ..> UC_RECEIPT : <<include>>
+UC_ORDER_REG ..> UC_QUEUE_PROD : <<include>>
+UC_ORDER_BOX ..> UC_QUEUE_PROD : <<include>>
+UC_START_PROD ..> UC_MATERIAL : <<include>>
+UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
+
+@enduml

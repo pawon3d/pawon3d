@@ -1,0 +1,122 @@
+@startuml Sequence Diagram - Hitung Stok
+
+actor Inventori as User
+participant "Hitung Page\n(Livewire)" as HitungPage
+participant "Hitung\nModel" as Hitung
+participant "HitungDetail\nModel" as HitungDetail
+participant "Material\nModel" as Material
+participant "MaterialBatch\nModel" as Batch
+participant "InventoryLog\nModel" as Log
+participant "NotificationService" as Notif
+database Database as DB
+
+== Membuat Rencana Hitung ==
+User -> HitungPage: Buka halaman tambah hitung
+User -> HitungPage: Pilih aksi (hitung/rusak/hilang)
+User -> HitungPage: Pilih bahan-bahan
+
+HitungPage -> Hitung: create(hitung_data)
+note right
+  hitung_number: auto-generate
+  action: 'hitung'/'rusak'/'hilang'
+  status: 'Rencana'
+  user_id
+end note
+Hitung -> DB: INSERT INTO hitungs
+DB --> Hitung: hitung
+
+loop Untuk setiap bahan
+    HitungPage -> Material: find(id)
+    Material -> DB: SELECT * FROM materials
+    
+    HitungPage -> Batch: where('material_id', id)->sum('quantity')
+    Batch -> DB: SUM(quantity)
+    DB --> Batch: current_stock
+    
+    HitungPage -> HitungDetail: create(detail)
+    note right
+      material_id
+      quantity_system: stok sistem saat ini
+      quantity_actual: null (diisi nanti)
+    end note
+    HitungDetail -> DB: INSERT INTO hitung_details
+end
+
+HitungPage -> Notif: stockCountPlanned(hitung_number)
+Notif -> DB: INSERT INTO notifications
+
+HitungPage --> User: Rencana hitung tersimpan
+
+== Memulai Hitung ==
+User -> HitungPage: Pilih hitung dan mulai
+HitungPage -> Hitung: update(['status' => 'Proses'])
+Hitung -> DB: UPDATE hitungs
+DB --> Hitung: updated
+
+HitungPage -> Notif: stockCountProcessing(hitung_number)
+
+HitungPage --> User: Proses hitung dimulai
+
+== Input Hasil Hitung ==
+User -> HitungPage: Masukkan jumlah aktual per bahan
+
+loop Untuk setiap detail
+    HitungPage -> HitungDetail: update(['quantity_actual' => input])
+    HitungDetail -> DB: UPDATE hitung_details
+end
+
+== Menyelesaikan Hitung ==
+User -> HitungPage: Selesaikan hitung
+
+loop Untuk setiap detail
+    HitungPage -> HitungDetail: Hitung selisih
+    note right
+      selisih = quantity_actual - quantity_system
+    end note
+    
+    alt Aksi: Hitung (Stock Opname)
+        alt Selisih > 0 (Kelebihan)
+            HitungPage -> Batch: create(adjustment batch)
+            Batch -> DB: INSERT material_batches
+            
+            HitungPage -> Log: create(log)
+            note right
+              action: 'penyesuaian'
+              type: 'in'
+            end note
+        else Selisih < 0 (Kekurangan)
+            HitungPage -> Batch: Kurangi stok (FIFO)
+            Batch -> DB: UPDATE/DELETE material_batches
+            
+            HitungPage -> Log: create(log)
+            note right
+              action: 'penyesuaian'
+              type: 'out'
+            end note
+        end
+        
+    else Aksi: Rusak/Hilang
+        HitungPage -> Batch: Kurangi stok sebesar quantity_actual
+        Batch -> DB: UPDATE/DELETE material_batches
+        
+        HitungPage -> Log: create(log)
+        note right
+          action: 'rusak'/'hilang'
+          type: 'out'
+        end note
+    end
+    
+    HitungPage -> Material: Update status
+    Material -> DB: UPDATE materials
+end
+
+HitungPage -> Hitung: update(['status' => 'Selesai'])
+Hitung -> DB: UPDATE hitungs
+DB --> Hitung: updated
+
+HitungPage -> Notif: stockCountCompleted(hitung_number)
+Notif -> DB: INSERT INTO notifications
+
+HitungPage --> User: Hitung selesai, stok terupdate
+
+@enduml

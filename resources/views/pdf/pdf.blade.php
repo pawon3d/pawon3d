@@ -69,17 +69,17 @@
 
         <div style="margin-bottom: 5px;">
             @php
-            $fields = [
-            'Tipe' => $transaction->type,
-            'Total' => 'Rp ' . number_format($transaction->total_amount, 0, ',', '.'),
-            ];
+                $fields = [
+                    'Tipe' => $transaction->type,
+                    'Total' => 'Rp ' . number_format($transaction->total_amount, 0, ',', '.'),
+                ];
             @endphp
 
-            @foreach($fields as $label => $value)
-            <p style="margin: 1px 0;">
-                <strong>{{ $label }}:</strong>
-                {!! htmlspecialchars($value, ENT_QUOTES, 'UTF-8', true) !!}
-            </p>
+            @foreach ($fields as $label => $value)
+                <p style="margin: 1px 0;">
+                    <strong>{{ $label }}:</strong>
+                    {!! htmlspecialchars($value, ENT_QUOTES, 'UTF-8', true) !!}
+                </p>
             @endforeach
         </div>
 
@@ -92,51 +92,22 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($transaction->details as $detail)
-                <tr>
-                    <td class="text-center">{!! htmlspecialchars($detail->product->name, ENT_QUOTES, 'UTF-8', true) !!}
-                    </td>
-                    <td class="text-right">{{ $detail->quantity }}</td>
-                    <td class="text-right">Rp {{ number_format($detail->price, 0, ',', '.') }}</td>
-                </tr>
+                @foreach ($transaction->details as $detail)
+                    <tr>
+                        <td class="text-center">{!! htmlspecialchars($detail->product->name, ENT_QUOTES, 'UTF-8', true) !!}
+                        </td>
+                        <td class="text-right">{{ $detail->quantity }}</td>
+                        <td class="text-right">Rp {{ number_format($detail->price, 0, ',', '.') }}</td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
-
-        <div style="margin-top: 5px; text-align: center;">
-            <p>Scan QR Code untuk ulasan</p>
-            <div id="canvas"></div>
-        </div>
 
         <div style="text-align: center; margin-top: 8px;">
             <p>Terima kasih telah berbelanja</p>
         </div>
     </div>
 
-
-    <script type="text/javascript">
-        const qrCode = new QRCodeStyling({
-            width: 100,
-            height: 100,
-            type: "svg",
-            data: "{{ route('ulasan', $transaction->id) }}",
-            image: "",
-            dotsOptions: {
-                color: "#000",
-                type: "rounded"
-            },
-            backgroundOptions: {
-                color: "#fff",
-            },
-            imageOptions: {
-                crossOrigin: "anonymous",
-                margin: 20
-            }
-        });
-    
-        qrCode.append(document.getElementById("canvas"));
-        // qrCode.download({ name: "qr", extension: "svg" });
-    </script>
 </body>
 
 </html>

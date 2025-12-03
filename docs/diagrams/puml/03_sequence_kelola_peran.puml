@@ -1,0 +1,76 @@
+@startuml Sequence Diagram - Kelola Peran
+
+actor Pemilik as User
+participant "Peran Page\n(Livewire)" as RolePage
+participant "SpatieRole\nModel" as Role
+participant "Permission\nModel" as Permission
+participant "User\nModel" as UserModel
+database Database as DB
+
+== Melihat Daftar Peran ==
+User -> RolePage: GET /peran
+RolePage -> Role: with('permissions')->get()
+Role -> DB: SELECT * FROM roles\nJOIN role_has_permissions
+DB --> Role: roles with permissions
+Role --> RolePage: roles list
+RolePage --> User: Tampilkan daftar peran
+
+== Membuat Peran Baru ==
+User -> RolePage: Klik "Tambah Peran"
+RolePage -> Permission: all()
+Permission -> DB: SELECT * FROM permissions
+DB --> Permission: permissions list
+Permission --> RolePage: permissions grouped by category
+RolePage --> User: Tampilkan form dengan checkbox permissions
+
+User -> RolePage: Input nama peran
+User -> RolePage: Pilih permissions
+User -> RolePage: Submit
+
+RolePage -> Role: create(['name' => name, 'guard_name' => 'web'])
+Role -> DB: INSERT INTO roles
+DB --> Role: role created
+
+RolePage -> Role: syncPermissions(selected_permissions)
+Role -> DB: INSERT INTO role_has_permissions
+DB --> Role: permissions synced
+
+RolePage --> User: Peran berhasil dibuat
+
+== Mengubah Peran ==
+User -> RolePage: Pilih peran untuk edit
+RolePage -> Role: find(id)->with('permissions')
+Role --> RolePage: role data
+
+User -> RolePage: Update nama/permissions
+User -> RolePage: Submit
+
+RolePage -> Role: update(['name' => name])
+Role -> DB: UPDATE roles
+DB --> Role: updated
+
+RolePage -> Role: syncPermissions(new_permissions)
+Role -> DB: DELETE FROM role_has_permissions WHERE role_id = ?
+Role -> DB: INSERT INTO role_has_permissions
+DB --> Role: permissions synced
+
+RolePage --> User: Peran berhasil diperbarui
+
+== Menghapus Peran ==
+User -> RolePage: Pilih peran untuk hapus
+RolePage -> UserModel: whereHas('roles', role_id)->count()
+UserModel -> DB: SELECT COUNT(*) FROM model_has_roles
+DB --> UserModel: user count
+
+alt Ada user yang menggunakan peran
+    RolePage --> User: Tidak dapat dihapus\n(masih digunakan)
+else Tidak ada user
+    RolePage -> Role: delete()
+    Role -> DB: DELETE FROM roles WHERE id = ?
+    Role -> DB: DELETE FROM role_has_permissions WHERE role_id = ?
+    DB --> Role: deleted
+    
+    RolePage --> User: Peran berhasil dihapus
+end
+
+@enduml

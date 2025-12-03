@@ -68,11 +68,6 @@ class Product extends Model
         return $this->hasMany(ProductComposition::class);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
     public function transactions()
     {
         return $this->hasMany(TransactionDetail::class);

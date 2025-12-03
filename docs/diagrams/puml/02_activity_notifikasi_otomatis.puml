@@ -1,0 +1,61 @@
+@startuml Activity Diagram - Notifikasi Otomatis
+
+|Sistem (Scheduler)|
+start
+:Menjalankan scheduled command;
+note right
+  Dijalankan setiap hari
+  pukul 08:00
+end note
+
+fork
+    :Mengecek stok rendah;
+    
+    :Query bahan aktif;
+    while (Untuk setiap bahan) is (Ada)
+        :Hitung total stok dari batches;
+        
+        if (Stok <= Minimum?) then (Ya)
+            if (Stok = 0?) then (Ya)
+                :Update status: Kosong;
+            else (Tidak)
+                :Update status: Hampir Habis;
+            endif
+            :Catat untuk notifikasi;
+        else (Tidak)
+            :Update status: Tersedia;
+        endif
+    endwhile (Selesai)
+    
+    if (Ada bahan stok rendah?) then (Ya)
+        :Buat notifikasi alert stok rendah;
+        :Kirim ke user dengan permission inventori;
+    else (Tidak)
+    endif
+
+fork again
+    :Mengecek bahan expired;
+    
+    :Query batches aktif;
+    while (Untuk setiap batch) is (Ada)
+        if (Expired date <= Hari ini?) then (Ya)
+            :Update status bahan: Expired;
+            :Catat untuk notifikasi;
+        elseif (Expired date <= 7 hari lagi?) then (Ya)
+            :Catat untuk notifikasi (akan expired);
+        else (Tidak)
+        endif
+    endwhile (Selesai)
+    
+    if (Ada bahan expired/akan expired?) then (Ya)
+        :Buat notifikasi alert expired;
+        :Kirim ke user dengan permission inventori;
+    else (Tidak)
+    endif
+
+end fork
+
+:Log hasil pengecekan;
+stop
+
+@enduml

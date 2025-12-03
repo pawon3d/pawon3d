@@ -3,7 +3,6 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PdfController;
 use App\Livewire\Dashboard;
-use App\Livewire\Review\ReviewForm;
 use App\Livewire\User\Index;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,9 +38,6 @@ Route::get('/laporan-produksi', App\Livewire\Dashboard\LaporanProduksi::class)
 Route::get('/laporan-inventori', App\Livewire\Dashboard\LaporanInventori::class)
     ->middleware(['auth', 'permission:inventori.laporan.kelola'])
     ->name('laporan-inventori');
-
-Route::get('/ulasan/{transaction_id}', ReviewForm::class)
-    ->name('ulasan');
 
 Route::middleware(['auth'])->group(function () {
     // Route::redirect('settings', 'settings/profile');
@@ -191,12 +187,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/produksi/cetak/{id}', [PdfController::class, 'generateProductionDetailPDF'])
             ->name('rincian-produksi.pdf');
     });
-
-    Route::get('/ulasan', App\Livewire\Review\Index::class)->name('review');
-    Route::get('/hadiah', App\Livewire\Prize\Index::class)->name('hadiah');
-    Route::get('/penukaran', App\Livewire\Prize\Exchange::class)->name('penukaran');
-    // Volt::route('/hadiah/didapat', 'prize.get')->name('hadiah.didapat');
-    // Volt::route('/hadiah/ditukar', 'prize.redeem')->name('hadiah.ditukar');
 
     Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
     Route::get('/profil-saya/{id}', App\Livewire\Setting\MyProfile::class)->name('profil-saya');

@@ -1,0 +1,49 @@
+@startuml Activity Diagram - Login dan Otorisasi
+
+|User|
+start
+:Membuka halaman login;
+:Memasukkan email;
+:Memasukkan password;
+:Klik tombol Login;
+
+|Sistem|
+:Validasi format input;
+
+if (Format valid?) then (Ya)
+    :Mencari user berdasarkan email;
+    
+    if (User ditemukan?) then (Ya)
+        :Verifikasi password;
+        
+        if (Password benar?) then (Ya)
+            :Membuat session;
+            :Mengambil roles dan permissions;
+            :Redirect ke Dashboard;
+            
+            |User|
+            :Melihat Dashboard;
+            :Melihat menu sesuai permission;
+            note right
+              Menu yang tampil berdasarkan:
+              - kasir.* -> Menu Kasir
+              - produksi.* -> Menu Produksi
+              - inventori.* -> Menu Inventori
+              - manajemen.* -> Menu Manajemen
+            end note
+            
+        else (Tidak)
+            :Menampilkan error "Password salah";
+        endif
+        
+    else (Tidak)
+        :Menampilkan error "User tidak ditemukan";
+    endif
+    
+else (Tidak)
+    :Menampilkan error validasi;
+endif
+
+stop
+
+@enduml

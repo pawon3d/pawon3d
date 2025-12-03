@@ -1,0 +1,74 @@
+@startuml Activity Diagram - Proses Produksi
+
+|Produksi|
+start
+:Membuka halaman Antrian Produksi;
+:Melihat daftar produksi;
+
+if (Ada produksi menunggu?) then (Ya)
+    :Memilih produksi yang akan dimulai;
+    :Memeriksa detail produksi;
+    
+    |Sistem|
+    :Memeriksa ketersediaan bahan baku;
+    
+    if (Bahan baku cukup?) then (Ya)
+        :Menampilkan konfirmasi mulai;
+        
+        |Produksi|
+        :Memilih pekerja yang terlibat;
+        :Mengkonfirmasi mulai produksi;
+        
+        |Sistem|
+        :Mengurangi stok bahan baku;
+        note right
+          Pengurangan berdasarkan
+          komposisi produk
+        end note
+        :Mencatat log inventori;
+        :Update status: Proses;
+        :Kirim notifikasi (Produksi dimulai);
+        
+        |Produksi|
+        :Melakukan proses produksi;
+        
+        if (Produksi selesai?) then (Ya)
+            :Menandai produksi selesai;
+            
+            |Sistem|
+            :Menambah stok produk jadi;
+            :Update status: Selesai;
+            :Kirim notifikasi (Produksi selesai);
+            
+            if (Dari pesanan?) then (Ya)
+                :Update status transaksi: Dapat Diambil;
+                :Kirim notifikasi ke Kasir;
+            else (Siap Beli)
+            endif
+            
+        else (Dibatalkan)
+            |Produksi|
+            :Membatalkan produksi;
+            
+            |Sistem|
+            :Mengembalikan stok bahan baku;
+            :Update status: Dibatalkan;
+            :Kirim notifikasi (Produksi dibatalkan);
+        endif
+        
+    else (Tidak)
+        |Sistem|
+        :Menampilkan peringatan bahan tidak cukup;
+        :Menampilkan daftar bahan yang kurang;
+        
+        |Produksi|
+        :Menunda produksi;
+    endif
+    
+else (Tidak)
+    :Tidak ada aksi;
+endif
+
+stop
+
+@enduml

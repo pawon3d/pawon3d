@@ -1,0 +1,35 @@
+@startuml Activity Diagram - Reset Stok Produk Harian
+
+|Sistem (Scheduler)|
+start
+:Menjalankan scheduled command;
+note right
+  Dijalankan setiap hari
+  pukul 00:00 (tengah malam)
+end note
+
+:Query semua produk;
+
+while (Untuk setiap produk) is (Ada)
+    if (Stok > 0?) then (Ya)
+        :Reset stok menjadi 0;
+        :Mencatat log reset;
+    else (Tidak)
+        :Skip (sudah 0);
+    endif
+endwhile (Selesai)
+
+:Log hasil reset;
+:Kirim notifikasi (Reset stok selesai);
+
+stop
+
+note right
+  Alasan reset harian:
+  Produk kue/roti bersifat
+  perishable (mudah basi),
+  sehingga stok tidak
+  akumulatif antar hari.
+end note
+
+@enduml

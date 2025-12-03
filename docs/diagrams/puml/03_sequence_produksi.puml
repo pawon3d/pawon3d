@@ -1,0 +1,119 @@
+@startuml Sequence Diagram - Proses Produksi
+
+actor Produksi as User
+participant "Antrian Page\n(Livewire)" as Queue
+participant "Mulai Page\n(Livewire)" as Start
+participant "Production\nModel" as Production
+participant "ProductionDetail\nModel" as ProdDetail
+participant "ProductionWorker\nModel" as Worker
+participant "Product\nModel" as Product
+participant "ProductComposition\nModel" as Composition
+participant "MaterialBatch\nModel" as Batch
+participant "InventoryLog\nModel" as Log
+participant "Transaction\nModel" as Transaction
+participant "NotificationService" as Notif
+database Database as DB
+
+== Melihat Antrian ==
+User -> Queue: Buka halaman antrian
+Queue -> Production: where('status', 'Antrian')->get()
+Production -> DB: SELECT * FROM productions
+DB --> Production: productions list
+Production --> Queue: antrian produksi
+Queue --> User: Tampilkan antrian
+
+== Memulai Produksi ==
+User -> Start: Pilih produksi
+Start -> Production: find(id)->with('details.product')
+Production -> DB: SELECT with relationships
+DB --> Production: production + details
+Production --> Start: production data
+
+Start -> Start: Cek ketersediaan bahan
+
+loop Untuk setiap produk di production_details
+    Start -> Composition: where('product_id', id)->get()
+    Composition -> DB: SELECT * FROM product_compositions
+    DB --> Composition: komposisi bahan
+    
+    loop Untuk setiap bahan
+        Start -> Batch: where('material_id', id)\n->sum('quantity')
+        Batch -> DB: SUM(quantity) FROM material_batches
+        DB --> Batch: total stok
+        
+        alt Stok Cukup
+            Start -> Start: OK
+        else Stok Tidak Cukup
+            Start --> User: Peringatan: Bahan kurang
+        end
+    end
+end
+
+User -> Start: Pilih pekerja terlibat
+User -> Start: Konfirmasi mulai produksi
+
+Start -> Worker: createMany(workers)
+Worker -> DB: INSERT INTO production_workers
+DB --> Worker: workers created
+
+== Kurangi Stok Bahan (FIFO) ==
+loop Untuk setiap bahan
+    Start -> Batch: orderBy('expired_at', 'asc')\n->orderBy('created_at', 'asc')
+    note right
+      FIFO: Batch dengan
+      expired terdekat
+      digunakan duluan
+    end note
+    Batch -> DB: SELECT FROM material_batches
+    DB --> Batch: batches sorted
+    
+    Start -> Batch: decrement/delete
+    Batch -> DB: UPDATE/DELETE material_batches
+    DB --> Batch: updated
+    
+    Start -> Log: create(log_data)
+    note right
+      action: 'produksi'
+      type: 'out'
+    end note
+    Log -> DB: INSERT INTO inventory_logs
+end
+
+Start -> Production: update(['status' => 'Proses', 'is_start' => true])
+Production -> DB: UPDATE productions
+DB --> Production: updated
+
+Start -> Notif: productionProcessing(production_number)
+Notif -> DB: INSERT INTO notifications
+Start --> User: Produksi dimulai
+
+== Menyelesaikan Produksi ==
+User -> Start: Klik selesai produksi
+
+Start -> Production: update(['status' => 'Selesai', 'is_finish' => true])
+Production -> DB: UPDATE productions
+DB --> Production: updated
+
+== Tambah Stok Produk ==
+loop Untuk setiap production_detail
+    Start -> Product: increment('stock', qty)
+    Product -> DB: UPDATE products SET stock = stock + qty
+    DB --> Product: updated
+end
+
+== Update Status Transaksi (jika dari pesanan) ==
+alt Ada transaction_id
+    Start -> Transaction: update(['status' => 'Dapat Diambil'])
+    Transaction -> DB: UPDATE transactions
+    DB --> Transaction: updated
+    
+    Start -> Notif: orderReadyForPickup(invoice_number)
+    Notif -> DB: INSERT notifications (untuk kasir)
+end
+
+Start -> Notif: productionCompleted(production_number)
+Notif -> DB: INSERT INTO notifications
+
+Start --> User: Produksi selesai
+
+@enduml

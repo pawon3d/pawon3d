@@ -45,11 +45,6 @@ class Transaction extends Model
         return $this->hasOne(Production::class);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -101,12 +96,12 @@ class Transaction extends Model
                 $method = $model->method ?? 'default';
                 $basePrefix = $prefixMap[$method] ?? 'OR'; // fallback ke 'PS' kalau tidak cocok
 
-                $prefix = $basePrefix.'-'.$today;
+                $prefix = $basePrefix . '-' . $today;
 
                 // Cari nomor terakhir untuk kombinasi metode + tanggal
                 $lastTransaction = DB::table('transactions')
                     ->lockForUpdate()
-                    ->where('invoice_number', 'like', $prefix.'-%')
+                    ->where('invoice_number', 'like', $prefix . '-%')
                     ->orderByDesc('invoice_number')
                     ->first();
 
@@ -116,7 +111,7 @@ class Transaction extends Model
                 }
 
                 $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-                $model->invoice_number = $prefix.'-'.$nextNumber;
+                $model->invoice_number = $prefix . '-' . $nextNumber;
             });
         });
     }

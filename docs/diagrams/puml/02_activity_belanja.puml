@@ -1,0 +1,78 @@
+@startuml Activity Diagram - Proses Belanja Bahan Baku
+
+|Inventori|
+start
+:Membuka halaman Belanja;
+
+fork
+    :Melihat daftar belanja;
+fork again
+    :Membuat rencana belanja baru;
+end fork
+
+if (Membuat rencana baru?) then (Ya)
+    :Memilih supplier;
+    :Menambahkan bahan baku;
+    :Memasukkan jumlah rencana;
+    :Memasukkan harga perkiraan;
+    :Menyimpan rencana belanja;
+    
+    |Sistem|
+    :Generate nomor belanja (BP-YYMMDD-XXXX);
+    :Menyimpan expense dengan status: Rencana;
+    :Menyimpan expense details;
+    :Kirim notifikasi (Rencana belanja dibuat);
+    
+else (Tidak)
+endif
+
+|Inventori|
+:Memilih belanja untuk diproses;
+
+if (Mulai belanja?) then (Ya)
+    :Mengkonfirmasi mulai belanja;
+    
+    |Sistem|
+    :Update status: Proses;
+    :Kirim notifikasi (Belanja dimulai);
+    
+    |Inventori|
+    :Melakukan pembelian;
+    :Mengisi jumlah aktual;
+    :Mengisi harga aktual;
+    :Mengisi tanggal expired (jika ada);
+    
+    if (Jumlah sesuai rencana?) then (Ya)
+        :Melanjutkan;
+    else (Tidak)
+        :Mencatat selisih;
+    endif
+    
+    :Menyelesaikan belanja;
+    
+    |Sistem|
+    :Membuat batch baru untuk setiap bahan;
+    note right
+      Batch mencatat:
+      - Quantity
+      - Expired date
+      - Harga beli
+    end note
+    :Menambah stok bahan baku;
+    :Menghitung grand total aktual;
+    :Update status: Selesai;
+    :Mencatat log inventori;
+    :Kirim notifikasi (Belanja selesai);
+    
+else (Dibatalkan)
+    |Inventori|
+    :Membatalkan belanja;
+    
+    |Sistem|
+    :Update status: Dibatalkan;
+    :Kirim notifikasi (Belanja dibatalkan);
+endif
+
+stop
+
+@enduml
