@@ -6,6 +6,8 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\View;
@@ -286,6 +288,226 @@ class LaporanKasir extends Component
         $this->currentPage = 1;
     }
 
+    public function exportPdf()
+    {
+        // Determine date range based on filter period
+        if ($this->filterPeriod === 'Custom' && $this->customStartDate) {
+            $startDate = Carbon::parse($this->customStartDate)->startOfDay();
+            $endDate = $this->customEndDate ? Carbon::parse($this->customEndDate)->endOfDay() : Carbon::parse($this->customStartDate)->endOfDay();
+            $lengthDays = Carbon::parse($this->customStartDate)->diffInDays(Carbon::parse($this->customEndDate ?? $this->customStartDate)) + 1;
+            $prevStart = Carbon::parse($this->customStartDate)->subDays($lengthDays)->startOfDay();
+            $prevEnd = Carbon::parse($this->customStartDate)->subDay()->endOfDay();
+            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+        } else {
+            $selectedDate = Carbon::parse($this->selectedDate);
+
+            switch ($this->filterPeriod) {
+                case 'Hari':
+                    $startDate = $selectedDate->copy()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfDay();
+                    $prevStart = $selectedDate->copy()->subDay()->startOfDay();
+                    $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
+                    $dateRange = $selectedDate->translatedFormat('d F Y');
+                    break;
+                case 'Minggu':
+                    $startDate = $selectedDate->copy()->startOfWeek()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfWeek()->endOfDay();
+                    $prevStart = $selectedDate->copy()->subWeek()->startOfWeek()->startOfDay();
+                    $prevEnd = $selectedDate->copy()->subWeek()->endOfWeek()->endOfDay();
+                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+                    break;
+                case 'Bulan':
+                    $startDate = $selectedDate->copy()->startOfMonth()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfMonth()->endOfDay();
+                    $prevStart = $selectedDate->copy()->subMonth()->startOfMonth()->startOfDay();
+                    $prevEnd = $selectedDate->copy()->subMonth()->endOfMonth()->endOfDay();
+                    $dateRange = $selectedDate->translatedFormat('F Y');
+                    break;
+                case 'Tahun':
+                    $startDate = $selectedDate->copy()->startOfYear()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfYear()->endOfDay();
+                    $prevStart = $selectedDate->copy()->subYear()->startOfYear()->startOfDay();
+                    $prevEnd = $selectedDate->copy()->subYear()->endOfYear()->endOfDay();
+                    $dateRange = 'Tahun ' . $selectedDate->year;
+                    break;
+                default:
+                    $startDate = $selectedDate->copy()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfDay();
+                    $prevStart = $selectedDate->copy()->subDay()->startOfDay();
+                    $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
+                    $dateRange = $selectedDate->translatedFormat('d F Y');
+            }
+        }
+
+        // Query transactions
+        $transactionsQuery = Transaction::whereBetween('start_date', [$startDate, $endDate])
+            ->where('status', 'Selesai');
+
+        if ($this->selectedWorker !== 'semua') {
+            $transactionsQuery->where('created_by', $this->selectedWorker);
+        }
+
+        if ($this->selectedMethod !== 'semua') {
+            $transactionsQuery->where('method', $this->selectedMethod);
+        }
+
+        $transactions = $transactionsQuery->get();
+
+        // Prev transactions
+        $prevTransactionsQuery = Transaction::whereBetween('start_date', [$prevStart, $prevEnd])
+            ->where('status', 'Selesai');
+
+        if ($this->selectedWorker !== 'semua') {
+            $prevTransactionsQuery->where('created_by', $this->selectedWorker);
+        }
+
+        if ($this->selectedMethod !== 'semua') {
+            $prevTransactionsQuery->where('method', $this->selectedMethod);
+        }
+
+        $prevTransactions = $prevTransactionsQuery->get();
+
+        $transactionIds = $transactions->pluck('id');
+        $prevTransactionIds = $prevTransactions->pluck('id');
+
+        $details = TransactionDetail::with('product')
+            ->whereIn('transaction_id', $transactionIds)
+            ->get();
+
+        $prevDetails = TransactionDetail::with('product')
+            ->whereIn('transaction_id', $prevTransactionIds)
+            ->get();
+
+        $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
+            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+
+            return [
+                'total' => $total,
+                'name' => $items->first()->product->name ?? 'Unknown',
+            ];
+        });
+
+        $sorted = $groupedProducts->sortByDesc('total');
+        $top10 = $sorted->take(10);
+        $best = $sorted->first();
+
+        $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
+            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+
+            return [
+                'total' => $total,
+                'name' => $items->first()->product->name ?? 'Unknown',
+            ];
+        })->sortByDesc('total')->first();
+
+        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+
+        $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
+            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+
+            return [
+                'total' => $total,
+                'name' => $items->first()->product->name ?? 'Unknown',
+            ];
+        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+
+        $sessionCount = $transactions->unique('created_by_shift')->count();
+        $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
+
+        $transactionCount = $transactions->count();
+        $prevTransactionCount = $prevTransactions->count();
+
+        $customerCount = $transactions->unique('phone')->count();
+        $prevCustomerCount = $prevTransactions->unique('phone')->count();
+
+        $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
+        $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
+
+        $grossRevenue = $transactions->sum('total_amount');
+        $prevGrossRevenue = $prevTransactions->sum('total_amount');
+
+        $discountTotal = $transactions->sum('points_discount');
+        $prevDiscountTotal = $prevTransactions->sum('points_discount');
+
+        $refundTotal = $transactions->sum('total_refund');
+        $prevRefundTotal = $prevTransactions->sum('total_refund');
+
+        $netRevenue = $grossRevenue - $refundTotal - $discountTotal;
+        $prevNetRevenue = $prevGrossRevenue - $prevRefundTotal - $prevDiscountTotal;
+
+        $capitalTotal = $details->sum(function ($d) {
+            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+        });
+        $prevCapitalTotal = $prevDetails->sum(function ($d) {
+            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+        });
+        $profit = $netRevenue - $capitalTotal;
+        $prevProfit = $prevNetRevenue - $prevCapitalTotal;
+
+        $diffStats = [
+            'sessionCount' => $this->calculateDiff($sessionCount, $prevSessionCount),
+            'transactionCount' => $this->calculateDiff($transactionCount, $prevTransactionCount),
+            'customerCount' => $this->calculateDiff($customerCount, $prevCustomerCount),
+            'productSold' => $this->calculateDiff($productSold, $prevProductSold),
+            'best' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
+            'worst' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
+            'grossRevenue' => $this->calculateDiff($grossRevenue, $prevGrossRevenue),
+            'discount' => $this->calculateDiff($discountTotal, $prevDiscountTotal),
+            'refund' => $this->calculateDiff($refundTotal, $prevRefundTotal),
+            'netRevenue' => $this->calculateDiff($netRevenue, $prevNetRevenue),
+            'profit' => $this->calculateDiff($profit, $prevProfit),
+        ];
+
+        // Product sales for table
+        $products = Product::all();
+        $productSales = $products->map(function ($product) use ($details) {
+            $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $produksi = $terjual;
+            $tidakTerjual = max(0, $produksi - $terjual);
+
+            return (object) [
+                'name' => $product->name,
+                'produksi' => $produksi,
+                'sold' => $terjual,
+                'unsold' => $tidakTerjual,
+            ];
+        })->filter(fn($item) => $item->sold > 0)->sortByDesc('sold')->values();
+
+        // Worker and method names
+        $workerName = $this->selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($this->selectedWorker)?->name ?? 'Unknown');
+        $methodName = match ($this->selectedMethod) {
+            'semua' => 'Semua Metode',
+            'pesanan-reguler' => 'Pesanan Reguler',
+            'pesanan-kotak' => 'Pesanan Kotak',
+            'siap-beli' => 'Siap Saji',
+            default => 'Semua Metode',
+        };
+
+        $pdf = Pdf::loadView('pdf.laporan-kasir', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'methodName' => $methodName,
+            'sessionCount' => $sessionCount,
+            'transactionCount' => $transactionCount,
+            'customerCount' => $customerCount,
+            'productSold' => $productSold,
+            'bestProduct' => $best,
+            'worstProduct' => $worst,
+            'grossRevenue' => $grossRevenue,
+            'discountTotal' => $discountTotal,
+            'refundTotal' => $refundTotal,
+            'netRevenue' => $netRevenue,
+            'profit' => $profit,
+            'diffStats' => $diffStats,
+            'topProducts' => $top10->toArray(),
+            'productSales' => $productSales,
+        ]);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'laporan-kasir-' . now()->format('Y-m-d') . '.pdf');
+    }
+
     protected function updateChartData($transactions, $details)
     {
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
@@ -524,13 +746,13 @@ class LaporanKasir extends Component
             $discount = $monthTransactions->sum('points_discount');
             $net = $gross - $refund - $discount;
             $modal = $monthDetails->sum(fn($d) => ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity));
-            $profit = $net - $modal;
+            $monthProfit = $net - $modal;
 
             $chartGross[] = $gross;
             $chartDiscount[] = $discount;
             $chartRefund[] = $refund;
             $chartNet[] = $net;
-            $chartProfit[] = $profit;
+            $chartProfit[] = $monthProfit;
         }
 
         // Set chart data berdasarkan selectedChart

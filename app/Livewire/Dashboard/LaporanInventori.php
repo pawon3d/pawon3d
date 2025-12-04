@@ -7,6 +7,8 @@ use App\Models\ExpenseDetail;
 use App\Models\Material;
 use App\Models\Product;
 use App\Models\Production;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\View;
@@ -103,14 +105,14 @@ class LaporanInventori extends Component
             $expenseQuery->where('user_id', $this->selectedWorker);
         }
         $expenseCollection = $expenseQuery->get();
-        $expenseCounts = $expenseCollection->groupBy(fn ($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
+        $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
 
         $productionQuery = Production::whereBetween('date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->date)->toDateString())->map(fn ($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->date)->toDateString())->map(fn($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -270,6 +272,265 @@ class LaporanInventori extends Component
         $this->currentPage = 1;
     }
 
+    public function exportPdf()
+    {
+        // Determine date range based on filter period
+        if ($this->filterPeriod === 'Custom' && $this->customStartDate) {
+            $startDate = Carbon::parse($this->customStartDate)->startOfDay();
+            $endDate = $this->customEndDate ? Carbon::parse($this->customEndDate)->endOfDay() : Carbon::parse($this->customStartDate)->endOfDay();
+            $lengthDays = $startDate->diffInDays($endDate) + 1;
+            $prevStart = $startDate->copy()->subDays($lengthDays);
+            $prevEnd = $startDate->copy()->subDay();
+            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+        } else {
+            $selectedDate = Carbon::parse($this->selectedDate);
+
+            switch ($this->filterPeriod) {
+                case 'Hari':
+                    $startDate = $selectedDate->copy()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfDay();
+                    $prevStart = $startDate->copy()->subDay();
+                    $prevEnd = $endDate->copy()->subDay();
+                    $dateRange = $selectedDate->translatedFormat('d F Y');
+                    break;
+                case 'Minggu':
+                    $startDate = $selectedDate->copy()->startOfWeek();
+                    $endDate = $selectedDate->copy()->endOfWeek();
+                    $prevStart = $startDate->copy()->subWeek();
+                    $prevEnd = $endDate->copy()->subWeek();
+                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+                    break;
+                case 'Bulan':
+                    $startDate = $selectedDate->copy()->startOfMonth();
+                    $endDate = $selectedDate->copy()->endOfMonth();
+                    $prevStart = $startDate->copy()->subMonth();
+                    $prevEnd = $endDate->copy()->subMonth();
+                    $dateRange = $selectedDate->translatedFormat('F Y');
+                    break;
+                case 'Tahun':
+                    $startDate = $selectedDate->copy()->startOfYear();
+                    $endDate = $selectedDate->copy()->endOfYear();
+                    $prevStart = $startDate->copy()->subYear();
+                    $prevEnd = $endDate->copy()->subYear();
+                    $dateRange = 'Tahun ' . $selectedDate->year;
+                    break;
+                default:
+                    $startDate = $selectedDate->copy()->startOfDay();
+                    $endDate = $selectedDate->copy()->endOfDay();
+                    $prevStart = $startDate->copy()->subDay();
+                    $prevEnd = $endDate->copy()->subDay();
+                    $dateRange = $selectedDate->translatedFormat('d F Y');
+            }
+        }
+
+        $expensesQuery = Expense::whereBetween('expense_date', [$startDate, $endDate]);
+
+        if ($this->selectedWorker !== 'semua') {
+            $expensesQuery->where('user_id', $this->selectedWorker);
+        }
+
+        $expenses = $expensesQuery->get();
+        $prevExpenses = Expense::whereBetween('expense_date', [$prevStart, $prevEnd])->get();
+
+        $expenseIds = $expenses->pluck('id');
+        $prevExpenseIds = $prevExpenses->pluck('id');
+
+        $details = ExpenseDetail::with('material')
+            ->whereIn('expense_id', $expenseIds)
+            ->get();
+
+        $prevDetails = ExpenseDetail::with('material')
+            ->whereIn('expense_id', $prevExpenseIds)
+            ->get();
+
+        $totalExpense = $expenses->count();
+        $prevTotalExpense = $prevExpenses->count();
+
+        $materials = Material::with(['material_details', 'batches'])->get();
+        $remainGrandTotal = 0;
+        foreach ($materials as $material) {
+            $materialTotal = 0;
+            foreach ($material->material_details as $detail) {
+                $remainBatchQty = $material->batches->where('unit_id', $detail->unit_id)->sum('batch_quantity');
+                $detailTotal = $detail->supply_price * $remainBatchQty;
+                $materialTotal += $detailTotal;
+            }
+            $remainGrandTotal += $materialTotal;
+        }
+        $prevRemainGrandTotal = $remainGrandTotal;
+
+        $products = Product::with(['product_compositions.material'])->get();
+        $groupProductByMaterial = $products->flatMap(function ($product) {
+            return $product->product_compositions->map(function ($composition) use ($product) {
+                return [
+                    'material_id' => $composition->material_id,
+                    'material_quantity' => $composition->material_quantity,
+                    'unit_id' => $composition->unit_id,
+                    'pcs' => $product->pcs,
+                    'product_id' => $product->id,
+                    'material_name' => $composition->material->name ?? 'Unknown',
+                ];
+            });
+        })->groupBy('material_id');
+
+        $totalPrice = [];
+        $usedGrandTotal = 0;
+        foreach ($groupProductByMaterial as $materialId => $compositions) {
+            foreach ($compositions as $composition) {
+                $productId = $composition['product_id'];
+
+                $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
+                    ->whereHas('production', function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('date', [$startDate, $endDate]);
+
+                        if ($this->selectedWorker !== 'semua') {
+                            $query->whereHas('workers', function ($workerQuery) {
+                                $workerQuery->where('user_id', $this->selectedWorker);
+                            });
+                        }
+                    });
+
+                $productionDetails = $productionDetailsQuery->get();
+                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
+                $dividedQuantity = $composition['pcs'] > 0 ? $totalProduction / $composition['pcs'] : 0;
+                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
+                $material = Material::find($materialId);
+                $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
+                $priceValue = $totalMaterialQuantity * $materialPrice;
+                $totalPrice[$materialId][] = $priceValue;
+                $usedGrandTotal += $priceValue;
+            }
+        }
+
+        $sumPrices = collect($totalPrice)->mapWithKeys(function ($priceArray, $materialId) {
+            return [$materialId => array_sum($priceArray)];
+        });
+
+        $sorted = $sumPrices->sortDesc()->take(10);
+
+        $topMaterials = [];
+        foreach ($sorted as $materialId => $sumPrice) {
+            if (! $sumPrice || $sumPrice <= 0) {
+                continue;
+            }
+            $material = Material::find($materialId);
+            $topMaterials[] = [
+                'name' => $material?->name ?? 'Unknown',
+                'total' => $sumPrice,
+            ];
+        }
+
+        $best = null;
+        $worst = null;
+        if (! empty($sorted) && $sorted->count() > 0) {
+            $firstId = $sorted->keys()->first();
+            $firstValue = $sorted->first();
+            $best = [
+                'total' => $firstValue,
+                'name' => Material::find($firstId)?->name ?? 'Unknown',
+            ];
+
+            $nonZero = $sorted->filter(fn($v) => $v > 0);
+            if ($nonZero->count() > 0) {
+                $lastId = $nonZero->keys()->last();
+                $lastValue = $nonZero->last();
+                $worst = [
+                    'total' => $lastValue,
+                    'name' => Material::find($lastId)?->name ?? 'Unknown',
+                ];
+            }
+        }
+
+        $grandTotal = $remainGrandTotal + $usedGrandTotal;
+
+        $materialTables = $materials->map(function ($material) use ($groupProductByMaterial) {
+            $remainQty = 0;
+            $remainValue = 0;
+            $remainUnitAlias = null;
+
+            foreach ($material->material_details as $detail) {
+                $qty = $material->batches->where('unit_id', $detail->unit_id)->sum('batch_quantity');
+                $remainQty += $qty;
+                $remainValue += $qty * $detail->supply_price;
+
+                if (! $remainUnitAlias && $qty > 0 && $detail->unit) {
+                    $remainUnitAlias = $detail->unit->alias;
+                }
+            }
+
+            $usedValue = 0;
+            $usedQty = 0;
+            $usedUnitAlias = null;
+
+            $compositions = $groupProductByMaterial[$material->id] ?? collect();
+            foreach ($compositions as $composition) {
+                $productId = $composition['product_id'];
+                $pcs = $composition['pcs'];
+                if ($pcs <= 0) {
+                    continue;
+                }
+
+                $productionDetails = \App\Models\ProductionDetail::where('product_id', $productId)->get();
+                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
+                $dividedQuantity = $totalProduction / $pcs;
+                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
+
+                $materialDetail = $material->material_details->where('unit_id', $composition['unit_id'])->first();
+                $materialPrice = $materialDetail->supply_price ?? 0;
+                $usedValue += $totalMaterialQuantity * $materialPrice;
+                $usedQty += $totalMaterialQuantity;
+
+                if (! $usedUnitAlias && $materialDetail && $materialDetail->unit) {
+                    $usedUnitAlias = $materialDetail->unit->alias;
+                }
+            }
+
+            return (object) [
+                'name' => $material->name,
+                'total' => $usedQty + $remainQty,
+                'total_alias' => $usedUnitAlias ?? $remainUnitAlias,
+                'total_price' => $usedValue + $remainValue,
+                'used' => $usedQty,
+                'used_alias' => $usedUnitAlias,
+                'used_price' => $usedValue,
+                'remain' => $remainQty,
+                'remain_alias' => $remainUnitAlias,
+                'remain_price' => $remainValue,
+            ];
+        })->filter(fn($m) => $m->total > 0 || $m->total_price > 0)->sortByDesc('total')->values();
+
+        $diffStats = [
+            'totalExpense' => $this->calculateDiff($totalExpense, $prevTotalExpense),
+            'grandTotal' => $this->calculateDiff($grandTotal, $grandTotal),
+            'usedGrandTotal' => $this->calculateDiff($usedGrandTotal, $usedGrandTotal),
+            'remainGrandTotal' => $this->calculateDiff($remainGrandTotal, $prevRemainGrandTotal),
+            'best' => $this->calculateDiff($best['total'] ?? 0, 0),
+            'worst' => $this->calculateDiff($worst['total'] ?? 0, 0),
+        ];
+
+        $workerName = $this->selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($this->selectedWorker)?->name ?? 'Unknown');
+
+        $pdf = Pdf::loadView('pdf.laporan-inventori', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'grandTotal' => $grandTotal,
+            'usedGrandTotal' => $usedGrandTotal,
+            'remainGrandTotal' => $remainGrandTotal,
+            'totalExpense' => $totalExpense,
+            'bestMaterial' => $best,
+            'worstMaterial' => $worst,
+            'diffStats' => $diffStats,
+            'topMaterials' => $topMaterials,
+            'materialTables' => $materialTables,
+        ]);
+
+        $pdf->setPaper('A4', 'landscape');
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'laporan-inventori-' . now()->format('Y-m-d') . '.pdf');
+    }
+
     public function render()
     {
         // Determine date range based on filter period
@@ -363,7 +624,7 @@ class LaporanInventori extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -372,7 +633,7 @@ class LaporanInventori extends Component
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
-        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $totalExpense = $expenses->count();
         $prevTotalExpense = $prevExpenses->count();
@@ -484,7 +745,7 @@ class LaporanInventori extends Component
                 'name' => Material::find($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn ($v) => $v > 0);
+            $nonZero = $sorted->filter(fn($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
@@ -560,7 +821,7 @@ class LaporanInventori extends Component
         $filteredMaterials = $materialTables;
         if (! empty($this->search)) {
             $searchLower = Str::lower($this->search);
-            $filteredMaterials = $materialTables->filter(fn ($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
+            $filteredMaterials = $materialTables->filter(fn($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
         }
 
         // Create a LengthAwarePaginator for the table component

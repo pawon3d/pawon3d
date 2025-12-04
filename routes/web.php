@@ -33,12 +33,21 @@ Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
 Route::get('/laporan-kasir', App\Livewire\Dashboard\LaporanKasir::class)
     ->middleware(['auth', 'permission:kasir.laporan.kelola'])
     ->name('laporan-kasir');
+Route::get('/laporan-kasir/pdf', [PdfController::class, 'laporanKasir'])
+    ->middleware(['auth', 'permission:kasir.laporan.kelola'])
+    ->name('laporan-kasir.pdf');
 Route::get('/laporan-produksi', App\Livewire\Dashboard\LaporanProduksi::class)
     ->middleware(['auth', 'permission:produksi.laporan.kelola'])
     ->name('laporan-produksi');
+Route::get('/laporan-produksi/pdf', [PdfController::class, 'laporanProduksi'])
+    ->middleware(['auth', 'permission:produksi.laporan.kelola'])
+    ->name('laporan-produksi.pdf');
 Route::get('/laporan-inventori', App\Livewire\Dashboard\LaporanInventori::class)
     ->middleware(['auth', 'permission:inventori.laporan.kelola'])
     ->name('laporan-inventori');
+Route::get('/laporan-inventori/pdf', [PdfController::class, 'laporanInventori'])
+    ->middleware(['auth', 'permission:inventori.laporan.kelola'])
+    ->name('laporan-inventori.pdf');
 
 Route::middleware(['auth'])->group(function () {
     // Route::redirect('settings', 'settings/profile');
@@ -207,4 +216,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -13,9 +13,9 @@ class DashboardController extends Controller
 
         // Check permissions in order of priority
         $permissionGroups = [
-            'ringkasan-kasir' => ['kasir.pesanan.kelola', 'kasir.laporan.kelola'],
-            'ringkasan-produksi' => ['produksi.rencana.kelola', 'produksi.mulai', 'produksi.laporan.kelola'],
-            'ringkasan-inventori' => [
+            'laporan-kasir' => ['kasir.pesanan.kelola', 'kasir.laporan.kelola'],
+            'laporan-produksi' => ['produksi.rencana.kelola', 'produksi.mulai', 'produksi.laporan.kelola'],
+            'laporan-inventori' => [
                 'inventori.produk.kelola',
                 'inventori.persediaan.kelola',
                 'inventori.belanja.rencana.kelola',

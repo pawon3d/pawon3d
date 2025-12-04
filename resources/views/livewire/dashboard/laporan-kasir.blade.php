@@ -3,6 +3,7 @@
     <div class="flex justify-between items-center">
         <h1 class="text-xl font-semibold text-[#333333]">Laporan Kasir</h1>
         <button
+            onclick="window.open('{{ route('laporan-kasir.pdf') }}?filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}&selectedMethod={{ $selectedMethod }}', '_blank')"
             class="flex items-center gap-2 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-5 py-2.5 rounded-[15px] transition-colors">
             <flux:icon icon="printer" class="size-5" />
             <span class="text-sm font-medium">Cetak Informasi</span>
