@@ -15,12 +15,21 @@ package "User & Authentication" #LightBlue {
         - password: string
         - image: string
         - gender: string
+        - is_active: boolean
+        - invitation_token: string
+        - invitation_expires_at: datetime
+        - activated_at: datetime
         --
         + workers(): HasMany
         + notifications(): HasMany
         + unreadNotifications(): HasMany
         + hasRole(): bool
         + hasPermission(): bool
+        + isActivated(): bool
+        + hasValidInvitationToken(): bool
+        + sendInvitation(): void
+        + activateWithPassword(): void
+        + generateInvitationToken(): void
     }
     
     class SpatieRole {

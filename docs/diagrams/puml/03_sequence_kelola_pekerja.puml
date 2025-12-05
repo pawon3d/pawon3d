@@ -4,10 +4,11 @@ actor Pemilik
 participant "User Page\n(Livewire)" as Page
 participant "User\nModel" as User
 participant "SpatieRole\nModel" as Role
-participant "Hash\nFacade" as Hash
+participant "Mail\nFacade" as Mail
+participant "Notification" as Notif
 database Database as DB
 
-== Menambah Pekerja ==
+== Menambah Pekerja (Undangan) ==
 Pemilik -> Page: Klik "Tambah Pekerja"
 
 Page -> Role: all()
@@ -22,12 +23,12 @@ note right
   - Nama
   - Email
   - Nomor telepon
-  - Password
   - Jenis kelamin
   - Foto (opsional)
+  (tanpa password)
 end note
 
-Pemilik -> Page: Pilih role
+Pemilik -> Page: Pilih role (wajib)
 Pemilik -> Page: Simpan
 
 Page -> User: where('email', email)->exists()
@@ -37,10 +38,13 @@ DB --> User: exists check
 alt Email sudah terdaftar
     Page --> Pemilik: Error: Email sudah digunakan
 else Email baru
-    Page -> Hash: make(password)
-    Hash --> Page: hashed password
-    
     Page -> User: create(userData)
+    note right
+      is_active = false
+      password = random hash
+      invitation_token = generated
+      invitation_expires_at = now + 7 days
+    end note
     User -> DB: INSERT INTO users
     DB --> User: user created
     
@@ -48,7 +52,39 @@ else Email baru
     User -> DB: INSERT INTO model_has_roles
     DB --> User: role assigned
     
-    Page --> Pemilik: Pekerja berhasil ditambahkan
+    Page -> Mail: send(UserInvitationNotification)
+    Mail -> Notif: via('mail')
+    Notif --> Mail: email queued
+    
+    Page --> Pemilik: Pekerja berhasil ditambahkan\nEmail undangan terkirim
+end
+
+== Kirim Ulang Undangan ==
+Pemilik -> Page: Pilih pekerja belum aktivasi
+Pemilik -> Page: Klik "Kirim Ulang Undangan"
+
+Page -> User: generateInvitationToken()
+User -> DB: UPDATE invitation_token, expires_at
+DB --> User: updated
+
+Page -> Mail: send(UserInvitationNotification)
+Mail --> Page: sent
+
+Page --> Pemilik: Undangan terkirim ulang
+
+== Toggle Aktif/Nonaktif ==
+Pemilik -> Page: Klik toggle status
+Page -> User: find(id)
+
+alt Status saat ini Aktif
+    Page -> User: update(['is_active' => false])
+    User -> DB: UPDATE is_active = false
+    Page --> Pemilik: Pekerja dinonaktifkan
+    note right: Pekerja tidak bisa login
+else Status saat ini Nonaktif
+    Page -> User: update(['is_active' => true])
+    User -> DB: UPDATE is_active = true
+    Page --> Pemilik: Pekerja diaktifkan kembali
 end
 
 == Melihat Detail Pekerja ==
@@ -64,9 +100,9 @@ DB --> Role: permissions list
 Page --> Pemilik: Tampilkan detail pekerja
 note right
   - Info pekerja
+  - Status: Aktif/Nonaktif/Menunggu Aktivasi
   - Role yang dimiliki
   - Permission yang didapat
-  - Riwayat aktivitas
 end note
 
 == Mengedit Pekerja ==
@@ -76,13 +112,6 @@ User --> Page: user data
 Page --> Pemilik: Tampilkan form edit
 
 Pemilik -> Page: Ubah data
-
-alt Ubah password
-    Pemilik -> Page: Masukkan password baru
-    Page -> Hash: make(newPassword)
-    Hash --> Page: hashed password
-end
-
 Pemilik -> Page: Ubah role (opsional)
 Pemilik -> Page: Simpan
 
@@ -98,29 +127,6 @@ alt Role berubah
 end
 
 Page --> Pemilik: Pekerja berhasil diupdate
-
-== Reset Password ==
-Pemilik -> Page: Pilih "Reset Password"
-Page --> Pemilik: Form reset password
-
-Pemilik -> Page: Masukkan password baru
-Pemilik -> Page: Konfirmasi password
-Pemilik -> Page: Simpan
-
-Page -> Page: Validasi password match
-
-alt Password tidak sama
-    Page --> Pemilik: Error: Password tidak cocok
-else Password cocok
-    Page -> Hash: make(newPassword)
-    Hash --> Page: hashed password
-    
-    Page -> User: update(['password' => hashedPassword])
-    User -> DB: UPDATE users SET password = ?
-    DB --> User: updated
-    
-    Page --> Pemilik: Password berhasil direset
-end
 
 == Menghapus Pekerja ==
 Pemilik -> Page: Pilih hapus

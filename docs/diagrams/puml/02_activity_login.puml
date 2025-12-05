@@ -17,20 +17,38 @@ if (Format valid?) then (Ya)
         :Verifikasi password;
         
         if (Password benar?) then (Ya)
-            :Membuat session;
-            :Mengambil roles dan permissions;
-            :Redirect ke Dashboard;
-            
-            |User|
-            :Melihat Dashboard;
-            :Melihat menu sesuai permission;
-            note right
-              Menu yang tampil berdasarkan:
-              - kasir.* -> Menu Kasir
-              - produksi.* -> Menu Produksi
-              - inventori.* -> Menu Inventori
-              - manajemen.* -> Menu Manajemen
-            end note
+            if (Akun aktif (is_active)?) then (Ya)
+                :Membuat session;
+                :Mengambil roles dan permissions;
+                
+                if (User punya permission?) then (Ya)
+                    :Redirect ke Dashboard sesuai permission;
+                    
+                    |User|
+                    :Melihat Dashboard;
+                    :Melihat menu sesuai permission;
+                    note right
+                      Menu yang tampil berdasarkan:
+                      - kasir.* -> Menu Kasir
+                      - produksi.* -> Menu Produksi
+                      - inventori.* -> Menu Inventori
+                      - manajemen.* -> Menu Manajemen
+                    end note
+                else (Tidak)
+                    :Redirect ke halaman "Menunggu Peran";
+                    |User|
+                    :Melihat pesan menunggu penugasan peran;
+                    :Hubungi administrator;
+                endif
+                
+            else (Tidak)
+                :Menampilkan error "Akun tidak aktif";
+                note right
+                  Akun bisa nonaktif karena:
+                  - Belum aktivasi
+                  - Dinonaktifkan pemilik
+                end note
+            endif
             
         else (Tidak)
             :Menampilkan error "Password salah";

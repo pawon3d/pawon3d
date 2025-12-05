@@ -20,6 +20,10 @@ entity "users" as users {
     not_null(password) : varchar(255)
     image : varchar(255)
     gender : varchar(20)
+    not_null(is_active) : boolean <<default:false>>
+    invitation_token : varchar(64) <<unique>>
+    invitation_expires_at : timestamp
+    activated_at : timestamp
     remember_token : varchar(100)
     created_at : timestamp
     updated_at : timestamp

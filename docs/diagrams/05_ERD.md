@@ -29,6 +29,10 @@ entity "users" as users {
     not_null(password) : varchar(255)
     image : varchar(255)
     gender : varchar(20)
+    not_null(is_active) : boolean <<default:false>>
+    invitation_token : varchar(64) <<unique>>
+    invitation_expires_at : timestamp
+    activated_at : timestamp
     remember_token : varchar(100)
     created_at : timestamp
     updated_at : timestamp
@@ -702,3 +706,42 @@ Nilai yang mungkin untuk kolom status:
 **materials.status:**
 
 -   Tersedia, Hampir Habis, Kosong, Expired
+
+---
+
+## Perubahan Database untuk Feature Worker Activation
+
+Kolom baru yang ditambahkan pada tabel `users` untuk mendukung fitur aktivasi pekerja:
+
+| Kolom                   | Tipe        | Constraint              | Deskripsi                       |
+| ----------------------- | ----------- | ----------------------- | ------------------------------- |
+| `is_active`             | boolean     | default:false, NOT NULL | Status aktivasi pekerja         |
+| `invitation_token`      | varchar(64) | unique, nullable        | Token untuk validasi undangan   |
+| `invitation_expires_at` | timestamp   | nullable                | Masa berlaku token undangan     |
+| `activated_at`          | timestamp   | nullable                | Waktu pekerja mengaktifkan akun |
+
+### Alur Aktivasi Pekerja
+
+1. **Admin mengundang pekerja** → Generate token & set expiry (7 hari)
+2. **Pekerja terima email** → Klik link dengan token di URL
+3. **Validasi token** → Cek token valid & belum expired
+4. **Set password** → Pekerja isi password pertama kali
+5. **Aktivasi** → Update is_active=true, activated_at=now, clear token
+6. **Login** → Pekerja bisa login dengan email & password
+
+### Query Contoh
+
+```sql
+-- User dengan token valid
+SELECT * FROM users
+WHERE invitation_token = 'xxx'
+  AND is_active = false
+  AND invitation_expires_at > NOW();
+
+-- Aktifkan user
+UPDATE users
+SET is_active = true,
+    activated_at = NOW(),
+    invitation_token = NULL
+WHERE id = 'user_id';
+```

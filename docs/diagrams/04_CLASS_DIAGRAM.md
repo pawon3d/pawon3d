@@ -24,12 +24,22 @@ package "User & Authentication" #LightBlue {
         - password: string
         - image: string
         - gender: string
+        - is_active: boolean
+        - invitation_token: string
+        - invitation_expires_at: datetime
+        - activated_at: datetime
         --
-        + workers(): HasMany
+        + hasRole(role): bool
+        + hasPermission(permission): bool
+        + isActivated(): bool
+        + hasValidInvitationToken(): bool
+        + activateWithPassword(password): void
+        + generateInvitationToken(): string
         + notifications(): HasMany
-        + unreadNotifications(): HasMany
-        + hasRole(): bool
-        + hasPermission(): bool
+        + transactions(): HasMany
+        + productions(): HasMany
+        + expenses(): HasMany
+        + roles(): BelongsToMany
     }
 
     class SpatieRole {
@@ -594,3 +604,65 @@ Hitung "1" --> "*" HitungDetail : contains
 | Expense - ExpenseDetail         | 1 : \*       | Satu belanja punya banyak item                              |
 | Expense - Supplier              | \* : 1       | Banyak belanja ke satu supplier                             |
 | Hitung - HitungDetail           | 1 : \*       | Satu hitung punya banyak bahan                              |
+
+---
+
+## Kolom & Method Baru: Worker Activation Feature
+
+### User Class - Kolom Baru
+
+| Kolom                   | Tipe     | Deskripsi                                                         |
+| ----------------------- | -------- | ----------------------------------------------------------------- |
+| `is_active`             | boolean  | Status aktivasi pekerja (false = belum aktif, true = sudah aktif) |
+| `invitation_token`      | string   | Token unik untuk validasi undangan (unique, nullable)             |
+| `invitation_expires_at` | datetime | Masa berlaku token undangan (nullable, default: 7 hari)           |
+| `activated_at`          | datetime | Waktu pekerja berhasil mengaktifkan akun (nullable)               |
+
+### User Class - Method Baru
+
+| Method                           | Return | Deskripsi                                                                            |
+| -------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| `isActivated()`                  | bool   | Cek apakah pekerja sudah aktif (is_active=true AND activated_at!=null)               |
+| `hasValidInvitationToken()`      | bool   | Cek apakah punya token undangan yang valid & belum expired                           |
+| `activateWithPassword(password)` | void   | Aktivasi pekerja dengan password (set is_active=true, activated_at=now, clear token) |
+| `generateInvitationToken()`      | string | Generate token baru dan set expiry (return token yang di-generate)                   |
+
+### Alur Aktivasi dalam User Class
+
+```php
+// 1. Admin mengundang pekerja
+$user = User::create([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'is_active' => false,  // Belum aktif
+]);
+
+// 2. Generate token undangan
+$token = $user->generateInvitationToken();
+// Set: invitation_token, invitation_expires_at (+7 hari)
+
+// 3. Validasi token saat pekerja klik link
+if ($user->hasValidInvitationToken()) {
+    // Token valid, lanjut ke step 4
+}
+
+// 4. Pekerja isi password & aktivasi
+$user->activateWithPassword('newPassword123');
+// Update: password (hash), is_active=true, activated_at=now
+// Clear: invitation_token, invitation_expires_at
+
+// 5. Check apakah sudah aktif
+if ($user->isActivated()) {
+    // Pekerja bisa login
+}
+```
+
+| Material - MaterialBatch | 1 : \* | Satu bahan punya banyak batch (FIFO) |
+| Transaction - TransactionDetail | 1 : \* | Satu transaksi punya banyak detail |
+| Transaction - Payment | 1 : \* | Satu transaksi bisa dibayar bertahap |
+| Transaction - Production | 1 : 0..1 | Transaksi pesanan bisa punya satu produksi |
+| Production - ProductionDetail | 1 : \* | Satu produksi punya banyak produk |
+| Production - ProductionWorker | 1 : \* | Satu produksi dikerjakan banyak pekerja |
+| Expense - ExpenseDetail | 1 : \* | Satu belanja punya banyak item |
+| Expense - Supplier | \* : 1 | Banyak belanja ke satu supplier |
+| Hitung - HitungDetail | 1 : \* | Satu hitung punya banyak bahan |

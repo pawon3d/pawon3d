@@ -52,10 +52,19 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
     ' --- MODUL MANAJEMEN ---
     package "Modul Manajemen" {
         usecase "Mengelola Pekerja" as UC_WORKER
+        usecase "Mengundang Pekerja" as UC_INVITE
+        usecase "Toggle Aktif Pekerja" as UC_TOGGLE_ACTIVE
         usecase "Mengelola Peran & Hak Akses" as UC_ROLE
         usecase "Mengelola Pelanggan" as UC_CUSTOMER
         usecase "Mengelola Profil Usaha" as UC_STORE_PROFILE
         usecase "Mengelola Metode Pembayaran" as UC_PAYMENT_METHOD
+    }
+
+    ' --- MODUL AUTENTIKASI ---
+    package "Modul Autentikasi" {
+        usecase "Login" as UC_LOGIN
+        usecase "Aktivasi Akun" as UC_ACTIVATE
+        usecase "Logout" as UC_LOGOUT
     }
 
     ' --- MODUL NOTIFIKASI ---
@@ -75,11 +84,19 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
 
 ' === RELASI AKTOR - USE CASE ===
 
+' Pekerja (sebelum punya role spesifik)
+actor "Pekerja" as worker
+worker --> UC_ACTIVATE
+worker --> UC_LOGIN
+worker --> UC_LOGOUT
+
 ' Pemilik - akses penuh
 owner --> UC_REPORT_CASHIER
 owner --> UC_REPORT_PROD
 owner --> UC_REPORT_INV
 owner --> UC_WORKER
+owner --> UC_INVITE
+owner --> UC_TOGGLE_ACTIVE
 owner --> UC_ROLE
 owner --> UC_CUSTOMER
 owner --> UC_STORE_PROFILE
@@ -124,6 +141,10 @@ customer --> UC_FAQ
 
 ' === RELASI EXTEND & INCLUDE ===
 
+' Mengelola Pekerja extends
+UC_WORKER <|-- UC_INVITE : <<extend>>
+UC_WORKER <|-- UC_TOGGLE_ACTIVE : <<extend>>
+
 ' Mengelola Belanja extends
 UC_EXPENSE <|-- UC_PLAN_EXP : <<extend>>
 UC_EXPENSE <|-- UC_START_EXP : <<extend>>
@@ -135,5 +156,6 @@ UC_ORDER ..> UC_RECEIPT : <<include>>
 UC_ORDER ..> UC_QUEUE_PROD : <<include>>
 UC_START_PROD ..> UC_MATERIAL : <<include>>
 UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
+UC_INVITE ..> UC_ACTIVATE : <<include>>
 
 @enduml

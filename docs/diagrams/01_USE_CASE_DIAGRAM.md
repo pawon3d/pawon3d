@@ -4,7 +4,7 @@
 
 ### Penjelasan Diagram
 
-Use case diagram berikut menggambarkan keseluruhan interaksi antara aktor dengan Sistem Informasi Manajemen Toko Kue. Diagram ini melibatkan lima aktor utama, yaitu Pemilik, Kasir, Produksi, Inventori, dan Pelanggan. Setiap aktor memiliki hak akses yang berbeda-beda sesuai dengan tanggung jawab dan kebutuhan operasional masing-masing, yang telah diidentifikasi melalui analisis kebutuhan sebelumnya.
+Use case diagram berikut menggambarkan keseluruhan interaksi antara aktor dengan Sistem Informasi Manajemen Toko Kue. Diagram ini melibatkan enam aktor utama, yaitu Pemilik, Kasir, Produksi, Inventori, Pekerja (generik), dan Pelanggan. Setiap aktor memiliki hak akses yang berbeda-beda sesuai dengan tanggung jawab dan kebutuhan operasional masing-masing, yang telah diidentifikasi melalui analisis kebutuhan sebelumnya.
 
 Berikut adalah penjelasan peran masing-masing aktor dalam sistem:
 
@@ -12,9 +12,10 @@ Berikut adalah penjelasan peran masing-masing aktor dalam sistem:
 2. Kasir: Bertanggung jawab atas operasional penjualan, termasuk mengelola pesanan, memproses pembayaran, mencetak struk, dan mengelola sesi penjualan.
 3. Produksi: Menangani perencanaan dan pelaksanaan produksi, mulai dari merencanakan, memulai, hingga menyelesaikan proses produksi.
 4. Inventori: Mengelola persediaan bahan baku, produk, belanja, stok hitung, serta menerima alert terkait stok rendah dan bahan expired.
-5. Pelanggan: Aktor eksternal yang dapat mengakses landing page untuk melihat katalog produk, cara pemesanan, dan FAQ.
+5. Pekerja: Aktor generik yang dapat login, aktivasi akun, dan logout. Setelah aktivasi, pekerja akan mendapat role spesifik (Kasir/Produksi/Inventori).
+6. Pelanggan: Aktor eksternal yang dapat mengakses landing page untuk melihat katalog produk, cara pemesanan, dan FAQ.
 
-Sistem ini dibagi ke dalam enam modul utama, yaitu Modul Kasir, Modul Produksi, Modul Inventori, Modul Manajemen, Modul Notifikasi, dan Modul Landing Page. Relasi antar use case menggunakan stereotype extend untuk menunjukkan variasi perilaku dan include untuk menunjukkan ketergantungan fungsional.
+Sistem ini dibagi ke dalam tujuh modul utama, yaitu Modul Kasir, Modul Produksi, Modul Inventori, Modul Manajemen, Modul Autentikasi, Modul Notifikasi, dan Modul Landing Page. Relasi antar use case menggunakan stereotype extend untuk menunjukkan variasi perilaku dan include untuk menunjukkan ketergantungan fungsional.
 
 ---
 
@@ -32,6 +33,7 @@ actor "Pemilik" as owner
 actor "Kasir" as cashier
 actor "Produksi" as production
 actor "Inventori" as inventory
+actor "Pekerja" as worker
 actor "Pelanggan" as customer
 
 ' === SISTEM ===
@@ -75,10 +77,19 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
     ' --- MODUL MANAJEMEN ---
     package "Modul Manajemen" {
         usecase "Mengelola Pekerja" as UC_WORKER
+        usecase "Mengundang Pekerja" as UC_INVITE
+        usecase "Toggle Aktif Pekerja" as UC_TOGGLE_ACTIVE
         usecase "Mengelola Peran & Hak Akses" as UC_ROLE
         usecase "Mengelola Pelanggan" as UC_CUSTOMER
         usecase "Mengelola Profil Usaha" as UC_STORE_PROFILE
         usecase "Mengelola Metode Pembayaran" as UC_PAYMENT_METHOD
+    }
+
+    ' --- MODUL AUTENTIKASI ---
+    package "Modul Autentikasi" {
+        usecase "Login" as UC_LOGIN
+        usecase "Aktivasi Akun" as UC_ACTIVATE
+        usecase "Logout" as UC_LOGOUT
     }
 
     ' --- MODUL NOTIFIKASI ---
@@ -98,11 +109,18 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
 
 ' === RELASI AKTOR - USE CASE ===
 
+' Pekerja (sebelum punya role spesifik)
+worker --> UC_ACTIVATE
+worker --> UC_LOGIN
+worker --> UC_LOGOUT
+
 ' Pemilik - akses penuh
 owner --> UC_REPORT_CASHIER
 owner --> UC_REPORT_PROD
 owner --> UC_REPORT_INV
 owner --> UC_WORKER
+owner --> UC_INVITE
+owner --> UC_TOGGLE_ACTIVE
 owner --> UC_ROLE
 owner --> UC_CUSTOMER
 owner --> UC_STORE_PROFILE
@@ -147,6 +165,10 @@ customer --> UC_FAQ
 
 ' === RELASI EXTEND & INCLUDE ===
 
+' Mengelola Pekerja extends
+UC_WORKER <|-- UC_INVITE : <<extend>>
+UC_WORKER <|-- UC_TOGGLE_ACTIVE : <<extend>>
+
 ' Mengelola Belanja extends
 UC_EXPENSE <|-- UC_PLAN_EXP : <<extend>>
 UC_EXPENSE <|-- UC_START_EXP : <<extend>>
@@ -158,6 +180,7 @@ UC_ORDER ..> UC_RECEIPT : <<include>>
 UC_ORDER ..> UC_QUEUE_PROD : <<include>>
 UC_START_PROD ..> UC_MATERIAL : <<include>>
 UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
+UC_INVITE ..> UC_ACTIVATE : <<include>>
 
 @enduml
 ```
@@ -168,40 +191,45 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 | No  | Kode  | Nama Use Case                 | Aktor              | Deskripsi Singkat                                  |
 | --- | ----- | ----------------------------- | ------------------ | -------------------------------------------------- |
-| 1   | UC-01 | Mengelola Pesanan             | Kasir              | Membuat, mengubah, dan menghapus pesanan pelanggan |
-| 2   | UC-02 | Memproses Pembayaran          | Kasir              | Menerima pembayaran DP atau lunas                  |
-| 3   | UC-03 | Mencetak Struk                | Kasir              | Mencetak struk transaksi                           |
-| 4   | UC-04 | Membatalkan Pesanan           | Kasir              | Membatalkan pesanan dan proses refund              |
-| 5   | UC-05 | Mengelola Sesi Penjualan      | Kasir              | Membuka dan menutup sesi/shift kasir               |
-| 6   | UC-06 | Melihat Laporan Kasir         | Kasir, Pemilik     | Melihat ringkasan dan laporan transaksi            |
-| 7   | UC-07 | Merencanakan Produksi         | Produksi           | Membuat rencana produksi siap beli                 |
-| 8   | UC-08 | Memulai Produksi              | Produksi           | Memulai proses produksi                            |
-| 9   | UC-09 | Menyelesaikan Produksi        | Produksi           | Menandai produksi selesai, update stok             |
-| 10  | UC-10 | Membatalkan Produksi          | Produksi           | Membatalkan rencana produksi                       |
-| 11  | UC-11 | Melihat Antrian Produksi      | Produksi           | Melihat daftar pesanan yang perlu diproduksi       |
-| 12  | UC-12 | Melihat Laporan Produksi      | Produksi, Pemilik  | Melihat ringkasan dan laporan produksi             |
-| 13  | UC-13 | Mengelola Produk              | Inventori          | Menambah, mengubah, menghapus produk               |
-| 14  | UC-14 | Mengelola Bahan Baku          | Inventori          | Mengelola data bahan baku/material                 |
-| 15  | UC-15 | Mengelola Belanja             | Inventori          | Mengelola pembelian bahan baku                     |
-| 16  | UC-16 | Merencanakan Belanja          | Inventori          | Membuat rencana belanja bahan baku                 |
-| 17  | UC-17 | Memulai Belanja               | Inventori          | Melakukan proses belanja                           |
-| 18  | UC-18 | Menyelesaikan Belanja         | Inventori          | Menyelesaikan belanja, update stok                 |
-| 19  | UC-19 | Mengelola Stok Hitung         | Inventori          | Hitung stok, catat rusak/hilang                    |
-| 20  | UC-20 | Melihat Alur Persediaan       | Inventori          | Tracking pergerakan bahan baku                     |
-| 21  | UC-21 | Melihat Laporan Inventori     | Inventori, Pemilik | Melihat ringkasan dan laporan inventori            |
-| 22  | UC-22 | Mengelola Kategori Persediaan | Inventori          | Mengelola kategori bahan baku                      |
-| 23  | UC-23 | Mengelola Supplier            | Inventori          | Mengelola data supplier                            |
-| 24  | UC-24 | Mengelola Pekerja             | Pemilik            | CRUD data pekerja/karyawan                         |
-| 25  | UC-25 | Mengelola Peran & Hak Akses   | Pemilik            | Mengelola role dan permission                      |
-| 26  | UC-26 | Mengelola Pelanggan           | Pemilik            | Mengelola data pelanggan dan poin                  |
-| 27  | UC-27 | Mengelola Profil Usaha        | Pemilik            | Mengatur profil toko                               |
-| 28  | UC-28 | Mengelola Metode Pembayaran   | Pemilik            | Mengatur channel pembayaran                        |
-| 29  | UC-29 | Melihat Notifikasi            | Semua User         | Melihat notifikasi sistem                          |
-| 30  | UC-30 | Menerima Alert Stok Rendah    | Inventori          | Notifikasi otomatis stok hampir habis              |
-| 31  | UC-31 | Menerima Alert Expired        | Inventori          | Notifikasi bahan akan/sudah expired                |
-| 32  | UC-32 | Melihat Katalog Produk        | Pelanggan          | Melihat daftar produk di landing page              |
-| 33  | UC-33 | Melihat Cara Pemesanan        | Pelanggan          | Melihat panduan cara memesan                       |
-| 34  | UC-34 | Melihat FAQ                   | Pelanggan          | Melihat pertanyaan yang sering ditanyakan          |
+| 1   | UC-01 | Login                         | Pekerja            | Masuk ke sistem dengan email dan password          |
+| 2   | UC-02 | Aktivasi Akun                 | Pekerja            | Mengaktifkan akun via link undangan email          |
+| 3   | UC-03 | Logout                        | Pekerja            | Keluar dari sistem                                 |
+| 4   | UC-04 | Mengelola Pesanan             | Kasir              | Membuat, mengubah, dan menghapus pesanan pelanggan |
+| 5   | UC-05 | Memproses Pembayaran          | Kasir              | Menerima pembayaran DP atau lunas                  |
+| 6   | UC-06 | Mencetak Struk                | Kasir              | Mencetak struk transaksi                           |
+| 7   | UC-07 | Membatalkan Pesanan           | Kasir              | Membatalkan pesanan dan proses refund              |
+| 8   | UC-08 | Mengelola Sesi Penjualan      | Kasir              | Membuka dan menutup sesi/shift kasir               |
+| 9   | UC-09 | Melihat Laporan Kasir         | Kasir, Pemilik     | Melihat ringkasan dan laporan transaksi            |
+| 10  | UC-10 | Merencanakan Produksi         | Produksi           | Membuat rencana produksi siap beli                 |
+| 11  | UC-11 | Memulai Produksi              | Produksi           | Memulai proses produksi                            |
+| 12  | UC-12 | Menyelesaikan Produksi        | Produksi           | Menandai produksi selesai, update stok             |
+| 13  | UC-13 | Membatalkan Produksi          | Produksi           | Membatalkan rencana produksi                       |
+| 14  | UC-14 | Melihat Antrian Produksi      | Produksi           | Melihat daftar pesanan yang perlu diproduksi       |
+| 15  | UC-15 | Melihat Laporan Produksi      | Produksi, Pemilik  | Melihat ringkasan dan laporan produksi             |
+| 16  | UC-16 | Mengelola Produk              | Inventori          | Menambah, mengubah, menghapus produk               |
+| 17  | UC-17 | Mengelola Bahan Baku          | Inventori          | Mengelola data bahan baku/material                 |
+| 18  | UC-18 | Mengelola Belanja             | Inventori          | Mengelola pembelian bahan baku                     |
+| 19  | UC-19 | Merencanakan Belanja          | Inventori          | Membuat rencana belanja bahan baku                 |
+| 20  | UC-20 | Memulai Belanja               | Inventori          | Melakukan proses belanja                           |
+| 21  | UC-21 | Menyelesaikan Belanja         | Inventori          | Menyelesaikan belanja, update stok                 |
+| 22  | UC-22 | Mengelola Stok Hitung         | Inventori          | Hitung stok, catat rusak/hilang                    |
+| 23  | UC-23 | Melihat Alur Persediaan       | Inventori          | Tracking pergerakan bahan baku                     |
+| 24  | UC-24 | Melihat Laporan Inventori     | Inventori, Pemilik | Melihat ringkasan dan laporan inventori            |
+| 25  | UC-25 | Mengelola Kategori Persediaan | Inventori          | Mengelola kategori bahan baku                      |
+| 26  | UC-26 | Mengelola Supplier            | Inventori          | Mengelola data supplier                            |
+| 27  | UC-27 | Mengelola Pekerja             | Pemilik            | CRUD data pekerja/karyawan                         |
+| 28  | UC-28 | Mengundang Pekerja            | Pemilik            | Mengirim undangan aktivasi via email               |
+| 29  | UC-29 | Toggle Aktif Pekerja          | Pemilik            | Mengaktifkan/menonaktifkan akun pekerja            |
+| 30  | UC-30 | Mengelola Peran & Hak Akses   | Pemilik            | Mengelola role dan permission                      |
+| 31  | UC-31 | Mengelola Pelanggan           | Pemilik            | Mengelola data pelanggan dan poin                  |
+| 32  | UC-32 | Mengelola Profil Usaha        | Pemilik            | Mengatur profil toko                               |
+| 33  | UC-33 | Mengelola Metode Pembayaran   | Pemilik            | Mengatur channel pembayaran                        |
+| 34  | UC-34 | Melihat Notifikasi            | Semua User         | Melihat notifikasi sistem                          |
+| 35  | UC-35 | Menerima Alert Stok Rendah    | Inventori          | Notifikasi otomatis stok hampir habis              |
+| 36  | UC-36 | Menerima Alert Expired        | Inventori          | Notifikasi bahan akan/sudah expired                |
+| 37  | UC-37 | Melihat Katalog Produk        | Pelanggan          | Melihat daftar produk di landing page              |
+| 38  | UC-38 | Melihat Cara Pemesanan        | Pelanggan          | Melihat panduan cara memesan                       |
+| 39  | UC-39 | Melihat FAQ                   | Pelanggan          | Melihat pertanyaan yang sering ditanyakan          |
 
 ---
 

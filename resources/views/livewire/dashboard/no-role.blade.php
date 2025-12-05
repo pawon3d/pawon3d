@@ -45,8 +45,7 @@
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <flux:button type="submit" variant="primary">
-                    <flux:icon icon="arrow-right-start-on-rectangle" class="w-4 h-4 mr-2" />
+                <flux:button type="submit" variant="primary" icon="arrow-right-start-on-rectangle">
                     Keluar
                 </flux:button>
             </form>

@@ -50,6 +50,21 @@ alt Password Salah
     Login --> User: Email atau password salah
 end
 
+== Cek Status Akun ==
+Auth -> UserModel: checkActive()
+UserModel -> DB: SELECT is_active FROM users
+
+alt Akun Tidak Aktif
+    Auth --> LoginReq: false
+    LoginReq --> Login: throw ValidationException
+    Login --> User: Akun tidak aktif
+    note right
+      Penyebab:
+      - Belum aktivasi
+      - Dinonaktifkan pemilik
+    end note
+end
+
 Auth -> Session: regenerate()
 Session --> Auth: new session id
 
@@ -58,14 +73,26 @@ Auth --> LoginReq: true
 
 LoginReq -> LoginReq: RateLimiter::clear()
 
-== Redirect ke Dashboard ==
-LoginReq --> Login: redirect('/dashboard')
-Login -> User: GET /dashboard
+== Redirect Berdasarkan Permission ==
+LoginReq -> UserModel: hasAnyPermission()
+UserModel -> DB: SELECT permissions via roles
 
-note right of User
-  Middleware 'auth' memeriksa session
-  Middleware 'permission:*' memeriksa
-  roles/permissions untuk akses menu
-end note
+alt User Punya Permission
+    LoginReq --> Login: redirect('/dashboard')
+    Login -> User: GET /dashboard sesuai permission
+    note right of User
+      Redirect berdasarkan:
+      - kasir.* -> Laporan Kasir
+      - produksi.* -> Laporan Produksi
+      - inventori.* -> Laporan Inventori
+    end note
+else User Tanpa Permission
+    LoginReq --> Login: redirect('/menunggu-peran')
+    Login -> User: GET /menunggu-peran
+    note right of User
+      User menunggu admin
+      menugaskan peran
+    end note
+end
 
 @enduml
