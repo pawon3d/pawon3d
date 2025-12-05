@@ -1,0 +1,62 @@
+@startuml Activity Diagram - Proses Aktivasi Akun Pekerja
+
+|Pekerja|
+start
+:Menerima email undangan;
+:Klik link aktivasi di email;
+
+|Sistem|
+:Memvalidasi token;
+
+if (Token valid?) then (Tidak)
+    :Menampilkan pesan "Link tidak valid";
+    stop
+else (Ya)
+endif
+
+if (Token expired? (>7 hari)) then (Ya)
+    :Menampilkan pesan "Link sudah kadaluarsa";
+    :Minta hubungi pemilik untuk kirim ulang;
+    stop
+else (Tidak)
+endif
+
+if (Akun sudah aktif?) then (Ya)
+    :Menampilkan pesan "Akun sudah diaktifkan";
+    :Redirect ke halaman login;
+    stop
+else (Tidak)
+endif
+
+:Menampilkan form aktivasi akun;
+
+|Pekerja|
+:Melihat email (readonly);
+:Mengisi kata sandi baru;
+:Mengisi konfirmasi kata sandi;
+:Klik Aktifkan Akun;
+
+|Sistem|
+:Validasi kata sandi;
+note right
+  Syarat kata sandi:
+  - Minimal 8 karakter
+  - Mengandung huruf dan angka
+  - Konfirmasi cocok
+end note
+
+if (Validasi berhasil?) then (Ya)
+    :Hash kata sandi;
+    :Set is_active = true;
+    :Set activated_at = now;
+    :Hapus invitation_token;
+    :Auto login pekerja;
+    :Redirect ke dashboard;
+    :Tampilkan pesan sukses;
+else (Tidak)
+    :Menampilkan pesan error validasi;
+endif
+
+stop
+
+@enduml

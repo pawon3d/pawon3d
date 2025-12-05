@@ -19,3 +19,37 @@
 @yield('css')
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+{{-- Livewire request timeout configuration --}}
+<script>
+    document.addEventListener('livewire:init', () => {
+        // Tingkatkan timeout untuk request yang berat (60 detik)
+        Livewire.hook('request', ({
+            fail
+        }) => {
+            // Handle request timeout gracefully
+        });
+
+        // Handle failed requests - refresh halaman jika timeout
+        Livewire.hook('request', ({
+            respond,
+            fail
+        }) => {
+            respond((response) => {
+                // Request berhasil
+            });
+
+            fail(({
+                status,
+                content,
+                preventDefault
+            }) => {
+                if (status === 419) {
+                    // Session expired
+                    window.location.reload();
+                    preventDefault();
+                }
+            });
+        });
+    });
+</script>

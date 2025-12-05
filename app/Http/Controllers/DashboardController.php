@@ -33,6 +33,7 @@ class DashboardController extends Controller
             }
         }
 
-        return redirect()->route('home');
+        // User has no permissions, redirect to waiting page
+        return redirect()->route('no-role');
     }
 }

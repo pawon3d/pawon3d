@@ -14,8 +14,6 @@ class Tambah extends Component
 
     public $email;
 
-    public $password;
-
     public $image;
 
     public $role;
@@ -27,10 +25,6 @@ class Tambah extends Component
     public $previewImage;
 
     public $roles;
-
-    public array $pin = ['', '', '', '', '', ''];
-
-    public bool $showPin = true;
 
     public function mount()
     {
@@ -49,54 +43,45 @@ class Tambah extends Component
         $this->previewImage = $this->image->temporaryUrl();
     }
 
-    public function updatedPassword()
-    {
-        $this->validate(
-            [
-                'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Minimal 8 karakter, harus mengandung huruf dan angka
-            ],
-            [
-                'password.required' => 'Password harus diisi.',
-                'password.min' => 'Password minimal 8 karakter.',
-                'password.alpha_num' => 'Password harus terdiri dari huruf dan angka.',
-                'password.regex' => 'Password harus mengandung setidaknya satu huruf dan satu angka.',
-            ]
-        );
-    }
-
     public function createUser()
     {
-        // $pinCode = implode('', $this->pin);
-
-        // // Validasi jika perlu
-        // if (!ctype_digit($pinCode) || strlen($pinCode) !== 6) {
-        //     $this->alert('pin', 'PIN harus terdiri dari 6 digit angka.');
-        //     return;
-        // }
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
-            'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', // Minimal 8 karakter, harus mengandung huruf dan angka
             'gender' => 'required',
+            'role' => 'required|exists:roles,name',
+        ], [
+            'name.required' => 'Nama harus diisi.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'gender.required' => 'Jenis kelamin harus dipilih.',
+            'role.required' => 'Peran harus dipilih.',
         ]);
 
         $user = new \App\Models\User;
         $user->name = $this->name;
         $user->email = $this->email;
-        $user->password = bcrypt($this->password);
         $user->phone = $this->phone;
         $user->gender = $this->gender;
+        $user->password = bcrypt(\Illuminate\Support\Str::random(32)); // Temporary password
+        $user->is_active = false;
+
         if ($this->image) {
             $user->image = $this->image->store('user_images', 'public');
         }
+
         $user->save();
 
         // Assign role
         $user->assignRole($this->role);
 
-        session()->flash('success', 'Pekerja berhasil ditambahkan.');
+        // Kirim email invitation
+        $user->sendInvitation();
+
+        session()->flash('success', 'Pekerja berhasil ditambahkan. Email undangan telah dikirim ke '.$this->email);
 
         return redirect()->route('user');
     }

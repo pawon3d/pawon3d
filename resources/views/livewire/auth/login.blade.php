@@ -39,6 +39,25 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
             throw ValidationException::withMessages([
                 'email' => __('Salah email atau password'),
+                'password' => __('Salah email atau password'),
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // Cek apakah akun sudah diaktivasi
+        if (!$user->activated_at) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => __('Akun Anda belum diaktifkan. Silakan cek email untuk mengaktifkan akun.'),
+            ]);
+        }
+
+        // Cek apakah akun aktif
+        if (!$user->is_active) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => __('Akun Anda telah dinonaktifkan. Silakan hubungi pemilik usaha.'),
             ]);
         }
 
@@ -101,6 +120,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
+    <flux:error name="email" />
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- email -->
         <flux:input wire:model="email" type="email" name="email" required autofocus autocomplete="email"

@@ -52,6 +52,8 @@ class LaporanInventori extends Component
 
     public $shouldUpdateChart = false;
 
+    public bool $readyToLoad = false;
+
     protected $listeners = ['refreshCharts' => '$refresh', 'update-top-products'];
 
     protected $queryString = [
@@ -105,14 +107,14 @@ class LaporanInventori extends Component
             $expenseQuery->where('user_id', $this->selectedWorker);
         }
         $expenseCollection = $expenseQuery->get();
-        $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $expenseCounts = $expenseCollection->groupBy(fn ($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $productionQuery = Production::whereBetween('date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -281,7 +283,7 @@ class LaporanInventori extends Component
             $lengthDays = $startDate->diffInDays($endDate) + 1;
             $prevStart = $startDate->copy()->subDays($lengthDays);
             $prevEnd = $startDate->copy()->subDay();
-            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDate = Carbon::parse($this->selectedDate);
 
@@ -298,7 +300,7 @@ class LaporanInventori extends Component
                     $endDate = $selectedDate->copy()->endOfWeek();
                     $prevStart = $startDate->copy()->subWeek();
                     $prevEnd = $endDate->copy()->subWeek();
-                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+                    $dateRange = $startDate->translatedFormat('d F Y').' - '.$endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDate->copy()->startOfMonth();
@@ -312,7 +314,7 @@ class LaporanInventori extends Component
                     $endDate = $selectedDate->copy()->endOfYear();
                     $prevStart = $startDate->copy()->subYear();
                     $prevEnd = $endDate->copy()->subYear();
-                    $dateRange = 'Tahun ' . $selectedDate->year;
+                    $dateRange = 'Tahun '.$selectedDate->year;
                     break;
                 default:
                     $startDate = $selectedDate->copy()->startOfDay();
@@ -430,7 +432,7 @@ class LaporanInventori extends Component
                 'name' => Material::find($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn($v) => $v > 0);
+            $nonZero = $sorted->filter(fn ($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
@@ -497,7 +499,7 @@ class LaporanInventori extends Component
                 'remain_alias' => $remainUnitAlias,
                 'remain_price' => $remainValue,
             ];
-        })->filter(fn($m) => $m->total > 0 || $m->total_price > 0)->sortByDesc('total')->values();
+        })->filter(fn ($m) => $m->total > 0 || $m->total_price > 0)->sortByDesc('total')->values();
 
         $diffStats = [
             'totalExpense' => $this->calculateDiff($totalExpense, $prevTotalExpense),
@@ -528,11 +530,62 @@ class LaporanInventori extends Component
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'laporan-inventori-' . now()->format('Y-m-d') . '.pdf');
+        }, 'laporan-inventori-'.now()->format('Y-m-d').'.pdf');
+    }
+
+    public function loadData(): void
+    {
+        $this->readyToLoad = true;
+    }
+
+    /**
+     * Get empty state data for initial loading
+     */
+    protected function getEmptyState(): array
+    {
+        $emptyPaginator = new LengthAwarePaginator([], 0, $this->perPage, 1, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]);
+
+        return [
+            'grandTotal' => 0,
+            'usedGrandTotal' => 0,
+            'remainGrandTotal' => 0,
+            'totalExpense' => 0,
+            'bestMaterial' => null,
+            'worstMaterial' => null,
+            'diffStats' => [
+                'totalExpense' => 0,
+                'grandTotal' => 0,
+                'usedGrandTotal' => 0,
+                'remainGrandTotal' => 0,
+                'best' => 0,
+                'worst' => 0,
+            ],
+            'topMaterialChartData' => ['labels' => [], 'data' => []],
+            'paginator' => $emptyPaginator,
+            'totalProductSales' => 0,
+            'totalPages' => 0,
+            'tableHeaders' => [
+                ['label' => 'Persediaan', 'class' => 'text-left'],
+                ['label' => 'Jumlah Belanja', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Modal Belanja', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Jumlah Terpakai', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Modal Terpakai', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Jumlah Tersisa', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Modal Tersisa', 'class' => 'text-right', 'align' => 'right'],
+            ],
+        ];
     }
 
     public function render()
     {
+        // Return empty state while loading
+        if (! $this->readyToLoad) {
+            return view('livewire.dashboard.laporan-inventori', $this->getEmptyState());
+        }
+
         // Determine date range based on filter period
         if ($this->filterPeriod === 'Custom' && $this->customStartDate) {
             $startDate = Carbon::parse($this->customStartDate)->startOfDay();
@@ -624,7 +677,7 @@ class LaporanInventori extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -633,7 +686,7 @@ class LaporanInventori extends Component
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $totalExpense = $expenses->count();
         $prevTotalExpense = $prevExpenses->count();
@@ -745,7 +798,7 @@ class LaporanInventori extends Component
                 'name' => Material::find($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn($v) => $v > 0);
+            $nonZero = $sorted->filter(fn ($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
@@ -821,7 +874,7 @@ class LaporanInventori extends Component
         $filteredMaterials = $materialTables;
         if (! empty($this->search)) {
             $searchLower = Str::lower($this->search);
-            $filteredMaterials = $materialTables->filter(fn($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
+            $filteredMaterials = $materialTables->filter(fn ($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
         }
 
         // Create a LengthAwarePaginator for the table component

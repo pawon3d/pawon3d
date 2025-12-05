@@ -2,6 +2,22 @@
 
 ## Sistem Informasi Manajemen Toko Kue
 
+### Penjelasan Diagram
+
+Use case diagram berikut menggambarkan keseluruhan interaksi antara aktor dengan Sistem Informasi Manajemen Toko Kue. Diagram ini melibatkan lima aktor utama, yaitu Pemilik, Kasir, Produksi, Inventori, dan Pelanggan. Setiap aktor memiliki hak akses yang berbeda-beda sesuai dengan tanggung jawab dan kebutuhan operasional masing-masing, yang telah diidentifikasi melalui analisis kebutuhan sebelumnya.
+
+Berikut adalah penjelasan peran masing-masing aktor dalam sistem:
+
+1. Pemilik: Memiliki akses penuh ke seluruh modul sistem, terutama untuk melihat laporan, mengelola pekerja, peran, pelanggan, dan pengaturan usaha.
+2. Kasir: Bertanggung jawab atas operasional penjualan, termasuk mengelola pesanan, memproses pembayaran, mencetak struk, dan mengelola sesi penjualan.
+3. Produksi: Menangani perencanaan dan pelaksanaan produksi, mulai dari merencanakan, memulai, hingga menyelesaikan proses produksi.
+4. Inventori: Mengelola persediaan bahan baku, produk, belanja, stok hitung, serta menerima alert terkait stok rendah dan bahan expired.
+5. Pelanggan: Aktor eksternal yang dapat mengakses landing page untuk melihat katalog produk, cara pemesanan, dan FAQ.
+
+Sistem ini dibagi ke dalam enam modul utama, yaitu Modul Kasir, Modul Produksi, Modul Inventori, Modul Manajemen, Modul Notifikasi, dan Modul Landing Page. Relasi antar use case menggunakan stereotype extend untuk menunjukkan variasi perilaku dan include untuk menunjukkan ketergantungan fungsional.
+
+---
+
 ### Diagram Use Case (PlantUML)
 
 ```plantuml
@@ -24,9 +40,6 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
     ' --- MODUL KASIR ---
     package "Modul Kasir" {
         usecase "Mengelola Pesanan" as UC_ORDER
-        usecase "Membuat Pesanan Reguler" as UC_ORDER_REG
-        usecase "Membuat Pesanan Kotak" as UC_ORDER_BOX
-        usecase "Membuat Pesanan Siap Beli" as UC_ORDER_READY
         usecase "Memproses Pembayaran" as UC_PAYMENT
         usecase "Mencetak Struk" as UC_RECEIPT
         usecase "Membatalkan Pesanan" as UC_CANCEL_ORDER
@@ -134,11 +147,6 @@ customer --> UC_FAQ
 
 ' === RELASI EXTEND & INCLUDE ===
 
-' Mengelola Pesanan extends
-UC_ORDER <|-- UC_ORDER_REG : <<extend>>
-UC_ORDER <|-- UC_ORDER_BOX : <<extend>>
-UC_ORDER <|-- UC_ORDER_READY : <<extend>>
-
 ' Mengelola Belanja extends
 UC_EXPENSE <|-- UC_PLAN_EXP : <<extend>>
 UC_EXPENSE <|-- UC_START_EXP : <<extend>>
@@ -147,8 +155,7 @@ UC_EXPENSE <|-- UC_FINISH_EXP : <<extend>>
 ' Include relationships
 UC_ORDER ..> UC_PAYMENT : <<include>>
 UC_ORDER ..> UC_RECEIPT : <<include>>
-UC_ORDER_REG ..> UC_QUEUE_PROD : <<include>>
-UC_ORDER_BOX ..> UC_QUEUE_PROD : <<include>>
+UC_ORDER ..> UC_QUEUE_PROD : <<include>>
 UC_START_PROD ..> UC_MATERIAL : <<include>>
 UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
@@ -162,42 +169,39 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 | No  | Kode  | Nama Use Case                 | Aktor              | Deskripsi Singkat                                  |
 | --- | ----- | ----------------------------- | ------------------ | -------------------------------------------------- |
 | 1   | UC-01 | Mengelola Pesanan             | Kasir              | Membuat, mengubah, dan menghapus pesanan pelanggan |
-| 2   | UC-02 | Membuat Pesanan Reguler       | Kasir              | Membuat pesanan kue custom dengan jadwal           |
-| 3   | UC-03 | Membuat Pesanan Kotak         | Kasir              | Membuat pesanan kue dalam kotak/box                |
-| 4   | UC-04 | Membuat Pesanan Siap Beli     | Kasir              | Membuat pesanan dari stok produk siap              |
-| 5   | UC-05 | Memproses Pembayaran          | Kasir              | Menerima pembayaran DP atau lunas                  |
-| 6   | UC-06 | Mencetak Struk                | Kasir              | Mencetak struk transaksi                           |
-| 7   | UC-07 | Membatalkan Pesanan           | Kasir              | Membatalkan pesanan dan proses refund              |
-| 8   | UC-08 | Mengelola Sesi Penjualan      | Kasir              | Membuka dan menutup sesi/shift kasir               |
-| 9   | UC-09 | Melihat Laporan Kasir         | Kasir, Pemilik     | Melihat ringkasan dan laporan transaksi            |
-| 10  | UC-10 | Merencanakan Produksi         | Produksi           | Membuat rencana produksi siap beli                 |
-| 11  | UC-11 | Memulai Produksi              | Produksi           | Memulai proses produksi                            |
-| 12  | UC-12 | Menyelesaikan Produksi        | Produksi           | Menandai produksi selesai, update stok             |
-| 13  | UC-13 | Membatalkan Produksi          | Produksi           | Membatalkan rencana produksi                       |
-| 14  | UC-14 | Melihat Antrian Produksi      | Produksi           | Melihat daftar pesanan yang perlu diproduksi       |
-| 15  | UC-15 | Melihat Laporan Produksi      | Produksi, Pemilik  | Melihat ringkasan dan laporan produksi             |
-| 16  | UC-16 | Mengelola Produk              | Inventori          | Menambah, mengubah, menghapus produk               |
-| 17  | UC-17 | Mengelola Bahan Baku          | Inventori          | Mengelola data bahan baku/material                 |
-| 18  | UC-18 | Mengelola Belanja             | Inventori          | Mengelola pembelian bahan baku                     |
-| 19  | UC-19 | Merencanakan Belanja          | Inventori          | Membuat rencana belanja bahan baku                 |
-| 20  | UC-20 | Memulai Belanja               | Inventori          | Melakukan proses belanja                           |
-| 21  | UC-21 | Menyelesaikan Belanja         | Inventori          | Menyelesaikan belanja, update stok                 |
-| 22  | UC-22 | Mengelola Stok Hitung         | Inventori          | Hitung stok, catat rusak/hilang                    |
-| 23  | UC-23 | Melihat Alur Persediaan       | Inventori          | Tracking pergerakan bahan baku                     |
-| 24  | UC-24 | Melihat Laporan Inventori     | Inventori, Pemilik | Melihat ringkasan dan laporan inventori            |
-| 25  | UC-25 | Mengelola Kategori Persediaan | Inventori          | Mengelola kategori bahan baku                      |
-| 26  | UC-26 | Mengelola Supplier            | Inventori          | Mengelola data supplier                            |
-| 27  | UC-27 | Mengelola Pekerja             | Pemilik            | CRUD data pekerja/karyawan                         |
-| 28  | UC-28 | Mengelola Peran & Hak Akses   | Pemilik            | Mengelola role dan permission                      |
-| 29  | UC-29 | Mengelola Pelanggan           | Pemilik            | Mengelola data pelanggan dan poin                  |
-| 30  | UC-30 | Mengelola Profil Usaha        | Pemilik            | Mengatur profil toko                               |
-| 31  | UC-31 | Mengelola Metode Pembayaran   | Pemilik            | Mengatur channel pembayaran                        |
-| 32  | UC-32 | Melihat Notifikasi            | Semua User         | Melihat notifikasi sistem                          |
-| 33  | UC-33 | Menerima Alert Stok Rendah    | Inventori          | Notifikasi otomatis stok hampir habis              |
-| 34  | UC-34 | Menerima Alert Expired        | Inventori          | Notifikasi bahan akan/sudah expired                |
-| 35  | UC-35 | Melihat Katalog Produk        | Pelanggan          | Melihat daftar produk di landing page              |
-| 36  | UC-36 | Melihat Cara Pemesanan        | Pelanggan          | Melihat panduan cara memesan                       |
-| 37  | UC-37 | Melihat FAQ                   | Pelanggan          | Melihat pertanyaan yang sering ditanyakan          |
+| 2   | UC-02 | Memproses Pembayaran          | Kasir              | Menerima pembayaran DP atau lunas                  |
+| 3   | UC-03 | Mencetak Struk                | Kasir              | Mencetak struk transaksi                           |
+| 4   | UC-04 | Membatalkan Pesanan           | Kasir              | Membatalkan pesanan dan proses refund              |
+| 5   | UC-05 | Mengelola Sesi Penjualan      | Kasir              | Membuka dan menutup sesi/shift kasir               |
+| 6   | UC-06 | Melihat Laporan Kasir         | Kasir, Pemilik     | Melihat ringkasan dan laporan transaksi            |
+| 7   | UC-07 | Merencanakan Produksi         | Produksi           | Membuat rencana produksi siap beli                 |
+| 8   | UC-08 | Memulai Produksi              | Produksi           | Memulai proses produksi                            |
+| 9   | UC-09 | Menyelesaikan Produksi        | Produksi           | Menandai produksi selesai, update stok             |
+| 10  | UC-10 | Membatalkan Produksi          | Produksi           | Membatalkan rencana produksi                       |
+| 11  | UC-11 | Melihat Antrian Produksi      | Produksi           | Melihat daftar pesanan yang perlu diproduksi       |
+| 12  | UC-12 | Melihat Laporan Produksi      | Produksi, Pemilik  | Melihat ringkasan dan laporan produksi             |
+| 13  | UC-13 | Mengelola Produk              | Inventori          | Menambah, mengubah, menghapus produk               |
+| 14  | UC-14 | Mengelola Bahan Baku          | Inventori          | Mengelola data bahan baku/material                 |
+| 15  | UC-15 | Mengelola Belanja             | Inventori          | Mengelola pembelian bahan baku                     |
+| 16  | UC-16 | Merencanakan Belanja          | Inventori          | Membuat rencana belanja bahan baku                 |
+| 17  | UC-17 | Memulai Belanja               | Inventori          | Melakukan proses belanja                           |
+| 18  | UC-18 | Menyelesaikan Belanja         | Inventori          | Menyelesaikan belanja, update stok                 |
+| 19  | UC-19 | Mengelola Stok Hitung         | Inventori          | Hitung stok, catat rusak/hilang                    |
+| 20  | UC-20 | Melihat Alur Persediaan       | Inventori          | Tracking pergerakan bahan baku                     |
+| 21  | UC-21 | Melihat Laporan Inventori     | Inventori, Pemilik | Melihat ringkasan dan laporan inventori            |
+| 22  | UC-22 | Mengelola Kategori Persediaan | Inventori          | Mengelola kategori bahan baku                      |
+| 23  | UC-23 | Mengelola Supplier            | Inventori          | Mengelola data supplier                            |
+| 24  | UC-24 | Mengelola Pekerja             | Pemilik            | CRUD data pekerja/karyawan                         |
+| 25  | UC-25 | Mengelola Peran & Hak Akses   | Pemilik            | Mengelola role dan permission                      |
+| 26  | UC-26 | Mengelola Pelanggan           | Pemilik            | Mengelola data pelanggan dan poin                  |
+| 27  | UC-27 | Mengelola Profil Usaha        | Pemilik            | Mengatur profil toko                               |
+| 28  | UC-28 | Mengelola Metode Pembayaran   | Pemilik            | Mengatur channel pembayaran                        |
+| 29  | UC-29 | Melihat Notifikasi            | Semua User         | Melihat notifikasi sistem                          |
+| 30  | UC-30 | Menerima Alert Stok Rendah    | Inventori          | Notifikasi otomatis stok hampir habis              |
+| 31  | UC-31 | Menerima Alert Expired        | Inventori          | Notifikasi bahan akan/sudah expired                |
+| 32  | UC-32 | Melihat Katalog Produk        | Pelanggan          | Melihat daftar produk di landing page              |
+| 33  | UC-33 | Melihat Cara Pemesanan        | Pelanggan          | Melihat panduan cara memesan                       |
+| 34  | UC-34 | Melihat FAQ                   | Pelanggan          | Melihat pertanyaan yang sering ditanyakan          |
 
 ---
 
@@ -210,7 +214,7 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 | **Nama Use Case**       | Mengelola Pesanan                                                                                                                                                                                                                                                                            |
 | **Kode**                | UC-01                                                                                                                                                                                                                                                                                        |
 | **Aktor**               | Kasir                                                                                                                                                                                                                                                                                        |
-| **Deskripsi**           | Use case ini memungkinkan kasir untuk membuat, melihat, mengubah, dan menghapus pesanan pelanggan. Terdapat 3 jenis pesanan: pesanan reguler (custom dengan jadwal), pesanan kotak (box), dan siap beli (dari stok).                                                                         |
+| **Deskripsi**           | Use case ini memungkinkan kasir untuk membuat, melihat, mengubah, dan menghapus pesanan pelanggan. Pesanan dapat berupa pesanan reguler (custom dengan jadwal), pesanan kotak (box), atau siap beli (dari stok).                                                                             |
 | **Pre-condition**       | - Kasir sudah login ke sistem<br>- Kasir memiliki permission `kasir.pesanan.kelola`<br>- Sesi penjualan aktif                                                                                                                                                                                |
 | **Post-condition**      | - Pesanan tersimpan dalam database<br>- Stok produk terupdate (untuk siap beli)<br>- Notifikasi terkirim ke bagian terkait                                                                                                                                                                   |
 | **Skenario Utama**      | 1. Kasir memilih jenis pesanan<br>2. Kasir memilih produk dari katalog<br>3. Kasir memasukkan jumlah pesanan<br>4. Kasir memasukkan data pelanggan (opsional)<br>5. Sistem menghitung total<br>6. Kasir memproses pembayaran<br>7. Sistem menyimpan pesanan<br>8. Sistem mengirim notifikasi |
@@ -219,12 +223,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-05: Memproses Pembayaran
+### UC-02: Memproses Pembayaran
 
 | Komponen                | Deskripsi                                                                                                                                                                                                                                                                                                                                  |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Nama Use Case**       | Memproses Pembayaran                                                                                                                                                                                                                                                                                                                       |
-| **Kode**                | UC-05                                                                                                                                                                                                                                                                                                                                      |
+| **Kode**                | UC-02                                                                                                                                                                                                                                                                                                                                      |
 | **Aktor**               | Kasir                                                                                                                                                                                                                                                                                                                                      |
 | **Deskripsi**           | Use case ini memungkinkan kasir untuk menerima pembayaran dari pelanggan. Pembayaran bisa berupa uang muka (DP) atau lunas.                                                                                                                                                                                                                |
 | **Pre-condition**       | - Pesanan sudah dibuat<br>- Kasir sudah login<br>- Metode pembayaran aktif tersedia                                                                                                                                                                                                                                                        |
@@ -235,12 +239,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-11: Memulai Produksi
+### UC-08: Memulai Produksi
 
 | Komponen                | Deskripsi                                                                                                                                                                                                                                                                                                                                           |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Memulai Produksi                                                                                                                                                                                                                                                                                                                                    |
-| **Kode**                | UC-11                                                                                                                                                                                                                                                                                                                                               |
+| **Kode**                | UC-08                                                                                                                                                                                                                                                                                                                                               |
 | **Aktor**               | Produksi                                                                                                                                                                                                                                                                                                                                            |
 | **Deskripsi**           | Use case ini memungkinkan bagian produksi untuk memulai proses produksi. Sistem akan mengurangi stok bahan baku sesuai komposisi produk.                                                                                                                                                                                                            |
 | **Pre-condition**       | - Produksi sudah login<br>- Ada rencana produksi yang akan dimulai<br>- Bahan baku tersedia                                                                                                                                                                                                                                                         |
@@ -251,12 +255,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-21: Menyelesaikan Belanja
+### UC-18: Menyelesaikan Belanja
 
 | Komponen                | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Menyelesaikan Belanja                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Kode**                | UC-21                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Kode**                | UC-18                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **Aktor**               | Inventori                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **Deskripsi**           | Use case ini memungkinkan bagian inventori untuk menyelesaikan proses belanja bahan baku. Sistem akan menambah stok bahan baku sesuai dengan yang dibeli.                                                                                                                                                                                                                                                                    |
 | **Pre-condition**       | - Inventori sudah login<br>- Ada belanja dengan status "Proses"<br>- Permission `inventori.belanja.mulai`                                                                                                                                                                                                                                                                                                                    |
@@ -267,12 +271,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-22: Mengelola Stok Hitung
+### UC-19: Mengelola Stok Hitung
 
 | Komponen                | Deskripsi                                                                                                                                                                                                                                                                                                                                                             |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Mengelola Stok Hitung                                                                                                                                                                                                                                                                                                                                                 |
-| **Kode**                | UC-22                                                                                                                                                                                                                                                                                                                                                                 |
+| **Kode**                | UC-19                                                                                                                                                                                                                                                                                                                                                                 |
 | **Aktor**               | Inventori                                                                                                                                                                                                                                                                                                                                                             |
 | **Deskripsi**           | Use case ini memungkinkan bagian inventori untuk melakukan penghitungan stok fisik, mencatat bahan rusak, dan mencatat bahan hilang. Ini penting untuk menjaga akurasi data inventori.                                                                                                                                                                                |
 | **Pre-condition**       | - Inventori sudah login<br>- Permission `inventori.hitung.kelola`                                                                                                                                                                                                                                                                                                     |
@@ -283,12 +287,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-29: Mengelola Pelanggan
+### UC-26: Mengelola Pelanggan
 
 | Komponen                | Deskripsi                                                                                                                                                                                                                                                       |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Mengelola Pelanggan                                                                                                                                                                                                                                             |
-| **Kode**                | UC-29                                                                                                                                                                                                                                                           |
+| **Kode**                | UC-26                                                                                                                                                                                                                                                           |
 | **Aktor**               | Pemilik                                                                                                                                                                                                                                                         |
 | **Deskripsi**           | Use case ini memungkinkan pemilik untuk mengelola data pelanggan termasuk informasi kontak dan poin loyalitas.                                                                                                                                                  |
 | **Pre-condition**       | - Pemilik sudah login<br>- Permission `manajemen.pelanggan.kelola`                                                                                                                                                                                              |
@@ -299,12 +303,12 @@ UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 
 ---
 
-### UC-34: Menerima Alert Stok Rendah
+### UC-30: Menerima Alert Stok Rendah
 
 | Komponen           | Deskripsi                                                                                                                                                                                                                                     |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**  | Menerima Alert Stok Rendah                                                                                                                                                                                                                    |
-| **Kode**           | UC-33                                                                                                                                                                                                                                         |
+| **Kode**           | UC-30                                                                                                                                                                                                                                         |
 | **Aktor**          | Inventori                                                                                                                                                                                                                                     |
 | **Deskripsi**      | Use case ini adalah fitur otomatis yang mengirim notifikasi ketika stok bahan baku mencapai batas minimum.                                                                                                                                    |
 | **Pre-condition**  | - Scheduled command aktif (08:00 setiap hari)<br>- Bahan baku memiliki nilai minimum yang diset                                                                                                                                               |

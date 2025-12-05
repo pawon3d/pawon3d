@@ -17,9 +17,6 @@ rectangle "Sistem Informasi Manajemen Toko Kue" {
     ' --- MODUL KASIR ---
     package "Modul Kasir" {
         usecase "Mengelola Pesanan" as UC_ORDER
-        usecase "Membuat Pesanan Reguler" as UC_ORDER_REG
-        usecase "Membuat Pesanan Kotak" as UC_ORDER_BOX
-        usecase "Membuat Pesanan Siap Beli" as UC_ORDER_READY
         usecase "Memproses Pembayaran" as UC_PAYMENT
         usecase "Mencetak Struk" as UC_RECEIPT
         usecase "Membatalkan Pesanan" as UC_CANCEL_ORDER
@@ -127,11 +124,6 @@ customer --> UC_FAQ
 
 ' === RELASI EXTEND & INCLUDE ===
 
-' Mengelola Pesanan extends
-UC_ORDER <|-- UC_ORDER_REG : <<extend>>
-UC_ORDER <|-- UC_ORDER_BOX : <<extend>>
-UC_ORDER <|-- UC_ORDER_READY : <<extend>>
-
 ' Mengelola Belanja extends
 UC_EXPENSE <|-- UC_PLAN_EXP : <<extend>>
 UC_EXPENSE <|-- UC_START_EXP : <<extend>>
@@ -140,8 +132,7 @@ UC_EXPENSE <|-- UC_FINISH_EXP : <<extend>>
 ' Include relationships
 UC_ORDER ..> UC_PAYMENT : <<include>>
 UC_ORDER ..> UC_RECEIPT : <<include>>
-UC_ORDER_REG ..> UC_QUEUE_PROD : <<include>>
-UC_ORDER_BOX ..> UC_QUEUE_PROD : <<include>>
+UC_ORDER ..> UC_QUEUE_PROD : <<include>>
 UC_START_PROD ..> UC_MATERIAL : <<include>>
 UC_FINISH_PROD ..> UC_PRODUCT : <<include>>
 

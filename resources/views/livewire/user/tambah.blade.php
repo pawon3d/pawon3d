@@ -36,24 +36,24 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                            <!-- Image Preview -->
-                            <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                id="image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="image-preview" />
                             @else
-                            <!-- Default Content -->
-                            <div class="flex flex-col items-center justify-center p-4 text-center">
-                                <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
-                                <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                <p class="mb-2 text-xs text-gray-600 mt-4">
-                                    Ukuran gambar tidak lebih dari
-                                    <span class="font-semibold">2mb</span>
-                                </p>
-                                <p class="text-xs text-gray-500">
-                                    Pastikan gambar dalam format
-                                    <span class="font-semibold">JPG </span> atau
-                                    <span class="font-semibold">PNG</span>
-                                </p>
-                            </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-6 text-gray-400" />
+                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-2 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                             @endif
                         </div>
                     </label>
@@ -71,9 +71,9 @@
 
                 <!-- Error Message -->
                 @error('image')
-                <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                    {{ $message }}
-                </div>
+                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                 @enderror
 
                 <!-- Loading Indicator -->
@@ -107,12 +107,13 @@
             </p>
             <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" />
             <flux:error name="email" />
-            <flux:label>Password</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan password dengan kombinasi huruf dan angka (minimal 8 karakter)
-            </p>
-            <flux:input placeholder="Password" wire:model.live="password" type="password" viewable />
-            <flux:error name="password" />
+            <flux:callout icon="information-circle" color="blue" class="mt-2">
+                <flux:callout.heading>Aktivasi via Email</flux:callout.heading>
+                <flux:callout.text>
+                    Setelah disimpan, sistem akan mengirim email undangan ke alamat ini.
+                    Pekerja akan mengatur kata sandi sendiri melalui tautan di email tersebut.
+                </flux:callout.text>
+            </flux:callout>
             <flux:label>Nomor Telepon</flux:label>
             <p class="text-sm text-gray-500">
                 Masukkan nomor telepon aktif (WhatsApp).
@@ -126,7 +127,7 @@
             <flux:select placeholder="Pilih Peran" wire:model.defer="role">
                 <option value="" hidden>Pilih Peran</option>
                 @foreach ($roles as $role)
-                <option value="{{ $role->name }}">{{ $role->name }}</option>
+                    <option value="{{ $role->name }}">{{ $role->name }}</option>
                 @endforeach
             </flux:select>
             <flux:error name="role" />

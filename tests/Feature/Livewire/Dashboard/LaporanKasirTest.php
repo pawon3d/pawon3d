@@ -11,6 +11,7 @@ it('laporan kasir component renders correctly', function () {
     Livewire\Livewire::actingAs($user)
         ->test(LaporanKasir::class)
         ->assertStatus(200)
+        ->call('loadData') // Trigger lazy loading
         ->assertSee('Laporan Kasir')
         ->assertSee('10 Produk Terlaris')
         ->assertSee('Penjualan Produk')
@@ -65,7 +66,8 @@ it('can change filter period', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanKasir::class);
+        ->test(LaporanKasir::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     $component->call('setFilterPeriod', 'Bulan');
 
@@ -77,7 +79,8 @@ it('can select date from calendar', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanKasir::class);
+        ->test(LaporanKasir::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     $component->call('selectDate', now()->subDay()->toDateString());
 

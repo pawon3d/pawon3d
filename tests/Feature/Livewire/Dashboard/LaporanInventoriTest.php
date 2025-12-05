@@ -12,6 +12,7 @@ test('laporan inventori component renders correctly', function () {
     Livewire\Livewire::actingAs($user)
         ->test(LaporanInventori::class)
         ->assertStatus(200)
+        ->call('loadData') // Trigger lazy loading
         ->assertSee('Laporan Inventori')
         ->assertSee('Sesi Belanja Persediaan')
         ->assertSee('Nilai Persediaan')
@@ -97,7 +98,8 @@ test('chart update event dispatched when date changes', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanInventori::class);
+        ->test(LaporanInventori::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     // Select a new date - this should trigger chart update
     $component->call('selectDate', '2025-01-15');
@@ -109,7 +111,8 @@ test('chart update event dispatched when worker changes', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanInventori::class);
+        ->test(LaporanInventori::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     // Change worker - this should trigger chart update
     $component->set('selectedWorker', 'all');
@@ -121,7 +124,8 @@ test('chart update event dispatched when filter period changes', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanInventori::class);
+        ->test(LaporanInventori::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     // Change filter period - this should trigger chart update
     $component->call('setFilterPeriod', 'Bulan');

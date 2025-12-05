@@ -23,7 +23,7 @@
     <!-- Main Content Card -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
         <!-- Search and Add Button -->
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex justify-between items-center mb-5 gap-3">
             <div class="flex items-center gap-4 flex-1">
                 <div
                     class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full max-w-[545px]">
@@ -35,14 +35,12 @@
                     <input wire:model.live.debounce.300ms="search" placeholder="Cari Pekerja"
                         class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none" />
                 </div>
-                <button class="flex items-center gap-2 text-[#666666] font-medium text-base">
-                    <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Filter
-                </button>
+                <flux:select wire:model.live="filterStatus" class="w-40">
+                    <option value="">Semua Status</option>
+                    <option value="active">Aktif</option>
+                    <option value="inactive">Nonaktif</option>
+                    <option value="pending">Menunggu Aktivasi</option>
+                </flux:select>
             </div>
             <flux:button variant="primary" icon="plus" href="{{ route('user.tambah') }}" wire:navigate>
                 Tambah Pekerja
@@ -55,6 +53,8 @@
             ['label' => 'Email', 'sortable' => true, 'sort-by' => 'email'],
             ['label' => 'No. Telepon', 'sortable' => false],
             ['label' => 'Peran', 'sortable' => false],
+            ['label' => 'Status', 'sortable' => false],
+            ['label' => 'Aksi', 'sortable' => false],
         ]" :paginator="$users" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
             bodyText="#666666" emptyMessage="Tidak ada data pekerja.">
             @foreach ($users as $user)
@@ -72,6 +72,33 @@
                     </td>
                     <td class="px-6 py-5 text-[#666666] font-medium text-sm">
                         {{ $user->role_name ?? 'Tidak ada peran' }}
+                    </td>
+                    <td class="px-6 py-5 text-sm">
+                        @if (!$user->activated_at)
+                            <flux:badge color="amber" size="sm">Menunggu Aktivasi</flux:badge>
+                        @elseif ($user->is_active)
+                            <flux:badge color="green" size="sm">Aktif</flux:badge>
+                        @else
+                            <flux:badge color="red" size="sm">Nonaktif</flux:badge>
+                        @endif
+                    </td>
+                    <td class="px-6 py-5 text-sm">
+                        <div class="flex items-center gap-2">
+                            @if (!$user->activated_at)
+                                <flux:button size="xs" variant="ghost" icon="envelope"
+                                    wire:click="resendInvitation('{{ $user->id }}')"
+                                    wire:confirm="Kirim ulang email undangan ke {{ $user->email }}?"
+                                    title="Kirim Ulang Undangan">
+                                </flux:button>
+                            @endif
+                            @if ($user->id !== auth()->id())
+                                <flux:button size="xs" variant="ghost"
+                                    icon="{{ $user->is_active ? 'eye-slash' : 'eye' }}"
+                                    wire:click="toggleActive('{{ $user->id }}')"
+                                    title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                </flux:button>
+                            @endif
+                        </div>
                     </td>
                 </tr>
             @endforeach

@@ -12,9 +12,9 @@ if (Aksi?) then (Tambah)
       - Nama
       - Email (unik)
       - Nomor telepon
-      - Password
       - Jenis kelamin
       - Foto (opsional)
+      (tanpa password)
     end note
     
     :Memilih peran (role);
@@ -34,22 +34,42 @@ if (Aksi?) then (Tambah)
     if (Email sudah terdaftar?) then (Ya)
         :Menampilkan pesan error;
     else (Tidak)
-        :Hash password;
-        :Menyimpan ke database;
+        :Menyimpan ke database (is_active=false);
+        :Generate invitation token;
         :Assign role ke user;
+        :Kirim email undangan aktivasi;
         :Menampilkan pesan sukses;
     endif
+
+else if (Aksi?) then (Kirim Ulang Undangan)
+    |Pemilik|
+    :Memilih pekerja yang belum aktivasi;
+    :Klik Kirim Ulang Undangan;
+    
+    |Sistem|
+    :Generate invitation token baru;
+    :Kirim email undangan aktivasi;
+    :Menampilkan pesan sukses;
+    
+else if (Aksi?) then (Toggle Aktif/Nonaktif)
+    |Pemilik|
+    :Memilih pekerja;
+    :Klik toggle aktif/nonaktif;
+    
+    |Sistem|
+    if (Status saat ini?) then (Aktif)
+        :Set is_active = false;
+        :Pekerja tidak bisa login;
+    else (Nonaktif)
+        :Set is_active = true;
+        :Pekerja bisa login kembali;
+    endif
+    :Menampilkan pesan sukses;
     
 else if (Aksi?) then (Edit)
     |Pemilik|
     :Memilih pekerja yang akan diedit;
     :Mengubah data pekerja;
-    
-    if (Ubah password?) then (Ya)
-        :Memasukkan password baru;
-    else (Tidak)
-    endif
-    
     :Mengubah peran (opsional);
     :Menyimpan perubahan;
     
@@ -71,6 +91,7 @@ else if (Aksi?) then (Lihat Detail)
     
     |Sistem|
     :Menampilkan detail pekerja;
+    :Menampilkan status (Aktif/Nonaktif/Menunggu);
     :Menampilkan role & permission;
     :Menampilkan riwayat aktivitas;
     note right
@@ -80,18 +101,6 @@ else if (Aksi?) then (Lihat Detail)
       - Login terakhir
     end note
     
-else if (Aksi?) then (Reset Password)
-    |Pemilik|
-    :Memilih pekerja;
-    :Klik Reset Password;
-    :Memasukkan password baru;
-    :Konfirmasi password;
-    
-    |Sistem|
-    :Hash password baru;
-    :Update password pekerja;
-    :Menampilkan pesan sukses;
-    
 else (Hapus)
     |Pemilik|
     :Memilih pekerja yang akan dihapus;
@@ -100,7 +109,7 @@ else (Hapus)
     |Sistem|
     if (Pekerja punya transaksi/produksi?) then (Ya)
         :Menampilkan peringatan;
-        :Nonaktifkan pekerja (soft delete);
+        :Nonaktifkan pekerja saja;
     else (Tidak)
         :Hapus pekerja permanen;
     endif

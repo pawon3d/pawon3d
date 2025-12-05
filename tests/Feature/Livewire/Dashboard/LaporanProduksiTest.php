@@ -11,6 +11,7 @@ it('laporan produksi component renders correctly', function () {
     Livewire\Livewire::actingAs($user)
         ->test(LaporanProduksi::class)
         ->assertStatus(200)
+        ->call('loadData') // Trigger lazy loading
         ->assertSee('Laporan Produksi')
         ->assertSee('10 Produksi Tertinggi')
         ->assertSee('Metode Produksi Teratas')
@@ -21,7 +22,8 @@ it('chart update event dispatched when method changes', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanProduksi::class);
+        ->test(LaporanProduksi::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     // change method - should schedule chart update
     $component->set('selectedMethod', 'pesanan-reguler');
@@ -33,7 +35,8 @@ it('chart update event dispatched when filter period changes', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanProduksi::class);
+        ->test(LaporanProduksi::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     $component->call('setFilterPeriod', 'Bulan');
 
@@ -44,7 +47,8 @@ it('can select date from calendar', function () {
     $user = User::factory()->create();
 
     $component = Livewire\Livewire::actingAs($user)
-        ->test(LaporanProduksi::class);
+        ->test(LaporanProduksi::class)
+        ->call('loadData'); // Trigger lazy loading first
 
     $component->call('selectDate', now()->subDay()->toDateString());
 

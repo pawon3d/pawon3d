@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PdfController;
+use App\Livewire\ActivateAccount;
 use App\Livewire\User\Index;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,11 @@ Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('land
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
+
+// Aktivasi Akun (guest only)
+Route::get('/aktivasi-akun/{token}', ActivateAccount::class)
+    ->middleware('guest')
+    ->name('activate-account');
 
 Route::get('dashboard', function () {
     return redirect()->route('ringkasan-umum');
@@ -30,6 +36,9 @@ Route::get('/ringkasan-inventori', App\Livewire\Dashboard\RingkasanInventori::cl
 Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
     ->middleware('auth')
     ->name('ringkasan-umum');
+Route::get('/menunggu-peran', App\Livewire\Dashboard\NoRole::class)
+    ->middleware('auth')
+    ->name('no-role');
 Route::get('/laporan-kasir', App\Livewire\Dashboard\LaporanKasir::class)
     ->middleware(['auth', 'permission:kasir.laporan.kelola'])
     ->name('laporan-kasir');
