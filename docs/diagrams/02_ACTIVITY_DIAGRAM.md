@@ -34,6 +34,8 @@
 
 ## 1. Activity Diagram: Proses Login dan Otorisasi
 
+Activity diagram berikut menggambarkan alur proses login dan otorisasi ke dalam sistem. Proses dimulai ketika user membuka halaman login dan memasukkan email serta password. Sistem kemudian melakukan validasi format input, pencarian user berdasarkan email, dan verifikasi password. Jika semua validasi berhasil dan akun dalam status aktif, sistem akan memeriksa apakah user memiliki permission. User dengan permission akan diarahkan ke dashboard sesuai hak aksesnya (Kasir, Produksi, Inventori, atau Manajemen), sedangkan user tanpa permission akan diarahkan ke halaman menunggu penugasan peran. Jika terjadi kegagalan pada tahap validasi manapun, sistem akan menampilkan pesan error yang sesuai.
+
 ```plantuml
 @startuml Activity Diagram - Login dan Otorisasi
 
@@ -108,6 +110,8 @@ stop
 
 ## 2. Activity Diagram: Proses Aktivasi Akun
 
+Activity diagram berikut menggambarkan alur proses aktivasi akun pekerja baru. Proses dimulai ketika pekerja menerima email undangan dan mengklik link aktivasi. Sistem akan memvalidasi token untuk memastikan link valid, belum kadaluarsa (maksimal 7 hari), dan akun belum pernah diaktifkan sebelumnya. Jika validasi berhasil, sistem menampilkan form aktivasi dimana pekerja dapat melihat emailnya (readonly) dan mengisi kata sandi baru beserta konfirmasinya. Kata sandi harus memenuhi syarat minimal 8 karakter dan mengandung huruf serta angka. Setelah validasi kata sandi berhasil, sistem akan meng-hash kata sandi, mengaktifkan akun, menghapus invitation token, dan secara otomatis me-login pekerja ke dashboard.
+
 ```plantuml
 @startuml Activity Diagram - Proses Aktivasi Akun Pekerja
 
@@ -176,6 +180,8 @@ stop
 ---
 
 ## 3. Activity Diagram: Proses Transaksi Penjualan
+
+Activity diagram berikut menggambarkan alur proses transaksi penjualan di sistem POS. Proses dimulai ketika kasir membuka halaman POS dan memilih jenis pesanan (Siap Beli atau Pesanan Reguler/Kotak). Untuk pesanan Siap Beli, kasir memilih produk dari katalog dan mengatur jumlah pesanan dengan syarat stok tersedia. Untuk Pesanan Reguler/Kotak, kasir juga perlu memasukkan jadwal pengambilan. Selanjutnya, kasir dapat memasukkan data pelanggan (opsional) dan menggunakan poin loyalitas jika tersedia. Setelah menghitung total pesanan dan memilih metode pembayaran, kasir dapat memproses pembayaran secara lunas atau dengan uang muka (DP). Sistem akan menyimpan transaksi, mengurangi stok untuk pesanan Siap Beli atau membuat record produksi untuk Pesanan Reguler/Kotak, serta mengirim notifikasi yang sesuai.
 
 ```plantuml
 @startuml Activity Diagram - Proses Transaksi Penjualan
@@ -268,6 +274,8 @@ stop
 
 ## 4. Activity Diagram: Proses Sesi Penjualan (Shift)
 
+Activity diagram berikut menggambarkan alur proses pengelolaan sesi penjualan (shift) kasir. Proses dimulai ketika kasir membuka halaman transaksi dan memeriksa apakah ada sesi aktif. Jika belum ada sesi, kasir menekan tombol "Buka Sesi", memasukkan modal awal (kas), dan mengkonfirmasi pembukaan sesi. Sistem akan generate nomor shift dan menyimpan data sesi dengan status "Buka". Selama sesi aktif, kasir dapat melakukan transaksi yang akan dicatat dalam sesi tersebut. Ketika kasir ingin mengakhiri shift, kasir menekan tombol "Tutup Sesi". Sistem akan menghitung total penjualan, total cash, dan total non-cash. Kasir kemudian memasukkan kas akhir aktual dan mengkonfirmasi penutupan. Sistem menghitung selisih antara kas yang diharapkan dengan kas aktual, mengupdate shift dengan informasi closed_by dan final_cash, serta mengubah status menjadi "Tutup".
+
 ```plantuml
 @startuml Activity Diagram - Sesi Penjualan (Shift)
 
@@ -331,6 +339,8 @@ stop
 ---
 
 ## 5. Activity Diagram: Proses Pelunasan Pembayaran
+
+Activity diagram berikut menggambarkan alur proses pelunasan pembayaran untuk transaksi yang sebelumnya dibayar dengan uang muka (DP). Proses dimulai ketika kasir membuka halaman transaksi dan memfilter status "Uang Muka". Kasir memilih transaksi yang akan dilunasi dan menekan tombol "Lunasi". Sistem menampilkan detail transaksi termasuk nomor invoice, nama pelanggan, total tagihan, jumlah DP yang sudah dibayar, dan sisa tagihan. Kasir kemudian memilih metode pembayaran (tunai atau non-tunai). Untuk pembayaran tunai, kasir memasukkan jumlah uang diterima dan sistem menghitung kembalian. Untuk non-tunai, kasir memilih channel pembayaran seperti QRIS atau transfer bank. Setelah konfirmasi, sistem menyimpan data pembayaran, mengupdate status transaksi menjadi "Lunas", dan jika pelanggan terdaftar, sistem akan menambah poin loyalitas (1 poin per Rp 10.000).
 
 ```plantuml
 @startuml Activity Diagram - Proses Pelunasan Pembayaran
@@ -411,6 +421,8 @@ stop
 
 ## 6. Activity Diagram: Proses Pembatalan Pesanan dengan Refund
 
+Activity diagram berikut menggambarkan alur proses pembatalan pesanan beserta penanganan refund. Proses dimulai ketika kasir membuka halaman transaksi, memilih pesanan yang akan dibatalkan, dan menekan tombol "Batalkan". Sistem memeriksa status pesanan. Untuk pesanan dengan status "Antrian" atau "Proses", sistem akan memeriksa apakah ada produksi terkait. Jika produksi sudah dimulai, sistem membatalkan produksi dan mengembalikan stok bahan baku. Jika produksi belum dimulai, sistem menghapus record produksi. Selanjutnya, sistem memeriksa pembayaran. Jika ada pembayaran, sistem menghitung total yang harus direfund dan kasir memproses pengembalian uang. Jika pelanggan telah mendapat poin dari transaksi ini, sistem akan mengurangi poin tersebut. Status transaksi diupdate menjadi "Dibatalkan". Untuk pesanan dengan status "Selesai" atau "Dibatalkan", sistem menampilkan pesan error yang sesuai.
+
 ```plantuml
 @startuml Activity Diagram - Pembatalan Pesanan dengan Refund
 
@@ -476,6 +488,8 @@ stop
 ---
 
 ## 7. Activity Diagram: Proses Produksi
+
+Activity diagram berikut menggambarkan alur proses produksi pada sistem. Proses dimulai ketika bagian produksi membuka halaman Antrian Produksi dan melihat daftar produksi yang menunggu. Jika ada produksi menunggu, bagian produksi memilih dan memeriksa detail produksi. Sistem memeriksa ketersediaan bahan baku. Jika bahan baku cukup, bagian produksi memilih pekerja yang terlibat dan mengkonfirmasi mulai produksi. Sistem mengurangi stok bahan baku berdasarkan komposisi produk dengan metode FIFO, mengupdate status bahan secara otomatis, mencatat log inventori, dan mengubah status menjadi "Proses". Setelah proses produksi selesai, bagian produksi menandai produksi selesai. Sistem menambah stok produk jadi dan mengupdate status menjadi "Selesai". Jika produksi berasal dari pesanan, status transaksi diubah menjadi "Dapat Diambil". Jika bahan baku tidak cukup, sistem menampilkan peringatan dan daftar bahan yang kurang.
 
 ```plantuml
 @startuml Activity Diagram - Proses Produksi
@@ -567,6 +581,8 @@ stop
 
 ## 8. Activity Diagram: Proses Belanja Bahan Baku
 
+Activity diagram berikut menggambarkan alur proses belanja bahan baku untuk keperluan produksi. Proses dimulai ketika bagian inventori membuka halaman Belanja dan memilih untuk melihat daftar belanja atau membuat rencana belanja baru. Untuk rencana baru, inventori memilih supplier, menambahkan bahan baku beserta jumlah rencana dan harga perkiraan. Sistem generate nomor belanja (BP-YYMMDD-XXXX) dan menyimpan expense dengan status "Rencana". Ketika mulai belanja, status diubah menjadi "Proses" dan inventori melakukan pembelian dengan mengisi jumlah aktual, harga aktual, dan tanggal expired jika ada. Sistem mencatat selisih antara rencana dan aktual. Setelah belanja selesai, sistem membuat batch baru untuk setiap bahan, menambah stok bahan baku, menghitung ulang status bahan secara otomatis, dan mencatat log inventori.
+
 ```plantuml
 @startuml Activity Diagram - Proses Belanja Bahan Baku
 
@@ -657,6 +673,8 @@ stop
 ---
 
 ## 9. Activity Diagram: Proses Hitung Stok
+
+Activity diagram berikut menggambarkan alur proses penghitungan stok (stock opname) bahan baku. Proses dimulai ketika bagian inventori membuka halaman Hitung dan membuat rencana hitung baru dengan memilih jenis aksi: Hitung (untuk stock opname), Rusak (untuk mencatat bahan rusak), atau Hilang (untuk mencatat bahan hilang). Sistem generate nomor hitung (HC-YYMMDD-XXXX) dan menyimpan dengan status "Rencana". Untuk aksi Hitung, inventori memasukkan jumlah aktual hasil hitung dan sistem menghitung selisih antara data sistem dengan aktual. Jika ada selisih, sistem melakukan adjustment dan mencatat log inventori. Untuk aksi Rusak atau Hilang, inventori memasukkan jumlah bahan yang rusak/hilang dan sistem mengurangi stok bahan baku serta mencatat log inventori. Setelah proses selesai, sistem menghitung ulang status bahan secara otomatis berdasarkan kondisi stok.
 
 ```plantuml
 @startuml Activity Diagram - Proses Hitung Stok
@@ -759,6 +777,8 @@ stop
 ---
 
 ## 10. Activity Diagram: Proses Mengelola Produk
+
+Activity diagram berikut menggambarkan alur proses pengelolaan data produk dalam sistem. Proses dimulai ketika bagian inventori membuka halaman Produk dan memilih aksi yang akan dilakukan: Tambah, Edit, Hapus, atau Lihat Detail. Untuk menambah produk, inventori mengisi form produk termasuk nama, kategori, harga jual, deskripsi, gambar, dan masa simpan. Jika produk memiliki resep, inventori menambahkan komposisi bahan dengan memilih bahan baku, jumlah, dan satuan, serta dapat menambahkan biaya tambahan. Sistem akan menghitung modal produk berdasarkan harga bahan dan biaya tambahan. Untuk menghapus produk yang pernah ada di transaksi, sistem melakukan soft delete untuk menjaga integritas data. Fitur Lihat Detail menampilkan informasi lengkap produk termasuk komposisi bahan, biaya tambahan, dan riwayat produksi.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Produk
@@ -866,6 +886,8 @@ stop
 ---
 
 ## 11. Activity Diagram: Proses Mengelola Bahan Baku
+
+Activity diagram berikut menggambarkan alur proses pengelolaan data bahan baku. Proses dimulai ketika bagian inventori membuka halaman Bahan Baku dan memilih aksi: Tambah, Edit, Lihat Batch, Lihat Alur, atau Hapus. Untuk menambah bahan baku, inventori mengisi form dengan nama bahan, kategori, stok minimum, deskripsi, dan status aktif. Selanjutnya, inventori menentukan satuan bahan dengan konversi otomatis jika satuan dalam grup konversi yang sama (misalnya kg dan g dalam grup "Berat"), atau memasukkan konversi manual jika berbeda grup. Fitur Lihat Batch menampilkan daftar batch dengan informasi FIFO termasuk tanggal masuk, kuantitas tersisa, tanggal expired, dan harga beli. Fitur Lihat Alur menampilkan riwayat pergerakan stok dari belanja, produksi, pencatatan rusak/hilang, dan penyesuaian. Untuk menghapus bahan yang digunakan di produk, sistem melakukan soft delete.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Bahan Baku
@@ -998,6 +1020,8 @@ stop
 
 ## 12. Activity Diagram: Proses Mengelola Kategori Produk
 
+Activity diagram berikut menggambarkan alur proses pengelolaan kategori produk. Proses dimulai ketika bagian inventori membuka halaman Kategori Produk dan memilih aksi: Tambah, Edit, Lihat Produk, atau Hapus. Untuk menambah kategori, inventori mengisi nama kategori dan deskripsi (opsional). Sistem melakukan validasi untuk memastikan nama kategori belum ada sebelumnya. Jika nama sudah ada, sistem menampilkan pesan error. Fitur Lihat Produk menampilkan daftar produk yang termasuk dalam kategori tersebut beserta jumlahnya. Untuk menghapus kategori, sistem memeriksa apakah kategori masih memiliki produk. Jika kategori memiliki produk, penghapusan tidak diizinkan dan sistem menampilkan peringatan. Hal ini untuk menjaga integritas data produk yang memerlukan kategori.
+
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Kategori Produk
 
@@ -1064,6 +1088,8 @@ stop
 
 ## 13. Activity Diagram: Proses Mengelola Satuan
 
+Activity diagram berikut menggambarkan alur proses pengelolaan satuan pengukuran dalam sistem. Proses dimulai ketika bagian inventori membuka halaman Satuan dan memilih aksi: Tambah, Edit, atau Hapus. Untuk menambah satuan, inventori mengisi form dengan nama satuan (seperti Kilogram atau Liter), alias (seperti kg atau L), grup konversi (Berat, Volume, dll), serta satuan dasar dan faktor konversi jika diperlukan. Sistem melakukan validasi untuk memastikan nama atau simbol satuan belum ada sebelumnya. Jika sudah ada, sistem menampilkan pesan error. Untuk menghapus satuan, sistem memeriksa apakah satuan digunakan oleh bahan baku. Jika satuan masih digunakan, penghapusan tidak diizinkan dan sistem menampilkan peringatan untuk menjaga konsistensi data bahan baku.
+
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Satuan
 
@@ -1129,6 +1155,8 @@ stop
 ---
 
 ## 14. Activity Diagram: Proses Mengelola Supplier
+
+Activity diagram berikut menggambarkan alur proses pengelolaan data supplier dalam sistem. Proses dimulai ketika bagian inventori membuka halaman Supplier dan memilih aksi: Tambah, Edit, Lihat Riwayat, atau Hapus. Untuk menambah supplier, inventori mengisi form dengan nama supplier/toko, nomor telepon, dan alamat. Sistem melakukan validasi data sebelum menyimpan ke database. Fitur Lihat Riwayat menampilkan riwayat belanja dari supplier tersebut termasuk nomor belanja, tanggal, total belanja, dan status. Untuk menghapus supplier, sistem memeriksa apakah supplier memiliki riwayat belanja. Jika supplier pernah digunakan untuk belanja, penghapusan tidak diizinkan untuk menjaga integritas data transaksi belanja dan sistem menampilkan peringatan.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Supplier
@@ -1207,6 +1235,8 @@ stop
 ---
 
 ## 15. Activity Diagram: Proses Mengelola Pekerja
+
+Activity diagram berikut menggambarkan alur proses pengelolaan data pekerja dalam sistem. Proses dimulai ketika pemilik membuka halaman Pekerja dan memilih aksi: Tambah, Kirim Ulang Undangan, Toggle Aktif/Nonaktif, Edit, Lihat Detail, atau Hapus. Untuk menambah pekerja, pemilik mengisi form dengan nama, email (unik), nomor telepon, jenis kelamin, dan foto (opsional) tanpa password. Pemilik juga memilih peran seperti Kasir, Produksi, atau Inventori. Sistem menyimpan data dengan status is_active=false, generate invitation token, dan mengirim email undangan aktivasi. Fitur Kirim Ulang Undangan digunakan untuk pekerja yang belum aktivasi. Fitur Toggle Aktif/Nonaktif memungkinkan pemilik mengontrol akses login pekerja. Fitur Lihat Detail menampilkan status, role, permission, dan riwayat aktivitas pekerja.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Pekerja
@@ -1336,6 +1366,8 @@ stop
 
 ## 16. Activity Diagram: Proses Mengelola Peran
 
+Activity diagram berikut menggambarkan alur proses pengelolaan peran (role) dan hak akses dalam sistem. Proses dimulai ketika pemilik membuka halaman Peran & Hak Akses dan memilih aksi: Tambah, Edit, Lihat Detail, atau Hapus. Untuk menambah peran, pemilik mengisi nama peran dan memilih hak akses (permission) dari berbagai grup seperti Kasir, Produksi, Inventori, dan Manajemen. Sistem melakukan validasi nama peran dan menyimpan relasi permission. Untuk mengedit peran, pemilik dapat mengubah nama dan permission, dimana perubahan permission langsung berlaku untuk semua user dengan peran tersebut. Fitur Lihat Detail menampilkan daftar permission dan user yang memiliki peran ini. Untuk menghapus peran, sistem memeriksa apakah peran digunakan oleh user. Jika peran masih digunakan, penghapusan tidak diizinkan.
+
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Peran
 
@@ -1430,6 +1462,8 @@ stop
 ---
 
 ## 17. Activity Diagram: Proses Mengelola Pelanggan
+
+Activity diagram berikut menggambarkan alur proses pengelolaan data pelanggan dan sistem poin loyalitas. Proses dimulai ketika pemilik membuka halaman Pelanggan dan memilih aksi: Tambah, Edit, Lihat Detail, Atur Poin, atau Hapus. Untuk menambah pelanggan, pemilik mengisi nama dan nomor telepon (unik). Sistem menyimpan data dengan poin awal 0. Fitur Lihat Detail menampilkan informasi pelanggan, total poin, riwayat poin (dapat poin dari transaksi, pakai poin untuk diskon), dan riwayat transaksi (nomor invoice, total belanja, status pembayaran). Fitur Atur Poin memungkinkan pemilik menambah atau mengurangi poin secara manual dengan mencatat alasan. Untuk menghapus pelanggan, sistem memeriksa apakah pelanggan memiliki transaksi. Jika ada transaksi, penghapusan tidak diizinkan untuk menjaga integritas data.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Pelanggan
@@ -1551,6 +1585,8 @@ stop
 
 ## 18. Activity Diagram: Proses Mengelola Metode Pembayaran
 
+Activity diagram berikut menggambarkan alur proses pengelolaan metode atau channel pembayaran. Proses dimulai ketika pemilik membuka halaman Metode Pembayaran dan memilih aksi: Tambah, Edit, Toggle Status, atau Hapus. Untuk menambah channel pembayaran, pemilik mengisi form dengan nama (BCA, Mandiri, QRIS, dll), tipe (Bank Transfer, E-Wallet, QRIS), nomor rekening/akun, dan nama pemilik rekening, serta menentukan status aktif. Fitur Toggle Status memungkinkan pemilik mengaktifkan atau menonaktifkan channel, dimana channel nonaktif tidak akan muncul di kasir saat transaksi. Untuk menghapus channel, sistem memeriksa apakah channel pernah digunakan dalam transaksi. Jika pernah digunakan, penghapusan tidak diizinkan dan sistem menyarankan untuk menonaktifkan saja agar integritas data transaksi tetap terjaga.
+
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Metode Pembayaran
 
@@ -1632,6 +1668,8 @@ stop
 ---
 
 ## 19. Activity Diagram: Proses Mengelola Profil Usaha
+
+Activity diagram berikut menggambarkan alur proses pengelolaan profil usaha atau toko. Proses dimulai ketika pemilik membuka halaman Profil Usaha dan sistem menampilkan data profil saat ini termasuk nama toko, alamat, nomor telepon, email, logo, deskripsi, dan jam operasional. Pemilik dapat memilih aksi: Edit Informasi Dasar (mengubah nama, alamat, telepon, email), Ubah Logo (memilih file gambar JPG/PNG maksimal 2MB yang akan di-resize dan disimpan ke storage), Atur Jam Operasional (mengatur jam buka, jam tutup, dan hari operasional), atau Ubah Deskripsi. Setiap perubahan akan divalidasi oleh sistem sebelum disimpan. Informasi profil usaha ini digunakan di berbagai tempat seperti struk transaksi dan tampilan toko.
 
 ```plantuml
 @startuml Activity Diagram - Proses Mengelola Profil Usaha
@@ -1726,6 +1764,8 @@ stop
 
 ## 20. Activity Diagram: Proses Notifikasi Otomatis
 
+Activity diagram berikut menggambarkan alur proses pengecekan dan notifikasi otomatis yang dijalankan oleh sistem scheduler setiap hari pukul 08:00. Proses ini berjalan secara paralel untuk dua pengecekan utama. Pertama, pengecekan stok rendah: sistem query semua bahan aktif, menghitung total stok dari batches, dan mengupdate status bahan menjadi "Kosong" (jika stok = 0), "Hampir Habis" (jika stok <= minimum), atau "Tersedia" (jika stok cukup). Jika ada bahan dengan stok rendah, sistem membuat notifikasi alert dan mengirim ke user dengan permission inventori. Kedua, pengecekan bahan expired: sistem query semua batches aktif dan memeriksa tanggal expired. Bahan yang sudah expired akan diupdate statusnya menjadi "Expired", dan bahan yang akan expired dalam 7 hari juga akan dicatat. Notifikasi alert expired dikirim ke user inventori.
+
 ```plantuml
 @startuml Activity Diagram - Notifikasi Otomatis
 
@@ -1793,6 +1833,8 @@ stop
 ---
 
 ## 21. Activity Diagram: Proses Reset Stok Produk Harian
+
+Activity diagram berikut menggambarkan alur proses reset stok produk harian yang dijalankan oleh sistem scheduler setiap hari pukul 00:00 (tengah malam). Proses dimulai dengan query semua produk dalam sistem. Untuk setiap produk yang memiliki stok lebih dari 0, sistem akan mereset stok menjadi 0 dan mencatat log reset. Produk yang sudah memiliki stok 0 akan di-skip. Setelah proses selesai, sistem mencatat log hasil reset dan mengirim notifikasi. Alasan dilakukannya reset harian adalah karena produk kue/roti bersifat perishable (mudah basi), sehingga stok tidak akumulatif antar hari. Produk yang tidak terjual dalam sehari dianggap tidak layak jual keesokan harinya.
 
 ```plantuml
 @startuml Activity Diagram - Reset Stok Produk Harian

@@ -14,10 +14,10 @@ I -> H: Akses halaman supplier
 activate H
 H -> S: mount()
 activate S
-S -> M: Supplier::withCount('shoppings')->get()
+S -> M: Supplier::withCount('expenses')->get()
 activate M
 M -> DB: SELECT * FROM suppliers
-M -> DB: SELECT COUNT shoppings
+M -> DB: SELECT COUNT expenses
 DB --> M: Data supplier
 M --> S: Collection supplier
 deactivate M
@@ -51,12 +51,12 @@ deactivate S
 I -> H: Klik nama supplier
 H -> S: showHistory(supplier)
 activate S
-S -> M: supplier->shoppings()->with('details')->get()
+S -> M: supplier->expenses()->with('details')->get()
 activate M
-M -> DB: SELECT * FROM shoppings WHERE supplier_id = ?
-M -> DB: SELECT * FROM shopping_details
+M -> DB: SELECT * FROM expenses WHERE supplier_id = ?
+M -> DB: SELECT * FROM expense_details
 DB --> M: Riwayat belanja
-M --> S: Collection shopping
+M --> S: Collection expense
 deactivate M
 S --> H: Tampilkan modal riwayat
 deactivate S
@@ -95,9 +95,9 @@ I -> H: Klik tombol Hapus
 H --> I: Konfirmasi hapus
 I -> S: delete(supplier)
 activate S
-S -> M: supplier->shoppings()->count()
+S -> M: supplier->expenses()->count()
 activate M
-M -> DB: SELECT COUNT FROM shoppings
+M -> DB: SELECT COUNT FROM expenses
 DB --> M: count
 M --> S: jumlah belanja
 deactivate M

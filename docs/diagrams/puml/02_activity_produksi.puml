@@ -21,10 +21,6 @@ if (Ada produksi menunggu?) then (Ya)
         
         |Sistem|
         :Mengurangi stok bahan baku;
-        note right
-          Pengurangan berdasarkan
-          komposisi produk (FIFO)
-        end note
         :Update status bahan otomatis;
         note right
           Status berubah berdasarkan:

@@ -122,7 +122,7 @@ class Mulai extends Component
                 $batchQty = $materialBatches->sum('batch_quantity');
                 $requiredQuantity = $parsed * $productComposition->material_quantity;
                 if ($batchQty < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
+                    $this->alert('error', 'Jumlah bahan baku produk '.$productionDetail->product->name.' tidak cukup untuk produksi ini.');
 
                     return;
                 }
@@ -134,17 +134,35 @@ class Mulai extends Component
                         break;
                     }
 
+                    $quantityUsed = 0;
+                    $quantityBefore = $batch->batch_quantity;
+
                     if ($batch->batch_quantity >= $remaining) {
                         // Batch ini cukup, kurangi langsung
+                        $quantityUsed = $remaining;
                         $batch->batch_quantity -= $remaining;
                         $batch->save();
                         $remaining = 0;
                     } else {
                         // Batch ini tidak cukup, habiskan batch ini dan lanjut
+                        $quantityUsed = $batch->batch_quantity;
                         $remaining -= $batch->batch_quantity;
                         $batch->batch_quantity = 0;
                         $batch->save();
                     }
+
+                    // Create inventory log untuk pengurangan stok (produksi)
+                    \App\Models\InventoryLog::create([
+                        'material_id' => $productComposition->material_id,
+                        'material_batch_id' => $batch->id,
+                        'user_id' => auth()->id(),
+                        'action' => 'produksi',
+                        'quantity_change' => -$quantityUsed,
+                        'quantity_after' => $batch->batch_quantity,
+                        'reference_type' => 'production',
+                        'reference_id' => $productionDetail->production_id,
+                        'note' => "Produksi: {$productionDetail->production->production_number} - {$productionDetail->product->name}",
+                    ]);
                 }
 
                 // Recalculate material status after batch quantity changes

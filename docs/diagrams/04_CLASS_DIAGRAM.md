@@ -6,6 +6,61 @@
 
 ## Class Diagram (PlantUML)
 
+Berikut adalah diagram kelas yang menggambarkan struktur dan komponen Sistem Informasi Manajemen Toko Kue. Diagram kelas ini memvisualisasikan berbagai kelas yang terlibat dalam sistem, beserta atribut dan relasi antar kelas tersebut. Terdapat beberapa kelas utama dalam sistem ini, yang dikelompokkan berdasarkan fungsinya:
+
+**Package User & Authentication:**
+1. **Class User**, kelas ini menyimpan data pengguna sistem (pekerja) termasuk nama, email, telepon, password, foto profil, dan status aktivasi. Kelas ini terintegrasi dengan Spatie Permission untuk manajemen role dan permission. Pada kelas ini terdapat method untuk aktivasi akun melalui invitation token.
+2. **Class SpatieRole**, kelas ini menyimpan data peran pengguna seperti Pemilik, Kasir, Produksi, dan Inventori. Setiap role dapat memiliki banyak permission.
+3. **Class Permission**, kelas ini menyimpan hak akses granular yang dapat dimiliki oleh role, seperti kasir.transaksi, produksi.mulai, inventori.belanja, dan lainnya.
+4. **Class Notification**, kelas ini menyimpan data notifikasi sistem seperti judul, isi, tipe, dan status sudah dibaca. Pada kelas ini terdapat Foreign Key user_id yang merupakan turunan dari kelas User.
+
+**Package Customer & Points:**
+5. **Class Customer**, kelas ini menyimpan data pelanggan seperti nama, nomor telepon, dan total poin loyalitas yang dimiliki.
+6. **Class PointsHistory**, kelas ini menyimpan riwayat perubahan poin pelanggan termasuk action (earn/use/manual_add/manual_deduct), jumlah poin, dan deskripsi. Pada kelas ini terdapat Foreign Key phone yang merupakan referensi ke Customer dan transaction_id yang merupakan turunan dari kelas Transaction.
+
+**Package Product Management:**
+7. **Class Product**, kelas ini menyimpan data produk yang dijual seperti nama, deskripsi, harga, stok, method penjualan (siap-beli/pesanan), modal produksi, dan informasi masa simpan berdasarkan suhu. Pada kelas ini terdapat Foreign Key category_id yang merupakan turunan dari kelas Category.
+8. **Class Category**, kelas ini menyimpan data kategori produk seperti nama dan deskripsi kategori.
+9. **Class ProductCategory**, kelas ini merupakan pivot table untuk relasi many-to-many antara Product dan Category. Pada kelas ini terdapat Foreign Key product_id dan category_id.
+10. **Class ProductComposition**, kelas ini menyimpan data komposisi bahan baku dari tiap produk berupa kuantitas dan satuan yang digunakan. Pada kelas ini terdapat Foreign Key product_id yang merupakan turunan dari kelas Product dan Foreign Key material_id yang merupakan turunan dari kelas Material.
+11. **Class OtherCost**, kelas ini menyimpan data biaya tambahan produksi seperti biaya gas, listrik, dan tenaga kerja. Pada kelas ini terdapat Foreign Key product_id dan type_cost_id.
+12. **Class TypeCost**, kelas ini menyimpan jenis-jenis biaya tambahan yang dapat digunakan oleh produk.
+
+**Package Material & Inventory:**
+13. **Class Material**, kelas ini menyimpan data bahan baku seperti nama, status (Tersedia/Hampir Habis/Kosong/Expired), stok minimum, deskripsi, dan status aktif. Material dapat memiliki resep jika merupakan bahan olahan.
+14. **Class MaterialBatch**, kelas ini menyimpan data batch bahan baku dengan sistem FIFO (First In First Out) termasuk kuantitas, tanggal expired, dan harga beli per batch. Pada kelas ini terdapat Foreign Key material_id yang merupakan turunan dari kelas Material.
+15. **Class MaterialDetail**, kelas ini menyimpan data satuan ukur yang dapat digunakan oleh bahan baku beserta kuantitas dasar konversinya. Pada kelas ini terdapat Foreign Key material_id dan unit_id.
+16. **Class Unit**, kelas ini menyimpan master data satuan pengukuran seperti kilogram (kg), gram (g), liter (L), butir, dan lainnya.
+17. **Class IngredientCategory**, kelas ini menyimpan data kategori bahan baku untuk pengelompokan.
+18. **Class IngredientCategoryDetail**, kelas ini merupakan pivot table untuk relasi bahan baku dengan kategorinya. Pada kelas ini terdapat Foreign Key ingredient_category_id dan material_id.
+19. **Class InventoryLog**, kelas ini menyimpan log pergerakan stok bahan baku termasuk action (belanja/produksi/penyesuaian/rusak/hilang), tipe (in/out), kuantitas, dan referensi ke dokumen terkait. Pada kelas ini terdapat Foreign Key material_id.
+
+**Package Transaction:**
+20. **Class Transaction**, kelas ini menyimpan data transaksi penjualan seperti nomor invoice, jadwal pengambilan, status transaksi (Antrian/Proses/Dapat Diambil/Selesai/Dibatalkan), status pembayaran (Lunas/Uang Muka), method (siap-beli/pesanan-reguler/pesanan-kotak), total amount, dan penggunaan poin. Pada kelas ini terdapat Foreign Key user_id dan customer_id.
+21. **Class TransactionDetail**, kelas ini menyimpan detail item dalam transaksi berupa kuantitas, harga, dan subtotal. Pada kelas ini terdapat Foreign Key transaction_id dan product_id.
+22. **Class Payment**, kelas ini menyimpan data pembayaran transaksi termasuk metode pembayaran, jumlah bayar, dan kembalian. Satu transaksi dapat memiliki banyak pembayaran (DP dan pelunasan). Pada kelas ini terdapat Foreign Key transaction_id dan payment_channel_id.
+23. **Class PaymentChannel**, kelas ini menyimpan data channel pembayaran seperti nama (BCA, Mandiri, QRIS), tipe (Bank Transfer, E-Wallet), nomor rekening, nama pemilik, dan status aktif.
+24. **Class Refund**, kelas ini menyimpan data pengembalian dana untuk transaksi yang dibatalkan termasuk jumlah refund dan alasan pembatalan. Pada kelas ini terdapat Foreign Key transaction_id.
+25. **Class Shift**, kelas ini menyimpan data sesi penjualan kasir termasuk nomor shift, kas awal, kas akhir, kas yang diharapkan, dan status shift. Pada kelas ini terdapat Foreign Key opened_by dan closed_by yang merupakan turunan dari kelas User.
+
+**Package Production:**
+26. **Class Production**, kelas ini menyimpan data produksi termasuk nomor produksi, method, status (Antrian/Proses/Selesai/Dibatalkan), dan flag is_start serta is_finish. Pada kelas ini terdapat Foreign Key transaction_id yang merupakan turunan dari kelas Transaction (jika produksi berasal dari pesanan).
+27. **Class ProductionDetail**, kelas ini menyimpan detail produk yang diproduksi berupa kuantitas. Pada kelas ini terdapat Foreign Key production_id dan product_id.
+28. **Class ProductionWorker**, kelas ini menyimpan data pekerja yang terlibat dalam produksi. Pada kelas ini terdapat Foreign Key production_id dan user_id.
+
+**Package Expense (Purchasing):**
+29. **Class Expense**, kelas ini menyimpan data belanja bahan baku termasuk nomor belanja, status (Rencana/Proses/Selesai/Dibatalkan), total perkiraan, dan total aktual. Pada kelas ini terdapat Foreign Key supplier_id yang merupakan turunan dari kelas Supplier.
+30. **Class ExpenseDetail**, kelas ini menyimpan detail bahan yang dibeli termasuk kuantitas dan harga (perkiraan vs aktual) serta tanggal expired. Pada kelas ini terdapat Foreign Key expense_id dan material_id.
+31. **Class Supplier**, kelas ini menyimpan data supplier bahan baku seperti nama, nomor telepon, dan alamat.
+
+**Package Stock Count (Hitung):**
+32. **Class Hitung**, kelas ini menyimpan data stock opname atau pencatatan rusak/hilang termasuk nomor hitung, action (hitung/rusak/hilang), dan status. Pada kelas ini terdapat Foreign Key user_id yang merupakan turunan dari kelas User.
+33. **Class HitungDetail**, kelas ini menyimpan detail bahan yang dihitung termasuk kuantitas sistem dan kuantitas aktual hasil penghitungan fisik. Pada kelas ini terdapat Foreign Key hitung_id dan material_id.
+
+**Package Store Settings:**
+34. **Class StoreProfile**, kelas ini menyimpan data profil toko seperti nama toko, deskripsi, alamat, nomor telepon, email, dan logo untuk keperluan tampilan dan struk transaksi.
+35. **Class StoreDocument**, kelas ini menyimpan dokumen-dokumen toko seperti izin usaha dengan informasi nama dokumen, path file, dan tipe dokumen.
+
 ```plantuml
 @startuml Class Diagram - Sistem Manajemen Toko Kue
 

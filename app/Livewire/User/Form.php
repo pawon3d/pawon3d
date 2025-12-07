@@ -31,6 +31,8 @@ class Form extends Component
 
     public $gender;
 
+    public $is_active;
+
     public $previewImage;
 
     public $roles;
@@ -56,8 +58,9 @@ class Form extends Component
             $this->phone = $user->phone;
             $this->gender = $user->gender;
             $this->role = $user->getRoleNames()->first();
+            $this->is_active = $user->is_active ?? true;
             if ($user->image) {
-                $this->previewImage = env('APP_URL').'/storage/'.$user->image;
+                $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
             }
             View::share('title', 'Rincian Pekerja');
         } else {
@@ -126,6 +129,7 @@ class Form extends Component
             'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/',
             'gender' => 'required',
             'role' => 'required',
+            'is_active' => 'required|boolean',
         ], [
             'password.required' => 'Password harus diisi.',
             'password.min' => 'Password minimal 8 karakter.',
@@ -136,12 +140,13 @@ class Form extends Component
             'email.unique' => 'Email sudah digunakan.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
             'role.required' => 'Peran harus dipilih.',
+            'is_active.required' => 'Status pekerja harus dipilih.',
         ]);
 
         // Check if the role has reached its maximum number of users
         $selectedRole = SpatieRole::where('name', $this->role)->first();
         if ($selectedRole && $selectedRole->hasReachedMaxUsers()) {
-            $this->addError('role', 'Peran "'.$selectedRole->name.'" sudah mencapai batas maksimum '.$selectedRole->max_users.' pekerja.');
+            $this->addError('role', 'Peran "' . $selectedRole->name . '" sudah mencapai batas maksimum ' . $selectedRole->max_users . ' pekerja.');
 
             return;
         }
@@ -152,6 +157,7 @@ class Form extends Component
         $user->password = bcrypt($this->password);
         $user->phone = $this->phone;
         $user->gender = $this->gender;
+        $user->is_active = $this->is_active;
         if ($this->image) {
             $user->image = $this->image->store('user_images', 'public');
         }
@@ -168,12 +174,13 @@ class Form extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$this->userId,
+            'email' => 'required|email|unique:users,email,' . $this->userId,
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/',
             'gender' => 'required',
             'role' => 'required',
+            'is_active' => 'required|boolean',
         ], [
             'password.min' => 'Password minimal 8 karakter.',
             'password.alpha_num' => 'Password harus terdiri dari huruf dan angka.',
@@ -187,6 +194,7 @@ class Form extends Component
             'email.required' => 'Email harus diisi.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
             'role.required' => 'Peran harus dipilih.',
+            'is_active.required' => 'Status pekerja harus dipilih.',
         ]);
 
         $user = User::findOrFail($this->userId);
@@ -196,7 +204,7 @@ class Form extends Component
         if ($currentRole !== $this->role) {
             $selectedRole = SpatieRole::where('name', $this->role)->first();
             if ($selectedRole && $selectedRole->hasReachedMaxUsers()) {
-                $this->addError('role', 'Peran "'.$selectedRole->name.'" sudah mencapai batas maksimum '.$selectedRole->max_users.' pekerja.');
+                $this->addError('role', 'Peran "' . $selectedRole->name . '" sudah mencapai batas maksimum ' . $selectedRole->max_users . ' pekerja.');
 
                 return;
             }
@@ -210,9 +218,10 @@ class Form extends Component
         }
         $user->phone = $this->phone;
         $user->gender = $this->gender;
+        $user->is_active = $this->is_active;
         if ($this->image) {
             if ($user->image) {
-                $oldImagePath = public_path('storage/'.$user->image);
+                $oldImagePath = public_path('storage/' . $user->image);
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
@@ -247,7 +256,7 @@ class Form extends Component
     {
         $user = User::findOrFail($this->userId);
         if ($user->image) {
-            $oldImagePath = public_path('storage/'.$user->image);
+            $oldImagePath = public_path('storage/' . $user->image);
             if (file_exists($oldImagePath)) {
                 unlink($oldImagePath);
             }

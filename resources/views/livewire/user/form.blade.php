@@ -233,6 +233,28 @@
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
+                <!-- Status Pekerja -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-4">
+                        <p class="text-base font-medium text-[#666666]">Status Pekerja</p>
+                        <p class="text-sm font-normal text-[#666666]">
+                            Pilih status pekerja seperti <span class="font-bold">Aktif</span> atau <span
+                                class="font-bold">Nonaktif/Dinonaktifkan.</span> Aktif jika pekerja masih bekerja dan
+                            nonaktif jika pekerja bermasalah, berhenti atau keluar dari pekerjaan.
+                        </p>
+                    </div>
+                    <select wire:model="is_active"
+                        class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666] appearance-none cursor-pointer"
+                        style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23666666%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;">
+                        <option value="" class="text-[#959595]">Pilih Status</option>
+                        <option value="true">Aktif</option>
+                        <option value="false">Nonaktif/Dinonaktifkan</option>
+                    </select>
+                    @error('is_active')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
         </div>
     </div>
@@ -308,6 +330,8 @@
                                             'gender' => 'Jenis Kelamin',
                                             'image' => 'Foto',
                                             'password' => 'Kata Sandi',
+                                            'role' => 'Peran',
+                                            'is_active' => 'Status Aktif',
                                         ];
                                     @endphp
                                     @foreach ($new as $field => $newValue)

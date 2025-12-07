@@ -68,6 +68,7 @@
             ['label' => 'Nama Satuan', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Singkatan', 'sortable' => true, 'sort-by' => 'alias'],
             ['label' => 'Kelompok Satuan', 'sortable' => true, 'sort-by' => 'group'],
+            ['label' => 'Konversi', 'sortable' => false],
             [
                 'label' => 'Jumlah Penggunaan',
                 'sortable' => true,
@@ -93,6 +94,16 @@
                             Jumlah
                         @else
                             -
+                        @endif
+                    </td>
+                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                        @if ($unit->base_unit_id && $unit->conversion_factor)
+                            <span class="text-xs bg-[#e8f4f8] text-[#0066cc] px-2 py-1 rounded">
+                                1 {{ $unit->name ?? '-' }} = {{ number_format($unit->conversion_factor, 3) }}
+                                {{ $unit->baseUnit->name }}
+                            </span>
+                        @else
+                            <span class="text-[#959595]">-</span>
                         @endif
                     </td>
                     <td class="px-6 py-5 text-right text-[#666666] font-medium text-sm">
@@ -143,6 +154,43 @@
                         <input type="text" id="alias" wire:model.lazy="alias" placeholder="Contoh : gr"
                             class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] text-base text-[#959595] focus:outline-none focus:border-[#666666]" />
                         @error('alias')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Divider untuk Unit Konversi -->
+                    <div class="my-6 h-px bg-[#d4d4d4]"></div>
+                    <p class="text-sm font-medium text-[#666666] text-center mb-4">Unit Konversi (Opsional)</p>
+
+                    <!-- Unit Dasar -->
+                    <div class="space-y-2.5">
+                        <label for="base_unit_id" class="block text-lg font-medium text-[#333333]">Unit Dasar</label>
+                        <div class="relative">
+                            <select id="base_unit_id" wire:model.lazy="base_unit_id"
+                                class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] text-base text-[#959595] focus:outline-none focus:border-[#666666] appearance-none">
+                                <option value="">-- Tidak Ada Unit Dasar --</option>
+                                @foreach ($baseUnits as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <p class="text-xs text-[#959595] mt-1">Pilih unit dasar jika satuan ini adalah konversi dari
+                            unit lain</p>
+                        @error('base_unit_id')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Faktor Konversi -->
+                    <div class="space-y-2.5">
+                        <label for="conversion_factor" class="block text-lg font-medium text-[#333333]">Faktor
+                            Konversi</label>
+                        <input type="number" id="conversion_factor" wire:model.lazy="conversion_factor"
+                            placeholder="Contoh: 1000 (1 kg = 1000 gram)" step="0.001"
+                            class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] text-base text-[#959595] focus:outline-none focus:border-[#666666]" />
+                        <p class="text-xs text-[#959595] mt-1">Berapa banyak unit ini untuk 1 unit dasar (misal: 1 kg =
+                            1000 gram)</p>
+                        @error('conversion_factor')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
@@ -212,6 +260,48 @@
                             <input type="text" id="edit_alias" wire:model.lazy="alias"
                                 class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666]" />
                             @error('alias')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Divider untuk Unit Konversi -->
+                    <div class="my-6 h-px bg-[#d4d4d4]"></div>
+                    <p class="text-sm font-medium text-[#666666] text-center mb-4">Unit Konversi (Opsional)</p>
+
+                    <!-- Unit Dasar -->
+                    <div class="space-y-5">
+                        <div class="space-y-2.5">
+                            <label for="edit_base_unit_id" class="block text-lg font-medium text-[#333333]">Unit
+                                Dasar</label>
+                            <div class="relative">
+                                <select id="edit_base_unit_id" wire:model.lazy="base_unit_id"
+                                    class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666] appearance-none">
+                                    <option value="">-- Tidak Ada Unit Dasar --</option>
+                                    @foreach ($baseUnits as $id => $name)
+                                        @if ($id !== $unit_id)
+                                            <option value="{{ $id }}">{{ $name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                            <p class="text-xs text-[#959595] mt-1">Pilih unit dasar jika satuan ini adalah konversi
+                                dari unit lain</p>
+                            @error('base_unit_id')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <!-- Faktor Konversi -->
+                        <div class="space-y-2.5">
+                            <label for="edit_conversion_factor"
+                                class="block text-lg font-medium text-[#333333]">Faktor Konversi</label>
+                            <input type="number" id="edit_conversion_factor" wire:model.lazy="conversion_factor"
+                                placeholder="Contoh: 1000 (1 kg = 1000 gram)" step="0.001"
+                                class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666]" />
+                            <p class="text-xs text-[#959595] mt-1">Berapa banyak unit ini untuk 1 unit dasar (misal: 1
+                                kg = 1000 gram)</p>
+                            @error('conversion_factor')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>

@@ -183,7 +183,7 @@ class Rincian extends Component
 
         $affectedMaterialIds = collect();
 
-        $expense->expenseDetails->each(function ($detail) use ($affectedMaterialIds) {
+        $expense->expenseDetails->each(function ($detail) use (&$affectedMaterialIds, $expense) {
             $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
                 ->where('unit_id', $detail->unit_id)
                 ->first();
@@ -197,7 +197,7 @@ class Rincian extends Component
             $affectedMaterialIds->push($detail->material_id);
 
             // Generate a batch number if not present in detail
-            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
+            $batchNumber = 'B-'.Carbon::parse($detail->expiry_date)->format('ymd');
 
             // Cek apakah sudah ada batch dengan batch_number dan unit_id yang sama
             $materialBatch = \App\Models\MaterialBatch::where('batch_number', $batchNumber)
@@ -206,18 +206,45 @@ class Rincian extends Component
 
             if ($materialBatch) {
                 // Jika ada, update batch_quantity
+                $quantityBefore = $materialBatch->batch_quantity;
                 $materialBatch->update([
                     'batch_quantity' => $materialBatch->batch_quantity + $detail->quantity_get,
                     'date' => $detail->expiry_date,
                     'material_id' => $detail->material_id,
                 ]);
+
+                // Create inventory log untuk penambahan stok
+                \App\Models\InventoryLog::create([
+                    'material_id' => $detail->material_id,
+                    'material_batch_id' => $materialBatch->id,
+                    'user_id' => auth()->id(),
+                    'action' => 'belanja',
+                    'quantity_change' => $detail->quantity_get,
+                    'quantity_after' => $materialBatch->batch_quantity,
+                    'reference_type' => 'expense',
+                    'reference_id' => $expense->id,
+                    'note' => "Belanja: {$expense->expense_number}",
+                ]);
             } else {
                 // Jika tidak ada, create baru
-                \App\Models\MaterialBatch::create([
+                $newBatch = \App\Models\MaterialBatch::create([
                     'unit_id' => $detail->unit_id,
                     'material_id' => $detail->material_id,
                     'batch_quantity' => $detail->quantity_get,
                     'date' => $detail->expiry_date,
+                ]);
+
+                // Create inventory log untuk penambahan stok
+                \App\Models\InventoryLog::create([
+                    'material_id' => $detail->material_id,
+                    'material_batch_id' => $newBatch->id,
+                    'user_id' => auth()->id(),
+                    'action' => 'belanja',
+                    'quantity_change' => $detail->quantity_get,
+                    'quantity_after' => $detail->quantity_get,
+                    'reference_type' => 'expense',
+                    'reference_id' => $expense->id,
+                    'note' => "Belanja: {$expense->expense_number}",
                 ]);
             }
         });

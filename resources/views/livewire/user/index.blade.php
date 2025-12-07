@@ -93,7 +93,7 @@
                             @endif
                             @if ($user->id !== auth()->id())
                                 <flux:button size="xs" variant="ghost"
-                                    icon="{{ $user->is_active ? 'eye-slash' : 'eye' }}"
+                                    icon="{{ $user->is_active ? 'pause-circle' : 'play-circle' }}"
                                     wire:click="toggleActive('{{ $user->id }}')"
                                     title="{{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
                                 </flux:button>
@@ -136,6 +136,8 @@
                                     'gender' => 'Jenis Kelamin',
                                     'image' => 'Foto',
                                     'password' => 'Kata Sandi',
+                                    'role' => 'Peran',
+                                    'is_active' => 'Status Aktif',
                                 ];
                             @endphp
                             <div class="mt-2 text-xs space-y-1 bg-gray-50 rounded p-2">

@@ -62,6 +62,12 @@ class Index extends Component
 
     public $usageSortDirection = 'asc';
 
+    public $base_unit_id = null;
+
+    public $conversion_factor = null;
+
+    public $baseUnits = [];
+
     protected $listeners = [
         'delete',
         'cancelled',
@@ -71,6 +77,8 @@ class Index extends Component
         'name' => 'required|min:3|unique:units,name',
         'alias' => 'required|min:1',
         'group' => 'required',
+        'base_unit_id' => 'nullable|exists:units,id',
+        'conversion_factor' => 'nullable|numeric|min:0.001',
     ];
 
     protected $messages = [
@@ -80,6 +88,9 @@ class Index extends Component
         'alias.required' => 'Singkatan tidak boleh kosong',
         'alias.min' => 'Singkatan minimal 1 karakter',
         'group.required' => 'Kelompok satuan harus dipilih',
+        'base_unit_id.exists' => 'Unit dasar yang dipilih tidak ditemukan',
+        'conversion_factor.numeric' => 'Faktor konversi harus berupa angka',
+        'conversion_factor.min' => 'Faktor konversi minimal 0.001',
     ];
 
     protected $queryString = ['search', 'filterStatus',  'sortField', 'sortDirection'];
@@ -109,6 +120,15 @@ class Index extends Component
     {
         View::share('title', 'Satuan Ukur');
         View::share('mainTitle', 'Inventori');
+        $this->loadBaseUnits();
+    }
+
+    protected function loadBaseUnits()
+    {
+        $this->baseUnits = Unit::whereNull('base_unit_id')
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     }
 
     public function render()
@@ -134,15 +154,27 @@ class Index extends Component
             'name' => 'required|min:3|unique:units,name',
             'alias' => 'required|min:1',
             'group' => 'required',
+            'base_unit_id' => 'nullable|exists:units,id',
+            'conversion_factor' => 'nullable|numeric|min:0.001',
         ]);
+
+        // Validasi: jika ada base_unit_id, conversion_factor harus diisi
+        if ($this->base_unit_id && ! $this->conversion_factor) {
+            $this->addError('conversion_factor', 'Faktor konversi harus diisi jika unit dasar dipilih');
+
+            return;
+        }
 
         Unit::create([
             'name' => $this->name,
             'alias' => $this->alias,
             'group' => $this->group,
+            'base_unit_id' => $this->base_unit_id ?: null,
+            'conversion_factor' => $this->conversion_factor ?: null,
         ]);
 
         $this->resetForm();
+        $this->loadBaseUnits();
         $this->alert('success', 'Satuan Ukur berhasil ditambahkan');
         $this->showModal = false;
     }
@@ -160,6 +192,8 @@ class Index extends Component
         $this->name = $unit->name;
         $this->alias = $unit->alias;
         $this->group = $unit->group;
+        $this->base_unit_id = $unit->base_unit_id;
+        $this->conversion_factor = $unit->conversion_factor;
 
         // Load materials that use this unit
         $this->usageSearch = '';
@@ -298,13 +332,31 @@ class Index extends Component
                 'min:3',
                 Rule::unique('units')->ignore($this->unit_id),
             ],
+            'base_unit_id' => 'nullable|exists:units,id',
+            'conversion_factor' => 'nullable|numeric|min:0.001',
         ]);
+
+        // Validasi: jika ada base_unit_id, conversion_factor harus diisi
+        if ($this->base_unit_id && ! $this->conversion_factor) {
+            $this->addError('conversion_factor', 'Faktor konversi harus diisi jika unit dasar dipilih');
+
+            return;
+        }
+
+        // Validasi: unit tidak boleh reference dirinya sendiri sebagai base_unit
+        if ($this->base_unit_id === $this->unit_id) {
+            $this->addError('base_unit_id', 'Unit tidak boleh menjadi referensi dari dirinya sendiri');
+
+            return;
+        }
 
         $unit = \App\Models\Unit::find($this->unit_id);
         $unit->update([
             'name' => $this->name,
             'alias' => $this->alias,
             'group' => $this->group,
+            'base_unit_id' => $this->base_unit_id ?: null,
+            'conversion_factor' => $this->conversion_factor ?: null,
         ]);
         $this->alert('success', 'Satuan Ukur berhasil diperbarui');
         $this->showEditModal = false;
@@ -363,5 +415,9 @@ class Index extends Component
         $this->usageMaterials = [];
         $this->usageSearch = '';
         $this->usagePage = 1;
+        $this->base_unit_id = null;
+        $this->conversion_factor = null;
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 }

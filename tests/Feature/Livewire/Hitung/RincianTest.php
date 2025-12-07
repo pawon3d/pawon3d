@@ -329,3 +329,117 @@ test('finish catat rusak keeps non-expired batch when quantity becomes zero', fu
     expect(MaterialBatch::find($batchId))->not->toBeNull();
     expect((float) $nonExpiredBatch->batch_quantity)->toBe(0.0);
 });
+
+test('finish hitung persediaan creates inventory log', function () {
+    $hitung = Hitung::create([
+        'hitung_number' => 'HP-'.now()->format('ymd').'-0030',
+        'action' => 'Hitung Persediaan',
+        'hitung_date' => now(),
+        'status' => 'Sedang Diproses',
+        'is_start' => true,
+        'is_finish' => false,
+        'grand_total' => 50000,
+        'loss_grand_total' => 0,
+        'user_id' => $this->user->id,
+    ]);
+
+    HitungDetail::create([
+        'hitung_id' => $hitung->id,
+        'material_id' => $this->material->id,
+        'material_batch_id' => $this->batch->id,
+        'quantity_expect' => 100,
+        'quantity_actual' => 95,
+        'total' => 50000,
+        'loss_total' => 0,
+    ]);
+
+    expect(\App\Models\InventoryLog::count())->toBe(0);
+
+    Livewire::test(Rincian::class, ['id' => $hitung->id])
+        ->call('finish');
+
+    expect(\App\Models\InventoryLog::count())->toBe(1);
+
+    $log = \App\Models\InventoryLog::first();
+    expect($log->action)->toBe('hitung')
+        ->and((float) $log->quantity_change)->toBe(-5.0)
+        ->and((float) $log->quantity_after)->toBe(95.0)
+        ->and($log->reference_type)->toBe('hitung')
+        ->and($log->reference_id)->toEqual($hitung->id);
+});
+
+test('finish catat rusak creates inventory log', function () {
+    $hitung = Hitung::create([
+        'hitung_number' => 'CPR-'.now()->format('ymd').'-0031',
+        'action' => 'Catat Persediaan Rusak',
+        'hitung_date' => now(),
+        'status' => 'Sedang Diproses',
+        'is_start' => true,
+        'is_finish' => false,
+        'grand_total' => 10000,
+        'loss_grand_total' => 10000,
+        'user_id' => $this->user->id,
+    ]);
+
+    HitungDetail::create([
+        'hitung_id' => $hitung->id,
+        'material_id' => $this->material->id,
+        'material_batch_id' => $this->batch->id,
+        'quantity_expect' => 100,
+        'quantity_actual' => 10,
+        'total' => 10000,
+        'loss_total' => 10000,
+    ]);
+
+    expect(\App\Models\InventoryLog::count())->toBe(0);
+
+    Livewire::test(Rincian::class, ['id' => $hitung->id])
+        ->call('finish');
+
+    expect(\App\Models\InventoryLog::count())->toBe(1);
+
+    $log = \App\Models\InventoryLog::first();
+    expect($log->action)->toBe('rusak')
+        ->and((float) $log->quantity_change)->toBe(-10.0)
+        ->and((float) $log->quantity_after)->toBe(90.0)
+        ->and($log->reference_type)->toBe('hitung')
+        ->and($log->reference_id)->toEqual($hitung->id);
+});
+
+test('finish catat hilang creates inventory log', function () {
+    $hitung = Hitung::create([
+        'hitung_number' => 'CPH-'.now()->format('ymd').'-0032',
+        'action' => 'Catat Persediaan Hilang',
+        'hitung_date' => now(),
+        'status' => 'Sedang Diproses',
+        'is_start' => true,
+        'is_finish' => false,
+        'grand_total' => 5000,
+        'loss_grand_total' => 5000,
+        'user_id' => $this->user->id,
+    ]);
+
+    HitungDetail::create([
+        'hitung_id' => $hitung->id,
+        'material_id' => $this->material->id,
+        'material_batch_id' => $this->batch->id,
+        'quantity_expect' => 100,
+        'quantity_actual' => 5,
+        'total' => 5000,
+        'loss_total' => 5000,
+    ]);
+
+    expect(\App\Models\InventoryLog::count())->toBe(0);
+
+    Livewire::test(Rincian::class, ['id' => $hitung->id])
+        ->call('finish');
+
+    expect(\App\Models\InventoryLog::count())->toBe(1);
+
+    $log = \App\Models\InventoryLog::first();
+    expect($log->action)->toBe('hilang')
+        ->and((float) $log->quantity_change)->toBe(-5.0)
+        ->and((float) $log->quantity_after)->toBe(95.0)
+        ->and($log->reference_type)->toBe('hitung')
+        ->and($log->reference_id)->toEqual($hitung->id);
+});
