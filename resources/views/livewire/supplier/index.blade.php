@@ -1,7 +1,7 @@
 <div>
     <div class="mb-6 flex justify-between items-center">
         <div class="flex gap-4 items-center">
-            <a href="{{ route('belanja') }}"
+            <a href="{{ route('belanja') }}" wire:navigate
                 class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
@@ -34,7 +34,8 @@
                     <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
                 </div>
             </div>
-            <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}">
+            <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}"
+                wire:navigate>
                 Tambah Toko
             </flux:button>
         </div>
@@ -59,7 +60,7 @@
             @foreach ($suppliers as $supplier)
                 <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors">
                     <td class="px-6 py-0">
-                        <a href="{{ route('supplier.edit', $supplier->id) }}" class="block">
+                        <a href="{{ route('supplier.edit', $supplier->id) }}" class="block" wire:navigate>
                             <span class="font-montserrat font-medium text-[14px] text-[#666666]">
                                 {{ $supplier->name }}
                             </span>

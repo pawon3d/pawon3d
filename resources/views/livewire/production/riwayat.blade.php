@@ -1,7 +1,7 @@
 <div>
     <!-- Header dengan tombol kembali dan judul -->
     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
-        <a href="{{ route('produksi') }}"
+        <a href="{{ route('produksi') }}" wire:navigate
             style="background-color: #313131; color: white; padding: 10px 25px; border-radius: 15px; display: flex; align-items: center; gap: 5px; text-decoration: none; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);"
             wire:navigate>
             <flux:icon.arrow-left style="width: 20px; height: 20px;" />
@@ -61,7 +61,7 @@
                 <tr>
                     <!-- ID Produksi -->
                     <td style="padding: 0 25px; height: 60px;">
-                        <a href="{{ route('produksi.rincian', $production->id) }}"
+                        <a href="{{ route('produksi.rincian', $production->id) }}" wire:navigate
                             style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-decoration: none;">
                             {{ $production->production_number }}
                         </a>

@@ -3,7 +3,7 @@
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <a href="{{ route('produksi.rincian', $production_id) }}"
+                <a href="{{ route('produksi.rincian', $production_id) }}" wire:navigate
                     style="background: #313131; color: #f6f6f6; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
                     <svg style="width: 20px; height: 20px; fill: #ffffff;" viewBox="0 0 20 20">
                         <path
@@ -132,7 +132,7 @@
 
         <!-- Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
-            <a href="{{ route('produksi.rincian', $production_id) }}"
+            <a href="{{ route('produksi.rincian', $production_id) }}" wire:navigate
                 style="background: #c4c4c4; color: #333333; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
                 <svg style="width: 20px; height: 20px; fill: #333333;" viewBox="0 0 20 20">
                     <path

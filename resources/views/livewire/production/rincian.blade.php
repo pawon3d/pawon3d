@@ -2,7 +2,7 @@
     {{-- Header Section --}}
     <div class="flex items-center justify-between mb-[30px]">
         <div class="flex items-center gap-[15px]">
-            <a href="{{ route('produksi') }}"
+            <a href="{{ route('produksi') }}" wire:navigate
                 class="bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
                 <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 16L6 10L12 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"
@@ -394,7 +394,7 @@
                         Produksi</span>
                 </button>
                 @if ($total_quantity_get < $total_quantity_plan)
-                    <a href="{{ route('produksi.mulai', $production->id) }}"
+                    <a href="{{ route('produksi.mulai', $production->id) }}" wire:navigate
                         class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -419,7 +419,7 @@
                     </svg>
                 </button>
                 @if ($production->method != 'siap-beli' && $total_quantity_get <= 0)
-                    <a href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}"
+                    <a href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}" wire:navigate
                         class="bg-[#666666] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
                         <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none"
                             xmlns="http://www.w3.org/2000/svg">

@@ -1,6 +1,6 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('produksi') }}"
+        <a href="{{ route('produksi') }}" wire:navigate
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
@@ -195,7 +195,7 @@
 
 
     <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('produksi') }}"
+        <a href="{{ route('produksi') }}" wire:navigate
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal

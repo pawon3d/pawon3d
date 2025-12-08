@@ -64,9 +64,9 @@
                             :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
                             {{ __('Bahan Baku') }}
                         </flux:navlist.item>
-                        <flux:navlist.item :href="route('supplier')"
+                        {{-- <flux:navlist.item :href="route('supplier')"
                             :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
-                            {{ __('Toko Persediaan') }}</flux:navlist.item>
+                            {{ __('Toko Persediaan') }}</flux:navlist.item> --}}
                     @endcan
                     @can('inventori.belanja.rencana.kelola')
                         <flux:navlist.item :href="route('belanja')"
@@ -92,17 +92,6 @@
                 </flux:navlist.group>
             @endcanany
 
-            {{-- @canany(['Manajemen Sistem', 'Kasir'])
-            <flux:navlist.group heading="Penilaian" expandable :expanded="false" icon="star" iconVariant="solid">
-                <flux:navlist.item :href="route('hadiah')" :current="request()->routeIs('hadiah') || request()->routeIs('hadiah.didapat') || request()->routeIs(
-                        'hadiah.ditukar')" wire:navigate>
-                    {{ __('Hadiah') }}
-            </flux:navlist.item>
-            <flux:navlist.item :href="route('penukaran')" :current="request()->routeIs('penukaran')" wire:navigate>
-                {{ __('Penilaian') }}</flux:navlist.item>
-            </flux:navlist.group>
-            @endcanany --}}
-
             @can('manajemen.pelanggan.kelola')
                 <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer')"
                     icon="user-group" wire:navigate>
@@ -111,7 +100,8 @@
             @endcan
             @canany(['manajemen.pekerja.kelola', 'manajemen.peran.kelola'])
                 <flux:navlist.group onclick="openSidebar()" heading="Karyawan" expandable icon="id-card"
-                    :expanded="false">
+                    :expanded="false"
+                    current="{{ Str::startsWith(Route::currentRouteName(), 'user') || Str::startsWith(Route::currentRouteName(), 'role') || Str::startsWith(Route::currentRouteName(), 'user.tambah') || Str::startsWith(Route::currentRouteName(), 'user.edit') || Str::startsWith(Route::currentRouteName(), 'role.tambah') || Str::startsWith(Route::currentRouteName(), 'role.edit') }}">
                     @can('manajemen.pekerja.kelola')
                         <flux:navlist.item :href="route('user')"
                             :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
@@ -125,7 +115,8 @@
                 </flux:navlist.group>
             @endcanany
             <flux:navlist.item solo="true" :href="route('pengaturan')" icon="cog-6-tooth"
-                :current="request()->routeIs('pengaturan')" wire:navigate>{{ __('Pengaturan') }}
+                :current="request()->routeIs('pengaturan') || request()->routeIs('profil-saya') || request()->routeIs('profil-usaha') || request()->routeIs('metode-pembayaran') || request()->routeIs('notifikasi')"
+                wire:navigate>{{ __('Pengaturan') }}
             </flux:navlist.item>
         </flux:navlist>
 

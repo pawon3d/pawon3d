@@ -2,7 +2,7 @@
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
-            <a href="{{ route('user') }}"
+            <a href="{{ route('user') }}" wire:navigate
                 class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
                 wire:navigate>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

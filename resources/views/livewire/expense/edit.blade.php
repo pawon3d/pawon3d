@@ -1,6 +1,7 @@
 <div class="space-y-[30px]">
     <div class="flex items-center justify-between gap-[15px] flex-wrap">
-        <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja.rincian', $expense_id) }}">
+        <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja.rincian', $expense_id) }}"
+            wire:navigate>
             Kembali
         </flux:button>
         <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Ubah Daftar Belanja</h1>

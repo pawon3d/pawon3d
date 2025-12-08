@@ -384,7 +384,7 @@
 
     {{-- Action Buttons --}}
     <div class="flex justify-end gap-4 mt-6">
-        <flux:button href="{{ route('pengaturan') }}" icon="x-mark">Batal</flux:button>
+        <flux:button href="{{ route('pengaturan') }}" icon="x-mark" wire:navigate>Batal</flux:button>
         <flux:button wire:click="updateStore" icon="save" variant="primary">Simpan</flux:button>
     </div>
 

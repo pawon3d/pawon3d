@@ -1,7 +1,7 @@
 <div>
     {{-- Header: Back Button + Title --}}
     <div class="flex items-center gap-4 mb-5">
-        <a href="{{ route('produksi') }}"
+        <a href="{{ route('produksi') }}" wire:navigate
             class="inline-flex items-center gap-[5px] px-[25px] py-[10px] bg-[#313131] text-white rounded-[15px] shadow-sm hover:bg-[#252324] transition font-['Montserrat'] font-semibold text-[16px]"
             wire:navigate>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
                 @endphp
                 <tr class="border-b border-[#d4d4d4] hover:bg-[#f5f5f5]">
                     <td class="px-[25px] py-4">
-                        <a href="{{ route('produksi.rincian-pesanan', $transaction->id) }}"
+                        <a href="{{ route('produksi.rincian-pesanan', $transaction->id) }}" wire:navigate
                             class="font-['Montserrat'] font-medium text-[14px] text-[#666666] hover:underline">
                             {{ $transaction->invoice_number }}
                         </a>

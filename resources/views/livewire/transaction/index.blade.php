@@ -12,6 +12,7 @@
                     <span>Tutup Sesi Penjualan</span>
                 </button>
                 <flux:button type="button" variant="secondary" href="{{ route('transaksi.riwayat-sesi') }}"
+                    wire:navigate
                     class="inline-flex items-center justify-center px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors">
                     <flux:icon icon="history" class="size-5" />
                 </flux:button>

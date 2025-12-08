@@ -374,7 +374,8 @@
 
                 @if ($is_other)
                     <div class="flex justify-end gap-4">
-                        <flux:button variant="primary" icon="bolt" href="{{ route('jenis-biaya') }}">
+                        <flux:button variant="primary" icon="bolt" href="{{ route('jenis-biaya') }}"
+                            wire:navigate>
                             Jenis Biaya Produksi
                         </flux:button>
                         <flux:button type="button" wire:click="addOther" variant="primary" icon="plus">

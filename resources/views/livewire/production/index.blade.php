@@ -76,7 +76,7 @@
             <div class="flex items-center gap-3">
                 @if ($method === 'siap-beli')
                     <flux:button variant="primary" icon="list-bullet" href="{{ route('produksi.antrian-produksi') }}"
-                        wire:navigate>
+                        wire:navigate wire:navigate>
                         Antrian Produksi
                     </flux:button>
                 @else
@@ -144,11 +144,11 @@
                     <td class="px-6 py-5 w-[180px]">
                         @if ($method == 'siap-beli')
                             <a href="{{ route('produksi.rincian-siap-beli', ['id' => $production->id]) }}"
-                                class="text-[14px] font-medium text-[#666666] hover:underline">
+                                wire:navigate class="text-[14px] font-medium text-[#666666] hover:underline">
                                 {{ $production->production_number }}
                             </a>
                         @else
-                            <a href="{{ route('produksi.rincian', $production->id) }}"
+                            <a href="{{ route('produksi.rincian', $production->id) }}" wire:navigate
                                 class="text-[14px] font-medium text-[#666666] hover:underline">
                                 {{ $production->production_number }}
                             </a>

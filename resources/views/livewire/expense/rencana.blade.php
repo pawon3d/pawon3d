@@ -30,7 +30,8 @@
                     <p class="font-montserrat font-medium text-[16px] text-[#666666] px-1.5 py-2.5">Filter</p>
                 </div>
             </div>
-            <flux:button type="button" variant="primary" icon="plus" href="{{ route('belanja.tambah') }}">
+            <flux:button type="button" variant="primary" icon="plus" href="{{ route('belanja.tambah') }}"
+                wire:navigate>
                 Tambah Belanja
             </flux:button>
         </div>

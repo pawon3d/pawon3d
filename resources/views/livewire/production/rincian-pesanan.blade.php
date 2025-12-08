@@ -3,7 +3,7 @@
     <div
         style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-            <a href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}"
+            <a href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}" wire:navigate
                 style="background: #313131; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; padding: 10px 25px; text-decoration: none;">
                 <svg style="width: 20px; height: 20px; min-width: 20px;" viewBox="0 0 20 20" fill="none"
                     xmlns="http://www.w3.org/2000/svg">

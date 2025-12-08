@@ -4,9 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PdfController;
 use App\Livewire\ActivateAccount;
 use App\Livewire\User\Index;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::get('/', App\Livewire\Landing\Index::class)->name('home');
 Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
@@ -59,12 +57,6 @@ Route::get('/laporan-inventori/pdf', [PdfController::class, 'laporanInventori'])
     ->name('laporan-inventori.pdf');
 
 Route::middleware(['auth'])->group(function () {
-    // Route::redirect('settings', 'settings/profile');
-
-    // Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    // Volt::route('settings/password', 'settings.password')->name('settings.password');
-    // Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
-
     // Pekerja routes
     Route::middleware(['permission:manajemen.pekerja.kelola'])->group(function () {
         Route::get('/pekerja', Index::class)->name('user');
@@ -87,47 +79,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pelanggan/{id}/rincian', App\Livewire\Customer\Show::class)->name('customer.show');
     });
 
-    Route::post('/read-notification/{id}', function ($id) {
-        $notification = \App\Models\Notification::find($id);
-        $notification->update(['is_read' => true]);
-
-        return response()->json(['message' => 'Notifikasi telah dibaca']);
-    })->name('read-notification');
-
-    Route::post('/read-all-notification', function () {
-        $user = Auth::user();
-        \App\Models\Notification::where('user_id', $user->id)->update(['is_read' => true]);
-
-        return response()->json(['message' => 'Semua notifikasi telah dibaca']);
-    })->name('read-all-notification');
-
     Route::get('/notifikasi', App\Livewire\Notification\Index::class)->name('notifikasi');
 
     Route::group(['middleware' => ['permission:inventori.produk.kelola|inventori.persediaan.kelola|inventori.belanja.rencana.kelola|inventori.toko.kelola|inventori.belanja.mulai|inventori.hitung.kelola|inventori.alur.lihat|inventori.laporan.kelola']], function () {
         Route::get('/kategori', App\Livewire\Category\Index::class)->name('kategori');
-        // Route::get('/kategori/tambah', App\Livewire\Category\Tambah::class)->name('kategori.tambah');
-        // Route::get('/kategori/{id}/rincian', App\Livewire\Category\Rincian::class)->name('kategori.edit');
-        Route::get('/kategori/cetak', [PdfController::class, 'generateCategoryPDF'])
-            ->name('kategori.pdf');
         Route::get('/satuan-ukur', App\Livewire\Unit\Index::class)->name('satuan-ukur');
-
-        Route::get('/satuan-ukur/cetak', [PdfController::class, 'generateUnitPDF'])
-            ->name('satuan-ukur.pdf');
         Route::get('/jenis-biaya', App\Livewire\TypeCost\Index::class)->name('jenis-biaya');
         Route::get('/kategori-persediaan', App\Livewire\IngredientCategory\Index::class)->name('kategori-persediaan');
-        // Route::get('/kategori-persediaan/tambah', App\Livewire\IngredientCategory\Tambah::class)->name('kategori-persediaan.tambah');
-        // Route::get('/kategori-persediaan/{id}/rincian', App\Livewire\IngredientCategory\Rincian::class)->name('kategori-persediaan.edit');
-        Route::get('/kategori-persediaan/cetak', [PdfController::class, 'generateIngredientCategoryPDF'])
-            ->name('kategori-persediaan.pdf');
         Route::get('/produk', App\Livewire\Product\Index::class)->name('produk');
         Route::get('/produk/tambah/', App\Livewire\Product\Form::class)->name('produk.tambah');
-        // Route::get('/produk/salin/{method}', App\Livewire\Product\Salin::class)->name('produk.salin');
         Route::get('/produk/{id}/rincian', App\Livewire\Product\Form::class)->name('produk.edit');
-        Route::get('/produk/cetak', [PdfController::class, 'generateProductPDF'])
-            ->name('produk.pdf');
         Route::get('/supplier', App\Livewire\Supplier\Index::class)->name('supplier');
-        Route::get('/supplier/tambah', App\Livewire\Supplier\Tambah::class)->name('supplier.tambah');
-        Route::get('/supplier/{id}/rincian', App\Livewire\Supplier\Rincian::class)->name('supplier.edit');
+        Route::get('/supplier/tambah', App\Livewire\Supplier\Form::class)->name('supplier.tambah');
+        Route::get('/supplier/{id}/rincian', App\Livewire\Supplier\Form::class)->name('supplier.edit');
         Route::get('/supplier/cetak', [PdfController::class, 'generateSupplierPDF'])
             ->name('supplier.pdf');
         Route::get('/bahan-baku', App\Livewire\Material\Index::class)->name('bahan-baku');
@@ -142,8 +106,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/belanja/{id}/rincian', App\Livewire\Expense\Rincian::class)->name('belanja.rincian');
         Route::get('/belanja/{id}/dapatkan-belanja', App\Livewire\Expense\Mulai::class)->name('belanja.dapatkan-belanja');
         Route::get('/belanja/riwayat', App\Livewire\Expense\Riwayat::class)->name('belanja.riwayat');
-        Route::get('/belanja/{status}/cetak', [PdfController::class, 'generateExpensePDF'])
-            ->name('belanja.pdf');
         Route::get('/belanja/cetak/{id}', [PdfController::class, 'generateExpenseDetailPDF'])
             ->name('rincian-belanja.pdf');
         Route::get('/hitung', App\Livewire\Hitung\Index::class)->name('hitung');
@@ -153,15 +115,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/hitung/{id}/rincian', App\Livewire\Hitung\Rincian::class)->name('hitung.rincian');
         Route::get('/hitung/{id}/mulai-aksi', App\Livewire\Hitung\Mulai::class)->name('hitung.mulai');
         Route::get('/hitung/riwayat', App\Livewire\Hitung\Riwayat::class)->name('hitung.riwayat');
-        Route::get('/hitung/{status}/cetak', [PdfController::class, 'generateHitungPDF'])
-            ->name('hitung.pdf');
-        Route::get('/hitung/cetak/{id}', [PdfController::class, 'generateHitungDetailPDF'])
-            ->name('rincian-hitung.pdf');
         Route::get('/alur-persediaan', App\Livewire\Alur\Index::class)->name('alur-persediaan');
     });
 
     Route::group(['middleware' => ['permission:kasir.pesanan.kelola|kasir.laporan.kelola']], function () {
-        Route::get('/pos', App\Livewire\Transaction\Pos::class)->name('pos');
         Route::get('/transaksi', App\Livewire\Transaction\Index::class)->name('transaksi');
         Route::get('/transaksi/{id}/edit', App\Livewire\Transaction\Edit::class)->name('transaksi.edit');
         Route::get('/transaksi/{id}/rincian-pesanan', App\Livewire\Transaction\RincianPesanan::class)->name('transaksi.rincian-pesanan');
@@ -173,14 +130,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi-rincian-sesi/{id}', App\Livewire\Transaction\RincianSesi::class)->name('transaksi.rincian-sesi');
         Route::get('/transaksi/cetak', [PdfController::class, 'generateTransactionPDF'])
             ->name('transaksi.pdf');
-        Route::get('/transaksi/cetak/{id}', [PdfController::class, 'generateTransactionDetailPDF'])
-            ->name('rincian-transaksi.pdf');
         Route::get('/transaksi/{id}/print', function () {
             return view('pdf.pdf', [
                 'transaction' => \App\Models\Transaction::find(request()->id),
             ]);
         })->name('transaksi.cetak');
-        Route::get('/cetak-struk/{id}', App\Livewire\Receipt::class)->name('cetak-struk');
     });
 
     Route::group(['middleware' => ['permission:produksi.rencana.kelola|produksi.mulai|produksi.laporan.kelola']], function () {
@@ -201,10 +155,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/produksi/edit-produksi-pesanan/{id}', App\Livewire\Production\EditProduksiPesanan::class)
             ->name('produksi.edit-produksi-pesanan');
         Route::get('/produksi/{id}/rincian-pesanan', App\Livewire\Production\RincianPesanan::class)->name('produksi.rincian-pesanan');
-        Route::get('/produksi/{status}/cetak', [PdfController::class, 'generateProductionPDF'])
-            ->name('produksi.pdf');
-        Route::get('/produksi/cetak/{id}', [PdfController::class, 'generateProductionDetailPDF'])
-            ->name('rincian-produksi.pdf');
     });
 
     Route::get('/pengaturan', App\Livewire\Setting\Index::class)->name('pengaturan');
@@ -220,9 +170,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/metode-pembayaran', App\Livewire\Setting\PaymentMethod::class)->name('metode-pembayaran');
     });
 
-    Route::get('/panduan-pengguna', App\Livewire\Setting\UserManual::class)->name('panduan-pengguna');
-
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -1,7 +1,7 @@
 <div>
     <div class="flex gap-8 items-center h-10 mb-[30px]">
         <div class="flex gap-[15px] items-center">
-            <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja') }}">
+            <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja') }}" wire:navigate>
                 Kembali
             </flux:button>
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Riwayat Belanja Persediaan</h1>

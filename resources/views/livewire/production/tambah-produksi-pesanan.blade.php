@@ -1,6 +1,6 @@
 <div>
     <div class="mb-4 flex items-center">
-        <a href="{{ route('produksi.rincian-pesanan', ['id' => $transactionId]) }}"
+        <a href="{{ route('produksi.rincian-pesanan', ['id' => $transactionId]) }}" wire:navigate
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
             <flux:icon.arrow-left variant="mini" class="mr-2" wire:navigate />
             Kembali
@@ -26,7 +26,7 @@
 
             <select class="js-example-basic-multiple" wire:model.live="user_ids" multiple="multiple">
                 @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
                 @endforeach
             </select>
             <flux:error name="user_ids" />
@@ -115,18 +115,18 @@
                 </thead>
                 <tbody>
                     @foreach ($details as $detail)
-                    <tr>
-                        <td class="px-6 py-3">
-                            <span class="text-sm">
-                                {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <span class="text-sm ">
-                                {{ $detail->quantity ?? 0 }}
-                            </span>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-3">
+                                <span class="text-sm">
+                                    {{ $detail->product->name ?? 'Produk Tidak Ditemukan' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <span class="text-sm ">
+                                    {{ $detail->quantity ?? 0 }}
+                                </span>
+                            </td>
+                        </tr>
                     @endforeach
 
                 </tbody>
@@ -151,7 +151,7 @@
 
 
     <div class="flex justify-end mt-16 gap-4">
-        <a href="{{ route('produksi.rincian-pesanan', ['id' => $transactionId]) }}"
+        <a href="{{ route('produksi.rincian-pesanan', ['id' => $transactionId]) }}" wire:navigate
             class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
             <flux:icon.x-mark class="w-4 h-4 mr-2" />
             Batal
@@ -162,8 +162,8 @@
 
 
     @script
-    <script type="text/javascript">
-        document.addEventListener('livewire:initialized', function() {
+        <script type="text/javascript">
+            document.addEventListener('livewire:initialized', function() {
                 function loadJavascript() {
                     $('.js-example-basic-multiple').select2({
                         placeholder: "Cari Pekerja...",
@@ -178,45 +178,45 @@
                     loadJavascript();
                 })
             });
-    </script>
+        </script>
     @endscript
 
     @section('css')
-    <style>
-        .select2-search__field {
-            height: 10.5rem !important;
-            /* sekitar 176px */
-            min-height: 10.5rem !important;
-            max-height: 10.5rem !important;
-            padding: 0.75rem !important;
-            font-size: 0.875rem !important;
-            line-height: 1.5rem !important;
-            resize: none !important;
-            border-radius: 0.375rem !important;
-            border: none !important;
-        }
+        <style>
+            .select2-search__field {
+                height: 10.5rem !important;
+                /* sekitar 176px */
+                min-height: 10.5rem !important;
+                max-height: 10.5rem !important;
+                padding: 0.75rem !important;
+                font-size: 0.875rem !important;
+                line-height: 1.5rem !important;
+                resize: none !important;
+                border-radius: 0.375rem !important;
+                border: none !important;
+            }
 
-        .select2-container--default .select2-selection--multiple {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            align-content: flex-start;
-            min-height: 10.5rem;
-            max-height: 10.5rem !important;
-            padding: 0.5rem;
-            gap: 0.25rem;
-            border-radius: 0.375rem !important;
-            border: 1px solid #e5e7eb !important;
-        }
+            .select2-container--default .select2-selection--multiple {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                align-content: flex-start;
+                min-height: 10.5rem;
+                max-height: 10.5rem !important;
+                padding: 0.5rem;
+                gap: 0.25rem;
+                border-radius: 0.375rem !important;
+                border: 1px solid #e5e7eb !important;
+            }
 
 
-        .select2-selection__rendered {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            align-items: flex-start !important;
-            align-content: flex-start !important;
-            width: 100%;
-        }
-    </style>
+            .select2-selection__rendered {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: flex-start !important;
+                align-content: flex-start !important;
+                width: 100%;
+            }
+        </style>
     @endsection
 </div>

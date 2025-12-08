@@ -27,14 +27,16 @@
                 </div>
             </div>
             <div class="flex gap-2.5 items-center">
-                <flux:button type="button" variant="primary" icon="archive-box" href="{{ route('supplier') }}">
+                <flux:button type="button" variant="primary" icon="archive-box" href="{{ route('supplier') }}"
+                    wire:navigate>
                     Toko Persediaan
                 </flux:button>
-                <flux:button type="button" variant="primary" icon="list-bullet" href="{{ route('belanja.rencana') }}">
+                <flux:button type="button" variant="primary" icon="list-bullet" href="{{ route('belanja.rencana') }}"
+                    wire:navigate>
                     Rencana Belanja
                 </flux:button>
                 <flux:button type="button" variant="primary" icon="clock" href="{{ route('belanja.riwayat') }}"
-                    square>
+                    wire:navigate square>
                 </flux:button>
             </div>
         </div>

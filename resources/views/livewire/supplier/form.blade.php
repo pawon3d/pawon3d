@@ -1,16 +1,27 @@
 <div>
-    <div class="mb-6 flex gap-4 items-center">
-        <a href="{{ route('supplier') }}"
-            class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
-            <flux:icon.arrow-left variant="mini" class="size-4" />
-            <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
-        </a>
-        <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Tambah Toko Persediaan</h1>
+    <div class="mb-6 flex gap-4 items-center justify-between">
+        <div class="flex gap-4 items-center">
+            <a href="{{ route('supplier') }}" wire:navigate
+                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
+                wire:navigate>
+                <flux:icon.arrow-left variant="mini" class="size-4" />
+                <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
+            </a>
+            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">
+                {{ $this->isEditMode() ? 'Rincian Toko Persediaan' : 'Tambah Toko Persediaan' }}
+            </h1>
+        </div>
+        @if ($this->isEditMode())
+            <div class="flex gap-2.5 items-center">
+                <flux:button type="button" wire:click="riwayatPembaruan" variant="filled">
+                    Riwayat Pembaruan
+                </flux:button>
+            </div>
+        @endif
     </div>
 
     <x-alert.info>
-        Tambah toko persediaan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat.
-        Informasi akan ditampilkan untuk memilih toko sebelum belanja persediaan.
+        {{ $this->isEditMode() ? 'Perbarui toko persediaan. Pastikan data benar agar bisa dipilih sebelum belanja persediaan.' : 'Tambah toko persediaan. Lengkapi informasi yang diminta untuk dipilih sebelum belanja persediaan.' }}
     </x-alert.info>
 
     <!-- First Section: Foto Toko + Basic Info -->
@@ -180,15 +191,45 @@
         </div>
     </div>
 
-    <div class="flex justify-end gap-8">
-        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('supplier') }}">
-            Batal
-        </flux:button>
-        <flux:button type="button" wire:click.prevent="store" variant="primary" icon="bookmark-square">
-            Simpan
-        </flux:button>
+    <div class="flex {{ $this->isEditMode() ? 'justify-between' : 'justify-end' }} flex-row items-center">
+        @if ($this->isEditMode())
+            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()">
+                Hapus Toko
+            </flux:button>
+        @endif
+        <div class="flex justify-end gap-8">
+            <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('supplier') }}"
+                wire:navigate>
+                Batal
+            </flux:button>
+            <flux:button type="button" wire:click.prevent="save" variant="primary" icon="bookmark-square">
+                {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
+            </flux:button>
+        </div>
     </div>
 
+    @if ($this->isEditMode())
+        <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Riwayat Pembaruan Toko Persediaan</flux:heading>
+                </div>
+                <div class="max-h-96 overflow-y-auto">
+                    @forelse ($activityLogs as $log)
+                        <div class="border-b py-2">
+                            <div class="text-sm font-medium">{{ $log->description }}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ $log->causer->name ?? 'System' }} -
+                                {{ $log->created_at->format('d M Y H:i') }}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-sm text-gray-500">Belum ada riwayat pembaruan.</div>
+                    @endforelse
+                </div>
+            </div>
+        </flux:modal>
+    @endif
 
     <script>
         function handleDrop(event) {
@@ -201,7 +242,9 @@
                 const input = document.getElementById('dropzone-file');
                 input.files = files;
                 previewImage(input);
-                input.dispatchEvent(new Event('change'));
+                input.dispatchEvent(new Event('change', {
+                    bubbles: true
+                }));
             }
         }
 
@@ -213,7 +256,6 @@
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
-                    // Update preview image
                     let previewImg = document.getElementById('image-preview');
                     if (!previewImg) {
                         previewImg = document.createElement('img');
@@ -223,7 +265,6 @@
                     }
                     previewImg.src = e.target.result;
 
-                    // Sembunyikan konten default
                     if (defaultContent) defaultContent.style.display = 'none';
                 };
 
@@ -231,5 +272,4 @@
             }
         }
     </script>
-
 </div>

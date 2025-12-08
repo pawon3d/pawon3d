@@ -191,7 +191,7 @@
 
 
     <div class="flex justify-end items-center gap-[30px] mt-[50px]">
-        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja') }}">
+        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja') }}" wire:navigate>
             Batal
         </flux:button>
         <flux:button type="button" wire:click.prevent="store" variant="primary" icon="archive-box">

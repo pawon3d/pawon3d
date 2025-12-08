@@ -118,7 +118,8 @@
     </div>
 
     <div class="flex justify-end gap-[15px] flex-wrap">
-        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja.rincian', $expense_id) }}">
+        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja.rincian', $expense_id) }}"
+            wire:navigate>
             Batal
         </flux:button>
         <flux:button type="button" wire:click="save" variant="primary" icon="save">

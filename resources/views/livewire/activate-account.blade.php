@@ -8,7 +8,7 @@
                 Akun ini sudah diaktifkan sebelumnya. Silakan login untuk melanjutkan.
             </flux:text>
             <div class="mt-6">
-                <flux:button variant="primary" href="{{ route('login') }}">
+                <flux:button variant="primary" href="{{ route('login') }}" wire:navigate>
                     Ke Halaman Login
                 </flux:button>
             </div>

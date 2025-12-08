@@ -128,7 +128,8 @@
 
         <!-- Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
-            <flux:button icon="x-circle" href="{{ route('produksi.rincian-siap-beli', $production_id) }}">
+            <flux:button icon="x-circle" href="{{ route('produksi.rincian-siap-beli', $production_id) }}"
+                wire:navigate>
                 Batal
             </flux:button>
             <flux:button variant="secondary" icon="bookmark-square" type="button" wire:click="save">

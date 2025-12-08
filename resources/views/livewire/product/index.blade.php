@@ -74,10 +74,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-[15px] justify-end flex-1">
-                    <flux:button variant="primary" icon="shapes" href="{{ route('kategori') }}">
+                    <flux:button variant="primary" icon="shapes" href="{{ route('kategori') }}" wire:navigate>
                         Kategori
                     </flux:button>
-                    <flux:button variant="primary" icon="plus" href="{{ route('produk.tambah') }}">
+                    <flux:button variant="primary" icon="plus" href="{{ route('produk.tambah') }}" wire:navigate>
                         Tambah Produk
                     </flux:button>
                 </div>

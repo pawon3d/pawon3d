@@ -3,7 +3,7 @@
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 50px;">
         <div style="display: flex; align-items: center; gap: 15px;">
             <flux:button href="{{ route('produksi', ['method' => 'siap-beli']) }}" icon="arrow-left" variant="secondary"
-                wire:navigate>
+                wire:navigate wire:navigate>
                 Kembali
             </flux:button>
             <h1

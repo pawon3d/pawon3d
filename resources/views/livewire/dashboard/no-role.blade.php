@@ -38,7 +38,7 @@
 
         {{-- Actions --}}
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <flux:button href="{{ route('home') }}" variant="ghost">
+            <flux:button href="{{ route('home') }}" variant="ghost" wire:navigate>
                 <flux:icon icon="home" class="w-4 h-4 mr-2" />
                 Kembali ke Beranda
             </flux:button>

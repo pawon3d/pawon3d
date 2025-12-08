@@ -40,13 +40,16 @@
                     </svg>
                     Tambah Persediaan
                 </a> --}}
-                <flux:button type="button" variant="primary" href="{{ route('satuan-ukur') }}" icon="lamp-ceiling">
+                <flux:button type="button" variant="primary" href="{{ route('satuan-ukur') }}" icon="lamp-ceiling"
+                    wire:navigate>
                     Daftar
                     Satuan Ukur</flux:button>
-                <flux:button type="button" variant="primary" href="{{ route('kategori-persediaan') }}" icon="shapes">
+                <flux:button type="button" variant="primary" href="{{ route('kategori-persediaan') }}" icon="shapes"
+                    wire:navigate>
                     Kategori
                 </flux:button>
-                <flux:button type="button" variant="primary" href="{{ route('bahan-baku.tambah') }}" icon="plus">
+                <flux:button type="button" variant="primary" href="{{ route('bahan-baku.tambah') }}" icon="plus"
+                    wire:navigate>
                     Tambah
                     Persediaan
                 </flux:button>
@@ -314,7 +317,7 @@
                                         {{ $nextBatch
                                             ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y')
                                             : 'Belum
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Ada Tanggal' }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Ada Tanggal' }}
 
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">
