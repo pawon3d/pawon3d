@@ -1,111 +1,57 @@
-@startuml Sequence Diagram - Proses Belanja
+@startuml Sequence - Belanja Bahan Baku
 
-actor Inventori as User
-participant "Expense Page\n(Livewire)" as ExpPage
-participant "Expense\nModel" as Expense
-participant "ExpenseDetail\nModel" as ExpDetail
-participant "Material\nModel" as Material
-participant "MaterialBatch\nModel" as Batch
-participant "InventoryLog\nModel" as Log
-participant "NotificationService" as Notif
-database Database as DB
+actor Inventori
+participant "Expense Page\n(Livewire)" as Page
+participant Expense
+participant ExpenseDetail
+participant MaterialBatch
+participant InventoryLog
+participant Notification as Notif
+database DB
 
-== Membuat Rencana Belanja ==
-User -> ExpPage: Buka halaman tambah belanja
-User -> ExpPage: Pilih supplier
-User -> ExpPage: Tambah bahan baku dan jumlah
+== Buat Rencana ==
+Inventori -> Page: GET /belanja/tambah
+Inventori -> Page: Pilih supplier, bahan,\nqty expect, price expect
 
-ExpPage -> Expense: create(expense_data)
-note right
-  expense_number: auto-generate
-  status: 'Rencana'
-  grand_total_expect: total perkiraan
-end note
-Expense -> DB: INSERT INTO expenses
+Page -> Expense: create(expense_number,\nsupplier_id,\nstatus="Rencana",\ngrand_total_expect)
+Expense -> DB: INSERT expenses
 DB --> Expense: expense
 
-ExpPage -> ExpDetail: createMany(details)
-loop Untuk setiap bahan
-    ExpDetail -> DB: INSERT INTO expense_details
-    note right
-      quantity_expect: jumlah rencana
-      price_expect: harga perkiraan
-    end note
-end
-DB --> ExpDetail: details
+Page -> ExpenseDetail: createMany(items)
+ExpenseDetail -> DB: INSERT expense_details
 
-ExpPage -> Notif: expensePlanned(expense_number)
-Notif -> DB: INSERT INTO notifications
+Page --> Inventori: Rencana tersimpan
 
-ExpPage --> User: Rencana belanja tersimpan
+== Mulai Belanja ==
+Inventori -> Page: GET /belanja/{id}/dapatkan-belanja
+Inventori -> Page: Klik "Mulai"
 
-== Memulai Belanja ==
-User -> ExpPage: Pilih belanja dan mulai
-ExpPage -> Expense: update(['status' => 'Proses'])
+Page -> Expense: update(status="Proses",\nis_start=true)
 Expense -> DB: UPDATE expenses
-DB --> Expense: updated
 
-ExpPage -> Notif: expenseProcessing(expense_number)
-Notif -> DB: INSERT INTO notifications
+== Input Hasil Aktual ==
+Inventori -> Page: Input qty_get,\nprice_get,\nexpiry_date per item
 
-ExpPage --> User: Belanja dimulai
+Page -> ExpenseDetail: update(quantity_get,\nprice_get,\ntotal_actual,\nexpiry_date,\nis_quantity_get=true)
+ExpenseDetail -> DB: UPDATE expense_details
 
-== Menyelesaikan Belanja ==
-User -> ExpPage: Isi jumlah aktual tiap bahan
-User -> ExpPage: Isi harga aktual tiap bahan
-User -> ExpPage: Isi tanggal expired (opsional)
+== Selesaikan Belanja ==
+Inventori -> Page: Klik "Selesaikan"
 
-loop Untuk setiap detail
-    ExpPage -> ExpDetail: update(actual_data)
-    note right
-      quantity_actual: jumlah real
-      price_actual: harga real
-      expired_at: tanggal expired
-    end note
-    ExpDetail -> DB: UPDATE expense_details
-end
-
-User -> ExpPage: Selesaikan belanja
-
-== Buat Batch Baru ==
-loop Untuk setiap bahan
-    ExpPage -> Batch: create(batch_data)
-    note right
-      material_id
-      quantity: jumlah aktual
-      expired_at
-      price: harga per unit
-    end note
-    Batch -> DB: INSERT INTO material_batches
-    DB --> Batch: batch created
+loop setiap detail
+    Page -> MaterialBatch: create(material_id,\nbatch_number,\ndate=expiry_date,\nbatch_quantity=qty_get)
+    MaterialBatch -> DB: INSERT material_batches
     
-    ExpPage -> Log: create(log_data)
-    note right
-      action: 'belanja'
-      type: 'in'
-    end note
-    Log -> DB: INSERT INTO inventory_logs
+    Page -> InventoryLog: create(action="in",\nreference_type="Expense",\nquantity_change=qty_get)
+    InventoryLog -> DB: INSERT inventory_logs
 end
 
-== Update Status Bahan ==
-loop Untuk setiap bahan
-    ExpPage -> Material: Hitung total stok
-    ExpPage -> Material: update(['status' => 'Tersedia'])
-    Material -> DB: UPDATE materials
-end
-
-== Update Expense ==
-ExpPage -> Expense: update(final_data)
-note right
-  status: 'Selesai'
-  grand_total_actual: total aktual
-end note
+Page -> Expense: update(status="Selesai",\nis_finish=true,\ngrand_total_actual=sum)
 Expense -> DB: UPDATE expenses
-DB --> Expense: updated
 
-ExpPage -> Notif: expenseCompleted(expense_number)
-Notif -> DB: INSERT INTO notifications
+Page -> Notif: expenseCompleted(expense_number)
+Notif -> DB: INSERT notifications
 
-ExpPage --> User: Belanja selesai, stok terupdate
+Page --> Inventori: Belanja selesai
 
 @enduml

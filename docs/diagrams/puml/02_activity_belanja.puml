@@ -1,83 +1,33 @@
-@startuml Activity Diagram - Proses Belanja Bahan Baku
+@startuml Activity - Belanja Bahan Baku
 
 |Inventori|
 start
-:Membuka halaman Belanja;
+:Buat rencana belanja;
 
-fork
-    :Melihat daftar belanja;
-fork again
-    :Membuat rencana belanja baru;
-end fork
-
-if (Membuat rencana baru?) then (Ya)
-    :Memilih supplier;
-    :Menambahkan bahan baku;
-    :Memasukkan jumlah rencana;
-    :Memasukkan harga perkiraan;
-    :Menyimpan rencana belanja;
-    
-    |Sistem|
-    :Generate nomor belanja (BP-YYMMDD-XXXX);
-    :Menyimpan expense dengan status: Rencana;
-    :Menyimpan expense details;
-    :Kirim notifikasi (Rencana belanja dibuat);
-    
-else (Tidak)
-endif
+|System|
+:Simpan expense\nstatus Rencana + detail;
 
 |Inventori|
-:Memilih belanja untuk diproses;
+:Mulai belanja;
 
-if (Mulai belanja?) then (Ya)
-    :Mengkonfirmasi mulai belanja;
-    
-    |Sistem|
-    :Update status: Proses;
-    :Kirim notifikasi (Belanja dimulai);
-    
-    |Inventori|
-    :Melakukan pembelian;
-    :Mengisi jumlah aktual;
-    :Mengisi harga aktual;
-    :Mengisi tanggal expired (jika ada);
-    
-    if (Jumlah sesuai rencana?) then (Ya)
-        :Melanjutkan;
-    else (Tidak)
-        :Mencatat selisih;
-    endif
-    
-    :Menyelesaikan belanja;
-    
-    |Sistem|
-    :Membuat batch baru untuk setiap bahan;
-    note right
-      Batch mencatat:
-      - Quantity
-      - Expired date
-      - Harga beli
-    end note
-    :Menambah stok bahan baku;
-    :Recalculate status bahan otomatis;
-    note right
-      Status berubah menjadi:
-      - Tersedia (jika stok cukup)
-      - Hampir Habis / Habis (jika masih kurang)
-    end note
-    :Menghitung grand total aktual;
-    :Update status: Selesai;
-    :Mencatat log inventori;
-    :Kirim notifikasi (Belanja selesai);
-    
-else (Dibatalkan)
-    |Inventori|
-    :Membatalkan belanja;
-    
-    |Sistem|
-    :Update status: Dibatalkan;
-    :Kirim notifikasi (Belanja dibatalkan);
-endif
+|System|
+:Set status Proses;
+
+|Inventori|
+:Input qty/price aktual\n+ expiry;
+
+|System|
+:Update detail;
+
+|Inventori|
+:Selesaikan belanja;
+
+|System|
+:Buat batch per detail;
+:Catat inventory log\n(in belanja);
+:Set status Selesai;
+:Hitung grand_total_actual;
+:Kirim notifikasi selesai;
 
 stop
 

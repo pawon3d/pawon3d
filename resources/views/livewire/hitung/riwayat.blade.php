@@ -79,7 +79,7 @@
 
     {{-- Cetak Button --}}
     {{-- <div class="mt-4 flex justify-end">
-        <flux:button variant="ghost" wire:click="cetakInformasi" icon="printer">
+        <flux:button variant="secondary" wire:click="cetakInformasi" icon="printer">
             Cetak Informasi
         </flux:button>
     </div> --}}

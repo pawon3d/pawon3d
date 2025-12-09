@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-xl font-semibold text-[#666666]">Hitung dan catat Persediaan</h1>
-        <flux:button variant="filled" class="!bg-[#525252] !text-white hover:!bg-[#424242]" wire:click="riwayatPembaruan">
+        <flux:button variant="secondary" wire:click="riwayatPembaruan">
             Riwayat Pembaruan
         </flux:button>
     </div>

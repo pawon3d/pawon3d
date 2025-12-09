@@ -1,7 +1,7 @@
 <div>
     <div class="flex justify-between items-center mb-4">
         <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Belanja Persediaan</h1>
-        <flux:button type="button" wire:click="riwayatPembaruan" variant="filled">
+        <flux:button variant="secondary" wire:click="riwayatPembaruan">
             Riwayat Pembaruan
         </flux:button>
     </div>

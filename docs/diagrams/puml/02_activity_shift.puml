@@ -1,56 +1,39 @@
-@startuml Activity Diagram - Sesi Penjualan (Shift)
+@startuml Activity - Shift Kasir (Buka/Tutup)
 
 |Kasir|
 start
-:Membuka halaman Transaksi;
+:Buka halaman transaksi;
 
-if (Ada sesi aktif?) then (Tidak)
-    :Menekan tombol "Buka Sesi";
-    :Memasukkan modal awal (kas);
-    :Mengkonfirmasi buka sesi;
-    
-    |Sistem|
-    :Generate nomor shift;
-    :Menyimpan shift baru;
-    note right
-      Data shift:
-      - opened_by
-      - initial_cash
-      - status: Buka
-    end note
-    :Kirim notifikasi (Sesi dibuka);
-    
+|System|
+if (Ada shift aktif?) then (ya)
     |Kasir|
-    :Memulai transaksi;
-    
-    while (Selama sesi aktif) is (Ya)
-        :Melakukan transaksi;
-        
-        |Sistem|
-        :Mencatat transaksi dalam sesi;
-    endwhile (Tutup sesi)
-    
+    :Lanjut transaksi;
+else (tidak)
     |Kasir|
-    :Menekan tombol "Tutup Sesi";
+    :Klik "Buka Sesi";
+    :Input kas awal;
     
-    |Sistem|
-    :Menghitung total penjualan;
-    :Menghitung total cash;
-    :Menghitung total non-cash;
-    
-    |Kasir|
-    :Memasukkan kas akhir aktual;
-    :Mengkonfirmasi tutup sesi;
-    
-    |Sistem|
-    :Menghitung selisih (expected vs actual);
-    :Update shift (closed_by, final_cash);
-    :Update status: Tutup;
-    :Kirim notifikasi (Sesi ditutup);
-    
-else (Ya)
-    :Melanjutkan transaksi di sesi aktif;
+    |System|
+    :Generate shift_number;
+    :Set status Buka;
 endif
+
+repeat
+    |Kasir|
+    :Proses transaksi POS;
+    
+    |System|
+    :Catat transaksi ke shift;
+repeat while (Shift belum ditutup?)
+
+|Kasir|
+:Klik "Tutup Sesi";
+:Input kas akhir;
+
+|System|
+:Hitung total_sales/refunds;
+:Update status Tutup;
+:Kirim notifikasi shift closed;
 
 stop
 

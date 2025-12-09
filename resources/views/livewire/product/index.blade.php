@@ -1,7 +1,7 @@
 <div class="space-y-[30px]">
     <div class="flex items-center justify-between h-[40px]">
         <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Kelola Produk</h1>
-        <flux:button type="button" variant="subtle" wire:click="riwayatPembaruan">
+        <flux:button variant="secondary" wire:click="riwayatPembaruan">
             Riwayat Pembaruan
         </flux:button>
     </div>

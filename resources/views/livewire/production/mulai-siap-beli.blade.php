@@ -12,10 +12,9 @@
                     Dapatkan Produk</p>
             </div>
             <div>
-                <button type="button" wire:click="riwayatPembaruan"
-                    style="background: #525252; color: #ffffff; padding: 10px 25px; border-radius: 15px; border: 1px solid #666666; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; cursor: pointer;">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan">
                     Riwayat Pembaruan
-                </button>
+                </flux:button>
             </div>
         </div>
 

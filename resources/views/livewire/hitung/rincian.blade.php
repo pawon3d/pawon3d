@@ -11,10 +11,9 @@
             <h1 class="text-xl font-semibold text-[#666666]">Rincian {{ $this->hitung->action }}</h1>
         </div>
         <div class="flex gap-2.5 items-center">
-            <button type="button" wire:click="riwayatPembaruan"
-                class="px-6 py-2.5 bg-[#525252] border border-[#666666] rounded-[15px] text-white text-sm font-medium">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
-            </button>
+            </flux:button>
         </div>
     </div>
 

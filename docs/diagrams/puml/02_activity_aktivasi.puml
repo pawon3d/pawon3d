@@ -1,0 +1,35 @@
+@startuml Activity - Aktivasi Akun
+
+|Pekerja|
+start
+:Klik tautan aktivasi;
+
+|System|
+:Validasi token\n(exist, not expired, not used);
+
+if (Valid?) then (ya)
+    :Tampilkan form password;
+    
+    |Pekerja|
+    :Isi password & konfirmasi;
+    :Submit;
+    
+    |System|
+    :Validasi aturan password;
+    
+    if (Lolos?) then (ya)
+        :Set is_active=true;
+        :Set activated_at now;
+        :Hapus token;
+        :Auto login;
+        :Redirect dashboard;
+    else (tidak)
+        :Tampilkan error;
+    endif
+else (tidak)
+    :Tampilkan error token;
+endif
+
+stop
+
+@enduml

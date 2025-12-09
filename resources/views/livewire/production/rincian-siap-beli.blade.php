@@ -13,11 +13,9 @@
 
         @if ($status === 'Sedang Diproses')
             <div style="display: flex; gap: 10px; height: 40px; align-items: center; padding-right: 2px;">
-                <button wire:click="riwayatPembaruan"
-                    style="background: #525252; border: 1px solid #666666; color: #ffffff; padding: 10px 25px; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; height: 100%;">
-                    <span style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px;">Riwayat
-                        Pembaruan</span>
-                </button>
+                <flux:button variant="secondary" wire:click="riwayatPembaruan">
+                    Riwayat Pembaruan
+                </flux:button>
             </div>
         @endif
     </div>

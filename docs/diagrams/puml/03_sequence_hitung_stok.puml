@@ -1,0 +1,73 @@
+@startuml Sequence - Hitung Stok/Rusak/Hilang
+
+actor Inventori
+participant "Hitung Page\n(Livewire)" as Page
+participant Hitung
+participant HitungDetail
+participant MaterialBatch
+participant InventoryLog
+participant Notification as Notif
+database DB
+
+== Buat Rencana ==
+Inventori -> Page: GET /hitung/tambah
+Inventori -> Page: Pilih action\n(hitung/rusak/hilang),\nbahan, qty expect
+
+Page -> Hitung: create(hitung_number,\naction,\nstatus="Rencana",\nuser_id)
+Hitung -> DB: INSERT hitungs
+DB --> Hitung: hitung
+
+Page -> HitungDetail: createMany(items)
+HitungDetail -> DB: INSERT hitung_details
+
+Page --> Inventori: Rencana tersimpan
+
+== Mulai Aksi ==
+Inventori -> Page: GET /hitung/{id}/mulai-aksi
+Inventori -> Page: Klik "Mulai"
+
+Page -> Hitung: update(status="Proses",\nis_start=true,\nhitung_date=now)
+Hitung -> DB: UPDATE hitungs
+
+== Input Hasil ==
+Inventori -> Page: Input quantity_actual\nper item
+
+Page -> HitungDetail: update(quantity_actual,\ntotal,\nloss_total)
+HitungDetail -> DB: UPDATE hitung_details
+
+== Selesaikan ==
+Inventori -> Page: Klik "Selesaikan"
+
+loop setiap detail
+    alt action = "hitung" (stock opname)
+        Page -> MaterialBatch: adjustBatch(material_id,\nquantity_actual - quantity_expect)
+        MaterialBatch -> DB: UPDATE material_batches
+        
+        Page -> InventoryLog: create(action="adjustment",\nquantity_change=selisih)
+        InventoryLog -> DB: INSERT inventory_logs
+        
+    else action = "rusak"
+        Page -> MaterialBatch: kurangiBatch(material_id,\nquantity_actual)
+        MaterialBatch -> DB: UPDATE material_batches
+        
+        Page -> InventoryLog: create(action="damaged",\nquantity_change=-quantity_actual)
+        InventoryLog -> DB: INSERT inventory_logs
+        
+    else action = "hilang"
+        Page -> MaterialBatch: kurangiBatch(material_id,\nquantity_actual)
+        MaterialBatch -> DB: UPDATE material_batches
+        
+        Page -> InventoryLog: create(action="lost",\nquantity_change=-quantity_actual)
+        InventoryLog -> DB: INSERT inventory_logs
+    end
+end
+
+Page -> Hitung: update(status="Selesai",\nis_finish=true,\nhitung_date_finish=now,\ngrand_total,\nloss_grand_total)
+Hitung -> DB: UPDATE hitungs
+
+Page -> Notif: hitungCompleted(hitung_number)
+Notif -> DB: INSERT notifications
+
+Page --> Inventori: Aksi selesai
+
+@enduml

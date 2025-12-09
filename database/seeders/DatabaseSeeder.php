@@ -10,6 +10,7 @@ use App\Models\Material;
 use App\Models\MaterialBatch;
 use App\Models\PaymentChannel;
 use App\Models\Product;
+use App\Models\StoreProfile;
 use App\Models\Supplier;
 use App\Models\Unit;
 use App\Models\User;
@@ -97,6 +98,25 @@ class DatabaseSeeder extends Seeder
 
         // Assign role utama
         $user->syncRoles([$roles['Manajemen Sistem']->name]);
+
+        StoreProfile::firstOrCreate([
+            'name' => '',
+            'tagline' => '',
+            'type' => '',
+            'banner' => '',
+            'product' => '',
+            'description' => '',
+            'building' => '',
+            'location' => '',
+            'address' => '',
+            'contact' => '',
+            'email' => '',
+            'website' => '',
+            'social_instagram' => '',
+            'social_facebook' => '',
+            'social_whatsapp' => '',
+        ]);
+
 
         // Category::create([
         //     'name' => 'Makanan',

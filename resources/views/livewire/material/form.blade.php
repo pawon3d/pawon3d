@@ -10,7 +10,7 @@
         </div>
         @if ($material_id)
             <div class="flex gap-2 items-center">
-                <flux:button variant="filled" wire:click="riwayatPembaruan">Riwayat Pembaruan</flux:button>
+                <flux:button variant="secondary" wire:click="riwayatPembaruan">Riwayat Pembaruan</flux:button>
             </div>
         @endif
     </div>

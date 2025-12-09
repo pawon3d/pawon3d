@@ -14,12 +14,9 @@
         </div>
 
         <div class="flex-1 flex justify-end">
-            <button type="button" wire:click="cetakInformasi"
-                class="bg-[#313131] flex items-center justify-center gap-[5px] px-[25px] py-[10px] rounded-[15px] shadow-sm hover:bg-[#252324] transition-colors"
-                style="font-family: 'Montserrat', sans-serif;">
-                <flux:icon icon="printer" class="size-5 text-[#f8f4e1]" />
-                <span class="font-semibold text-[16px] text-[#f8f4e1]">Cetak Informasi</span>
-            </button>
+            <flux:button variant="secondary" wire:click="cetakInformasi" icon="printer">
+                Cetak Informasi
+            </flux:button>
         </div>
     </div>
 

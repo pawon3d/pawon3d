@@ -1,499 +1,521 @@
 @startuml Class Diagram - Sistem Manajemen Toko Kue
 
-skinparam classAttributeIconSize 0
-skinparam classFontSize 11
-skinparam classAttributeFontSize 10
-
-' === CORE ENTITIES ===
-
-package "User & Authentication" #LightBlue {
+' ============================
+' PACKAGE: USER & AUTHENTICATION
+' ============================
+package "User & Authentication" {
     class User {
-        - id: uuid <<PK>>
-        - name: string
-        - email: string
-        - phone: string
-        - password: string
-        - image: string
-        - gender: string
-        - is_active: boolean
-        - invitation_token: string
-        - invitation_expires_at: datetime
-        - activated_at: datetime
+        +id: bigint
+        +name: string
+        +email: string
+        +password: string
+        +phone: string
+        +is_active: boolean
+        +activated_at: timestamp
+        +invitation_token: string
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + workers(): HasMany
-        + notifications(): HasMany
-        + unreadNotifications(): HasMany
-        + hasRole(): bool
-        + hasPermission(): bool
-        + isActivated(): bool
-        + hasValidInvitationToken(): bool
-        + sendInvitation(): void
-        + activateWithPassword(): void
-        + generateInvitationToken(): void
+        +roles()
+        +permissions()
+        +hasAnyPermission()
     }
-    
-    class SpatieRole {
-        - id: int <<PK>>
-        - name: string
-        - guard_name: string
+
+    class Role {
+        +id: bigint
+        +name: string
+        +guard_name: string
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + permissions(): BelongsToMany
-        + users(): BelongsToMany
+        +permissions()
+        +users()
     }
-    
+
     class Permission {
-        - id: int <<PK>>
-        - name: string
-        - guard_name: string
+        +id: bigint
+        +name: string
+        +guard_name: string
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + roles(): BelongsToMany
+        +roles()
     }
-    
-    class Notification {
-        - id: uuid <<PK>>
-        - user_id: uuid <<FK>>
-        - title: string
-        - body: text
-        - type: string
-        - is_read: boolean
-        --
-        + user(): BelongsTo
-    }
+
+    User "1" -- "*" Role : has >
+    Role "1" -- "*" Permission : has >
 }
 
-package "Customer & Points" #LightGreen {
+' ============================
+' PACKAGE: CUSTOMER & POINTS
+' ============================
+package "Customer & Points" {
     class Customer {
-        - id: uuid <<PK>>
-        - phone: string
-        - name: string
-        - points: integer
+        +id: bigint
+        +name: string
+        +phone: string
+        +address: text
+        +points: integer
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + transactions(): HasMany
-        + pointsHistories(): HasMany
+        +transactions()
+        +pointsHistories()
     }
-    
+
     class PointsHistory {
-        - id: uuid <<PK>>
-        - phone: string <<FK>>
-        - transaction_id: uuid <<FK>>
-        - action: string
-        - points: integer
-        - description: string
+        +id: bigint
+        +phone: string
+        +action: enum
+        +points: integer
+        +transaction_id: bigint
+        +created_at: timestamp
         --
-        + customer(): BelongsTo
-        + transaction(): BelongsTo
+        +transaction()
     }
+
+    Customer "1" -- "*" PointsHistory : has >
 }
 
-package "Product Management" #LightYellow {
+' ============================
+' PACKAGE: PRODUCT MANAGEMENT
+' ============================
+package "Product Management" {
     class Product {
-        - id: uuid <<PK>>
-        - name: string
-        - description: text
-        - price: decimal
-        - stock: integer
-        - method: json
-        - is_recipe: boolean
-        - is_ready: boolean
-        - pcs: integer
-        - capital: decimal
-        - category_id: uuid <<FK>>
-        - product_image: string
-        - suhu_ruangan: integer
-        - suhu_dingin: integer
-        - suhu_beku: integer
+        +id: bigint
+        +category_id: bigint
+        +code: string
+        +name: string
+        +image: string
+        +description: text
+        +stock: integer
+        +price: decimal
+        +is_ready: boolean
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + category(): BelongsTo
-        + product_categories(): HasMany
-        + productions(): HasMany
-        + product_compositions(): HasMany
-        + transactions(): HasMany
-        + other_costs(): HasMany
+        +category()
+        +compositions()
+        +productions()
     }
-    
+
     class Category {
-        - id: uuid <<PK>>
-        - name: string
-        - description: text
+        +id: bigint
+        +name: string
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + products(): HasMany
+        +products()
     }
-    
-    class ProductCategory {
-        - id: uuid <<PK>>
-        - product_id: uuid <<FK>>
-        - category_id: uuid <<FK>>
-        --
-        + product(): BelongsTo
-        + category(): BelongsTo
-    }
-    
+
     class ProductComposition {
-        - id: uuid <<PK>>
-        - product_id: uuid <<FK>>
-        - material_id: uuid <<FK>>
-        - quantity: decimal
-        - unit: string
+        +id: bigint
+        +product_id: bigint
+        +material_id: bigint
+        +quantity: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + product(): BelongsTo
-        + material(): BelongsTo
+        +product()
+        +material()
     }
-    
-    class OtherCost {
-        - id: uuid <<PK>>
-        - product_id: uuid <<FK>>
-        - type_cost_id: uuid <<FK>>
-        - cost: decimal
-        --
-        + product(): BelongsTo
-        + typeCost(): BelongsTo
-    }
-    
-    class TypeCost {
-        - id: uuid <<PK>>
-        - name: string
-        --
-        + otherCosts(): HasMany
-    }
+
+    Category "1" -- "*" Product : has >
+    Product "1" -- "*" ProductComposition : has >
 }
 
-package "Material & Inventory" #LightCoral {
+' ============================
+' PACKAGE: MATERIAL & INVENTORY
+' ============================
+package "Material & Inventory" {
     class Material {
-        - id: uuid <<PK>>
-        - name: string
-        - status: string
-        - minimum: decimal
-        - description: text
-        - is_recipe: boolean
-        - is_active: boolean
+        +id: bigint
+        +ingredient_category_id: bigint
+        +unit_id: bigint
+        +code: string
+        +name: string
+        +image: string
+        +description: text
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + material_details(): HasMany
-        + ingredientCategoryDetails(): HasMany
-        + expenseDetails(): HasMany
-        + batches(): HasMany
+        +ingredientCategory()
+        +unit()
+        +batches()
     }
-    
-    class MaterialBatch {
-        - id: uuid <<PK>>
-        - material_id: uuid <<FK>>
-        - quantity: decimal
-        - expired_at: date
-        - price: decimal
-        --
-        + material(): BelongsTo
-    }
-    
-    class MaterialDetail {
-        - id: uuid <<PK>>
-        - material_id: uuid <<FK>>
-        - unit_id: uuid <<FK>>
-        - base_quantity: decimal
-        --
-        + material(): BelongsTo
-        + unit(): BelongsTo
-    }
-    
-    class Unit {
-        - id: uuid <<PK>>
-        - name: string
-        - alias: string
-        - group: string
-        - base_unit_id: uuid <<FK>>
-        - conversion_factor: decimal
-        --
-        + materialDetails(): HasMany
-        + baseUnit(): BelongsTo
-        + derivedUnits(): HasMany
-        + hasConversionLadder(): bool
-        + canAutoConvertTo(Unit): bool
-        + convertTo(float, Unit): float
-        + getConversionFactorTo(Unit): float
-        + isBaseUnit(): bool
-    }
-    
+
     class IngredientCategory {
-        - id: uuid <<PK>>
-        - name: string
+        +id: bigint
+        +name: string
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + details(): HasMany
+        +materials()
     }
-    
-    class IngredientCategoryDetail {
-        - id: uuid <<PK>>
-        - ingredient_category_id: uuid <<FK>>
-        - material_id: uuid <<FK>>
+
+    class Unit {
+        +id: bigint
+        +name: string
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + ingredientCategory(): BelongsTo
-        + material(): BelongsTo
+        +materials()
     }
-    
+
+    class MaterialBatch {
+        +id: bigint
+        +material_id: bigint
+        +batch_number: string
+        +date: date
+        +batch_quantity: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +material()
+    }
+
     class InventoryLog {
-        - id: uuid <<PK>>
-        - material_id: uuid <<FK>>
-        - action: string
-        - type: string
-        - quantity: decimal
-        - reference_id: uuid
-        - reference_type: string
-        - notes: text
+        +id: bigint
+        +material_id: bigint
+        +action: enum
+        +quantity_change: decimal
+        +reference_type: string
+        +reference_id: bigint
+        +created_at: timestamp
         --
-        + material(): BelongsTo
+        +material()
     }
+
+    IngredientCategory "1" -- "*" Material : has >
+    Unit "1" -- "*" Material : has >
+    Material "1" -- "*" MaterialBatch : has >
+    Material "1" -- "*" InventoryLog : has >
 }
 
-package "Transaction" #LightPink {
+' ============================
+' PACKAGE: TRANSACTION
+' ============================
+package "Transaction" {
     class Transaction {
-        - id: uuid <<PK>>
-        - invoice_number: string
-        - user_id: uuid <<FK>>
-        - customer_id: uuid <<FK>>
-        - phone: string
-        - schedule: datetime
-        - status: string
-        - payment_status: string
-        - method: string
-        - total_amount: decimal
-        - points_used: integer
-        - points_discount: decimal
+        +id: bigint
+        +invoice_number: string
+        +customer_id: bigint
+        +method: enum
+        +status: enum
+        +payment_status: enum
+        +schedule: datetime
+        +total_amount: decimal
+        +total_refund: decimal
+        +note: text
+        +created_by_shift: bigint
+        +refund_by_shift: bigint
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + user(): BelongsTo
-        + customer(): BelongsTo
-        + details(): HasMany
-        + production(): HasOne
-        + payments(): HasMany
-        + refund(): HasOne
+        +customer()
+        +details()
+        +payments()
+        +production()
+        +refund()
+        +shift()
     }
-    
+
     class TransactionDetail {
-        - id: uuid <<PK>>
-        - transaction_id: uuid <<FK>>
-        - product_id: uuid <<FK>>
-        - quantity: integer
-        - price: decimal
-        - subtotal: decimal
+        +id: bigint
+        +transaction_id: bigint
+        +product_id: bigint
+        +quantity: integer
+        +unit_price: decimal
+        +sub_total: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + transaction(): BelongsTo
-        + product(): BelongsTo
+        +transaction()
+        +product()
     }
-    
+
     class Payment {
-        - id: uuid <<PK>>
-        - transaction_id: uuid <<FK>>
-        - payment_channel_id: uuid <<FK>>
-        - payment_method: string
-        - paid_amount: decimal
-        - change_amount: decimal
+        +id: bigint
+        +transaction_id: bigint
+        +payment_method: string
+        +payment_channel_id: bigint
+        +paid_amount: decimal
+        +receipt_number: string
+        +proof_image: string
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + transaction(): BelongsTo
-        + paymentChannel(): BelongsTo
+        +transaction()
+        +channel()
     }
-    
+
     class PaymentChannel {
-        - id: uuid <<PK>>
-        - name: string
-        - type: string
-        - account_number: string
-        - account_name: string
-        - is_active: boolean
+        +id: bigint
+        +name: string
+        +type: enum
+        +account_number: string
+        +account_name: string
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + payments(): HasMany
+        +payments()
     }
-    
+
     class Refund {
-        - id: uuid <<PK>>
-        - transaction_id: uuid <<FK>>
-        - amount: decimal
-        - reason: text
+        +id: bigint
+        +transaction_id: bigint
+        +reason: text
+        +refund_method: string
+        +payment_channel_id: bigint
+        +account_number: string
+        +total_amount: decimal
+        +proof_image: string
+        +refund_by_shift: bigint
+        +refunded_at: timestamp
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + transaction(): BelongsTo
+        +transaction()
+        +channel()
     }
-    
+
     class Shift {
-        - id: uuid <<PK>>
-        - shift_number: string
-        - opened_by: uuid <<FK>>
-        - closed_by: uuid <<FK>>
-        - status: string
-        - initial_cash: decimal
-        - final_cash: decimal
-        - expected_cash: decimal
+        +id: bigint
+        +shift_number: string
+        +opened_by: bigint
+        +closed_by: bigint
+        +start_time: timestamp
+        +end_time: timestamp
+        +initial_cash: decimal
+        +final_cash: decimal
+        +total_sales: decimal
+        +total_refunds: decimal
+        +status: enum
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + openedBy(): BelongsTo
-        + closedBy(): BelongsTo
+        +opener()
+        +closer()
+        +transactions()
     }
+
+    Transaction "1" -- "*" TransactionDetail : has >
+    Transaction "1" -- "*" Payment : has >
+    Transaction "1" -- "0..1" Refund : has >
+    Transaction "*" -- "0..1" Shift : created in >
+    Payment "*" -- "1" PaymentChannel : uses >
+    Refund "*" -- "0..1" PaymentChannel : uses >
 }
 
-package "Production" #Lavender {
+' ============================
+' PACKAGE: PRODUCTION
+' ============================
+package "Production" {
     class Production {
-        - id: uuid <<PK>>
-        - production_number: string
-        - transaction_id: uuid <<FK>>
-        - method: string
-        - status: string
-        - is_start: boolean
-        - is_finish: boolean
+        +id: bigint
+        +production_number: string
+        +transaction_id: bigint
+        +method: enum
+        +status: enum
+        +worker_id: bigint
+        +is_start: boolean
+        +is_finish: boolean
+        +start_date: datetime
+        +end_date: datetime
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + details(): HasMany
-        + workers(): HasMany
-        + transaction(): BelongsTo
+        +transaction()
+        +worker()
+        +details()
     }
-    
+
     class ProductionDetail {
-        - id: uuid <<PK>>
-        - production_id: uuid <<FK>>
-        - product_id: uuid <<FK>>
-        - quantity: integer
+        +id: bigint
+        +production_id: bigint
+        +product_id: bigint
+        +quantity_expect: integer
+        +quantity_get: integer
+        +quantity_fail: integer
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + production(): BelongsTo
-        + product(): BelongsTo
+        +production()
+        +product()
     }
-    
-    class ProductionWorker {
-        - id: uuid <<PK>>
-        - production_id: uuid <<FK>>
-        - user_id: uuid <<FK>>
-        --
-        + production(): BelongsTo
-        + user(): BelongsTo
-    }
+
+    Production "1" -- "*" ProductionDetail : has >
+    Production "*" -- "1" User : assigned to >
 }
 
-package "Expense (Purchasing)" #LightGray {
+' ============================
+' PACKAGE: EXPENSE (BELANJA)
+' ============================
+package "Expense" {
     class Expense {
-        - id: uuid <<PK>>
-        - expense_number: string
-        - supplier_id: uuid <<FK>>
-        - status: string
-        - grand_total_expect: decimal
-        - grand_total_actual: decimal
+        +id: bigint
+        +expense_number: string
+        +supplier_id: bigint
+        +status: enum
+        +is_start: boolean
+        +is_finish: boolean
+        +grand_total_expect: decimal
+        +grand_total_actual: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + expenseDetails(): HasMany
-        + supplier(): BelongsTo
+        +supplier()
+        +details()
     }
-    
+
     class ExpenseDetail {
-        - id: uuid <<PK>>
-        - expense_id: uuid <<FK>>
-        - material_id: uuid <<FK>>
-        - quantity_expect: decimal
-        - quantity_actual: decimal
-        - price_expect: decimal
-        - price_actual: decimal
-        - expired_at: date
+        +id: bigint
+        +expense_id: bigint
+        +material_id: bigint
+        +quantity_expect: decimal
+        +quantity_get: decimal
+        +price_expect: decimal
+        +price_get: decimal
+        +total_expect: decimal
+        +total_actual: decimal
+        +expiry_date: date
+        +is_quantity_get: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + expense(): BelongsTo
-        + material(): BelongsTo
+        +expense()
+        +material()
     }
-    
+
     class Supplier {
-        - id: uuid <<PK>>
-        - name: string
-        - phone: string
-        - address: text
+        +id: bigint
+        +name: string
+        +phone: string
+        +address: text
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + expenses(): HasMany
+        +expenses()
     }
+
+    Supplier "1" -- "*" Expense : has >
+    Expense "1" -- "*" ExpenseDetail : has >
 }
 
-package "Stock Count (Hitung)" #Wheat {
+' ============================
+' PACKAGE: STOCK COUNT (HITUNG)
+' ============================
+package "Stock Count" {
     class Hitung {
-        - id: uuid <<PK>>
-        - hitung_number: string
-        - action: string
-        - status: string
-        - user_id: uuid <<FK>>
+        +id: bigint
+        +hitung_number: string
+        +user_id: bigint
+        +action: enum
+        +status: enum
+        +is_start: boolean
+        +is_finish: boolean
+        +hitung_date: datetime
+        +hitung_date_finish: datetime
+        +grand_total: decimal
+        +loss_grand_total: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + details(): HasMany
-        + user(): BelongsTo
+        +user()
+        +details()
     }
-    
+
     class HitungDetail {
-        - id: uuid <<PK>>
-        - hitung_id: uuid <<FK>>
-        - material_id: uuid <<FK>>
-        - quantity_system: decimal
-        - quantity_actual: decimal
+        +id: bigint
+        +hitung_id: bigint
+        +material_id: bigint
+        +quantity_expect: decimal
+        +quantity_actual: decimal
+        +total: decimal
+        +loss_total: decimal
+        +created_at: timestamp
+        +updated_at: timestamp
         --
-        + hitung(): BelongsTo
-        + material(): BelongsTo
+        +hitung()
+        +material()
     }
+
+    Hitung "1" -- "*" HitungDetail : has >
+    Hitung "*" -- "1" User : created by >
 }
 
-package "Store Settings" #MintCream {
-    class StoreProfile {
-        - id: uuid <<PK>>
-        - name: string
-        - description: text
-        - address: text
-        - phone: string
-        - email: string
-        - logo: string
-        --
+' ============================
+' PACKAGE: STORE SETTINGS
+' ============================
+package "Store Settings" {
+    class StoreSetting {
+        +id: bigint
+        +key: string
+        +value: text
+        +type: enum
+        +created_at: timestamp
+        +updated_at: timestamp
     }
-    
+
     class StoreDocument {
-        - id: uuid <<PK>>
-        - name: string
-        - file_path: string
-        - type: string
+        +id: bigint
+        +type_cost_id: bigint
+        +document_number: string
+        +document_name: string
+        +nominal: decimal
+        +started_date: date
+        +ended_date: date
+        +file_path: string
+        +status: enum
+        +created_at: timestamp
+        +updated_at: timestamp
         --
+        +typeCost()
     }
+
+    class TypeCost {
+        +id: bigint
+        +name: string
+        +is_active: boolean
+        +created_at: timestamp
+        +updated_at: timestamp
+        --
+        +documents()
+    }
+
+    class Notification {
+        +id: string
+        +type: string
+        +notifiable_type: string
+        +notifiable_id: bigint
+        +data: json
+        +read_at: timestamp
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    TypeCost "1" -- "*" StoreDocument : has >
 }
 
-' === RELATIONSHIPS ===
-
-' User relationships
-User "1" --> "*" Notification : has
-User "*" --> "*" SpatieRole : has
-SpatieRole "*" --> "*" Permission : has
-User "1" --> "*" ProductionWorker : participates
-
-' Customer relationships
-Customer "1" --> "*" Transaction : makes
-Customer "1" --> "*" PointsHistory : has
-
-' Product relationships
-Product "*" --> "1" Category : belongs to
-Product "1" --> "*" ProductCategory : has
-Product "1" --> "*" ProductComposition : has
-ProductComposition "*" --> "1" Material : uses
-Product "1" --> "*" OtherCost : has
-OtherCost "*" --> "1" TypeCost : belongs to
-Product "1" --> "*" TransactionDetail : ordered in
-Product "1" --> "*" ProductionDetail : produced in
-
-' Material relationships
-Material "1" --> "*" MaterialBatch : has
-Material "1" --> "*" MaterialDetail : has
-MaterialDetail "*" --> "1" Unit : uses
-MaterialBatch "*" --> "1" Unit : measured in
-Unit "0..1" --> "*" Unit : base unit of
-Material "1" --> "*" IngredientCategoryDetail : belongs to
-IngredientCategoryDetail "*" --> "1" IngredientCategory : categorized by
-Material "1" --> "*" ExpenseDetail : purchased in
-Material "1" --> "*" InventoryLog : tracked in
-Material "1" --> "*" HitungDetail : counted in
-
-' Transaction relationships
-Transaction "*" --> "1" User : created by
-Transaction "*" --> "1" Customer : belongs to
-Transaction "1" --> "*" TransactionDetail : contains
-Transaction "1" --> "*" Payment : paid by
-Transaction "1" --> "0..1" Production : produces
-Transaction "1" --> "0..1" Refund : may have
-Payment "*" --> "1" PaymentChannel : uses
-
-' Production relationships
-Production "1" --> "*" ProductionDetail : contains
-Production "1" --> "*" ProductionWorker : worked by
-Production "*" --> "0..1" Transaction : linked to
-
-' Expense relationships
-Expense "*" --> "1" Supplier : from
-Expense "1" --> "*" ExpenseDetail : contains
-
-' Hitung relationships
-Hitung "*" --> "1" User : created by
-Hitung "1" --> "*" HitungDetail : contains
+' ============================
+' CROSS-PACKAGE RELATIONSHIPS
+' ============================
+Customer "1" -- "*" Transaction : makes >
+User "1" -- "*" Transaction : creates >
+User "1" -- "*" Shift : manages >
+Product "1" -- "*" TransactionDetail : sold in >
+Product "1" -- "*" ProductionDetail : produced in >
+Material "1" -- "*" ProductComposition : used in >
+Material "1" -- "*" ExpenseDetail : purchased in >
+Material "1" -- "*" HitungDetail : counted in >
+Transaction "0..1" -- "0..1" Production : triggers >
 
 @enduml

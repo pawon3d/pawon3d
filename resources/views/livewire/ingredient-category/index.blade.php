@@ -13,10 +13,9 @@
             <h1 class="text-xl font-semibold text-[#666666]">Kelola Kategori Persediaan</h1>
         </div>
         <div class="flex gap-2 items-center">
-            <button type="button" wire:click="riwayatPembaruan"
-                class="px-6 py-2.5 bg-[#525252] hover:bg-[#5a5a5a] text-white rounded-[15px] border border-[#666666] font-medium text-sm transition">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
-            </button>
+            </flux:button>
         </div>
     </div>
 

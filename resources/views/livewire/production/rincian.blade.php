@@ -15,12 +15,9 @@
                 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; white-space: nowrap;">
                 Rincian Produksi</h1>
         </div>
-        <button wire:click="riwayatPembaruan"
-            class="bg-[#525252] border border-[#666666] rounded-[15px] px-[25px] py-[10px] h-[40px] flex items-center">
-            <span
-                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #ffffff; white-space: nowrap;">Riwayat
-                Pembaruan</span>
-        </button>
+        <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            Riwayat Pembaruan
+        </flux:button>
     </div>
 
     {{-- Main Content Container --}}

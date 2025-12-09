@@ -1,65 +1,40 @@
-@startuml Activity Diagram - Login dan Otorisasi
+@startuml Activity - Login & Otorisasi
 
 |User|
 start
-:Membuka halaman login;
-:Memasukkan email;
-:Memasukkan password;
-:Klik tombol Login;
+:Isi email & password;
+:Klik Login;
 
-|Sistem|
-:Validasi format input;
+|System|
+:Validasi format;
 
-if (Format valid?) then (Ya)
-    :Mencari user berdasarkan email;
+if (Valid?) then (ya)
+    :Cari user by email;
     
-    if (User ditemukan?) then (Ya)
+    if (Ada user?) then (ya)
         :Verifikasi password;
         
-        if (Password benar?) then (Ya)
-            if (Akun aktif (is_active)?) then (Ya)
-                :Membuat session;
-                :Mengambil roles dan permissions;
+        if (Benar?) then (ya)
+            if (is_active?) then (ya)
+                :Regenerate session;
+                :Ambil roles & permissions;
                 
-                if (User punya permission?) then (Ya)
-                    :Redirect ke Dashboard sesuai permission;
-                    
-                    |User|
-                    :Melihat Dashboard;
-                    :Melihat menu sesuai permission;
-                    note right
-                      Menu yang tampil berdasarkan:
-                      - kasir.* -> Menu Kasir
-                      - produksi.* -> Menu Produksi
-                      - inventori.* -> Menu Inventori
-                      - manajemen.* -> Menu Manajemen
-                    end note
-                else (Tidak)
-                    :Redirect ke halaman "Menunggu Peran";
-                    |User|
-                    :Melihat pesan menunggu penugasan peran;
-                    :Hubungi administrator;
+                if (Punya permission?) then (ya)
+                    :Redirect dashboard\nsesuai role;
+                else (tidak)
+                    :Redirect ke\n"menunggu peran";
                 endif
-                
-            else (Tidak)
-                :Menampilkan error "Akun tidak aktif";
-                note right
-                  Akun bisa nonaktif karena:
-                  - Belum aktivasi
-                  - Dinonaktifkan pemilik
-                end note
+            else (tidak)
+                :Tampilkan error\nakun tidak aktif;
             endif
-            
-        else (Tidak)
-            :Menampilkan error "Password salah";
+        else (tidak)
+            :Error kredensial;
         endif
-        
-    else (Tidak)
-        :Menampilkan error "User tidak ditemukan";
+    else (tidak)
+        :Error user\ntidak ditemukan;
     endif
-    
-else (Tidak)
-    :Menampilkan error validasi;
+else (tidak)
+    :Error validasi;
 endif
 
 stop

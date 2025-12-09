@@ -18,10 +18,9 @@
         </div>
         @if ($this->isEditMode())
             <div class="flex gap-2.5">
-                <button type="button" wire:click="riwayatPembaruan"
-                    class="bg-[#525252] hover:bg-[#666666] border border-[#666666] px-6 py-2.5 rounded-[15px] font-medium text-sm text-white transition-colors cursor-pointer">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan">
                     Riwayat Pembaruan
-                </button>
+                </flux:button>
             </div>
         @endif
     </div>

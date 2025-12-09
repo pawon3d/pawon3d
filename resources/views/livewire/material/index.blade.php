@@ -2,16 +2,14 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-3xl font-bold">Daftar Barang Persediaan</h1>
         <div class="flex gap-2 items-center">
-            <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+            <flux:button variant="secondary" wire:click="cetakInformasi">
                 Cetak Informasi
-            </button>
+            </flux:button>
 
             <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
-            </button>
+            </flux:button>
         </div>
     </div>
 
@@ -317,7 +315,7 @@
                                         {{ $nextBatch
                                             ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y')
                                             : 'Belum
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Ada Tanggal' }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Ada Tanggal' }}
 
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">

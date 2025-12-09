@@ -1,0 +1,28 @@
+@startuml Activity - Hitung Stok/Rusak/Hilang
+
+|Inventori|
+start
+:Buat rencana\nhitung/rusak/hilang;
+
+|System|
+:Simpan hitung +\ndetail (expect);
+
+|Inventori|
+:Mulai aksi;
+
+|System|
+:Set status Proses;
+
+|Inventori|
+:Input qty aktual /\nrusak / hilang per detail;
+
+|System|
+:Update detail;
+:Sesuaikan batch\n(in/out sesuai aksi);
+:Catat inventory log;
+:Set status Selesai +\ngrand_total/loss_total;
+:Kirim notifikasi selesai;
+
+stop
+
+@enduml

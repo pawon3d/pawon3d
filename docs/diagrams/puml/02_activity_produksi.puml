@@ -1,77 +1,42 @@
-@startuml Activity Diagram - Proses Produksi
+@startuml Activity - Produksi (Pesanan/Siap Beli)
 
 |Produksi|
 start
-:Membuka halaman Antrian Produksi;
-:Melihat daftar produksi;
+:Buka antrian produksi;
 
-if (Ada produksi menunggu?) then (Ya)
-    :Memilih produksi yang akan dimulai;
-    :Memeriksa detail produksi;
+|System|
+:Tampilkan produksi\nstatus Antrian;
+
+|Produksi|
+:Pilih produksi;
+
+|System|
+:Muat detail +\ntransaksi terkait;
+:Ambil komposisi produk;
+:Cek stok bahan\n(batch FIFO);
+
+if (Stok cukup?) then (ya)
+    |Produksi|
+    :Tunjuk pekerja;
+    :Mulai produksi;
     
-    |Sistem|
-    :Memeriksa ketersediaan bahan baku;
+    |System|
+    :Set status Proses;
+    :Kurangi batch (FIFO);
+    :Catat inventory log\n(out produksi);
     
-    if (Bahan baku cukup?) then (Ya)
-        :Menampilkan konfirmasi mulai;
-        
-        |Produksi|
-        :Memilih pekerja yang terlibat;
-        :Mengkonfirmasi mulai produksi;
-        
-        |Sistem|
-        :Mengurangi stok bahan baku;
-        :Update status bahan otomatis;
-        note right
-          Status berubah berdasarkan:
-          - Expired: ada batch expired
-          - Kosong: stok = 0
-          - Habis: stok <= minimum
-          - Hampir Habis: stok rendah
-          - Tersedia: stok cukup
-        end note
-        :Mencatat log inventori;
-        :Update status: Proses;
-        :Kirim notifikasi (Produksi dimulai);
-        
-        |Produksi|
-        :Melakukan proses produksi;
-        
-        if (Produksi selesai?) then (Ya)
-            :Menandai produksi selesai;
-            
-            |Sistem|
-            :Menambah stok produk jadi;
-            :Update status: Selesai;
-            :Kirim notifikasi (Produksi selesai);
-            
-            if (Dari pesanan?) then (Ya)
-                :Update status transaksi: Dapat Diambil;
-                :Kirim notifikasi ke Kasir;
-            else (Siap Beli)
-            endif
-            
-        else (Dibatalkan)
-            |Produksi|
-            :Membatalkan produksi;
-            
-            |Sistem|
-            :Mengembalikan stok bahan baku;
-            :Update status: Dibatalkan;
-            :Kirim notifikasi (Produksi dibatalkan);
-        endif
-        
-    else (Tidak)
-        |Sistem|
-        :Menampilkan peringatan bahan tidak cukup;
-        :Menampilkan daftar bahan yang kurang;
-        
-        |Produksi|
-        :Menunda produksi;
-    endif
+    |Produksi|
+    :Input qty jadi & gagal;
     
-else (Tidak)
-    :Tidak ada aksi;
+    |System|
+    :Update detail produksi;
+    :Tambah stok produk jadi;
+    :Update status\nproduksi Selesai;
+    :Jika terkait transaksi ->\nset status Dapat Diambil;
+    :Kirim notifikasi selesai;
+else (tidak)
+    |System|
+    :Tolak mulai\n(stok kurang);
 endif
 
 stop

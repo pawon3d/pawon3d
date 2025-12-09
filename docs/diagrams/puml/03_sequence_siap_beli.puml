@@ -1,0 +1,64 @@
+@startuml Sequence - Transaksi Siap Beli
+
+actor Kasir
+participant "POS Page\n(Livewire)" as POS
+participant Product
+participant Customer
+participant Transaction
+participant TxDetail
+participant Payment
+participant PointsHistory as Points
+participant Notification as Notif
+database DB
+
+== Pilih Produk ==
+Kasir -> POS: Buka POS (siap beli)
+POS -> Product: query is_ready = true\n& active
+Product -> DB: SELECT products
+DB --> Product: data produk
+Product --> POS: produk siap jual
+
+Kasir -> POS: addToCart(product, qty)
+POS -> POS: hitung subtotal
+
+== Pelanggan (opsional) ==
+Kasir -> POS: input phone/name
+POS -> Customer: firstOrCreate(phone)
+Customer -> DB: SELECT/INSERT customers
+DB --> Customer: customer
+Customer --> POS: customer_id
+
+== Pembayaran ==
+Kasir -> POS: pilih metode & channel
+Kasir -> POS: isi nominal bayar
+POS -> POS: hitung total & kembalian
+
+== Simpan Transaksi ==
+POS -> Transaction: create(invoice_number,\ncustomer_id, user_id,\nmethod="siap-beli",\nstatus="Selesai",\npayment_status="Lunas",\ntotal_amount)
+Transaction -> DB: INSERT transactions
+DB --> Transaction: transaksi
+
+POS -> TxDetail: createMany(cart)
+TxDetail -> DB: INSERT transaction_details
+
+loop setiap item
+    POS -> Product: decrement(stock, qty)
+    Product -> DB: UPDATE products
+end
+
+POS -> Payment: create(transaction_id,\npayment_method,\npayment_channel_id,\npaid_amount,\nreceipt_number)
+Payment -> DB: INSERT payments
+
+alt Pelanggan terdaftar
+    POS -> Points: create(phone,\naction="earn",\npoints=floor(total/10000),\ntransaction_id)
+    Points -> DB: INSERT points_histories
+    POS -> Customer: increment(points)
+    Customer -> DB: UPDATE customers
+end
+
+POS -> Notif: orderCompleted(invoice_number)
+Notif -> DB: INSERT notifications
+
+POS --> Kasir: Tampilkan konfirmasi /\ncetak struk
+
+@enduml

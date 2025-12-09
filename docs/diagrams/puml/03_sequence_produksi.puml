@@ -1,119 +1,79 @@
-@startuml Sequence Diagram - Proses Produksi
+@startuml Sequence - Produksi (Pesanan/Siap Beli)
 
-actor Produksi as User
-participant "Antrian Page\n(Livewire)" as Queue
-participant "Mulai Page\n(Livewire)" as Start
-participant "Production\nModel" as Production
-participant "ProductionDetail\nModel" as ProdDetail
-participant "ProductionWorker\nModel" as Worker
-participant "Product\nModel" as Product
-participant "ProductComposition\nModel" as Composition
-participant "MaterialBatch\nModel" as Batch
-participant "InventoryLog\nModel" as Log
-participant "Transaction\nModel" as Transaction
-participant "NotificationService" as Notif
-database Database as DB
+actor Produksi
+participant "Production Page\n(Livewire)" as Page
+participant Production as Prod
+participant ProdDetail
+participant ProductComp
+participant MaterialBatch
+participant InventoryLog
+participant Product
+participant Transaction
+participant Notification as Notif
+database DB
 
-== Melihat Antrian ==
-User -> Queue: Buka halaman antrian
-Queue -> Production: where('status', 'Antrian')->get()
-Production -> DB: SELECT * FROM productions
-DB --> Production: productions list
-Production --> Queue: antrian produksi
-Queue --> User: Tampilkan antrian
+== Pilih Produksi ==
+Produksi -> Page: GET /produksi
+Page -> Prod: where('status', 'Antrian')->get()
+Prod -> DB: SELECT * FROM productions
+DB --> Prod: list produksi
+Prod --> Page: antrian produksi
 
-== Memulai Produksi ==
-User -> Start: Pilih produksi
-Start -> Production: find(id)->with('details.product')
-Production -> DB: SELECT with relationships
-DB --> Production: production + details
-Production --> Start: production data
+Produksi -> Page: Pilih produksi
+Page -> Prod: with('details.product', 'transaction')->find(id)
+Prod -> DB: SELECT * FROM productions\nJOIN production_details\nJOIN products
+DB --> Prod: detail produksi
 
-Start -> Start: Cek ketersediaan bahan
-
-loop Untuk setiap produk di production_details
-    Start -> Composition: where('product_id', id)->get()
-    Composition -> DB: SELECT * FROM product_compositions
-    DB --> Composition: komposisi bahan
+== Cek Stok Bahan ==
+Page -> ProdDetail: get()
+loop setiap item produk
+    ProdDetail -> ProductComp: where('product_id')->get()
+    ProductComp -> DB: SELECT * FROM\nproduct_compositions
+    DB --> ProductComp: komposisi bahan
     
-    loop Untuk setiap bahan
-        Start -> Batch: where('material_id', id)\n->sum('quantity')
-        Batch -> DB: SUM(quantity) FROM material_batches
-        DB --> Batch: total stok
+    ProductComp -> MaterialBatch: where('material_id')\n->orderBy('date', 'asc')\n->sum('batch_quantity')
+    MaterialBatch -> DB: SELECT SUM(batch_quantity)\nFROM material_batches\n(FIFO)
+    DB --> MaterialBatch: total stok
+end
+
+alt Stok tidak cukup
+    Page --> Produksi: Error stok kurang
+else Stok cukup
+    == Mulai Produksi ==
+    Produksi -> Page: Pilih pekerja,\nmulai produksi
+    
+    Page -> Prod: update(status="Proses",\nis_start=true,\nstart_date=now)
+    Prod -> DB: UPDATE productions
+    
+    loop setiap bahan
+        Page -> MaterialBatch: kurangiBatch(material_id, qty)\n(FIFO)
+        MaterialBatch -> DB: UPDATE material_batches
         
-        alt Stok Cukup
-            Start -> Start: OK
-        else Stok Tidak Cukup
-            Start --> User: Peringatan: Bahan kurang
-        end
+        Page -> InventoryLog: create(action="out",\nreference_type="Production",\nquantity_change)
+        InventoryLog -> DB: INSERT inventory_logs
     end
-end
-
-User -> Start: Pilih pekerja terlibat
-User -> Start: Konfirmasi mulai produksi
-
-Start -> Worker: createMany(workers)
-Worker -> DB: INSERT INTO production_workers
-DB --> Worker: workers created
-
-== Kurangi Stok Bahan (FIFO) ==
-loop Untuk setiap bahan
-    Start -> Batch: orderBy('expired_at', 'asc')\n->orderBy('created_at', 'asc')
-    note right
-      FIFO: Batch dengan
-      expired terdekat
-      digunakan duluan
-    end note
-    Batch -> DB: SELECT FROM material_batches
-    DB --> Batch: batches sorted
     
-    Start -> Batch: decrement/delete
-    Batch -> DB: UPDATE/DELETE material_batches
-    DB --> Batch: updated
+    == Input Hasil ==
+    Produksi -> Page: Input qty jadi & gagal
     
-    Start -> Log: create(log_data)
-    note right
-      action: 'produksi'
-      type: 'out'
-    end note
-    Log -> DB: INSERT INTO inventory_logs
-end
-
-Start -> Production: update(['status' => 'Proses', 'is_start' => true])
-Production -> DB: UPDATE productions
-DB --> Production: updated
-
-Start -> Notif: productionProcessing(production_number)
-Notif -> DB: INSERT INTO notifications
-Start --> User: Produksi dimulai
-
-== Menyelesaikan Produksi ==
-User -> Start: Klik selesai produksi
-
-Start -> Production: update(['status' => 'Selesai', 'is_finish' => true])
-Production -> DB: UPDATE productions
-DB --> Production: updated
-
-== Tambah Stok Produk ==
-loop Untuk setiap production_detail
-    Start -> Product: increment('stock', qty)
-    Product -> DB: UPDATE products SET stock = stock + qty
-    DB --> Product: updated
-end
-
-== Update Status Transaksi (jika dari pesanan) ==
-alt Ada transaction_id
-    Start -> Transaction: update(['status' => 'Dapat Diambil'])
-    Transaction -> DB: UPDATE transactions
-    DB --> Transaction: updated
+    Page -> ProdDetail: update(quantity_get,\nquantity_fail)
+    ProdDetail -> DB: UPDATE production_details
     
-    Start -> Notif: orderReadyForPickup(invoice_number)
-    Notif -> DB: INSERT notifications (untuk kasir)
+    Page -> Product: increment(stock, qty_jadi)
+    Product -> DB: UPDATE products
+    
+    Page -> Prod: update(status="Selesai",\nis_finish=true,\nend_date=now)
+    Prod -> DB: UPDATE productions
+    
+    alt Terkait transaksi
+        Page -> Transaction: update(status="Dapat Diambil")
+        Transaction -> DB: UPDATE transactions
+    end
+    
+    Page -> Notif: productionCompleted(production_number)
+    Notif -> DB: INSERT notifications
+    
+    Page --> Produksi: Produksi selesai
 end
-
-Start -> Notif: productionCompleted(production_number)
-Notif -> DB: INSERT INTO notifications
-
-Start --> User: Produksi selesai
 
 @enduml

@@ -8,10 +8,9 @@
             </a>
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Kategori Produk</h1>
         </div>
-        <button type="button" wire:click="riwayatPembaruan"
-            class="bg-[#525252] border border-[#666666] text-white px-6 py-2.5 rounded-[15px] hover:bg-[#666666] transition-colors">
-            <span class="font-montserrat font-medium text-[14px]">Riwayat Pembaruan</span>
-        </button>
+        <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            Riwayat Pembaruan
+        </flux:button>
     </div>
 
     <x-alert.info class="font-montserrat font-semibold text-[14px] leading-[1.4]">

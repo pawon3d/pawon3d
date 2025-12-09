@@ -15,10 +15,9 @@
             </button> --}}
 
             <!-- Tombol Riwayat Pembaruan -->
-            <button type="button" wire:click="riwayatPembaruan"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
-            </button>
+            </flux:button>
         </div>
     </div>
     {{-- <div class="flex items-center border bg-white border-gray-500 rounded-lg p-4">

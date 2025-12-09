@@ -9,10 +9,10 @@
                 <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Dapatkan Belanja</h1>
             </div>
             <div class="flex items-center gap-[10px] flex-wrap">
-                <flux:button type="button" wire:click="cetakInformasi" variant="outline">
+                <flux:button variant="secondary" wire:click="cetakInformasi">
                     Cetak Informasi
                 </flux:button>
-                <flux:button type="button" wire:click="riwayatPembaruan" variant="outline">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan">
                     Riwayat Pembaruan
                 </flux:button>
             </div>
