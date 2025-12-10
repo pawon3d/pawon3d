@@ -64,7 +64,7 @@ class Index extends Component
 
     public $base_unit_id = null;
 
-    public $conversion_factor = null;
+    public $conversion_factor = 1;
 
     public $baseUnits = [];
 
@@ -134,7 +134,7 @@ class Index extends Component
     public function render()
     {
         $units = \App\Models\Unit::when($this->search, function ($query) {
-            $query->where('name', 'like', '%'.$this->search.'%');
+            $query->where('name', 'like', '%' . $this->search . '%');
         })->with('material_details')->withCount('material_details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
@@ -170,7 +170,7 @@ class Index extends Component
             'alias' => $this->alias,
             'group' => $this->group,
             'base_unit_id' => $this->base_unit_id ?: null,
-            'conversion_factor' => $this->conversion_factor ?: null,
+            'conversion_factor' => $this->conversion_factor ?: 1,
         ]);
 
         $this->resetForm();
@@ -215,7 +215,7 @@ class Index extends Component
     {
         if ($this->unit_id) {
             $this->usageMaterials = \App\Models\Material::when($this->usageSearch, function ($query) {
-                $query->where('name', 'like', '%'.$this->usageSearch.'%');
+                $query->where('name', 'like', '%' . $this->usageSearch . '%');
             })->whereHas('material_details', function ($query) {
                 $query->where('unit_id', $this->unit_id);
             })->with(['material_details' => function ($query) {
@@ -289,7 +289,7 @@ class Index extends Component
         $materials = \App\Models\Material::when($this->usageSearch, function ($query) {
             $term = trim($this->usageSearch);
 
-            return $query->where('name', 'like', '%'.$term.'%');
+            return $query->where('name', 'like', '%' . $term . '%');
         })->whereHas('material_details', function ($query) {
             $query->where('unit_id', $this->unit_id);
         })->with(['material_details' => function ($query) {
@@ -306,7 +306,7 @@ class Index extends Component
         $current = $materials
             ->slice($offset, $this->usagePerPage)
             ->values()
-            ->map(fn ($material) => [
+            ->map(fn($material) => [
                 'id' => $material->id,
                 'name' => $material->name,
                 'unit_alias' => $material->material_details->where('unit_id', $this->unit_id)->first() ? $material->material_details->where('unit_id', $this->unit_id)->first()->unit->alias : '-',

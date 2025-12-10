@@ -10,12 +10,32 @@ class Index extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public string $filter = 'kasir';
+    public string $filter = '';
 
     public function mount()
     {
         View::share('title', 'Notifikasi');
         View::share('mainTitle', 'Notifikasi');
+
+        $user = Auth::user();
+        if ($user->hasAnyPermission([
+            'inventori.persediaan.kelola',
+            'inventori.laporan.kelola',
+            'inventori.produk.kelola',
+            'inventori.belanja.rencana.kelola',
+            'inventori.toko.kelola',
+            'inventori.belanja.mulai',
+            'inventori.hitung.kelola',
+            'inventori.alur.lihat'
+        ])) {
+            $this->filter = 'inventori';
+        } elseif ($user->hasAnyPermission(['produksi.rencana.kelola', 'produksi.laporan.kelola', 'produksi.mulai'])) {
+            $this->filter = 'produksi';
+        } elseif ($user->hasAnyPermission(['kasir.pesanan.kelola', 'kasir.laporan.kelola'])) {
+            $this->filter = 'kasir';
+        } else {
+            $this->filter = '';
+        }
     }
 
     public function markAsRead($notificationId)

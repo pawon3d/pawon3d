@@ -82,7 +82,8 @@
             </div>
             <div class="flex justify-center">
                 <span class="font-montserrat font-medium text-[14px] text-[#525252]">
-                    {{ number_format($percentage, 0) }}% ({{ $completed_count ?? 0 }} dari {{ $total_count ?? 0 }})
+                    {{ number_format($percentage, 0) }}% ({{ $total_quantity_get ?? 0 }} dari
+                    {{ $total_quantity_expect ?? 0 }})
                 </span>
             </div>
         </div>

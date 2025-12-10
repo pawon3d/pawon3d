@@ -563,7 +563,7 @@
                     @foreach (['pesanan-reguler' => 'Pesanan Reguler', 'pesanan-kotak' => 'Pesanan Kotak', 'siap-beli' => 'Siap Saji'] as $value => $label)
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" value="{{ $value }}" wire:model.live="selectedMethods"
-                                class="text-[#56C568] focus:ring-[#56C568] rounded-full border-accent" />
+                                class="text-[#56C568] focus:ring-[#56C568] border-accent" />
                             <span class="text-base text-[#666666]">{{ $label }}</span>
                         </label>
                     @endforeach

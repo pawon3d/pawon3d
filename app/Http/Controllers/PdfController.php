@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InventoriExport;
+use App\Exports\KasirExport;
+use App\Exports\ProduksiExport;
 use App\Models\Category;
 use App\Models\Expense;
 use App\Models\ExpenseDetail;
@@ -18,12 +21,14 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Activitylog\Models\Activity;
 
 class PdfController extends Controller
 {
     public function print($id)
     {
+        set_time_limit(120);
         $transaction = \App\Models\Transaction::with(['user', 'details.product'])->find($id);
 
         $pdf = Pdf::loadView('pdf.pdf', compact('transaction'))->setPaper([0, 0, 227, 400], 'portrait');
@@ -33,6 +38,7 @@ class PdfController extends Controller
 
     public function printReport(Request $request)
     {
+        set_time_limit(120);
         header('Content-Type: application/pdf');
         header('Content-Disposition: inline; filename="laporan-transaksi.pdf"');
         header('Cache-Control: private, max-age=0, must-revalidate');
@@ -101,6 +107,7 @@ class PdfController extends Controller
 
     public function generateCategoryPDF(Request $request)
     {
+        set_time_limit(120);
         $categories = Category::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->with('products')
@@ -115,6 +122,7 @@ class PdfController extends Controller
 
     public function generateIngredientCategoryPDF(Request $request)
     {
+        set_time_limit(120);
         $categories = IngredientCategory::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->get();
@@ -126,6 +134,7 @@ class PdfController extends Controller
 
     public function generateProductPDF(Request $request)
     {
+        set_time_limit(120);
         $products = Product::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->with('category')->get();
@@ -137,6 +146,7 @@ class PdfController extends Controller
 
     public function generateSupplierPDF(Request $request)
     {
+        set_time_limit(120);
         $suppliers = Supplier::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->get();
@@ -148,6 +158,7 @@ class PdfController extends Controller
 
     public function generateMaterialPDF(Request $request)
     {
+        set_time_limit(120);
         $materials = Material::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->with('material_details')->get();
@@ -171,6 +182,7 @@ class PdfController extends Controller
 
     public function generateExpensePDF(Request $request)
     {
+        set_time_limit(120);
         $status = $request->status ?? 'all';
         if ($request->status === 'history') {
             $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
@@ -200,6 +212,7 @@ class PdfController extends Controller
 
     public function generateExpenseDetailPDF($id)
     {
+        set_time_limit(120);
         $expense = \App\Models\Expense::with(['expenseDetails', 'supplier'])
             ->findOrFail($id);
         $logName = Activity::inLog('expenses')->where('subject_id', $expense->id)->latest()->first()?->causer->name ?? '-';
@@ -219,6 +232,7 @@ class PdfController extends Controller
 
     public function generateHitungPDF(Request $request)
     {
+        set_time_limit(120);
         $status = $request->status ?? 'all';
         if ($request->status === 'history') {
             $hitungs = \App\Models\Hitung::with(['details'])
@@ -248,6 +262,7 @@ class PdfController extends Controller
 
     public function generateHitungDetailPDF($id)
     {
+        set_time_limit(120);
         $hitung = \App\Models\Hitung::with(['details.material', 'details.unit'])
             ->findOrFail($id);
         $logName = Activity::inLog('hitungs')->where('subject_id', $hitung->id)->latest()->first()?->causer->name ?? '-';
@@ -264,6 +279,7 @@ class PdfController extends Controller
 
     public function generateUserPDF(Request $request)
     {
+        set_time_limit(120);
         $users = \App\Models\User::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->with('roles')->get();
@@ -275,6 +291,7 @@ class PdfController extends Controller
 
     public function generateRolePDF(Request $request)
     {
+        set_time_limit(120);
         $roles = \App\Models\SpatieRole::when($request->search, function ($query) use ($request) {
             return $query->where('name', 'like', '%' . $request->search . '%');
         })->get();
@@ -286,6 +303,7 @@ class PdfController extends Controller
 
     public function laporanKasir(Request $request)
     {
+        set_time_limit(120);
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -347,7 +365,7 @@ class PdfController extends Controller
             ->where('status', 'Selesai');
 
         if ($selectedWorker !== 'semua') {
-            $transactionsQuery->where('created_by', $selectedWorker);
+            $transactionsQuery->where('user_id', $selectedWorker);
         }
 
         if ($selectedMethod !== 'semua') {
@@ -361,7 +379,7 @@ class PdfController extends Controller
             ->where('status', 'Selesai');
 
         if ($selectedWorker !== 'semua') {
-            $prevTransactionsQuery->where('created_by', $selectedWorker);
+            $prevTransactionsQuery->where('user_id', $selectedWorker);
         }
 
         if ($selectedMethod !== 'semua') {
@@ -508,6 +526,7 @@ class PdfController extends Controller
 
     public function laporanInventori(Request $request)
     {
+        set_time_limit(120);
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -727,6 +746,7 @@ class PdfController extends Controller
 
     public function laporanProduksi(Request $request)
     {
+        set_time_limit(120);
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -925,5 +945,39 @@ class PdfController extends Controller
             'diff' => $diff,
             'percentage' => $percentage,
         ];
+    }
+
+    public function kasirExcel(Request $request)
+    {
+        set_time_limit(120);
+        $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $selectedWorker = $request->get('selectedWorker', 'semua');
+        $saleMethod = $request->get('saleMethod', 'semua');
+
+        $filename = 'Laporan_Kasir_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+
+        return Excel::download(new KasirExport($selectedDate, $selectedWorker, $saleMethod), $filename);
+    }
+
+    public function produksiExcel(Request $request)
+    {
+        set_time_limit(120);
+        $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $selectedWorker = $request->get('selectedWorker', 'semua');
+
+        $filename = 'Laporan_Produksi_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+
+        return Excel::download(new ProduksiExport($selectedDate, $selectedWorker), $filename);
+    }
+
+    public function inventoriExcel(Request $request)
+    {
+        set_time_limit(120);
+        $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $selectedWorker = $request->get('selectedWorker', 'semua');
+
+        $filename = 'Laporan_Inventori_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+
+        return Excel::download(new InventoriExport($selectedDate, $selectedWorker), $filename);
     }
 }

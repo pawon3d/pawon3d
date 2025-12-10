@@ -129,7 +129,7 @@ class Form extends Component
             'password' => 'required|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/',
             'gender' => 'required',
             'role' => 'required',
-            'is_active' => 'required|boolean',
+            'is_active' => 'nullable|boolean',
         ], [
             'password.required' => 'Password harus diisi.',
             'password.min' => 'Password minimal 8 karakter.',
@@ -157,13 +157,14 @@ class Form extends Component
         $user->password = bcrypt($this->password);
         $user->phone = $this->phone;
         $user->gender = $this->gender;
-        $user->is_active = $this->is_active;
+        $user->is_active = false;
         if ($this->image) {
             $user->image = $this->image->store('user_images', 'public');
         }
         $user->save();
 
         $user->assignRole($this->role);
+        User::find($user->id)->sendInvitation();
 
         session()->flash('success', 'Pekerja berhasil ditambahkan.');
 
@@ -231,6 +232,7 @@ class Form extends Component
         $user->save();
 
         $user->syncRoles([$this->role]);
+
 
         session()->flash('success', 'Pekerja berhasil diperbarui.');
 

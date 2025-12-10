@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Production;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -93,6 +94,7 @@ class Mulai extends Component
 
     public function save()
     {
+
         foreach ($this->production_details as $detail) {
             if ($this->parseFraction($detail['recipe_quantity'] ?? '') === null) {
                 $this->alert('error', 'Format kuantitas resep tidak valid. Gunakan format pecahan seperti "1/2", atau angka desimal.');
@@ -109,64 +111,42 @@ class Mulai extends Component
         foreach ($this->production_details as $detail) {
             $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
             $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
+
             if ($productionDetail) {
+
                 // Hitung quantity baru yang ditambahkan
                 $quantityToAdd = $detail['quantity'];
                 $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
                     ->first();
-                $materialBatches = \App\Models\MaterialBatch::where('material_id', $productComposition->material_id)
-                    ->where('unit_id', $productComposition->unit_id)
-                    ->orderBy('date')
-                    ->where('date', '>=', now()->format('Y-m-d'))
-                    ->get();
-                $batchQty = $materialBatches->sum('batch_quantity');
+
+                // Gunakan helper method Material untuk cek stok dengan konversi otomatis
+                $material = \App\Models\Material::find($productComposition->material_id);
+                $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
+
                 $requiredQuantity = $parsed * $productComposition->material_quantity;
-                if ($batchQty < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk '.$productionDetail->product->name.' tidak cukup untuk produksi ini.');
+                $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
+
+                if ($availableQuantity < $requiredQuantity) {
+                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini. Tersedia: ' . $availableQuantity . ' ' . $compositionUnit->name . ', dibutuhkan: ' . $requiredQuantity . ' ' . $compositionUnit->name);
 
                     return;
                 }
 
-                $remaining = $requiredQuantity;
+                // Kurangi stok dengan konversi otomatis (FIFO)
+                $success = $material->reduceQuantity($requiredQuantity, $compositionUnit, [
+                    'user_id' => Auth::user()->id,
+                    'action' => 'produksi',
+                    'reference_type' => 'production',
+                    'reference_id' => $productionDetail->production_id,
+                    'note' => 'Produksi ' . $productionDetail->product->name,
+                ]);
 
-                foreach ($materialBatches as $batch) {
-                    if ($remaining <= 0) {
-                        break;
-                    }
+                if (! $success) {
+                    $this->alert('error', 'Gagal mengurangi stok bahan baku produk ' . $productionDetail->product->name);
 
-                    $quantityUsed = 0;
-                    $quantityBefore = $batch->batch_quantity;
-
-                    if ($batch->batch_quantity >= $remaining) {
-                        // Batch ini cukup, kurangi langsung
-                        $quantityUsed = $remaining;
-                        $batch->batch_quantity -= $remaining;
-                        $batch->save();
-                        $remaining = 0;
-                    } else {
-                        // Batch ini tidak cukup, habiskan batch ini dan lanjut
-                        $quantityUsed = $batch->batch_quantity;
-                        $remaining -= $batch->batch_quantity;
-                        $batch->batch_quantity = 0;
-                        $batch->save();
-                    }
-
-                    // Create inventory log untuk pengurangan stok (produksi)
-                    \App\Models\InventoryLog::create([
-                        'material_id' => $productComposition->material_id,
-                        'material_batch_id' => $batch->id,
-                        'user_id' => auth()->id(),
-                        'action' => 'produksi',
-                        'quantity_change' => -$quantityUsed,
-                        'quantity_after' => $batch->batch_quantity,
-                        'reference_type' => 'production',
-                        'reference_id' => $productionDetail->production_id,
-                        'note' => "Produksi: {$productionDetail->production->production_number} - {$productionDetail->product->name}",
-                    ]);
+                    return;
                 }
 
-                // Recalculate material status after batch quantity changes
-                $productComposition->material->recalculateStatus();
                 // Update detail belanja
                 $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
                 $productionDetail->update([
@@ -181,6 +161,7 @@ class Mulai extends Component
                 }
             }
         }
+
         if (! empty($this->selectedProducts)) {
             \App\Models\ProductionDetail::whereIn('id', $this->selectedProducts)
                 ->where('production_id', $this->production_id)

@@ -89,7 +89,7 @@
                     </td>
                     <td class="px-6 py-0">
                         <span class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
-                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') : '-' }}
+                            {{ $expense->end_date ? \Carbon\Carbon::parse($expense->end_date)->format('d M Y') : '-' }}
                         </span>
                     </td>
                     <td class="px-6 py-0">

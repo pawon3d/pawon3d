@@ -159,8 +159,8 @@
                         <div class="flex flex-col gap-1">
                             <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Koki</p>
                             <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
-                                @if (!empty($transaction->production) && !empty($transaction->production->user))
-                                    {{ $transaction->production->user->name }}
+                                @if (!empty($transaction->production) && !empty($transaction->production->workers))
+                                    {{ $transaction->production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ') }}
                                 @else
                                     -
                                 @endif

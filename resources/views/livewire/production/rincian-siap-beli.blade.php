@@ -298,16 +298,15 @@
                                     Produksi</span>
                             </div>
                         </flux:button>
-                        @if ($total_quantity_get < $total_quantity_plan)
-                            <flux:button wire:click="dapatkanProduk" icon="clipboard-document-list"
-                                variant="secondary">
-                                <div style="padding: 0 5px;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Dapatkan
-                                        Produk</span>
-                                </div>
-                            </flux:button>
-                        @endif
+                        {{-- @if ($total_quantity_get < $total_quantity_plan) --}}
+                        <flux:button wire:click="dapatkanProduk" icon="clipboard-document-list" variant="secondary">
+                            <div style="padding: 0 5px;">
+                                <span
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Dapatkan
+                                    Produk</span>
+                            </div>
+                        </flux:button>
+                        {{-- @endif --}}
                     </div>
                 </div>
             @endif

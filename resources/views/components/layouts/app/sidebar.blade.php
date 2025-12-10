@@ -13,7 +13,7 @@
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <div id="sidebar"
-        class="fixed inset-y-0 left-0 z-40 w-12 mt-12 bg-white border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
+        class="fixed inset-y-0 left-0 z-40 w-12 mt-12 bg-[#252324] border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
         <flux:navlist variant="outline" class="my-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
 
@@ -194,7 +194,9 @@
                     </flux:menu>
                 </flux:dropdown>
 
-                <livewire:notification.dropdown />
+                <flux:button type="button" variant="ghost" icon="bell" href="{{ route('notifikasi') }}"
+                    class="cursor-pointer !text-gray-100" wire:navigate />
+                {{-- <livewire:notification.dropdown /> --}}
             </div>
 
         </div>

@@ -197,20 +197,46 @@ class Rincian extends Component
             $affectedMaterialIds->push($detail->material_id);
 
             // Generate a batch number if not present in detail
-            $batchNumber = 'B-'.Carbon::parse($detail->expiry_date)->format('ymd');
+            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
+
+            // Ambil material dan base unit untuk konsolidasi
+            $material = \App\Models\Material::find($detail->material_id);
+            $currentUnit = \App\Models\Unit::find($detail->unit_id);
+
+            if (! $material || ! $currentUnit) {
+                return; // Di dalam each() callback, gunakan return bukan continue
+            }
+
+            // Tentukan target unit - gunakan base unit dari grup unit ini
+            $targetUnit = $currentUnit->base_unit_id
+                ? \App\Models\Unit::find($currentUnit->base_unit_id)
+                : $currentUnit;
+
+            if (! $targetUnit) {
+                $targetUnit = $currentUnit;
+            }
+
+            // Konversi quantity ke target unit
+            $quantityInTargetUnit = $currentUnit->convertTo($detail->quantity_get, $targetUnit);
+
+            // Jika tidak bisa konversi, gunakan unit asli
+            if ($quantityInTargetUnit === null) {
+                $quantityInTargetUnit = $detail->quantity_get;
+                $targetUnit = $currentUnit;
+            }
 
             // Cek apakah sudah ada batch dengan batch_number dan unit_id yang sama
             $materialBatch = \App\Models\MaterialBatch::where('batch_number', $batchNumber)
-                ->where('unit_id', $detail->unit_id)
+                ->where('unit_id', $targetUnit->id)
+                ->where('material_id', $detail->material_id)
                 ->first();
 
             if ($materialBatch) {
                 // Jika ada, update batch_quantity
                 $quantityBefore = $materialBatch->batch_quantity;
                 $materialBatch->update([
-                    'batch_quantity' => $materialBatch->batch_quantity + $detail->quantity_get,
+                    'batch_quantity' => $materialBatch->batch_quantity + $quantityInTargetUnit,
                     'date' => $detail->expiry_date,
-                    'material_id' => $detail->material_id,
                 ]);
 
                 // Create inventory log untuk penambahan stok
@@ -219,18 +245,18 @@ class Rincian extends Component
                     'material_batch_id' => $materialBatch->id,
                     'user_id' => auth()->id(),
                     'action' => 'belanja',
-                    'quantity_change' => $detail->quantity_get,
+                    'quantity_change' => $quantityInTargetUnit,
                     'quantity_after' => $materialBatch->batch_quantity,
                     'reference_type' => 'expense',
                     'reference_id' => $expense->id,
-                    'note' => "Belanja: {$expense->expense_number}",
+                    'note' => "Belanja: {$expense->expense_number} (dari {$detail->quantity_get} {$currentUnit->name})",
                 ]);
             } else {
-                // Jika tidak ada, create baru
+                // Jika tidak ada, create baru dengan target unit
                 $newBatch = \App\Models\MaterialBatch::create([
-                    'unit_id' => $detail->unit_id,
+                    'unit_id' => $targetUnit->id,
                     'material_id' => $detail->material_id,
-                    'batch_quantity' => $detail->quantity_get,
+                    'batch_quantity' => $quantityInTargetUnit,
                     'date' => $detail->expiry_date,
                 ]);
 
@@ -240,11 +266,11 @@ class Rincian extends Component
                     'material_batch_id' => $newBatch->id,
                     'user_id' => auth()->id(),
                     'action' => 'belanja',
-                    'quantity_change' => $detail->quantity_get,
-                    'quantity_after' => $detail->quantity_get,
+                    'quantity_change' => $quantityInTargetUnit,
+                    'quantity_after' => $quantityInTargetUnit,
                     'reference_type' => 'expense',
                     'reference_id' => $expense->id,
-                    'note' => "Belanja: {$expense->expense_number}",
+                    'note' => "Belanja: {$expense->expense_number} (dari {$detail->quantity_get} {$currentUnit->name})",
                 ]);
             }
         });

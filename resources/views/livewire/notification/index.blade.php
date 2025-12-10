@@ -14,21 +14,29 @@
 
         {{-- Filter Tabs --}}
         <div class="flex items-center gap-[10px]">
-            <button wire:click="$set('filter', 'kasir')"
-                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'kasir' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
-                style="font-family: Montserrat, sans-serif;">
-                Kasir
-            </button>
-            <button wire:click="$set('filter', 'produksi')"
-                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'produksi' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
-                style="font-family: Montserrat, sans-serif;">
-                Produksi
-            </button>
-            <button wire:click="$set('filter', 'inventori')"
-                class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'inventori' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
-                style="font-family: Montserrat, sans-serif;">
-                Inventori
-            </button>
+            @canany(['kasir.pesanan.kelola', 'kasir.laporan.kelola'])
+                <button wire:click="$set('filter', 'kasir')"
+                    class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'kasir' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                    style="font-family: Montserrat, sans-serif;">
+                    Kasir
+                </button>
+            @endcanany
+            @canany(['produksi.rencana.kelola', 'produksi.laporan.kelola', 'produksi.mulai'])
+                <button wire:click="$set('filter', 'produksi')"
+                    class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'produksi' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                    style="font-family: Montserrat, sans-serif;">
+                    Produksi
+                </button>
+            @endcanany
+            @canany(['inventori.persediaan.kelola', 'inventori.laporan.kelola', 'inventori.produk.kelola',
+                'inventori.belanja.rencana.kelola', 'inventori.toko.kelola', 'inventori.belanja.mulai',
+                'inventori.hitung.kelola', 'inventori.alur.lihat'])
+                <button wire:click="$set('filter', 'inventori')"
+                    class="px-[25px] py-[10px] rounded-[15px] font-semibold text-[16px] transition-colors shadow-sm {{ $filter === 'inventori' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] text-[#3f4e4f] border border-[#3f4e4f]' }}"
+                    style="font-family: Montserrat, sans-serif;">
+                    Inventori
+                </button>
+            @endcanany
         </div>
     </div>
 

@@ -1,36 +1,36 @@
 @aware(['variant'])
 
 @props([
-'iconVariant' => 'outline',
-'iconTrailing' => null,
-'badgeColor' => null,
-'variant' => null,
-'iconDot' => null,
-'accent' => true,
-'badge' => null,
-'icon' => null,
-'solo' => false,
+    'iconVariant' => 'outline',
+    'iconTrailing' => null,
+    'badgeColor' => null,
+    'variant' => null,
+    'iconDot' => null,
+    'accent' => true,
+    'badge' => null,
+    'icon' => null,
+    'solo' => false,
 ])
 
 @php
-// Button should be a square if it has no text contents...
-$square ??= $slot->isEmpty();
+    // Button should be a square if it has no text contents...
+    $square ??= $slot->isEmpty();
 
-// Size-up icons in square/icon-only buttons...
-$iconClasses = Flux::classes($square ? 'size-6!' : 'size-6!');
+    // Size-up icons in square/icon-only buttons...
+    $iconClasses = Flux::classes($square ? 'size-6!' : 'size-6!');
 
-$classes = Flux::classes()
-->add($solo ? '' : 'pl-10')
-->add('relative flex items-center gap-3 overflow-hidden')
-->add($square ? 'px-2.5!' : '')
-->add('py-3 text-left w-full ps-[calc(0.75rem-1px)] pe-3')
-->add('text-zinc-800 dark:text-white/80')
-->add([
-'data-current:bg-[#74512d20]',
-'data-current:border-zinc-800',
-'data-current:text-[#74512D] data-current:font-semibold',
-'hover:bg-[#74512d20] hover:text-[#74512D] hover:font-semibold',
-]);
+    $classes = Flux::classes()
+        ->add($solo ? '' : 'pl-10')
+        ->add('relative flex items-center gap-3 overflow-hidden')
+        ->add($square ? 'px-2.5!' : '')
+        ->add('py-3 text-left w-full ps-[calc(0.75rem-1px)] pe-3')
+        ->add('text-[#666666] dark:text-white/80')
+        ->add([
+            'data-current:bg-[#74512d20]',
+            'data-current:border-zinc-800',
+            'data-current:text-[#F8F4E1] data-current:font-semibold',
+            'hover:bg-[#74512d20] hover:text-[#F8F4E1] hover:font-semibold',
+        ]);
 @endphp
 
 <flux:button-or-link :attributes="$attributes->class($classes)" data-flux-navlist-item>
@@ -53,7 +53,7 @@ $classes = Flux::classes()
 
     <?php if ($slot->isNotEmpty()): ?>
     <span
-        class="{{ $solo ? 'ml-1' : 'ml-3'  }} flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block"
+        class="{{ $solo ? 'ml-1' : 'ml-3' }} flex-1 text-sm font-medium leading-none whitespace-nowrap [[data-nav-footer]_&]:hidden [[data-nav-sidebar]_[data-nav-footer]_&]:block"
         data-content>{{ $slot }}</span>
     <?php endif; ?>
 

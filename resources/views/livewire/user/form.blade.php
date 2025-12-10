@@ -54,7 +54,7 @@
                 <div class="flex flex-col gap-5 items-start">
                     <!-- Dropzone Area -->
                     <div class="relative w-[300px] h-[170px] border border-dashed border-black rounded-[15px] overflow-hidden"
-                        wire:ignore ondragover="event.preventDefault(); this.classList.add('border-[#74512d]');"
+                        ondragover="event.preventDefault(); this.classList.add('border-[#74512d]');"
                         ondragleave="this.classList.remove('border-[#74512d]');" ondrop="handleDrop(event)"
                         id="dropzone-container">
 
@@ -375,9 +375,8 @@
             const files = event.dataTransfer.files;
             if (files.length > 0) {
                 const input = document.getElementById('dropzone-file');
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(files[0]);
-                input.files = dataTransfer.files;
+                input.files = files;
+                previewImage(input);
                 input.dispatchEvent(new Event('change', {
                     bubbles: true
                 }));
@@ -385,13 +384,25 @@
         }
 
         function previewImage(input) {
+            const previewContainer = document.getElementById('preview-container');
+            const defaultContent = previewContainer.querySelector('.flex-col');
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
+
                 reader.onload = function(e) {
-                    const previewContainer = document.getElementById('preview-container');
-                    previewContainer.innerHTML =
-                        `<img src="${e.target.result}" alt="Preview" class="object-cover w-full h-full" />`;
+                    let previewImg = document.getElementById('image-preview');
+                    if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.id = 'image-preview';
+                        previewImg.className = 'object-cover w-full h-full';
+                        previewContainer.appendChild(previewImg);
+                    }
+                    previewImg.src = e.target.result;
+
+                    if (defaultContent) defaultContent.style.display = 'none';
                 };
+
                 reader.readAsDataURL(input.files[0]);
             }
         }

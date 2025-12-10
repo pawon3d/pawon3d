@@ -9,6 +9,10 @@
         {{-- Header --}}
         <div class="flex justify-between items-center">
             <h1 class="text-xl font-semibold text-[#333333]">Laporan Inventori</h1>
+            {{-- <flux:button variant="secondary" icon="printer"
+                onclick="window.open('{{ route('laporan-inventori.pdf') }}?filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}', '_blank')">
+                Cetak Informasi
+            </flux:button> --}}
             <flux:button variant="secondary" icon="printer"
                 onclick="window.open('{{ route('laporan-inventori.pdf') }}?filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}', '_blank')">
                 Cetak Informasi
@@ -180,11 +184,18 @@
                                             class="{{ $base }} {{ $bgClass }} {{ $textClass }} {{ $radiusClass }} {{ !$info['isSelected'] ? 'hover:bg-gray-100' : '' }}">
                                             <div class="flex flex-col items-center">
                                                 <span>{{ $info['day'] }}</span>
-                                                @if (!empty($info['hasData']))
-                                                    <span title="{{ $info['productionCount'] ?? 0 }} produksi"
-                                                        aria-label="{{ $info['productionCount'] ?? 0 }} produksi"
-                                                        class="mt-1 w-1.5 h-1.5 rounded-full bg-[#4caf50] transition-all duration-200"></span>
-                                                @endif
+                                                <div class="mt-1 flex items-center gap-1">
+                                                    @if (!empty($info['hasExpense']))
+                                                        <span title="{{ $info['expenseCount'] ?? 0 }} sesi belanja"
+                                                            aria-label="{{ $info['expenseCount'] ?? 0 }} sesi belanja"
+                                                            class="w-1.5 h-1.5 rounded-full bg-[#f59e0b] transition-all duration-200"></span>
+                                                    @endif
+                                                    @if (!empty($info['hasData']))
+                                                        <span title="{{ $info['productionCount'] ?? 0 }} produksi"
+                                                            aria-label="{{ $info['productionCount'] ?? 0 }} produksi"
+                                                            class="w-1.5 h-1.5 rounded-full bg-[#4caf50] transition-all duration-200"></span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </button>
 

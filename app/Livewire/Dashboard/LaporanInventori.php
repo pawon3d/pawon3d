@@ -107,14 +107,14 @@ class LaporanInventori extends Component
             $expenseQuery->where('user_id', $this->selectedWorker);
         }
         $expenseCollection = $expenseQuery->get();
-        $expenseCounts = $expenseCollection->groupBy(fn ($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
+        $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
 
         $productionQuery = Production::whereBetween('date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->date)->toDateString())->map(fn ($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->date)->toDateString())->map(fn($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -128,6 +128,8 @@ class LaporanInventori extends Component
 
             // For this calendar we mark dates based on productions only (usage of materials)
             $productionCount = $productionCounts[$dateString] ?? 0;
+            // Mark dates that have expenses (purchase sessions)
+            $expenseCount = $expenseCounts[$dateString] ?? 0;
 
             $inRange = false;
             $isRangeStart = false;
@@ -151,6 +153,8 @@ class LaporanInventori extends Component
                 'hasData' => $productionCount > 0,
                 'count' => $productionCount,
                 'productionCount' => $productionCount,
+                'hasExpense' => $expenseCount > 0,
+                'expenseCount' => $expenseCount,
                 'inRange' => $inRange,
                 'isRangeStart' => $isRangeStart,
                 'isRangeEnd' => $isRangeEnd,
@@ -283,7 +287,7 @@ class LaporanInventori extends Component
             $lengthDays = $startDate->diffInDays($endDate) + 1;
             $prevStart = $startDate->copy()->subDays($lengthDays);
             $prevEnd = $startDate->copy()->subDay();
-            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDate = Carbon::parse($this->selectedDate);
 
@@ -300,7 +304,7 @@ class LaporanInventori extends Component
                     $endDate = $selectedDate->copy()->endOfWeek();
                     $prevStart = $startDate->copy()->subWeek();
                     $prevEnd = $endDate->copy()->subWeek();
-                    $dateRange = $startDate->translatedFormat('d F Y').' - '.$endDate->translatedFormat('d F Y');
+                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDate->copy()->startOfMonth();
@@ -314,7 +318,7 @@ class LaporanInventori extends Component
                     $endDate = $selectedDate->copy()->endOfYear();
                     $prevStart = $startDate->copy()->subYear();
                     $prevEnd = $endDate->copy()->subYear();
-                    $dateRange = 'Tahun '.$selectedDate->year;
+                    $dateRange = 'Tahun ' . $selectedDate->year;
                     break;
                 default:
                     $startDate = $selectedDate->copy()->startOfDay();
@@ -325,14 +329,15 @@ class LaporanInventori extends Component
             }
         }
 
-        $expensesQuery = Expense::whereBetween('expense_date', [$startDate, $endDate]);
+        // Cast start/end to date strings because `expense_date` is a DATE column
+        $expensesQuery = Expense::whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()]);
 
         if ($this->selectedWorker !== 'semua') {
             $expensesQuery->where('user_id', $this->selectedWorker);
         }
 
         $expenses = $expensesQuery->get();
-        $prevExpenses = Expense::whereBetween('expense_date', [$prevStart, $prevEnd])->get();
+        $prevExpenses = Expense::whereBetween('expense_date', [$prevStart->toDateString(), $prevEnd->toDateString()])->get();
 
         $expenseIds = $expenses->pluck('id');
         $prevExpenseIds = $prevExpenses->pluck('id');
@@ -383,7 +388,7 @@ class LaporanInventori extends Component
 
                 $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
                     ->whereHas('production', function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date', [$startDate, $endDate]);
+                        $query->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()]);
 
                         if ($this->selectedWorker !== 'semua') {
                             $query->whereHas('workers', function ($workerQuery) {
@@ -432,7 +437,7 @@ class LaporanInventori extends Component
                 'name' => Material::find($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn ($v) => $v > 0);
+            $nonZero = $sorted->filter(fn($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
@@ -499,7 +504,7 @@ class LaporanInventori extends Component
                 'remain_alias' => $remainUnitAlias,
                 'remain_price' => $remainValue,
             ];
-        })->filter(fn ($m) => $m->total > 0 || $m->total_price > 0)->sortByDesc('total')->values();
+        })->filter(fn($m) => $m->total > 0 || $m->total_price > 0)->sortByDesc('total')->values();
 
         $diffStats = [
             'totalExpense' => $this->calculateDiff($totalExpense, $prevTotalExpense),
@@ -530,7 +535,7 @@ class LaporanInventori extends Component
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'laporan-inventori-'.now()->format('Y-m-d').'.pdf');
+        }, 'laporan-inventori-' . now()->format('Y-m-d') . '.pdf');
     }
 
     public function loadData(): void
@@ -630,7 +635,7 @@ class LaporanInventori extends Component
             }
         }
 
-        $expensesQuery = Expense::whereBetween('expense_date', [$startDate, $endDate]);
+        $expensesQuery = Expense::whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()]);
 
         // Filter by worker if not 'semua'
         if ($this->selectedWorker !== 'semua') {
@@ -640,7 +645,7 @@ class LaporanInventori extends Component
         $this->expenses = $expensesQuery->get();
         $expenses = $this->expenses;
 
-        $this->prevExpenses = Expense::whereBetween('expense_date', [$prevStart, $prevEnd])
+        $this->prevExpenses = Expense::whereBetween('expense_date', [$prevStart->toDateString(), $prevEnd->toDateString()])
             ->get();
         $prevExpenses = $this->prevExpenses;
 
@@ -677,7 +682,7 @@ class LaporanInventori extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -686,7 +691,7 @@ class LaporanInventori extends Component
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
-        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $totalExpense = $expenses->count();
         $prevTotalExpense = $prevExpenses->count();
@@ -737,7 +742,7 @@ class LaporanInventori extends Component
                 // Query ProductionDetail dengan filter tanggal dan worker
                 $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
                     ->whereHas('production', function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date', [$startDate, $endDate]);
+                        $query->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()]);
 
                         // Filter by worker if selected
                         if ($this->selectedWorker !== 'semua') {
@@ -798,7 +803,7 @@ class LaporanInventori extends Component
                 'name' => Material::find($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn ($v) => $v > 0);
+            $nonZero = $sorted->filter(fn($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
@@ -874,7 +879,7 @@ class LaporanInventori extends Component
         $filteredMaterials = $materialTables;
         if (! empty($this->search)) {
             $searchLower = Str::lower($this->search);
-            $filteredMaterials = $materialTables->filter(fn ($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
+            $filteredMaterials = $materialTables->filter(fn($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
         }
 
         // Create a LengthAwarePaginator for the table component

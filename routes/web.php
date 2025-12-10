@@ -56,6 +56,28 @@ Route::get('/laporan-inventori/pdf', [PdfController::class, 'laporanInventori'])
     ->middleware(['auth', 'permission:inventori.laporan.kelola'])
     ->name('laporan-inventori.pdf');
 
+// Export pages for kasir/produksi/inventori export-only pages
+Route::get('/laporan-kasir/export', App\Livewire\Dashboard\ExportKasir::class)
+    ->middleware(['auth', 'permission:kasir.laporan.kelola'])
+    ->name('laporan-kasir.export');
+Route::get('/laporan-kasir/excel', [PdfController::class, 'kasirExcel'])
+    ->middleware(['auth', 'permission:kasir.laporan.kelola'])
+    ->name('laporan-kasir.excel');
+
+Route::get('/laporan-produksi/export', App\Livewire\Dashboard\ExportProduksi::class)
+    ->middleware(['auth', 'permission:produksi.laporan.kelola'])
+    ->name('laporan-produksi.export');
+Route::get('/laporan-produksi/excel', [PdfController::class, 'produksiExcel'])
+    ->middleware(['auth', 'permission:produksi.laporan.kelola'])
+    ->name('laporan-produksi.excel');
+
+Route::get('/laporan-inventori/export', App\Livewire\Dashboard\ExportInventori::class)
+    ->middleware(['auth', 'permission:inventori.laporan.kelola'])
+    ->name('laporan-inventori.export');
+Route::get('/laporan-inventori/excel', [PdfController::class, 'inventoriExcel'])
+    ->middleware(['auth', 'permission:inventori.laporan.kelola'])
+    ->name('laporan-inventori.excel');
+
 Route::middleware(['auth'])->group(function () {
     // Pekerja routes
     Route::middleware(['permission:manajemen.pekerja.kelola'])->group(function () {
@@ -101,8 +123,8 @@ Route::middleware(['auth'])->group(function () {
             ->name('bahan-baku.pdf');
         Route::get('/belanja', App\Livewire\Expense\Index::class)->name('belanja');
         Route::get('/belanja/rencana', App\Livewire\Expense\Rencana::class)->name('belanja.rencana');
-        Route::get('/belanja/tambah', App\Livewire\Expense\Tambah::class)->name('belanja.tambah');
-        Route::get('/belanja/{id}/edit', App\Livewire\Expense\Edit::class)->name('belanja.edit');
+        Route::get('/belanja/tambah', App\Livewire\Expense\Form::class)->name('belanja.tambah');
+        Route::get('/belanja/{id}/edit', App\Livewire\Expense\Form::class)->name('belanja.edit');
         Route::get('/belanja/{id}/rincian', App\Livewire\Expense\Rincian::class)->name('belanja.rincian');
         Route::get('/belanja/{id}/dapatkan-belanja', App\Livewire\Expense\Mulai::class)->name('belanja.dapatkan-belanja');
         Route::get('/belanja/riwayat', App\Livewire\Expense\Riwayat::class)->name('belanja.riwayat');
@@ -173,4 +195,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

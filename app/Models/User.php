@@ -125,7 +125,14 @@ class User extends Authenticatable
         $this->invitation_sent_at = now();
         $this->save();
 
-        $storeName = StoreProfile::first()?->name != '' ? StoreProfile::first()->name : config('app.name');
+        $storeProfile = StoreProfile::query()->first();
+
+        if ($storeProfile->name != '' && $storeProfile->name != null) {
+            $storeName = $storeProfile->name;
+        } else {
+            $storeName = 'Pawon3D';
+        }
+
         $this->notify(new UserInvitationNotification($storeName));
     }
 

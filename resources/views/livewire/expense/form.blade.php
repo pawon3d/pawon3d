@@ -1,15 +1,18 @@
 <div>
     <div class="mb-[30px] flex items-center gap-[15px]">
-        <a href="{{ route('belanja.rencana') }}"
+        <a href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja.rencana') }}"
             class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]"
             wire:navigate>
             <flux:icon.arrow-left class="size-5 text-[#f6f6f6]" />
             <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Kembali</span>
         </a>
-        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Tambah Daftar Belanja</h1>
+        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">
+            {{ $expense_id ? 'Ubah' : 'Tambah' }} Daftar Belanja
+        </h1>
     </div>
     <x-alert.info>
-        Tambah belanja persediaan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat.
+        {{ $expense_id ? 'Ubah' : 'Tambah' }} belanja persediaan. Lengkapi informasi yang diminta, pastikan informasi
+        yang dimasukan benar dan tepat.
         Informasi akan digunakan untuk belanja persediaan sehingga dapat memperbarui harga produk produksi yang akan
         dijual.
     </x-alert.info>
@@ -191,12 +194,19 @@
 
 
     <div class="flex justify-end items-center gap-[30px] mt-[50px]">
-        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja') }}" wire:navigate>
+        <flux:button type="button" variant="subtle" icon="x-mark"
+            href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja') }}" wire:navigate>
             Batal
         </flux:button>
-        <flux:button type="button" wire:click.prevent="store" variant="primary" icon="archive-box">
-            Buat Rencana Belanja
-        </flux:button>
+        @if ($expense_id)
+            <flux:button type="button" wire:click.prevent="update" variant="primary" icon="save">
+                Simpan Perubahan
+            </flux:button>
+        @else
+            <flux:button type="button" wire:click.prevent="store" variant="primary" icon="archive-box">
+                Buat Rencana Belanja
+            </flux:button>
+        @endif
     </div>
 
 </div>

@@ -81,21 +81,19 @@
             </a>
         @endcan
 
-        @canany(['manajemen.profil_usaha.kelola', 'manajemen.pembayaran.kelola'])
-            <!-- Notifikasi -->
-            <a href="{{ route('notifikasi') }}" wire:navigate
-                class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
-                <div class="flex-1 flex gap-[10px] items-center">
-                    <div class="p-[5px]">
-                        <flux:icon.bell class="size-5 text-[#666666]" />
-                    </div>
-                    <span class="text-lg text-[#333333]">Notifikasi</span>
+        <!-- Notifikasi -->
+        <a href="{{ route('notifikasi') }}" wire:navigate
+            class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] h-[60px] flex items-center px-5 hover:bg-gray-100 transition-colors">
+            <div class="flex-1 flex gap-[10px] items-center">
+                <div class="p-[5px]">
+                    <flux:icon.bell class="size-5 text-[#666666]" />
                 </div>
-                <div class="flex items-center justify-center w-[42px] h-full">
-                    <flux:icon.chevron-right class="size-5 text-[#666666]" />
-                </div>
-            </a>
-        @endcanany
+                <span class="text-lg text-[#333333]">Notifikasi</span>
+            </div>
+            <div class="flex items-center justify-center w-[42px] h-full">
+                <flux:icon.chevron-right class="size-5 text-[#666666]" />
+            </div>
+        </a>
 
         <!-- Panduan Pengguna -->
         {{-- <a href="{{ route('panduan-pengguna') }}" wire:navigate
