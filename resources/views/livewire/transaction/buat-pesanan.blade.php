@@ -387,12 +387,16 @@
             @endif
 
             <flux:label>Nominal Pembayaran</flux:label>
-            <p class="text-sm text-gray-500">
-                Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
-                setengah
-                dari
-                Total Tagihan.
-            </p>
+            @if ($method == 'siap-beli')
+                <p class="text-sm text-red-600 font-medium">
+                    Untuk pembelian siap saji harus dibayar lunas. Tidak dapat menggunakan sistem uang muka (DP).
+                </p>
+            @else
+                <p class="text-sm text-gray-500">
+                    Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
+                    setengah dari Total Tagihan.
+                </p>
+            @endif
             <div class="flex flex-row gap-2 w-full">
                 <div class="flex flex-col gap-2 w-full">
                     @if ($paymentGroup == 'tunai')

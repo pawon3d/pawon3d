@@ -251,6 +251,19 @@ class BuatPesanan extends Component
         $this->paidAmount = $value;
     }
 
+    public function getChangeAmountProperty()
+    {
+        if ($this->paymentGroup !== 'tunai') {
+            return 0;
+        }
+
+        // Calculate total after points discount
+        $totalAfterPoints = $this->getTotalProperty() - ($this->pointsUsed * 100);
+
+        // Change is the difference between paid amount and total (only if overpaid)
+        return max(0, $this->paidAmount - $totalAfterPoints);
+    }
+
     public function updatedPaymentGroup($value)
     {
         if ($value == 'non-tunai') {
@@ -403,11 +416,11 @@ class BuatPesanan extends Component
         // Set default status
         $status = 'Belum Lunas';
 
-        if ($this->paymentMethod == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
+        if ($this->paymentGroup == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
 
             return;
-        } elseif ($this->paymentChannelId == '' && $this->paymentMethod != 'tunai') {
+        } elseif ($this->paymentChannelId == '' && $this->paymentGroup != 'tunai') {
             $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
 
             return;
@@ -420,10 +433,21 @@ class BuatPesanan extends Component
         }
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             $totalAfterPoints = $this->getTotalProperty() - ($this->pointsUsed * 100);
-            if ($this->paidAmount < 0.5 * $totalAfterPoints) {
-                $this->alert('warning', 'Jumlah pembayaran minimal 50% dari total setelah diskon poin.');
 
-                return;
+            // Untuk siap-beli harus bayar lunas langsung
+            if ($this->method == 'siap-beli') {
+                if ($this->paidAmount < $totalAfterPoints) {
+                    $this->alert('warning', 'Untuk pembelian siap saji harus dibayar lunas.');
+
+                    return;
+                }
+            } else {
+                // Untuk pesanan reguler/kotak minimal 50%
+                if ($this->paidAmount < 0.5 * $totalAfterPoints) {
+                    $this->alert('warning', 'Jumlah pembayaran minimal 50% dari total setelah diskon poin.');
+
+                    return;
+                }
             }
         }
 
@@ -545,6 +569,7 @@ class BuatPesanan extends Component
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),
+            'changeAmount' => $this->getChangeAmountProperty(),
         ]);
     }
 }

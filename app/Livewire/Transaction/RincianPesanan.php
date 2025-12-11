@@ -116,6 +116,10 @@ class RincianPesanan extends Component
 
     public $cancelProofImage = null;
 
+    public $riwayatModal = false;
+
+    public $activityLogs = [];
+
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
         'cancelTransaction' => 'cancelTransaction',
@@ -424,7 +428,7 @@ class RincianPesanan extends Component
 
     public function pay()
     {
-        if ($this->paymentMethod == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
+        if ($this->paymentGroup == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
 
             return;
@@ -440,16 +444,30 @@ class RincianPesanan extends Component
             // sementara
         }
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
-            if ($this->paidAmount < 0.5 * $this->transaction->total_amount) {
-                $this->alert('warning', 'Jumlah pembayaran minimal 50% dari sisa.');
+            $totalAfterPoints = $this->transaction->total_amount - ($this->transaction->points_discount ?? 0);
 
-                return;
+            // Untuk siap-beli harus bayar lunas langsung
+            if ($this->transaction->method == 'siap-beli') {
+                if ($this->paidAmount < $totalAfterPoints) {
+                    $this->alert('warning', 'Untuk pembelian siap saji harus dibayar lunas.');
+
+                    return;
+                }
+                $status = 'Lunas';
+                $this->paidAmount = $totalAfterPoints;
             } else {
-                if ($this->paidAmount >= $this->totalAmount) {
-                    $status = 'Lunas';
-                    $this->paidAmount = $this->totalAmount;
+                // Untuk pesanan reguler/kotak minimal 50%
+                if ($this->paidAmount < 0.5 * $totalAfterPoints) {
+                    $this->alert('warning', 'Jumlah pembayaran minimal 50% dari total setelah diskon poin.');
+
+                    return;
                 } else {
-                    $status = 'Belum Lunas';
+                    if ($this->paidAmount >= $totalAfterPoints) {
+                        $status = 'Lunas';
+                        $this->paidAmount = $totalAfterPoints;
+                    } else {
+                        $status = 'Belum Lunas';
+                    }
                 }
             }
         } else {
@@ -1006,6 +1024,113 @@ class RincianPesanan extends Component
 
         $this->noteModal = false;
         $this->alert('success', 'Catatan pesanan berhasil disimpan.');
+    }
+
+    public function riwayatPembaruan()
+    {
+        // Get all activity logs for this transaction
+        $this->activityLogs = \Spatie\Activitylog\Models\Activity::query()
+            ->where('subject_type', Transaction::class)
+            ->where('subject_id', $this->transactionId)
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($activity) {
+                return [
+                    'id' => $activity->id,
+                    'description' => $activity->description,
+                    'event' => $activity->event,
+                    'causer' => $activity->causer ? $activity->causer->name : 'System',
+                    'created_at' => $activity->created_at,
+                    'properties' => $activity->properties,
+                    'changes' => $this->formatChanges($activity),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        $this->riwayatModal = true;
+    }
+
+    private function formatChanges($activity)
+    {
+        $changes = [];
+        $properties = $activity->properties;
+
+        if (isset($properties['attributes']) && isset($properties['old'])) {
+            $attributes = $properties['attributes'];
+            $old = $properties['old'];
+
+            // Field labels mapping
+            $labels = [
+                'status' => 'Status',
+                'payment_status' => 'Status Pembayaran',
+                'total_amount' => 'Total Tagihan',
+                'points_used' => 'Poin Digunakan',
+                'points_discount' => 'Diskon Poin',
+                'note' => 'Catatan',
+                'cancel_reason' => 'Alasan Batal',
+                'cancelled_at' => 'Waktu Dibatalkan',
+                'end_date' => 'Tanggal Selesai',
+                'name' => 'Nama Pembeli',
+                'phone' => 'No. Telepon',
+                'date' => 'Tanggal Ambil',
+                'time' => 'Jam Ambil',
+            ];
+
+            // Fields yang tidak perlu ditampilkan untuk siap-beli
+            $excludeForSiapBeli = ['name', 'phone', 'date', 'time'];
+
+            foreach ($attributes as $key => $newValue) {
+                // Skip field name, phone, date, time jika method adalah siap-beli
+                if ($this->transaction->method == 'siap-beli' && in_array($key, $excludeForSiapBeli)) {
+                    continue;
+                }
+
+                if (isset($old[$key]) && $old[$key] != $newValue) {
+                    $label = $labels[$key] ?? ucfirst(str_replace('_', ' ', $key));
+
+                    // Format values
+                    $oldFormatted = $this->formatValue($key, $old[$key]);
+                    $newFormatted = $this->formatValue($key, $newValue);
+
+                    if ($oldFormatted != $newFormatted) {
+                        $changes[] = [
+                            'field' => $label,
+                            'old' => $oldFormatted,
+                            'new' => $newFormatted,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $changes;
+    }
+    private function formatValue($key, $value)
+    {
+        if (is_null($value)) {
+            return '-';
+        }
+
+        // Format based on field type
+        if (in_array($key, ['total_amount', 'points_discount'])) {
+            return 'Rp' . number_format($value, 0, ',', '.');
+        }
+
+        if (in_array($key, ['points_used'])) {
+            return number_format($value, 0, ',', '.') . ' poin';
+        }
+
+        if (in_array($key, ['cancelled_at', 'end_date', 'created_at', 'updated_at'])) {
+            return \Carbon\Carbon::parse($value)->format('d M Y H:i');
+        }
+
+        if ($key === 'date') {
+            return \Carbon\Carbon::parse($value)->format('d M Y');
+        }
+
+        return $value;
     }
 
     public function render()

@@ -194,7 +194,7 @@
                 <tr>
                     <td class="label">Tanggal</td>
                     <td class="value">
-                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d M Y H:i') : \Carbon\Carbon::now()->format('d M Y H:i') }}
+                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y H:i') : \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}
                     </td>
                 </tr>
                 <tr>
@@ -339,7 +339,7 @@
             <table class="info-table">
                 <tr>
                     <td class="label">Tanggal Cetak</td>
-                    <td class="value">{{ \Carbon\Carbon::now()->format('d M Y H:i') }}</td>
+                    <td class="value">{{ \Carbon\Carbon::now()->translatedFormat('d F Y H:i') }}</td>
                 </tr>
             </table>
         </div>

@@ -587,12 +587,17 @@
                 @endif
 
                 <flux:label>Nominal Pembayaran</flux:label>
-                <p class="text-sm text-gray-500">
-                    Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
-                    setengah
-                    dari
-                    Total Tagihan.
-                </p>
+                @if ($transaction->method == 'siap-beli')
+                    <p class="text-sm text-red-600 font-medium">
+                        Untuk pembelian siap saji harus dibayar lunas. Tidak dapat menggunakan sistem uang muka (DP).
+                    </p>
+                @else
+                    <p class="text-sm text-gray-500">
+                        Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50%
+                        atau
+                        setengah dari Total Tagihan.
+                    </p>
+                @endif
                 <div class="flex flex-row gap-2 w-full">
                     <div class="flex flex-col gap-2 w-full">
                         @if ($paymentGroup == 'tunai')
@@ -1692,6 +1697,89 @@
             </div>
         </div>
     </flux:modal>
+
+    {{-- Modal Riwayat Pembaruan --}}
+    <flux:modal class="w-full max-w-4xl" name="riwayat" wire:model="riwayatModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Riwayat Pembaruan</flux:heading>
+                <p class="text-sm text-gray-500 mt-2">Berikut adalah riwayat perubahan yang terjadi pada pesanan ini
+                </p>
+            </div>
+
+            <div class="max-h-[60vh] overflow-y-auto">
+                @if (count($activityLogs) > 0)
+                    <div class="space-y-4">
+                        @foreach ($activityLogs as $log)
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            @php
+                                                $badgeColor = match ($log['event']) {
+                                                    'created' => 'bg-green-100 text-green-800',
+                                                    'updated' => 'bg-blue-100 text-blue-800',
+                                                    'deleted' => 'bg-red-100 text-red-800',
+                                                    default => 'bg-gray-100 text-gray-800',
+                                                };
+                                            @endphp
+                                            <span class="px-2 py-1 text-xs font-medium rounded {{ $badgeColor }}">
+                                                {{ ucfirst($log['event']) }}
+                                            </span>
+                                            <span
+                                                class="text-sm font-medium text-gray-900">{{ $log['description'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 text-xs text-gray-500">
+                                            <span class="flex items-center gap-1">
+                                                <flux:icon.user variant="mini" class="size-3" />
+                                                {{ $log['causer'] }}
+                                            </span>
+                                            <span class="flex items-center gap-1">
+                                                <flux:icon.clock variant="mini" class="size-3" />
+                                                {{ \Carbon\Carbon::parse($log['created_at'])->format('d M Y, H:i') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (count($log['changes']) > 0)
+                                    <div class="mt-3 border-t border-gray-100 pt-3">
+                                        <p class="text-xs font-medium text-gray-700 mb-2">Perubahan:</p>
+                                        <div class="space-y-2">
+                                            @foreach ($log['changes'] as $change)
+                                                <div class="grid grid-cols-3 gap-3 text-xs">
+                                                    <div class="font-medium text-gray-700">{{ $change['field'] }}
+                                                    </div>
+                                                    <div class="text-gray-500">
+                                                        <span class="line-through">{{ $change['old'] }}</span>
+                                                    </div>
+                                                    <div class="text-green-700 font-medium">
+                                                        → {{ $change['new'] }}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <flux:icon.document-text class="size-12 text-gray-300 mx-auto mb-3" />
+                        <p class="text-sm text-gray-500">Belum ada riwayat perubahan</p>
+                    </div>
+                @endif
+            </div>
+
+            <div class="flex justify-end border-t border-gray-200 pt-4">
+                <flux:modal.close>
+                    <flux:button type="button" icon="x-mark">Tutup</flux:button>
+                </flux:modal.close>
+            </div>
+        </div>
+    </flux:modal>
+
     @script
         <script>
             window.addEventListener('open-wa', event => {
