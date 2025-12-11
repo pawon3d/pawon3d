@@ -146,6 +146,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi/{id}/rincian-pesanan', App\Livewire\Transaction\RincianPesanan::class)->name('transaksi.rincian-pesanan');
         Route::get('/transaksi/{id}/rincian-produk', App\Livewire\Transaction\RincianProduk::class)->name('transaksi.rincian-produk');
         Route::get('/transaksi/{method}/pesanan', App\Livewire\Transaction\Pesanan::class)->name('transaksi.pesanan');
+        Route::get('/transaksi/siap-beli', App\Livewire\Transaction\SiapBeli::class)->name('transaksi.siap-beli');
+        Route::get('/transaksi/siap-beli/{date}', App\Livewire\Transaction\TanggalSiapBeli::class)->name('transaksi.tanggal-siap-beli');
         Route::get('/transaksi/{method}/riwayat', App\Livewire\Transaction\Riwayat::class)->name('transaksi.riwayat');
         Route::get('/transaksi/{id}/buat-pesanan', App\Livewire\Transaction\BuatPesanan::class)->name('transaksi.buat-pesanan');
         Route::get('/transaksi-riwayat-sesi', App\Livewire\Transaction\RiwayatSesiPenjualan::class)->name('transaksi.riwayat-sesi');

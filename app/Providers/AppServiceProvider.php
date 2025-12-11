@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\Commands\BackfillPointsUsage;
 use App\Models\StoreProfile;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -15,7 +16,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                BackfillPointsUsage::class,
+            ]);
+        }
     }
 
     /**

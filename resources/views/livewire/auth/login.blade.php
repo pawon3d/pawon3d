@@ -137,7 +137,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             <div class="mr-2">
                 <label for="remember">
                     <input type="checkbox" id="remember" name="remember" wire:model="remember"
-                        class="form-checkbox h-4 w-4 text-black border-gray-500 rounded-full focus:ring-0 focus:ring-offset-0 not-checked:bg-white" />
+                        class="form-checkbox h-4 w-4 text-black border-gray-500 rounded-md focus:ring-0 focus:ring-offset-0 not-checked:bg-white" />
                     <span class="text-sm ml-4 font-medium select-none text-zinc-800">
                         Ingat Saya
                     </span>

@@ -1,6 +1,6 @@
 <div class="bg-[#eaeaea] min-h-screen">
     {{-- Header with Back Button --}}
-    <div class="flex items-center gap-[15px] mb-[70px]">
+    <div class="flex items-center gap-[15px] mb-3">
         <button wire:click.prevent="delete"
             class="bg-[#313131] px-[25px] py-[10px] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px]">
             <flux:icon icon="arrow-left" class="size-5" style="color: #ffffff;" />
@@ -20,75 +20,72 @@
         </p>
     </x-alert.info>
 
-    @if ($transaction->method != 'siap-beli')
-        <div
-            class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-wrap gap-[90px] mb-[30px]">
-            {{-- Left Column --}}
-            <div class="flex-1 min-w-[300px] flex flex-col gap-[30px]">
-                {{-- No. Telepon --}}
-                <div class="flex flex-col gap-[15px]">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
-                        No.
-                        Telepon</p>
-                    <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                        style="line-height: 1;">Masukkan nomor telepon aktif.</p>
+    <div
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-wrap gap-[90px] mb-[30px]">
+        {{-- Left Column --}}
+        <div class="flex-1 min-w-[300px] flex flex-col gap-[30px]">
+            {{-- No. Telepon --}}
+            <div class="flex flex-col gap-[15px]">
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                    No.
+                    Telepon</p>
+                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
+                    style="line-height: 1;">Masukkan nomor telepon aktif.</p>
 
-                    <div class="flex flex-col gap-[10px]">
-                        <div class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px]">
-                            <input type="text" wire:model.live="phone" placeholder="081122334455"
-                                class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
-                                style="line-height: 1;" />
-                        </div>
-                        @if ($phone)
-                            @if ($customer)
-                                <div class="flex justify-between items-center w-full">
-                                    <span
-                                        class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
-                                        style="line-height: 1;">
-                                        Terdaftar sebagai Pelanggan.
-                                    </span>
-                                    <button wire:click="$set('customerModal', true)"
-                                        class="flex items-center gap-[2px] font-['Montserrat'] font-semibold text-[12px] text-[#666666]"
-                                        style="line-height: 1;">
-                                        <span>{{ $customer->points ?? 0 }}</span>
-                                        <span>Poin</span>
-                                    </button>
-                                </div>
-                            @else
-                                <div class="flex justify-between items-center w-full">
-                                    <span
-                                        class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
-                                        style="line-height: 1;">
-                                        Ingin menjadi pelanggan?
-                                    </span>
-                                    <button wire:click="showCustomerModal"
-                                        class="font-['Montserrat'] font-normal text-[12px] text-[#666666] underline cursor-pointer"
-                                        style="line-height: 1;">
-                                        Tambah Pelanggan
-                                    </button>
-                                </div>
-                            @endif
-                        @endif
-                        <flux:error name="phone" />
-                    </div>
-                </div>
-
-                {{-- Nama Pembeli --}}
-                <div class="flex flex-col gap-[15px]">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
-                        Nama
-                        Pembeli</p>
-                    <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                        style="line-height: 1;">Masukkan nama Pembeli.</p>
-
-                    <div class="border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                        <input type="text" wire:model="name" placeholder="Contoh : Fani"
+                <div class="flex flex-col gap-[10px]">
+                    <div class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px]">
+                        <input type="text" wire:model.live="phone" placeholder="081122334455"
                             class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                             style="line-height: 1;" />
                     </div>
-                    <flux:error name="name" />
+                    @if ($phone)
+                        @if ($customer)
+                            <div class="flex justify-between items-center w-full">
+                                <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
+                                    style="line-height: 1;">
+                                    Terdaftar sebagai Pelanggan.
+                                </span>
+                                <button wire:click="$set('customerModal', true)"
+                                    class="flex items-center gap-[2px] font-['Montserrat'] font-semibold text-[12px] text-[#666666]"
+                                    style="line-height: 1;">
+                                    <span>{{ $customer->points ?? 0 }}</span>
+                                    <span>Poin</span>
+                                </button>
+                            </div>
+                        @else
+                            <div class="flex justify-between items-center w-full">
+                                <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
+                                    style="line-height: 1;">
+                                    Ingin menjadi pelanggan?
+                                </span>
+                                <button wire:click="showCustomerModal"
+                                    class="font-['Montserrat'] font-normal text-[12px] text-[#666666] underline cursor-pointer"
+                                    style="line-height: 1;">
+                                    Tambah Pelanggan
+                                </button>
+                            </div>
+                        @endif
+                    @endif
+                    <flux:error name="phone" />
                 </div>
+            </div>
 
+            {{-- Nama Pembeli --}}
+            <div class="flex flex-col gap-[15px]">
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                    Nama
+                    Pembeli</p>
+                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
+                    style="line-height: 1;">Masukkan nama Pembeli.</p>
+
+                <div class="border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
+                    <input type="text" wire:model="name" placeholder="Contoh : Fani"
+                        class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
+                        style="line-height: 1;" />
+                </div>
+                <flux:error name="name" />
+            </div>
+            @if ($transaction->method != 'siap-beli')
                 {{-- Tanggal Ambil Pesanan --}}
                 <div class="flex flex-col gap-[15px]">
                     <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
@@ -152,15 +149,19 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
 
+        </div>
+
+        @if ($method != 'siap-beli')
             {{-- Right Column - Catatan --}}
             <div class="flex-1 min-w-[300px] flex flex-col gap-[15px] h-[399px]">
                 <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
                     Catatan
                     Pesanan</p>
                 <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                    style="line-height: 1;">Masukkan catatan pesanan apabila diperlukan.</p>
+                    style="line-height: 1;">
+                    Masukkan catatan pesanan apabila diperlukan.</p>
 
                 <div class="flex-1 bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px]">
                     <textarea wire:model.defer="note" placeholder="Ini adalah catatan pesanan"
@@ -168,8 +169,9 @@
                         style="line-height: 1;"></textarea>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
+
+    </div>
 
 
 

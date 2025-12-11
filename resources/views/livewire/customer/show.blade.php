@@ -67,7 +67,10 @@
                     <span class="text-base font-medium text-[#666666]">{{ $totalTransactions }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-base font-medium text-[#666666]">Total Pembayaran</span>
+                    <span class="flex items-center gap-1text-base font-medium text-[#666666]">Total Pembayaran
+                        <flux:button icon="information-circle" iconVariant="outline" variant="ghost" type="button"
+                            wire:click="showDetailModal()" />
+                    </span>
                     <span
                         class="text-base font-medium text-[#666666]">Rp{{ number_format($totalPayment, 0, ',', '.') }}</span>
                 </div>
@@ -86,7 +89,7 @@
                 </button>
                 <button type="button" wire:click="update"
                     class="bg-[#3f4e4f] hover:bg-[#2f3e3f] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors cursor-pointer">
-                    <flux:icon icon="bookmark" class="size-5" />
+                    <flux:icon icon="save" class="size-5" />
                     Simpan Perubahan
                 </button>
             </div>
@@ -141,6 +144,167 @@
             </div>
         </div>
 
+        {{-- Payment Detail Modal --}}
+        <flux:modal class="w-full max-w-2xl" name="payments-detail" wire:model="showPaymentModal">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Detail Pembayaran</flux:heading>
+                    <p class="text-sm text-gray-500 mt-2">Daftar pembayaran yang dilakukan pelanggan untuk semua
+                        transaksi terkait.</p>
+                </div>
+
+                <div class="max-h-[60vh] overflow-y-auto">
+                    <div class="mb-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Bayar:
+                                <strong>Rp{{ number_format($totalPaidInModal, 0, ',', '.') }}</strong>
+                            </p>
+                            <p class="text-sm text-gray-600">Total Refund: <strong
+                                    class="text-red-600">Rp{{ number_format($totalRefundInModal, 0, ',', '.') }}</strong>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">Netto:
+                                <strong>Rp{{ number_format($netPaidInModal, 0, ',', '.') }}</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    @if (count($payments) > 0)
+                        <table class="w-full text-sm bg-white rounded">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">No. Transaksi</th>
+                                    <th class="px-4 py-2 text-left">Metode</th>
+                                    <th class="px-4 py-2 text-right">Jumlah</th>
+                                    <th class="px-4 py-2 text-left">Bank / Channel</th>
+                                    <th class="px-4 py-2 text-left">Tanggal</th>
+                                    <th class="px-4 py-2">Bukti</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($payments as $payment)
+                                    <tr class="border-t">
+                                        <td class="px-4 py-3">{{ $payment->transaction->invoice_number ?? '-' }}</td>
+                                        <td class="px-4 py-3">
+                                            {{ ucfirst($payment->payment_method ?? ($payment->payment_group ?? '-')) }}
+                                        </td>
+                                        <td class="px-4 py-3 text-right">
+                                            Rp{{ number_format($payment->paid_amount, 0, ',', '.') }}</td>
+                                        <td class="px-4 py-3">{{ $payment->channel?->bank_name ?? '-' }}</td>
+                                        <td class="px-4 py-3">
+                                            {{ \Carbon\Carbon::parse($payment->paid_at)->format('d M Y H:i') }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            @if ($payment->image)
+                                                <a href="{{ asset('storage/' . $payment->image) }}" target="_blank"
+                                                    class="inline-block px-2 py-1 bg-[#666] text-white rounded">Lihat</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center py-8 text-gray-500">Belum ada data pembayaran.</div>
+                    @endif
+
+                    {{-- Refunds --}}
+                    <div class="mt-6">
+                        <h3 class="text-sm font-medium mb-2">Refunds</h3>
+                        @if (count($refunds) > 0)
+                            <table class="w-full text-sm bg-white rounded">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">No. Transaksi</th>
+                                        <th class="px-4 py-2 text-left">Metode</th>
+                                        <th class="px-4 py-2 text-right">Jumlah</th>
+                                        <th class="px-4 py-2 text-left">Bank / Channel</th>
+                                        <th class="px-4 py-2 text-left">Tanggal</th>
+                                        <th class="px-4 py-2">Bukti</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($refunds as $refund)
+                                        <tr class="border-t">
+                                            <td class="px-4 py-3">{{ $refund->transaction->invoice_number ?? '-' }}
+                                            </td>
+                                            <td class="px-4 py-3">{{ ucfirst($refund->refund_method ?? '-') }}</td>
+                                            <td class="px-4 py-3 text-right text-red-600">
+                                                -Rp{{ number_format($refund->total_amount, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-3">{{ $refund->channel?->bank_name ?? '-' }}</td>
+                                            <td class="px-4 py-3">
+                                                {{ \Carbon\Carbon::parse($refund->refunded_at)->format('d M Y H:i') }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center">
+                                                @if ($refund->proof_image)
+                                                    <a href="{{ asset('storage/' . $refund->proof_image) }}"
+                                                        target="_blank"
+                                                        class="inline-block px-2 py-1 bg-[#666] text-white rounded">Lihat</a>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="text-center py-4 text-gray-500">Belum ada data refund.</div>
+                        @endif
+                    </div>
+
+                    {{-- Cancellations --}}
+                    <div class="mt-6">
+                        <h3 class="text-sm font-medium mb-2">Pembatalan</h3>
+                        @if (count($cancellations) > 0)
+                            <table class="w-full text-sm bg-white rounded">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">No. Transaksi</th>
+                                        <th class="px-4 py-2 text-left">Alasan</th>
+                                        <th class="px-4 py-2 text-left">Pengembalian Poin</th>
+                                        <th class="px-4 py-2 text-left">Waktu</th>
+                                        <th class="px-4 py-2">Bukti</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cancellations as $c)
+                                        <tr class="border-t">
+                                            <td class="px-4 py-3">{{ $c->invoice_number }}</td>
+                                            <td class="px-4 py-3">{{ $c->cancel_reason ?? '-' }}</td>
+                                            <td class="px-4 py-3">
+                                                {{ $c->points_used ? '+' . $c->points_used . ' poin' : '-' }}</td>
+                                            <td class="px-4 py-3">
+                                                {{ \Carbon\Carbon::parse($c->cancelled_at)->format('d M Y H:i') }}</td>
+                                            <td class="px-4 py-3 text-center">
+                                                @if ($c->cancel_proof_image)
+                                                    <a href="{{ asset('storage/' . $c->cancel_proof_image) }}"
+                                                        target="_blank"
+                                                        class="inline-block px-2 py-1 bg-[#666] text-white rounded">Lihat</a>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="text-center py-4 text-gray-500">Belum ada pembatalan.</div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-gray-200 pt-4">
+                    <flux:modal.close>
+                        <flux:button type="button" icon="x-mark">Tutup</flux:button>
+                    </flux:modal.close>
+                </div>
+            </div>
+        </flux:modal>
+
         <!-- Top Products Chart -->
         <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
             <p class="text-base font-medium text-[#333333] opacity-70 mb-4">10 Produk Pembelian Teratas</p>
@@ -182,10 +346,6 @@
                 <div class="flex justify-between items-center">
                     <span class="text-base font-medium text-[#666666]">Pesanan Terbaru</span>
                     <div class="flex gap-2.5">
-                        <button type="button" wire:click="setOrderType('all')"
-                            class="{{ $orderType === 'all' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
-                            Semua
-                        </button>
                         <button type="button" wire:click="setOrderType('pesanan-reguler')"
                             class="{{ $orderType === 'pesanan-reguler' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
                             Pesanan Reguler
@@ -194,8 +354,8 @@
                             class="{{ $orderType === 'pesanan-kotak' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
                             Pesanan Kotak
                         </button>
-                        <button type="button" wire:click="setOrderType('siap-saji')"
-                            class="{{ $orderType === 'siap-saji' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
+                        <button type="button" wire:click="setOrderType('siap-beli')"
+                            class="{{ $orderType === 'siap-beli' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
                             Siap Saji
                         </button>
                     </div>
@@ -213,15 +373,18 @@
                 </div>
 
                 <!-- Orders Table -->
-                <x-table.paginated :paginator="$orders" :headers="[
+                <x-table.paginated :paginator="$orders" :headers="array_merge([
                     ['label' => 'ID Transaksi', 'width' => 'w-[170px]'],
-                    ['label' => 'Tanggal Ambil', 'sortable' => true, 'sort-by' => 'created_at', 'width' => 'w-[190px]'],
+                    $orderType === 'siap-beli'
+                        ? ['label' => 'Tanggal Beli', 'sortable' => true, 'sort-by' => 'date', 'width' => 'w-[190px]']
+                        : ['label' => 'Tanggal Ambil', 'sortable' => true, 'sort-by' => 'date', 'width' => 'w-[190px]'],
                     ['label' => 'Daftar Produk'],
                     ['label' => 'Pembeli'],
                     ['label' => 'Kasir', 'width' => 'max-w-[120px]'],
+                ], $orderType !== 'siap-beli' ? [
                     ['label' => 'Status Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
                     ['label' => 'Status Pesanan', 'sortable' => true, 'sort-by' => 'status'],
-                ]" headerBg="#3F4E4F" headerText="#F8F4E1"
+                ] : [])" headerBg="#3F4E4F" headerText="#F8F4E1"
                     emptyMessage="Tidak ada pesanan." pageName="ordersPage">
                     @foreach ($orders as $order)
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
@@ -229,8 +392,8 @@
                                 {{ $order->invoice_number }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">
-                                {{ \Carbon\Carbon::parse($order->created_at)->translatedFormat('d M Y') }}
-                                {{ \Carbon\Carbon::parse($order->created_at)->format('H:i') }}
+                                {{ \Carbon\Carbon::parse($order->date)->translatedFormat('d F Y') }}
+                                {{ \Carbon\Carbon::parse($order->time)->format('H:i') }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600">
                                 <div class="truncate max-w-[200px]">
@@ -243,12 +406,14 @@
                             <td class="px-6 py-4 text-sm text-gray-600">
                                 {{ $order->user?->name ?? '-' }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
-                                {{ ucfirst($order->payment_status ?? '-') }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
-                                {{ ucfirst($order->status ?? '-') }}
-                            </td>
+                            @if ($orderType !== 'siap-beli')
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ ucfirst($order->payment_status ?? '-') }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ ucfirst($order->status ?? '-') }}
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </x-table.paginated>

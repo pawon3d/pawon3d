@@ -249,7 +249,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
             }
         }
     }
@@ -353,6 +353,13 @@ class RincianPesanan extends Component
         // Jika mengurangi poin yang digunakan, kembalikan poin ke customer
         if ($pointsChange < 0) {
             $this->customer->increment('points', abs($pointsChange));
+            // Record returned points
+            \App\Models\PointsHistory::create([
+                'phone' => $this->customer->phone,
+                'action' => 'Tukar Poin',
+                'points' => abs($pointsChange),
+                'transaction_id' => $this->transaction->id,
+            ]);
         }
         // Jika menambah poin yang digunakan, kurangi poin customer
         elseif ($pointsChange > 0) {
@@ -362,6 +369,13 @@ class RincianPesanan extends Component
                 return;
             }
             $this->customer->decrement('points', $pointsChange);
+            // Record points redemption
+            \App\Models\PointsHistory::create([
+                'phone' => $this->customer->phone,
+                'action' => 'Tukar Poin',
+                'points' => -1 * $pointsChange,
+                'transaction_id' => $this->transaction->id,
+            ]);
         }
 
         // Update transaction
@@ -407,7 +421,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
+            $this->paymentAccount = $channel->account_number.' - '.$channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -493,7 +507,7 @@ class RincianPesanan extends Component
                 $transaction->details()->each(function ($detail) {
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($detail->product->stock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
 
                         return;
                     }
@@ -508,6 +522,44 @@ class RincianPesanan extends Component
                 'status' => $this->transaction->status == 'Draft' || $this->transaction->status == 'temp' ? 'Belum Diproses' : $this->transaction->status,
                 'payment_status' => $status,
             ]);
+
+            // Handle points usage/changes if any
+            if ($this->pointsUsed > 0 && $this->transaction->customer_id) {
+                $customer = \App\Models\Customer::find($this->transaction->customer_id);
+                if ($customer) {
+                    $oldUsed = $transaction->points_used ?? 0;
+                    $newUsed = $this->pointsUsed;
+                    $delta = $newUsed - $oldUsed;
+
+                    if ($delta > 0) {
+                        // consume additional points
+                        $customer->decrement('points', $delta);
+                        \App\Models\PointsHistory::create([
+                            'phone' => $customer->phone,
+                            'action' => 'Tukar Poin',
+                            'points' => -1 * $delta,
+                            'transaction_id' => $transaction->id,
+                        ]);
+                    } elseif ($delta < 0) {
+                        // return points
+                        $customer->increment('points', abs($delta));
+                        \App\Models\PointsHistory::create([
+                            'phone' => $customer->phone,
+                            'action' => 'Tukar Poin',
+                            'points' => abs($delta),
+                            'transaction_id' => $transaction->id,
+                        ]);
+                    }
+
+                    // Persist the change on transaction if it differs
+                    if ($oldUsed != $newUsed) {
+                        $transaction->update([
+                            'points_used' => $newUsed,
+                            'points_discount' => $newUsed * 100,
+                        ]);
+                    }
+                }
+            }
 
             if ($this->paidAmount > 0 && $this->paymentMethod != '') {
                 $payment = Payment::create([
@@ -557,20 +609,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-' . $this->transaction->id . '.pdf';
-        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/' . $fileName);
+        $fileName = 'struk-'.$this->transaction->id.'.pdf';
+        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/'.$fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -586,11 +638,11 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -607,9 +659,9 @@ class RincianPesanan extends Component
         // Return stream untuk dibuka di tab baru
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'struk-' . $this->transaction->invoice_number . '.pdf', [
+        }, 'struk-'.$this->transaction->invoice_number.'.pdf', [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="struk-' . $this->transaction->invoice_number . '.pdf"',
+            'Content-Disposition' => 'inline; filename="struk-'.$this->transaction->invoice_number.'.pdf"',
         ]);
     }
 
@@ -796,13 +848,12 @@ class RincianPesanan extends Component
             if ($customer) {
                 $customer->increment('points', $transaction->points_used);
 
-                // Record points history
+                // Record points return in proper columns
                 \App\Models\PointsHistory::create([
-                    'customer_id' => $customer->id,
-                    'transaction_id' => $transaction->id,
+                    'phone' => $customer->phone,
+                    'action' => 'Tukar Poin',
                     'points' => $transaction->points_used,
-                    'type' => 'refund',
-                    'description' => 'Pengembalian poin dari pembatalan pesanan ' . $transaction->invoice_number,
+                    'transaction_id' => $transaction->id,
                 ]);
             }
         }
@@ -858,13 +909,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/' . $payment->image);
+        $path = storage_path('app/public/'.$payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }
@@ -1107,6 +1158,7 @@ class RincianPesanan extends Component
 
         return $changes;
     }
+
     private function formatValue($key, $value)
     {
         if (is_null($value)) {
@@ -1115,11 +1167,11 @@ class RincianPesanan extends Component
 
         // Format based on field type
         if (in_array($key, ['total_amount', 'points_discount'])) {
-            return 'Rp' . number_format($value, 0, ',', '.');
+            return 'Rp'.number_format($value, 0, ',', '.');
         }
 
         if (in_array($key, ['points_used'])) {
-            return number_format($value, 0, ',', '.') . ' poin';
+            return number_format($value, 0, ',', '.').' poin';
         }
 
         if (in_array($key, ['cancelled_at', 'end_date', 'created_at', 'updated_at'])) {

@@ -46,18 +46,43 @@
             </span>
         </div>
         @if ($transaction->method == 'siap-beli')
-            <div class="w-full flex items-center justify-between flex-row">
-                <div class="flex flex-col gap-1">
-                    <flux:heading class="text-lg font-semibold">Tanggal Pembelian</flux:heading>
-                    <p class="text-sm">
-                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y H:i') : '-' }}
-                    </p>
-                </div>
-                <div class="flex flex-col gap-1 items-end">
-                    <flux:heading class="text-lg font-semibold">Kasir</flux:heading>
-                    <p class="text-sm">
-                        {{ $transaction->user->name ?? '-' }}
-                    </p>
+            <div class="w-full">
+                <div class="flex items-start justify-between gap-14" style="font-family: Montserrat, sans-serif;">
+                    <div class="flex flex-col gap-1" style="min-width: 200px;">
+                        <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Tanggal
+                            Pembelian Dibuat</p>
+                        <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
+                            {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y H:i') : '-' }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                        <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Pembeli</p>
+                        <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
+                            {{ $transaction->name ?? '-' }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                        <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Kasir</p>
+                        <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
+                            {{ $transaction->user->name ?? '-' }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                        @php
+                            $paymentStatusColor = match ($transaction->payment_status) {
+                                'Lunas' => '#56c568',
+                                'Refund' => '#eb5757',
+                                'Belum Lunas' => '#ffc400',
+                                default => '#666666',
+                            };
+                        @endphp
+                        <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Status
+                            Pembayaran</p>
+                        <p class="text-sm font-semibold"
+                            style="line-height: 1; color: {{ $paymentStatusColor }}; font-size: 14px;">
+                            {{ $transaction->payment_status ?? '-' }}
+                        </p>
+                    </div>
                 </div>
             </div>
         @else
@@ -66,7 +91,8 @@
                     <!-- Kolom 1 -->
                     <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Tanggal
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
+                                Tanggal
                                 Pesanan Masuk</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
@@ -78,7 +104,8 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Pembeli
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
+                                Pembeli
                             </p>
                             <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                 {{ $transaction->name ?? '-' }}
@@ -89,7 +116,8 @@
                     <!-- Kolom 2 -->
                     <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Tanggal
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
+                                Tanggal
                                 Ambil Pesanan</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
@@ -112,7 +140,8 @@
                     <!-- Kolom 3 -->
                     <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Tanggal
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
+                                Tanggal
                                 Pesanan Selesai</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
@@ -124,7 +153,8 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Kasir</p>
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Kasir
+                            </p>
                             <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                 {{ $transaction->user->name ?? '-' }}
                             </p>
@@ -150,7 +180,8 @@
                             </p>
                         </div>
                         <div class="flex flex-col gap-1">
-                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Koki</p>
+                            <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Koki
+                            </p>
                             <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                 @if (!empty($transaction->production) && !empty($transaction->production->workers))
                                     {{ $transaction->production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ') }}
@@ -540,7 +571,8 @@
             </div>
         @endif
 
-        @if ($transaction->payment_status != 'Lunas' && $transaction->status != 'Batal')
+        @if (in_array(!$transaction->status, ['Batal', 'Selesai']) &&
+                in_array($transaction->payment_status, ['Belum Lunas', 'Refund']))
             <div class="w-full flex flex-col gap-4">
                 <flux:label>Metode Pembayaran</flux:label>
                 <p class="text-sm text-gray-500">
@@ -667,7 +699,7 @@
                 Hapus Pesanan
             </flux:button>
         @elseif(in_array($transaction->status, ['Belum Diproses', 'Selesai', 'Dapat Diambil', 'Sedang Diproses']) &&
-                $transaction->payment_status != 'Lunas')
+                in_array($transaction->payment_status, ['Belum Lunas', '']))
             <flux:button icon="ban" type="button" variant="danger" loading="false"
                 wire:click.prevent="showCancelModal">
                 Batalkan Pesanan

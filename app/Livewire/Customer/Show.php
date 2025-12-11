@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer;
 
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\PointsHistory;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\View;
@@ -38,6 +39,20 @@ class Show extends Component
 
     public $showHistoryModal = false;
 
+    public $showPaymentModal = false;
+
+    public $payments = [];
+
+    public $refunds = [];
+
+    public $cancellations = [];
+
+    public $totalPaidInModal = 0;
+
+    public $totalRefundInModal = 0;
+
+    public $netPaidInModal = 0;
+
     public $activityLogs = [];
 
     public $historySearch = '';
@@ -52,7 +67,7 @@ class Show extends Component
 
     public $orderSortDirection = 'desc';
 
-    public $orderType = 'all';
+    public $orderType = 'pesanan-reguler';
 
     protected $listeners = [
         'delete' => 'delete',
@@ -68,7 +83,13 @@ class Show extends Component
         $this->points = $customer->points;
         $this->lastTransaction = $customer->transactions()->latest()->first()?->created_at;
         $this->totalTransactions = $customer->transactions()->count();
-        $this->totalPayment = $customer->transactions()->sum('final_price');
+
+        // Calculate total paid amount by summing payments related to this customer's transactions.
+        // A transaction can be linked to a customer via customer_id or by matching phone number.
+        $this->totalPayment = Payment::whereHas('transaction', function ($q) use ($customer) {
+            $q->where('customer_id', $customer->id)
+                ->orWhere('phone', $customer->phone);
+        })->sum('paid_amount');
 
         View::share('title', 'Rincian Pelanggan');
         View::share('mainTitle', 'Pelanggan');
@@ -237,6 +258,33 @@ class Show extends Component
         $this->showHistoryModal = true;
     }
 
+    public function showDetailModal()
+    {
+        // Load all payments for transactions that belong to this customer (by customer_id or phone)
+        $this->payments = Payment::whereHas('transaction', function ($q) {
+            $q->where('customer_id', $this->customerId)
+                ->orWhere('phone', $this->phone);
+        })->with(['transaction', 'channel'])->orderBy('paid_at', 'desc')->get();
+
+        // Load refunds related to this customer's transactions
+        $this->refunds = \App\Models\Refund::whereHas('transaction', function ($q) {
+            $q->where('customer_id', $this->customerId)
+                ->orWhere('phone', $this->phone);
+        })->with(['transaction', 'channel'])->orderBy('refunded_at', 'desc')->get();
+
+        // Load cancelled transactions
+        $this->cancellations = \App\Models\Transaction::where(function ($q) {
+            $q->where('customer_id', $this->customerId)
+                ->orWhere('phone', $this->phone);
+        })->whereNotNull('cancelled_at')->orderBy('cancelled_at', 'desc')->get();
+
+        $this->totalPaidInModal = collect($this->payments)->sum('paid_amount');
+        $this->totalRefundInModal = collect($this->refunds)->sum('total_amount');
+        $this->netPaidInModal = $this->totalPaidInModal - $this->totalRefundInModal;
+
+        $this->showPaymentModal = true;
+    }
+
     public function getPointsHistoriesProperty()
     {
         return PointsHistory::where('phone', $this->phone)
@@ -264,7 +312,7 @@ class Show extends Component
         }
 
         return $query->orderBy($this->orderSortField, $this->orderSortDirection)
-            ->paginate(5, ['*'], 'ordersPage');
+            ->paginate(1, ['*'], 'ordersPage');
     }
 
     public function getTopProductsProperty()

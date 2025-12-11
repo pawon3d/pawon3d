@@ -33,17 +33,18 @@
         ]" headerBg="#3F4E4F" headerText="#F8F4E1"
             emptyMessage="Tidak ada pelanggan yang tersedia.">
             @foreach ($customers as $customer)
-                <tr onclick="window.location='{{ route('customer.show', $customer->id) }}'"
-                    class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
                     <td class="px-6 py-4 text-sm text-gray-600">
-                        {{ $customer->phone }}
+                        <a href="{{ route('customer.show', $customer->id) }}" class="hover:underline" wire:navigate>
+                            {{ $customer->phone }}
+                        </a>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
                         {{ $customer->name }}
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">
                         @if ($customer->transactions()->latest()->first())
-                            {{ \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->translatedFormat('d M Y') }}
+                            {{ \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->translatedFormat('d F Y') }}
                             {{ \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->format('H:i') }}
                         @else
                             -
@@ -107,9 +108,9 @@
             </div>
             <div class="mt-6 flex justify-end space-x-2">
                 <flux:modal.close>
-                    <flux:button type="button" icon="x-mark">Batal</flux:button>
+                    <flux:button type="button" variant="filled" icon="x-mark">Batal</flux:button>
                 </flux:modal.close>
-                <flux:button type="button" icon="save" variant="primary" wire:click="addCustomer">Simpan
+                <flux:button type="button" icon="save" variant="secondary" wire:click="addCustomer">Simpan
                 </flux:button>
             </div>
         </div>

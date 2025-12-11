@@ -99,6 +99,11 @@
                             wire:navigate>
                             <span>Daftar Pesanan</span>
                         </flux:button>
+                    @else
+                        <flux:button type="button" variant="primary" href="{{ route('transaksi.siap-beli') }}"
+                            icon="clipboard" wire:navigate>
+                            <span>Daftar Produk</span>
+                        </flux:button>
                     @endif
                     <flux:button type="button" variant="primary" icon="history"
                         href="{{ route('transaksi.riwayat', ['method' => $method]) }}" wire:navigate>

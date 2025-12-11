@@ -192,7 +192,7 @@ class BuatPesanan extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
                 }
             }
         }
@@ -295,7 +295,7 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
+            $this->paymentAccount = $channel->account_number.' - '.$channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -475,6 +475,13 @@ class BuatPesanan extends Component
             // Kurangi poin customer jika menggunakan poin
             if ($this->pointsUsed > 0 && $this->customer) {
                 $this->customer->decrement('points', $this->pointsUsed);
+                // Record points usage in history (negative points indicate redemption)
+                \App\Models\PointsHistory::create([
+                    'phone' => $this->customer->phone,
+                    'action' => 'Tukar Poin',
+                    'points' => -1 * $this->pointsUsed,
+                    'transaction_id' => $transaction->id,
+                ]);
             }
 
             if ($transaction->payment_status == 'Lunas' && $transaction->method == 'siap-beli') {
@@ -565,7 +572,7 @@ class BuatPesanan extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),
