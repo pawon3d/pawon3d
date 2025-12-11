@@ -116,7 +116,7 @@
                     <td class="px-6 py-4">
                         <span class="font-medium text-[14px] text-[#666666]"
                             style="font-family: 'Montserrat', sans-serif;">
-                            Rp{{ number_format($shift->total_received, 0, ',', '.') }}
+                            Rp{{ number_format($shift->final_cash - $shift->initial_cash, 0, ',', '.') }}
                         </span>
                     </td>
 

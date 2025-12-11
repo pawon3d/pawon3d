@@ -152,6 +152,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transaksi-rincian-sesi/{id}', App\Livewire\Transaction\RincianSesi::class)->name('transaksi.rincian-sesi');
         Route::get('/transaksi/cetak', [PdfController::class, 'generateTransactionPDF'])
             ->name('transaksi.pdf');
+        Route::get('/transaksi/{id}/struk', [PdfController::class, 'generateStrukPDF'])
+            ->name('transaksi.struk');
         Route::get('/transaksi/{id}/print', function () {
             return view('pdf.pdf', [
                 'transaction' => \App\Models\Transaction::find(request()->id),

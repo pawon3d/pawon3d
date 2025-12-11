@@ -980,4 +980,23 @@ class PdfController extends Controller
 
         return Excel::download(new InventoriExport($selectedDate, $selectedWorker), $filename);
     }
+
+    public function generateStrukPDF($id)
+    {
+        set_time_limit(120);
+
+        $transaction = Transaction::with([
+            'user',
+            'details.product',
+            'payments.channel',
+            'refund.channel',
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView('pdf.struk', [
+            'transaction' => $transaction,
+        ])->setPaper([0, 0, 227, 841.89], 'portrait'); // A4 height untuk auto-adjust
+
+        // Stream PDF untuk ditampilkan di browser (bukan download)
+        return $pdf->stream('struk-' . $transaction->invoice_number . '.pdf');
+    }
 }

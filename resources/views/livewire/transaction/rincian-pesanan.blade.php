@@ -9,10 +9,6 @@
             <h1 class="text-2xl">Rincian Pesanan</h1>
         </div>
         <div class="flex gap-2 items-center">
-            {{-- <button type="button" wire:click="cetakInformasi"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                Cetak Informasi
-            </button> --}}
 
             <!-- Tombol Riwayat Pembaruan -->
             <flux:button variant="secondary" wire:click="riwayatPembaruan">
@@ -20,16 +16,6 @@
             </flux:button>
         </div>
     </div>
-    {{-- <div class="flex items-center border bg-white border-gray-500 rounded-lg p-4">
-        <flux:icon icon="message-square-warning" class="size-16" />
-        <div class="ml-3">
-            <p class="mt-1 text-sm text-gray-500">
-                Lorem ipsum dolor sit amet consectetur. Viverra erat aenean mauris adipiscing nibh. Nullam adipiscing
-                dignissim consequat volutpat augue. Auctor euismod arcu at euismod. Odio cras proin eget facilisis vitae
-                at. Non at vitae lorem nec quis urna.
-            </p>
-        </div>
-    </div> --}}
 
     <div class="w-full flex flex-col gap-4 mt-4 bg-white border-gray-300 rounded-lg p-4">
         <div class="flex items-center justify-between">
@@ -40,15 +26,22 @@
                 $statusBgColor = match ($transaction->status) {
                     'Selesai' => '#56c568',
                     'Gagal', 'Batal' => '#eb5757',
+                    'Refund' => '#eb5757',
+                    'Draft' => '#fafafa',
+                    'Dapat Diambil' => '#3FA2F7',
                     default => '#ffc400',
                 };
                 $statusText = match ($transaction->status) {
                     'Gagal' => 'Batal',
                     default => $transaction->status,
                 };
+                $statusTextColor = match ($transaction->status) {
+                    'Draft' => '#666666',
+                    default => '#fafafa',
+                };
             @endphp
-            <span class="px-6 py-2 text-white font-medium rounded-full"
-                style="background-color: {{ $statusBgColor }}; font-family: Montserrat, sans-serif; font-size: 18px; line-height: 1; border-radius: 30px;">
+            <span class="px-6 py-2 text-[{{ $statusTextColor }}] font-medium rounded-full"
+                style="background-color: {{ $statusBgColor }}; font-family: Montserrat, sans-serif; font-size: 18px; line-height: 1; border-radius: 30px; {{ in_array($statusBgColor, ['#fafafa', '#f6f6f6']) ? 'border: 1px solid #666666;' : '' }}">
                 {{ $statusText }}
             </span>
         </div>
@@ -57,7 +50,7 @@
                 <div class="flex flex-col gap-1">
                     <flux:heading class="text-lg font-semibold">Tanggal Pembelian</flux:heading>
                     <p class="text-sm">
-                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y H:i') : '-' }}
+                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y H:i') : '-' }}
                     </p>
                 </div>
                 <div class="flex flex-col gap-1 items-end">
@@ -77,7 +70,7 @@
                                 Pesanan Masuk</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
-                                    {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y') : '-' }}
+                                    {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y') : '-' }}
                                 </p>
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                     {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('H:i') : '-' }}
@@ -100,7 +93,7 @@
                                 Ambil Pesanan</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
-                                    {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d-m-Y') : '-' }}
+                                    {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->translatedFormat('d F Y') : '-' }}
                                 </p>
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                     {{ $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '-' }}
@@ -123,10 +116,10 @@
                                 Pesanan Selesai</p>
                             <div class="flex flex-row items-center gap-4">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
-                                    {{ $transaction->end_date ? \Carbon\Carbon::parse($transaction->end_date)->format('d-m-Y') : '-' }}
+                                    {{ $transaction->end_date ? \Carbon\Carbon::parse($transaction->end_date)->translatedFormat('d F Y') : '-' }}
                                 </p>
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
-                                    {{ $transaction->end_date ? \Carbon\Carbon::parse($transaction->end_date)->format('H:i') : '-' }}
+                                    {{ $transaction->end_date ? \Carbon\Carbon::parse($transaction->end_date)->format('H:i') : '' }}
                                 </p>
                             </div>
                         </div>
@@ -174,11 +167,11 @@
                     <div class="w-full h-4 bg-gray-200 rounded"
                         style="background-color: #eaeaea; height: 16px; border-radius: 5px; overflow: hidden;">
                         <div class="h-full"
-                            style="width: {{ number_format($percentage, 0) }}%; background-color: #3f4e4f; border-radius: 5px;">
+                            style="width: {{ number_format($percentage, 0) }}%; background-color: #56C568CC; border-radius: 5px;">
                         </div>
                     </div>
                     <span class="text-xs"
-                        style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
+                        style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #525252;">
                         {{ number_format($percentage, 0) }}% ({{ $total_quantity_get }} dari
                         {{ $total_quantity_plan }})
                     </span>
@@ -193,7 +186,7 @@
                             class="inline-flex items-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
                             style="background-color: #666666; color: #f6f6f6; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px;">
                             <flux:icon.pencil class="size-3" />
-                            Buat Catatan
+                            Ubah Catatan
                         </button>
                     </div>
                     <div class="w-full bg-gray-100 border border-gray-300 rounded-lg p-5"
@@ -547,24 +540,36 @@
             </div>
         @endif
 
-        @if ($transaction->payment_status != 'Lunas' && $transactionStatus)
+        @if ($transaction->payment_status != 'Lunas' && $transaction->status != 'Batal')
             <div class="w-full flex flex-col gap-4">
                 <flux:label>Metode Pembayaran</flux:label>
                 <p class="text-sm text-gray-500">
-                    Pilih Metode Pembayaran (Tunai, Transfer, atau QRIS). Jika Bukan Tunai maka akan diminta bukti
+                    Pilih Metode Pembayaran (Tunai atau Non Tunai). Jika Bukan Tunai maka akan diminta bukti
                     pembayaran
                     berupa
                     gambar (.jpg dan .png)
                 </p>
-                <flux:select wire:model.live="paymentMethod" class="mt-2" placeholder="Pilih Metode Pembayaran">
+                <flux:select wire:model.live="paymentGroup" class="mt-2" placeholder="Pilih Metode Pembayaran">
+                    <flux:select.option hidden value="" class="text-gray-700">Pilih Metode Pembayaran
+                    </flux:select.option>
                     <flux:select.option value="tunai" class="text-gray-700">Tunai</flux:select.option>
-                    <flux:select.option value="transfer" class="text-gray-700">Transfer</flux:select.option>
+                    <flux:select.option value="non-tunai" class="text-gray-700">Non Tunai</flux:select.option>
                 </flux:select>
-                <flux:error name="paymentMethod" />
+                <flux:error name="paymentGroup" />
 
-                @if ($paymentMethod == 'transfer')
+                @if ($paymentGroup == 'non-tunai')
                     <div class="mt-2 flex flex-row gap-2 w-full">
-                        <div class="w-1/4">
+                        <div class="w-1/3">
+                            <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
+                                @foreach ($paymentMethods as $pmethod)
+                                    <flux:select.option value="{{ $pmethod->type }}" class="text-gray-700">
+                                        {{ ucfirst($pmethod->type) }}
+                                    </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                            <flux:error name="paymentMethod" />
+                        </div>
+                        <div class="w-1/3">
                             <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
                                 @foreach ($paymentChannels as $channel)
                                     <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
@@ -574,7 +579,7 @@
                             </flux:select>
                             <flux:error name="paymentChannelId" />
                         </div>
-                        <div class="w-3/4">
+                        <div class="w-1/3">
                             <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
                             <flux:error name="paymentAccount" />
                         </div>
@@ -590,7 +595,7 @@
                 </p>
                 <div class="flex flex-row gap-2 w-full">
                     <div class="flex flex-col gap-2 w-full">
-                        @if ($paymentMethod == 'tunai')
+                        @if ($paymentGroup == 'tunai')
                             <span class="text-xs text-gray-500">
                                 Nominal Uang Yang Diterima
                             </span>
@@ -599,7 +604,7 @@
                             wire:model.number.live="paidAmount" />
                         <flux:error name="paidAmount" />
                     </div>
-                    @if ($paymentMethod == 'tunai')
+                    @if ($paymentGroup == 'tunai')
                         <div class="flex flex-col gap-2 w-full">
                             <span class="text-xs text-gray-500">
                                 Nominal Uang Kembalian
@@ -610,11 +615,11 @@
                     @endif
                 </div>
 
-                @if ($paymentMethod == 'transfer')
+                @if ($paymentGroup == 'non-tunai')
                     <div class="mb-5 w-full">
                         <div class="flex flex-row items-center gap-4">
                             <label
-                                class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
+                                class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
                                 Pilih Bukti Pembayaran
                                 <input type="file" wire:model.live="image"
                                     accept="image/jpeg, image/png, image/jpg" class="hidden" />
@@ -650,53 +655,65 @@
 
 
 
-    <div class="flex justify-end mt-16 gap-4">
+    <div class="flex justify-between mt-16 gap-4">
         @if ($transaction->status == 'Draft')
             <flux:button icon="trash" type="button" variant="danger" loading="false"
                 wire:click.prevent="delete">
                 Hapus Pesanan
             </flux:button>
-        @endif
-        @if (
-            ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft') &&
+        @elseif(in_array($transaction->status, ['Belum Diproses', 'Selesai', 'Dapat Diambil', 'Sedang Diproses']) &&
                 $transaction->payment_status != 'Lunas')
-            <flux:button icon="pencil-square" type="button" href="{{ route('transaksi.edit', $transaction->id) }}"
-                wire:navigate>
-                Ubah Daftar Pesanan
+            <flux:button icon="ban" type="button" variant="danger" loading="false"
+                wire:click.prevent="showCancelModal">
+                Batalkan Pesanan
             </flux:button>
-        @elseif ($transaction->status == 'Belum Diproses' && $transaction->payment_status == 'Lunas')
-            <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
-                Selesaikan Pesanan
-            </flux:button>
-        @elseif ($transaction->status == 'Sedang Diproses' || $transaction->status == 'Dapat Diambil')
-            <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
-                Selesaikan Pesanan
-            </flux:button>
+        @else
+            <div></div>
         @endif
-        @if ($transaction->status == 'Gagal' || $transaction->status == 'Selesai')
-            <button type="button" wire:click='showRefundModal'
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
-                style="background-color: #eb5757; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
-                <flux:icon.receipt-refund variant="solid" class="size-5" />
-                Refund Pesanan
-            </button>
-            <button type="button" wire:click.prevent="$set('showStruk', true)"
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
-                style="background-color: #3f4e4f; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
-                <flux:icon.printer class="size-5" />
-                Cetak Struk Pesanan
-            </button>
-        @elseif($transaction->payment_status != 'Lunas')
-            <flux:button icon="shopping-cart" type="button" variant="primary" wire:click.prevent="pay">
-                Bayar dan
-                @if ($transaction->status == 'Draft')
-                    Buat
-                @else
-                    Ambil
+        <div class="flex justify-end flex-row gap-4">
+            @if (
+                ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft') &&
+                    $transaction->payment_status != 'Lunas')
+                <flux:button icon="pencil" type="secondary" class="!bg-[#FEBA17] !text-white"
+                    href="{{ route('transaksi.edit', $transaction->id) }}" wire:navigate>
+                    Ubah Daftar Pesanan
+                </flux:button>
+            @elseif ($transaction->status == 'Belum Diproses' && $transaction->payment_status == 'Lunas')
+                <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
+                    Selesaikan Pesanan
+                </flux:button>
+            @elseif ($transaction->status == 'Sedang Diproses' || $transaction->status == 'Dapat Diambil')
+                <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
+                    Selesaikan Pesanan
+                </flux:button>
+            @endif
+            @if ($transaction->status == 'Batal' || $transaction->status == 'Selesai')
+                @if ($transaction->status != 'Batal' && $transaction->refund == null)
+                    <button type="button" wire:click='showRefundModal'
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
+                        style="background-color: #eb5757; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
+                        <flux:icon.receipt-refund variant="solid" class="size-5" />
+                        Refund Pesanan
+                    </button>
                 @endif
-                Pesanan
-            </flux:button>
-        @endif
+                <button type="button" wire:click.prevent="$set('showStruk', true)"
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
+                    style="background-color: #3f4e4f; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
+                    <flux:icon.printer class="size-5" />
+                    Cetak Struk Pesanan
+                </button>
+            @elseif($transaction->payment_status != 'Lunas' && $transaction->status != 'Batal')
+                <flux:button icon="cashier" type="button" variant="secondary" wire:click.prevent="pay">
+                    Bayar dan
+                    @if ($transaction->status == 'Draft')
+                        Buat
+                    @else
+                        Serahkan
+                    @endif
+                    Pesanan
+                </flux:button>
+            @endif
+        </div>
     </div>
 
     @if ($showStruk)
@@ -742,24 +759,25 @@
                                         <div class="flex flex-col justify-center leading-[50px] text-center text-black"
                                             style="font-family: Pacifico, cursive; font-size: 0;">
                                             <p class="whitespace-pre">
-                                                <span style="font-size: 32px;">Pawon</span><span
-                                                    style="font-size: 34px; letter-spacing: -2.8px;">3</span><span
-                                                    style="font-size: 32px; letter-spacing: -2.6px;">D</span>
+                                                <span
+                                                    style="font-size: 32px;">{{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}</span>
                                             </p>
                                         </div>
                                         {{-- Alamat --}}
                                         <div class="flex flex-col gap-[4px] items-center text-center text-black"
                                             style="font-size: 10px; line-height: 1.2;">
-                                            <div class="flex flex-col justify-center">
-                                                <p class="mb-0">Jl. Jenderal Sudirman Km.3 RT.25 RW.07</p>
-                                                <p class="mb-0">Kel. Muara Bulian, Kec.Muara Bulian,</p>
-                                                <p>Kab.Batang Hari, Jambi, 36613</p>
+                                            <div class="flex flex-col justify-center items-center">
+                                                <p class="mb-0">
+                                                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian, Kab.Batang Hari, Jambi, 36613' }}
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col justify-center items-center">
+                                                <p>
+                                                    {{ $storeProfile->contact != '' ? $storeProfile->contact : '081122334455' }}
+                                                </p>
                                             </div>
                                             <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">081122334455</p>
-                                            </div>
-                                            <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">www.pawon3d.my.id</p>
+                                                <p class="whitespace-pre">{{ config('app.url') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -984,7 +1002,7 @@
                     <div class="fixed bottom-0 left-4 right-4 z-51">
                         <div class="max-w-md mt-8 mb-4 mx-auto border-gray-300 bg-white text-sm rounded-lg shadow-md p-4 font-sans text-center flex flex-col gap-4 fade-slide-up"
                             id="buttons">
-                            <input type="text" wire:model="phoneNumber"
+                            {{-- <input type="text" wire:model="phoneNumber"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="contoh: 08123456789" />
                             <div class="grid grid-cols-2 gap-4">
@@ -993,6 +1011,17 @@
                                 </flux:button>
                                 <flux:button type="button" variant="primary" wire:click="send" class="w-full">
                                     Kirim Struk
+                                </flux:button>
+                            </div> --}}
+                            <div class="flex flex-col gap-4">
+                                <a href="{{ route('transaksi.struk', ['id' => $transaction->id]) }}" target="_blank"
+                                    class="w-full relative flex items-center font-medium justify-center gap-2 whitespace-nowrap cursor-pointer bg-white hover:bg-zinc-50 text-zinc-800 dark:text-white  border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 h-10 text-sm rounded-lg"
+                                    style="font-family: Montserrat, sans-serif;">
+                                    Cetak Struk
+                                </a>
+                                <flux:button type="button" variant="secondary" wire:click.prevent="kembali"
+                                    class="w-full">
+                                    Lihat Rincian Pesanan
                                 </flux:button>
                             </div>
                         </div>
@@ -1578,6 +1607,87 @@
                 </flux:modal.close>
                 <flux:button type="button" icon="check" variant="primary" wire:click="saveNote">
                     Simpan Catatan
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal class="w-full max-w-md" name="cancel-order" wire:model="cancelModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Batalkan Pesanan</flux:heading>
+                <p class="text-sm text-gray-500 mt-2">Pesanan yang dibatalkan tidak dapat dikembalikan. Silakan isi
+                    alasan pembatalan dan unggah bukti untuk melanjutkan.</p>
+            </div>
+
+            <div>
+                <flux:label>Alasan Batal <span class="text-red-500">*</span></flux:label>
+                <flux:textarea wire:model="cancelReason" rows="4"
+                    placeholder="Pilih alasan dan unggah bukti untuk melakukan batal." class="w-full"
+                    maxlength="500"></flux:textarea>
+                <flux:error name="cancelReason" />
+                <p class="text-xs text-gray-500 mt-1">Maksimal 500 karakter</p>
+            </div>
+
+            <div>
+                <flux:label>Bukti Pembatalan</flux:label>
+                <p class="text-sm text-gray-500 mb-2">
+                    Unggah bukti pembatalan berupa gambar (.jpg atau .png)
+                </p>
+                <div class="flex flex-row items-center gap-4">
+                    <label
+                        class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)]">
+                        Pilih File
+                        <input type="file" wire:model.live="cancelProofImage"
+                            accept="image/jpeg, image/png, image/jpg" class="hidden" />
+                    </label>
+
+                    @if ($cancelProofImage)
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="{{ is_string($cancelProofImage) ? basename($cancelProofImage) : $cancelProofImage->getClientOriginalName() }}"
+                            readonly wire:loading.remove wire:target="cancelProofImage">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="Mengupload gambar..." readonly wire:loading wire:target="cancelProofImage">
+                    @else
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="Belum Ada Bukti" readonly wire:loading.remove wire:target="cancelProofImage">
+                        <input type="text"
+                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                            value="Mengupload gambar..." readonly wire:loading wire:target="cancelProofImage">
+                    @endif
+                </div>
+                <flux:error name="cancelProofImage" />
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-2">
+                <flux:modal.close>
+                    <flux:button type="button" variant="filled" icon="x-mark">Batal</flux:button>
+                </flux:modal.close>
+                <flux:modal.trigger name="confirmModal">
+                    <flux:button type="button" icon="ban" variant="danger">
+                        Batalkan Pesanan
+                    </flux:button>
+                </flux:modal.trigger>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="confirmModal" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Yakin Batalkan Pesanan?</flux:heading>
+            </div>
+
+            <div class="flex gap-2 justify-end w-full">
+                <flux:spacer />
+
+                <flux:modal.close>
+                    <flux:button type="button" icon="x-mark">Tidak</flux:button>
+                </flux:modal.close>
+                <flux:button type="submit" variant="secondary" icon="check" wire:click="cancelOrder">Yakin
                 </flux:button>
             </div>
         </div>

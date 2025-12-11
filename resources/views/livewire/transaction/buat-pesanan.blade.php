@@ -12,17 +12,13 @@
     </div>
 
     {{-- Info Penting Box --}}
-    <div
-        class="bg-[#3f4e4f] rounded-[20px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[24px] min-h-[110px] flex items-center gap-[20px] mb-[30px]">
-        <div class="shrink-0">
-
-        </div>
+    <x-alert.info>
         <p class="font-['Montserrat'] font-semibold text-[14px] text-[#dcd7c9] text-justify" style="line-height: 1;">
             Buat Pesanan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat. Informasi
             akan digunakan untuk membuat pesanan dan melakukan produksi. Masukkan atau tambah pembeli sebagai pelanggan
             untuk mendapatkan hak poin.
         </p>
-    </div>
+    </x-alert.info>
 
     @if ($transaction->method != 'siap-beli')
         <div
@@ -31,10 +27,11 @@
             <div class="flex-1 min-w-[300px] flex flex-col gap-[30px]">
                 {{-- No. Telepon --}}
                 <div class="flex flex-col gap-[15px]">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">No.
+                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                        No.
                         Telepon</p>
                     <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                        style="line-height: 1;">Masukkan nomorn telepon aktif.</p>
+                        style="line-height: 1;">Masukkan nomor telepon aktif.</p>
 
                     <div class="flex flex-col gap-[10px]">
                         <div class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px]">
@@ -78,12 +75,13 @@
 
                 {{-- Nama Pembeli --}}
                 <div class="flex flex-col gap-[15px]">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Nama
+                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                        Nama
                         Pembeli</p>
                     <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
                         style="line-height: 1;">Masukkan nama Pembeli.</p>
 
-                    <div class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
+                    <div class="border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
                         <input type="text" wire:model="name" placeholder="Contoh : Fani"
                             class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                             style="line-height: 1;" />
@@ -158,7 +156,8 @@
 
             {{-- Right Column - Catatan --}}
             <div class="flex-1 min-w-[300px] flex flex-col gap-[15px] h-[399px]">
-                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Catatan
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                    Catatan
                     Pesanan</p>
                 <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
                     style="line-height: 1;">Masukkan catatan pesanan apabila diperlukan.</p>
@@ -179,7 +178,8 @@
         <div class="px-[30px] py-[25px] flex flex-col gap-[20px]">
             {{-- Header --}}
             <div class="flex items-center gap-[20px]">
-                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Daftar
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                    Daftar
                     Pesanan</p>
             </div>
 
@@ -315,11 +315,13 @@
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col gap-[30px] mb-[30px]">
         <div class="flex flex-col gap-[15px] h-[113px]">
-            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Tukar Poin
+            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Tukar
+                Poin
             </p>
             <div class="flex items-start justify-between w-full">
                 <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                    style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp 100) yang dapat
+                    style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp 100) yang
+                    dapat
                     ditukarkan adalah kelipatan 10 poin.</p>
                 <div class="flex items-center gap-[2px] font-['Montserrat'] font-normal text-[14px] text-[#666666]"
                     style="line-height: 1;">
@@ -339,122 +341,113 @@
     {{-- Metode Pembayaran Section --}}
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col gap-[30px] mb-[30px]">
-        {{-- Metode Pembayaran --}}
-        <div class="flex flex-col gap-[15px] h-[113px]">
-            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Metode
-                Pembayaran</p>
-            <div class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                style="line-height: 1;">
-                <span>Pilih Metode Pembayaran </span>
-                <span class="font-semibold">Tunai atau Non-tunai. </span>
-                <span>Jika </span>
-                <span class="font-semibold">Non-tunai </span>
-                <span>maka akan diminta bukti pembayaran berupa gambar (.jpg atau .png)</span>
-            </div>
+        <div class="w-full flex flex-col gap-4">
+            <flux:label>Metode Pembayaran</flux:label>
+            <p class="text-sm text-gray-500">
+                Pilih Metode Pembayaran (Tunai atau Non Tunai). Jika Bukan Tunai maka akan diminta bukti
+                pembayaran
+                berupa
+                gambar (.jpg dan .png)
+            </p>
+            <flux:select wire:model.live="paymentGroup" class="mt-2" placeholder="Pilih Metode Pembayaran">
+                <flux:select.option hidden value="" class="text-gray-700">Pilih Metode Pembayaran
+                </flux:select.option>
+                <flux:select.option value="tunai" class="text-gray-700">Tunai</flux:select.option>
+                <flux:select.option value="non-tunai" class="text-gray-700">Non Tunai</flux:select.option>
+            </flux:select>
+            <flux:error name="paymentGroup" />
 
-            <div class="relative">
-                <select wire:model.live="paymentMethod"
-                    class="w-full bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px] font-['Montserrat'] font-normal text-[16px] text-[#666666] focus:outline-none focus:ring-0 appearance-none cursor-pointer"
-                    style="line-height: 1;">
-                    <option value="" class="text-[#959595]">Pilih Metode Pembayaran</option>
-                    <option value="tunai">Tunai</option>
-                    <option value="transfer">Transfer</option>
-                    <option value="qris">QRIS</option>
-                </select>
-            </div>
-        </div>
-
-        @if ($paymentMethod == 'transfer')
-            <div class="flex gap-[15px]">
-                <div class="w-1/4 relative">
-                    <select wire:model.live="paymentChannelId"
-                        class="w-full bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px] font-['Montserrat'] font-normal text-[16px] text-[#666666] focus:outline-none focus:ring-0 appearance-none cursor-pointer"
-                        style="line-height: 1;">
-                        <option value="">Pilih Bank Tujuan</option>
-                        @foreach ($paymentChannels as $channel)
-                            <option value="{{ $channel->id }}">{{ $channel->bank_name }}</option>
-                        @endforeach
-                    </select>
-                    <flux:error name="paymentChannelId" />
-                </div>
-                <div class="w-3/4">
-                    <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                        <input type="text" wire:model="paymentAccount" readonly
-                            class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
-                            style="line-height: 1;" />
+            @if ($paymentGroup == 'non-tunai')
+                <div class="mt-2 flex flex-row gap-2 w-full">
+                    <div class="w-1/3">
+                        <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
+                            @foreach ($paymentMethods as $pmethod)
+                                <flux:select.option value="{{ $pmethod->type }}" class="text-gray-700">
+                                    {{ ucfirst($pmethod->type) }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        <flux:error name="paymentMethod" />
                     </div>
-                    <flux:error name="paymentAccount" />
+                    <div class="w-1/3">
+                        <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
+                            @foreach ($paymentChannels as $channel)
+                                <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
+                                    {{ $channel->bank_name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        <flux:error name="paymentChannelId" />
+                    </div>
+                    <div class="w-1/3">
+                        <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
+                        <flux:error name="paymentAccount" />
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        {{-- Nominal Pembayaran --}}
-        <div class="flex flex-col gap-[15px] h-[113px]">
-            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Nominal
-                Pembayaran</p>
-            <div class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                style="line-height: 1;">
-                <span>Masukkan nominal bayar. Untuk uang muka </span>
-                <span class="font-semibold">minimal 50%</span>
-                <span> dari </span>
-                <span class="font-semibold">Total Tagihan</span>
-                <span>.</span>
-            </div>
-
-            <div class="flex gap-[15px]">
-                <div class="flex-1">
-                    @if ($paymentMethod == 'tunai')
-                        <span class="block font-['Montserrat'] font-normal text-[12px] text-[#666666] mb-[5px]"
-                            style="line-height: 1;">Nominal Uang Yang Diterima</span>
+            <flux:label>Nominal Pembayaran</flux:label>
+            <p class="text-sm text-gray-500">
+                Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
+                setengah
+                dari
+                Total Tagihan.
+            </p>
+            <div class="flex flex-row gap-2 w-full">
+                <div class="flex flex-col gap-2 w-full">
+                    @if ($paymentGroup == 'tunai')
+                        <span class="text-xs text-gray-500">
+                            Nominal Uang Yang Diterima
+                        </span>
                     @endif
-                    <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                        <input type="text" wire:model.number.live="paidAmount" placeholder="Rp0"
-                            class="w-full font-['Montserrat'] font-normal text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
-                            style="line-height: 1;" />
-                    </div>
+                    <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
                     <flux:error name="paidAmount" />
                 </div>
-                @if ($paymentMethod == 'tunai')
-                    <div class="flex-1">
-                        <span class="block font-['Montserrat'] font-normal text-[12px] text-[#666666] mb-[5px]"
-                            style="line-height: 1;">Nominal Uang Kembalian</span>
-                        <div class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                            <input type="text"
-                                value="Rp{{ number_format(max(0, $paidAmount - $total), 0, ',', '.') }}" readonly
-                                class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
-                                style="line-height: 1;" />
-                        </div>
+                @if ($paymentGroup == 'tunai')
+                    <div class="flex flex-col gap-2 w-full">
+                        <span class="text-xs text-gray-500">
+                            Nominal Uang Kembalian
+                        </span>
+                        <flux:input placeholder="Kembalian" value="Rp{{ number_format($changeAmount, 0, ',', '.') }}"
+                            readonly />
                     </div>
                 @endif
             </div>
-        </div>
 
-        @if ($paymentMethod == 'transfer')
-            <div class="flex items-center gap-4">
-                <label
-                    class="bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-[inset_0px_1px_--theme(--color-white/.2)] px-4 h-10 rounded-lg flex items-center gap-2 cursor-pointer">
-                    Pilih Bukti Pembayaran
-                    <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
-                        class="hidden" />
-                </label>
-                @if ($image)
-                    <input type="text"
-                        value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}" readonly
-                        wire:loading.remove wire:target="image"
-                        class="flex-1 px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100" />
-                    <input type="text" value="Mengupload gambar..." readonly wire:loading wire:target="image"
-                        class="flex-1 px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100" />
-                @else
-                    <input type="text" value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove
-                        wire:target="image"
-                        class="flex-1 px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100" />
-                    <input type="text" value="Mengupload gambar..." readonly wire:loading wire:target="image"
-                        class="flex-1 px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100" />
-                @endif
-            </div>
-            <flux:error name="image" />
-        @endif
+            @if ($paymentGroup == 'non-tunai')
+                <div class="mb-5 w-full">
+                    <div class="flex flex-row items-center gap-4">
+                        <label
+                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
+                            Pilih Bukti Pembayaran
+                            <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
+                                class="hidden" />
+                        </label>
+
+                        @if ($image)
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}"
+                                readonly wire:loading.remove wire:target="image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                        @else
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove wire:target="image">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                        @endif
+
+                    </div>
+                </div>
+                <flux:error name="image" />
+            @endif
+        </div>
     </div>
+
 
     {{-- Action Buttons --}}
     <div class="flex items-center justify-end gap-[30px] mb-16">
@@ -591,7 +584,8 @@
                         </div>
                     @empty
                         <div class="col-span-3 text-center p-4 w-full">
-                            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk yang
+                            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk
+                                yang
                                 ditemukan.</p>
                         </div>
                     @endforelse

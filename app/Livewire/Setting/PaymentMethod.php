@@ -71,7 +71,7 @@ class PaymentMethod extends Component
     public function previewImage()
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
-            $this->previewImageUrl = asset('storage/'.$this->qrisImage);
+            $this->previewImageUrl = asset('storage/' . $this->qrisImage);
             $this->showPreviewModal = true;
         }
     }
@@ -79,7 +79,7 @@ class PaymentMethod extends Component
     public function downloadImage()
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
-            $path = storage_path('app/public/'.$this->qrisImage);
+            $path = storage_path('app/public/' . $this->qrisImage);
 
             return response()->download($path);
         }
@@ -127,18 +127,11 @@ class PaymentMethod extends Component
         $this->validate([
             'bankName' => 'required|string|max:255',
             'group' => 'required|string|max:50',
-            'accountNumber' => 'required|string|max:50',
-            'accountName' => 'required|string|max:255',
+            'accountNumber' => 'nullable|string|max:50',
+            'accountName' => 'nullable|string|max:255',
             'isActive' => 'boolean',
             'qrisImage' => 'nullable|file|max:2048',
         ]);
-        if ($this->group == 'tunai') {
-            $this->type = 'tunai';
-        } elseif ($this->group == 'qris') {
-            $this->type = 'qris';
-        } else {
-            $this->type = 'transfer';
-        }
 
         if ($this->edit && $this->paymentChannelId) {
             $channel = \App\Models\PaymentChannel::find($this->paymentChannelId);

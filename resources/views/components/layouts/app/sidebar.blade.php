@@ -216,11 +216,11 @@
                 <flux:spacer />
 
                 <flux:modal.close>
-                    <flux:button type="button" icon="x-mark">Tidak</flux:button>
+                    <flux:button type="button" variant="filled" icon="x-mark">Tidak</flux:button>
                 </flux:modal.close>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <flux:button type="submit" variant="primary" icon="check" wire:loading.attr="disabled">Yakin
+                    <flux:button type="submit" variant="secondary" icon="check" wire:loading.attr="disabled">Yakin
                     </flux:button>
                 </form>
             </div>

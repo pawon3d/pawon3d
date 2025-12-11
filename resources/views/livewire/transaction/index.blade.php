@@ -467,9 +467,9 @@
         </div>
         <div class="mt-6 flex justify-end space-x-2">
             <flux:modal.close>
-                <flux:button type="button" icon="x-mark">Batal</flux:button>
+                <flux:button type="button" icon="x-mark" variant="filled">Batal</flux:button>
             </flux:modal.close>
-            <flux:button type="button" icon="play" iconVariant="solid" variant="primary"
+            <flux:button type="button" icon="play" iconVariant="solid" variant="secondary"
                 wire:click="openShift">Buka
             </flux:button>
         </div>
@@ -1226,7 +1226,7 @@
             </div>
         </div>
     </flux:modal>
-    @section('css')
+    {{-- @section('css')
         <style>
             .tanggal {
                 position: relative;
@@ -1279,5 +1279,5 @@
                 cursor: pointer;
             }
         </style>
-    @endsection
+    @endsection --}}
 </div>

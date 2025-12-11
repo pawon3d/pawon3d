@@ -101,7 +101,7 @@
                     <td class="px-6 py-4">
                         <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}"
                             class="font-medium text-[14px] text-[#666666] hover:underline"
-                            style="font-family: 'Montserrat', sans-serif;">
+                            style="font-family: 'Montserrat', sans-serif;" wire:navigate>
                             {{ $transaction->invoice_number }}
                         </a>
                     </td>
@@ -113,9 +113,9 @@
                                 <p class="font-medium text-[14px] text-[#666666]"
                                     style="font-family: 'Montserrat', sans-serif;">
                                     @if ($method == 'siap-beli')
-                                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d M Y') : '-' }}
+                                        {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y') : '-' }}
                                     @else
-                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d M Y') : '-' }}
+                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->translatedFormat('d F Y') : '-' }}
                                     @endif
                                 </p>
                                 <p class="font-medium text-[14px] text-[#666666]"
@@ -123,14 +123,14 @@
                                     @if ($method == 'siap-beli')
                                         {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('H:i') : '-' }}
                                     @else
-                                        {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('H:i') : '-' }}
+                                        {{ $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '-' }}
                                     @endif
                                 </p>
                             </div>
                             @php
                                 $targetDate = $method == 'siap-beli' ? $transaction->start_date : $transaction->date;
                                 $daysUntil = $targetDate
-                                    ? \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($targetDate), false)
+                                    ? (int) \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($targetDate), false)
                                     : null;
                             @endphp
                             @if ($daysUntil !== null)
@@ -182,12 +182,12 @@
                                     $textColor = '#fafafa';
                                     $label = 'Belum Lunas';
                                 } else {
-                                    $bgColor = '#fafafa';
-                                    $textColor = '#666666';
-                                    $label = ucfirst($transaction->payment_status);
+                                    $bgColor = '#ffc400';
+                                    $textColor = '#fafafa';
+                                    $label = ucfirst('Belum Lunas');
                                 }
                             @endphp
-                            <div class="flex items-center justify-center">
+                            <div class="flex items-center">
                                 <div class="px-[15px] py-[5px] rounded-[15px] min-w-[90px] flex items-center justify-center"
                                     style="background-color: {{ $bgColor }}; {{ $bgColor === '#fafafa' ? 'border: 1px solid #666666;' : '' }}">
                                     <p class="font-bold text-[12px] text-center"
@@ -226,7 +226,7 @@
                                     $label = ucfirst($transaction->status);
                                 }
                             @endphp
-                            <div class="flex items-center justify-center">
+                            <div class="flex items-center">
                                 <div class="px-[15px] py-[5px] rounded-[15px] min-w-[90px] flex items-center justify-center"
                                     style="background-color: {{ $bgColor }}; {{ in_array($bgColor, ['#fafafa', '#f6f6f6']) ? 'border: 1px solid #666666;' : '' }}">
                                     <p class="font-bold text-[12px] text-center"

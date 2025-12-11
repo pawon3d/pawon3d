@@ -82,7 +82,8 @@
             ) {
                 'primary' => 'bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)]',
                 'secondary' => 'bg-[#3F4E4F] hover:bg-[color-mix(in_oklab,_#3F4E4F,_transparent_10%)]',
-                'filled' => 'bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20',
+                'filled'
+                    => 'bg-[#C4C4C4] hover:bg-[color-mix(in_oklab,_#C4C4C4,_transparent_10%)] dark:bg-white/10 dark:hover:bg-white/20',
                 'outline' => 'bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75',
                 'danger' => 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500',
                 'ghost' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
@@ -95,7 +96,7 @@
             ) {
                 'primary' => 'text-[var(--color-accent-foreground)]',
                 'secondary' => 'text-[#F8F4E1]',
-                'filled' => 'text-zinc-800 dark:text-white',
+                'filled' => 'text-[#333333] dark:text-white',
                 'outline' => 'text-zinc-800 dark:text-white',
                 'danger' => 'text-white',
                 'ghost' => 'text-zinc-800 dark:text-white',

@@ -288,7 +288,7 @@ class Edit extends Component
             //     }
             // }
 
-            session()->flash('success', 'Pesanan berhasil dibuat.');
+            session()->flash('success', 'Pesanan berhasil diubah.');
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
         }

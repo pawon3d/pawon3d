@@ -12,12 +12,12 @@
                 Riwayat {{ $methodName }}
             </p>
         </div>
-
+        {{-- 
         <div class="flex-1 flex justify-end">
             <flux:button variant="secondary" wire:click="cetakInformasi" icon="printer">
                 Cetak Informasi
             </flux:button>
-        </div>
+        </div> --}}
     </div>
 
     {{-- Content Container --}}
@@ -117,7 +117,7 @@
                     <td class="px-6 py-4">
                         <a href="{{ route('transaksi.rincian-pesanan', $transaction->id) }}"
                             class="font-medium text-[14px] text-[#666666] hover:underline"
-                            style="font-family: 'Montserrat', sans-serif;">
+                            style="font-family: 'Montserrat', sans-serif;" wire:navigate>
                             {{ $transaction->invoice_number }}
                         </a>
                     </td>
@@ -128,9 +128,9 @@
                             <p class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
                                 @if ($method == 'siap-beli')
-                                    {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->format('d M Y') : '-' }}
+                                    {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y') : '-' }}
                                 @else
-                                    {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->format('d M Y') : '-' }}
+                                    {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->translatedFormat('d F Y') : '-' }}
                                 @endif
                             </p>
                             <p class="font-medium text-[14px] text-[#666666]"
@@ -180,6 +180,14 @@
                                 $bgColor = '#ffc400';
                                 $textColor = '#fafafa';
                                 $label = 'Belum Lunas';
+                            } elseif ($paymentStatus === 'batal') {
+                                $bgColor = '#eb5757';
+                                $textColor = '#fafafa';
+                                $label = 'Batal';
+                            } elseif ($paymentStatus === 'refund') {
+                                $bgColor = '#eb5757';
+                                $textColor = '#fafafa';
+                                $label = 'Refund';
                             } else {
                                 $bgColor = '#fafafa';
                                 $textColor = '#666666';

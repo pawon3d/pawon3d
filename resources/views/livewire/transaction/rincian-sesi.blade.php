@@ -22,7 +22,7 @@
         {{-- View Details Button --}}
         <button wire:click="$dispatch('openDetailShiftModal', { shiftId: '{{ $shift->id }}' })"
             class="flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-            <flux:icon.eye class="w-[20px] h-[20px] text-white" />
+            <flux:icon.cashier class="w-[20px] h-[20px] text-white" />
             <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6] leading-[1]">Lihat Rincian
                 Sesi</span>
         </button>
@@ -91,10 +91,13 @@
 
                     {{-- ID Transaksi --}}
                     <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666] truncate"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            {{ $transaction->invoice_number }}
-                        </span>
+                        <a href="{{ route('transaksi.rincian-pesanan', ['id' => $transaction->id]) }}"
+                            class="hover:underline" wire:navigate>
+                            <span class="font-medium text-[14px] text-[#666666] truncate"
+                                style="font-family: 'Montserrat', sans-serif;">
+                                {{ $transaction->invoice_number }}
+                            </span>
+                        </a>
                     </td>
 
                     {{-- Jenis Penjualan --}}
@@ -149,11 +152,11 @@
                     </td>
 
                     {{-- Tanggal Cetak --}}
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-[10px]">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center flex-row flex-nowrap gap-[10px]">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($transaction->created_at)->translatedFormat('d F Y') }}
                             </span>
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
@@ -187,24 +190,25 @@
                                         <div class="flex flex-col justify-center leading-[50px] text-center text-black"
                                             style="font-family: Pacifico, cursive; font-size: 0;">
                                             <p class="whitespace-pre">
-                                                <span style="font-size: 32px;">Pawon</span><span
-                                                    style="font-size: 34px; letter-spacing: -2.8px;">3</span><span
-                                                    style="font-size: 32px; letter-spacing: -2.6px;">D</span>
+                                                <span
+                                                    style="font-size: 32px;">{{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}</span>
                                             </p>
                                         </div>
                                         {{-- Alamat --}}
                                         <div class="flex flex-col gap-[4px] items-center text-center text-black"
                                             style="font-size: 10px; line-height: 1.2;">
                                             <div class="flex flex-col justify-center">
-                                                <p class="mb-0">Jl. Jenderal Sudirman Km.3 RT.25 RW.07</p>
-                                                <p class="mb-0">Kel. Muara Bulian, Kec.Muara Bulian,</p>
-                                                <p>Kab.Batang Hari, Jambi, 36613</p>
+                                                <p class="mb-0">
+                                                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian, Kab.Batang Hari, Jambi, 36613' }}
+                                                </p>
                                             </div>
                                             <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">081122334455</p>
+                                                <p class="whitespace-pre">
+                                                    {{ $storeProfile->contact != '' ? $storeProfile->contact : '081122334455' }}
+                                                </p>
                                             </div>
                                             <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">www.pawon3d.my.id</p>
+                                                <p class="whitespace-pre">{{ config('app.url') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -428,24 +432,25 @@
                                         <div class="flex flex-col justify-center leading-[50px] text-center text-black"
                                             style="font-family: Pacifico, cursive; font-size: 0;">
                                             <p class="whitespace-pre">
-                                                <span style="font-size: 32px;">Pawon</span><span
-                                                    style="font-size: 34px; letter-spacing: -2.8px;">3</span><span
-                                                    style="font-size: 32px; letter-spacing: -2.6px;">D</span>
+                                                <span
+                                                    style="font-size: 32px;">{{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}</span>
                                             </p>
                                         </div>
                                         {{-- Alamat --}}
                                         <div class="flex flex-col gap-[4px] items-center text-center text-black"
                                             style="font-size: 10px; line-height: 1.2;">
                                             <div class="flex flex-col justify-center">
-                                                <p class="mb-0">Jl. Jenderal Sudirman Km.3 RT.25 RW.07</p>
-                                                <p class="mb-0">Kel. Muara Bulian, Kec.Muara Bulian,</p>
-                                                <p>Kab.Batang Hari, Jambi, 36613</p>
+                                                <p class="mb-0">
+                                                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian, Kab.Batang Hari, Jambi, 36613' }}
+                                                </p>
                                             </div>
                                             <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">081122334455</p>
+                                                <p class="whitespace-pre">
+                                                    {{ $storeProfile->contact != '' ? $storeProfile->contact : '081122334455' }}
+                                                </p>
                                             </div>
                                             <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">www.pawon3d.my.id</p>
+                                                <p class="whitespace-pre">{{ config('app.url') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -723,7 +728,7 @@
                                 <div class="flex items-center gap-[10px] text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
                                     @if ($detailShiftStartTime)
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->format('d M Y') }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->translatedFormat('d F Y') }}</span>
                                         <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->format('H:i') }}</span>
                                     @else
                                         <span>-</span>
@@ -738,7 +743,7 @@
                                 <div class="flex items-center gap-[10px] text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
                                     @if ($detailShiftEndTime)
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->format('d M Y') }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->translatedFormat('d F Y') }}</span>
                                         <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->format('H:i') }}</span>
                                     @else
                                         <span>-</span>
@@ -900,7 +905,7 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-[#666666] font-medium text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
-                                    Diskon
+                                    Potongan Harga
                                 </span>
                                 <span class="text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
@@ -927,7 +932,7 @@
                 <flux:modal.close class="w-full">
                     <button type="button"
                         class="w-full bg-[#3f4e4f] rounded-[15px] px-[25px] py-[10px] flex items-center justify-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#2f3e3f] transition-colors">
-                        <flux:icon icon="check" variant="solid" class="size-5 text-[#f8f4e1]" />
+                        <flux:icon icon="arrow-long-left" variant="solid" class="size-5 text-[#f8f4e1]" />
                         <span class="text-[#f8f4e1] font-semibold text-[16px]"
                             style="font-family: 'Montserrat', sans-serif;">
                             Tutup
@@ -975,7 +980,7 @@
 
             <div class="p-4 border-t mt-auto">
                 <flux:modal.close class="w-full">
-                    <flux:button type="button" variant="primary" icon="arrow-long-left" class="w-full">
+                    <flux:button type="button" variant="secondary" icon="arrow-long-left" class="w-full">
                         Kembali
                     </flux:button>
                 </flux:modal.close>

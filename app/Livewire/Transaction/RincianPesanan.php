@@ -9,6 +9,7 @@ use App\Models\PointsHistory;
 use App\Models\Transaction;
 use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
@@ -105,8 +106,19 @@ class RincianPesanan extends Component
 
     public $customer;
 
+    public $paymentGroup;
+
+    public $paymentMethods = [];
+
+    public $cancelModal = false;
+
+    public $cancelReason = '';
+
+    public $cancelProofImage = null;
+
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
+        'cancelTransaction' => 'cancelTransaction',
         'showStrukChanged',
     ];
 
@@ -233,7 +245,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
             }
         }
     }
@@ -360,9 +372,26 @@ class RincianPesanan extends Component
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
+    public function updatedPaymentGroup($value)
+    {
+        if ($value == 'non-tunai') {
+            $this->paymentMethods = PaymentChannel::where('group', $value)
+                ->where('is_active', true)
+                ->get()
+                ->unique('type')
+                ->values();
+        }
+    }
+
     public function updatedPaymentMethod($value)
     {
-        if ($value == 'transfer') {
+        if ($value != 'tunai') {
+            $this->paymentChannels = [];
+            $this->paymentChannelId = '';
+            $this->paymentBank = '';
+            $this->paymentAccountNumber = '';
+            $this->paymentAccountName = '';
+            $this->paymentAccount = '';
             $this->paymentChannels = PaymentChannel::where('type', $value)->where('is_active', true)->get();
         }
     }
@@ -374,7 +403,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
+            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -434,6 +463,7 @@ class RincianPesanan extends Component
             }
         }
         $this->validate([
+            'paymentGroup' => 'nullable|string',
             'paymentMethod' => 'nullable|string',
             'paymentBank' => 'nullable|string',
             'paymentAccount' => 'nullable|string',
@@ -445,7 +475,7 @@ class RincianPesanan extends Component
                 $transaction->details()->each(function ($detail) {
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($detail->product->stock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
 
                         return;
                     }
@@ -466,6 +496,7 @@ class RincianPesanan extends Component
                     'transaction_id' => $transaction->id,
                     'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
                     'payment_method' => $this->paymentMethod,
+                    'payment_group' => $this->paymentGroup,
                     'paid_amount' => $this->paidAmount,
                     'paid_at' => now(),
                 ]);
@@ -508,20 +539,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-'.$this->transaction->id.'.pdf';
-        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/'.$fileName);
+        $fileName = 'struk-' . $this->transaction->id . '.pdf';
+        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/' . $fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -537,20 +568,36 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62'.substr($phone, 1);
+            $phone = '62' . substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId])->with('notif', 'Struk berhasil dikirim!');
     }
 
+    public function printStruk()
+    {
+        // Generate PDF dan stream ke tab baru
+        $pdf = Pdf::loadView('pdf.struk', [
+            'transaction' => $this->transaction,
+        ])->setPaper([0, 0, 227, 400], 'portrait');
+
+        // Return stream untuk dibuka di tab baru
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'struk-' . $this->transaction->invoice_number . '.pdf', [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="struk-' . $this->transaction->invoice_number . '.pdf"',
+        ]);
+    }
+
     public function strukPrint()
     {
-        return redirect()->route('cetak-struk', ['id' => $this->transactionId]);
+        return redirect()->route('transaksi.cetak', ['id' => $this->transactionId]);
     }
 
     public function finish()
@@ -673,6 +720,84 @@ class RincianPesanan extends Component
         }
     }
 
+    public function showCancelModal()
+    {
+        $this->cancelReason = '';
+        $this->cancelProofImage = null;
+        $this->cancelModal = true;
+    }
+
+    public function cancelOrder()
+    {
+        Flux::modal('confirmModal')->close();
+
+        $this->validate([
+            'cancelReason' => 'required|string|max:500',
+            'cancelProofImage' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'cancelReason.required' => 'Alasan pembatalan harus diisi',
+            'cancelReason.max' => 'Alasan pembatalan maksimal 500 karakter',
+            'cancelProofImage.image' => 'File harus berupa gambar',
+            'cancelProofImage.mimes' => 'Format gambar harus jpeg, png, atau jpg',
+            'cancelProofImage.max' => 'Ukuran gambar maksimal 2MB',
+        ]);
+        $this->cancelTransaction();
+    }
+
+    public function cancelTransaction()
+    {
+        $transaction = Transaction::find($this->transactionId);
+
+        if (! $transaction) {
+            $this->alert('error', 'Transaksi tidak ditemukan.');
+
+            return;
+        }
+
+        // Upload bukti pembatalan jika ada
+        $proofImagePath = null;
+        if ($this->cancelProofImage) {
+            $proofImagePath = $this->cancelProofImage->store('cancellation-proofs', 'public');
+        }
+
+        // Get current shift
+        $currentShift = \App\Models\Shift::where('status', 'open')->latest()->first();
+
+        // Update transaction status
+        $transaction->update([
+            'status' => 'Batal',
+            'cancel_reason' => $this->cancelReason,
+            'cancel_proof_image' => $proofImagePath,
+            'cancelled_by_shift' => $currentShift?->id,
+            'cancelled_at' => now(),
+        ]);
+
+        // Jika ada pembayaran yang sudah dilakukan, kembalikan poin jika menggunakan poin
+        if ($transaction->points_used > 0 && $transaction->customer_id) {
+            $customer = \App\Models\Customer::find($transaction->customer_id);
+            if ($customer) {
+                $customer->increment('points', $transaction->points_used);
+
+                // Record points history
+                \App\Models\PointsHistory::create([
+                    'customer_id' => $customer->id,
+                    'transaction_id' => $transaction->id,
+                    'points' => $transaction->points_used,
+                    'type' => 'refund',
+                    'description' => 'Pengembalian poin dari pembatalan pesanan ' . $transaction->invoice_number,
+                ]);
+            }
+        }
+
+        // Kirim notifikasi pesanan dibatalkan
+        NotificationService::orderCancelled($transaction->invoice_number, $transaction->payment_status ?? 'Belum Lunas');
+
+        $this->cancelModal = false;
+        $this->alert('success', 'Pesanan berhasil dibatalkan.');
+
+        return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
+    }
+
     public function kembali()
     {
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
@@ -715,13 +840,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/'.$payment->image);
+        $path = storage_path('app/public/' . $payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }

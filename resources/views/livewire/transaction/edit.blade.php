@@ -13,15 +13,13 @@
     </div>
 
     <!-- Info Banner -->
-    <div class="flex items-center gap-5 mb-8 p-6 rounded-2xl"
-        style="background-color: #3f4e4f; border-radius: 20px; padding: 24px 30px; min-height: 110px; gap: 20px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); margin-bottom: 30px;">
-        <flux:icon.megaphone class="size-15 shrink-0" style="width: 60px; height: 60px; color: #dcd7c9;" />
+    <x-alert.info>
         <p class="font-semibold text-justify"
             style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1.4; color: #dcd7c9; font-weight: 600;">
             Ubah Pesanan. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat. Informasi
             akan digunakan untuk membuat pesanan dan melakukan produksi.
         </p>
-    </div>
+    </x-alert.info>
 
     <!-- Form Section -->
     <div class="w-full flex flex-wrap gap-20 p-6 rounded-2xl mb-8"

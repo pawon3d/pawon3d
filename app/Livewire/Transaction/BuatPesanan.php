@@ -71,6 +71,10 @@ class BuatPesanan extends Component
 
     public $availablePoints = 0;
 
+    public $paymentMethods = [];
+
+    public $paymentGroup;
+
     protected $messages = [
         'name.required' => 'Nama harus diisi.',
         'phone.required' => 'Nomor telepon harus diisi.',
@@ -247,9 +251,26 @@ class BuatPesanan extends Component
         $this->paidAmount = $value;
     }
 
+    public function updatedPaymentGroup($value)
+    {
+        if ($value == 'non-tunai') {
+            $this->paymentMethods = PaymentChannel::where('group', $value)
+                ->where('is_active', true)
+                ->get()
+                ->unique('type')
+                ->values();
+        }
+    }
+
     public function updatedPaymentMethod($value)
     {
-        if ($value == 'transfer') {
+        if ($value != 'tunai') {
+            $this->paymentChannels = [];
+            $this->paymentChannelId = '';
+            $this->paymentBank = '';
+            $this->paymentAccountNumber = '';
+            $this->paymentAccountName = '';
+            $this->paymentAccount = '';
             $this->paymentChannels = PaymentChannel::where('type', $value)->where('is_active', true)->get();
         }
     }
@@ -261,7 +282,7 @@ class BuatPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -310,8 +331,6 @@ class BuatPesanan extends Component
                 'method' => $this->method,
                 'status' => 'Draft',
                 'total_amount' => $this->getTotalProperty(),
-                'points_used' => $this->pointsUsed,
-                'points_discount' => $this->pointsUsed * 100, // 1 poin = Rp 100
             ]);
 
             foreach ($this->details as $detail) {
@@ -364,6 +383,7 @@ class BuatPesanan extends Component
                 'paymentMethod' => 'nullable|string',
                 'paymentBank' => 'nullable|string',
                 'paymentAccount' => 'nullable|string',
+                'paymentGroup' => 'nullable|string',
             ]);
         } else {
             $this->validate([
@@ -376,6 +396,7 @@ class BuatPesanan extends Component
                 'paymentMethod' => 'nullable|string',
                 'paymentBank' => 'nullable|string',
                 'paymentAccount' => 'nullable|string',
+                'paymentGroup' => 'nullable|string',
             ]);
         }
 
@@ -386,7 +407,7 @@ class BuatPesanan extends Component
             $this->alert('warning', 'Metode pembayaran harus diisi.');
 
             return;
-        } elseif ($this->paymentChannelId == '' && $this->paymentMethod == 'transfer') {
+        } elseif ($this->paymentChannelId == '' && $this->paymentMethod != 'tunai') {
             $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
 
             return;
@@ -460,6 +481,7 @@ class BuatPesanan extends Component
                     'transaction_id' => $transaction->id,
                     'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
                     'payment_method' => $this->paymentMethod,
+                    'payment_group' => $this->paymentGroup,
                     'paid_amount' => $this->paidAmount >= $this->getTotalProperty() ? $this->getTotalProperty() : $this->paidAmount,
                     'paid_at' => now(),
                 ]);
