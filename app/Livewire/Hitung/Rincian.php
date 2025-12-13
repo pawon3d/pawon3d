@@ -4,6 +4,7 @@ namespace App\Livewire\Hitung;
 
 use App\Models\Hitung;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -57,7 +58,7 @@ class Rincian extends Component
         $this->is_finish = (bool) $hitung->is_finish;
         $this->status = $hitung->status ?? 'Belum Diproses';
         $this->finish_date = $hitung->hitung_date_finish;
-        View::share('title', 'Rincian '.$hitung->action);
+        View::share('title', 'Rincian ' . $hitung->action);
         View::share('mainTitle', 'Inventori');
 
         if (session()->has('success')) {
@@ -74,7 +75,7 @@ class Rincian extends Component
             ->limit(50)
             ->get();
 
-        $this->activityLogs = $logs->map(fn ($log) => [
+        $this->activityLogs = $logs->map(fn($log) => [
             'description' => $log->description,
             'causer_name' => $log->causer->name ?? 'System',
             'created_at' => $log->created_at->format('d M Y H:i'),
@@ -179,7 +180,7 @@ class Rincian extends Component
         NotificationService::stockCountStarted($hitung->hitung_number);
 
         unset($this->hitung); // Clear computed property cache
-        $this->alert('success', $hitung->action.' berhasil dimulai.');
+        $this->alert('success', $hitung->action . ' berhasil dimulai.');
     }
 
     public function finish()
@@ -219,15 +220,11 @@ class Rincian extends Component
                 $quantityBefore = $batch->batch_quantity;
                 $quantityChange = $detail->quantity_actual - $quantityBefore;
 
-                $batch->update([
-                    'batch_quantity' => $detail->quantity_actual,
-                ]);
-
                 // Create inventory log untuk penyesuaian stok
                 \App\Models\InventoryLog::create([
                     'material_id' => $batch->material_id,
                     'material_batch_id' => $batch->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::user()->id,
                     'action' => 'hitung',
                     'quantity_change' => $quantityChange,
                     'quantity_after' => $detail->quantity_actual,
@@ -235,6 +232,15 @@ class Rincian extends Component
                     'reference_id' => $hitung->id,
                     'note' => "Hitung Persediaan: {$hitung->hitung_number} - {$detail->material->name}",
                 ]);
+
+                // Jika sebelumnya 0 dan hasil hitung juga 0, hapus batch
+                if ($quantityBefore == 0 && $detail->quantity_actual == 0) {
+                    $batch->delete();
+                } else {
+                    $batch->update([
+                        'batch_quantity' => $detail->quantity_actual,
+                    ]);
+                }
             } else {
                 // Untuk Catat Persediaan Rusak / Hilang:
                 // quantity_actual = jumlah yang rusak/hilang
@@ -252,7 +258,7 @@ class Rincian extends Component
                 \App\Models\InventoryLog::create([
                     'material_id' => $batch->material_id,
                     'material_batch_id' => $batch->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::user()->id,
                     'action' => $actionType,
                     'quantity_change' => -$detail->quantity_actual,
                     'quantity_after' => $newBatchQuantity,
@@ -284,7 +290,7 @@ class Rincian extends Component
         // Kirim notifikasi penghitungan selesai
         NotificationService::stockCountCompleted($hitung->hitung_number);
 
-        $this->alert('success', $hitung->action.' berhasil diselesaikan.');
+        $this->alert('success', $hitung->action . ' berhasil diselesaikan.');
     }
 
     public function render()

@@ -61,7 +61,7 @@
                         </a>
                     </td>
                     <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
-                        {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->format('d M Y') : '-' }}
+                        {{ $hitung->hitung_date ? \Carbon\Carbon::parse($hitung->hitung_date)->translatedFormat('d F Y') : '-' }}
                     </td>
                     <td class="px-6 py-4 text-sm font-medium text-[#666666] border-b border-[#d4d4d4]">
                         {{ $hitung->action ?? '-' }}

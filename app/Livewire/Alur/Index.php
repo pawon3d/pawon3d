@@ -33,19 +33,39 @@ class Index extends Component
         View::share('title', 'Alur Persediaan');
     }
 
+    public function keRincian($referenceType, $referenceId)
+    {
+        if (! $referenceType || ! $referenceId) {
+            return;
+        }
+
+        // Map reference type ke route
+        $routeMap = [
+            'hitung' => 'hitung.rincian',
+            'expense' => 'belanja.rincian',
+            'production' => 'produksi.rincian',
+        ];
+
+        $route = $routeMap[$referenceType] ?? null;
+
+        if ($route) {
+            $this->redirectIntended(default: route($route, ['id' => $referenceId], absolute: false), navigate: true);
+        }
+    }
+
     public function render()
     {
         $inventoryLogs = InventoryLog::query()
             ->with(['material', 'materialBatch.unit', 'user'])
             ->when($this->search, function ($query) {
                 $query->whereHas('material', function ($q) {
-                    $q->where('name', 'like', '%'.$this->search.'%');
+                    $q->where('name', 'like', '%' . $this->search . '%');
                 })
                     ->orWhereHas('materialBatch', function ($q) {
-                        $q->where('batch_number', 'like', '%'.$this->search.'%');
+                        $q->where('batch_number', 'like', '%' . $this->search . '%');
                     })
                     ->orWhereHas('user', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
+                        $q->where('name', 'like', '%' . $this->search . '%');
                     });
             })
             ->when($this->filterAction, function ($query) {
@@ -59,7 +79,6 @@ class Index extends Component
             'actionOptions' => [
                 '' => 'Semua Aksi',
                 'belanja' => 'Belanja',
-                'terpakai' => 'Terpakai',
                 'rusak' => 'Rusak',
                 'hilang' => 'Hilang',
                 'hitung' => 'Hitung',

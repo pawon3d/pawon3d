@@ -1,7 +1,7 @@
 <div>
     <div class="flex gap-8 items-center h-10 mb-[30px]">
         <div class="flex gap-[15px] items-center">
-            <flux:button type="button" variant="filled" icon="arrow-left" href="{{ route('belanja') }}" wire:navigate>
+            <flux:button type="button" variant="secondary" icon="arrow-left" href="{{ route('belanja') }}" wire:navigate>
                 Kembali
             </flux:button>
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Riwayat Belanja Persediaan</h1>
@@ -15,10 +15,6 @@
                     <flux:icon.magnifying-glass class="size-[16px] text-[#666666]" />
                     <input wire:model.live="search" placeholder="Cari Belanja"
                         class="px-2.5 py-2.5 border-0 focus:outline-none focus:ring-0 text-[16px] font-medium text-[#959595] bg-transparent flex-1" />
-                </div>
-                <div class="flex items-center cursor-pointer">
-                    <flux:icon.funnel class="size-[25px] text-[#666666]" />
-                    <p class="text-[16px] font-medium text-[#666666] px-1.5 py-2.5">Filter</p>
                 </div>
             </div>
         </div>
@@ -83,13 +79,14 @@
                 <tr class="h-[60px] border-b border-[#d4d4d4]">
                     <td class="px-6 py-0">
                         <a href="{{ route('belanja.rincian', $expense->id) }}"
-                            class="text-[14px] font-medium text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block">
+                            class="text-[14px] font-medium text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block"
+                            wire:navigate>
                             {{ $expense->expense_number }}
                         </a>
                     </td>
                     <td class="px-6 py-0">
                         <span class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
-                            {{ $expense->end_date ? \Carbon\Carbon::parse($expense->end_date)->format('d M Y') : '-' }}
+                            {{ $expense->end_date ? \Carbon\Carbon::parse($expense->end_date)->translatedFormat('d F Y') : '-' }}
                         </span>
                     </td>
                     <td class="px-6 py-0">

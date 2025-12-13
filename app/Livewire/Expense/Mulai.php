@@ -42,7 +42,7 @@ class Mulai extends Component
                 'material_name' => $detail->material->name,
                 'quantity_expect' => $detail->quantity_expect,
                 'quantity_get' => $detail->quantity_get,
-                'unit' => $detail->unit->name.' ('.$detail->unit->alias.')',
+                'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
                 'quantity' => 0,
             ];
         })->toArray();
@@ -117,7 +117,7 @@ class Mulai extends Component
                 $expenseDetail->update([
                     'quantity_get' => $updatedQuantityGet,
                     'total_actual' => $updatedQuantityGet * $expenseDetail->price_expect,
-                    'expiry_date' => $detail['expiry_date'] ? \Carbon\Carbon::createFromFormat('d/m/Y', $detail['expiry_date'])->format('Y-m-d') : null,
+                    'expiry_date' => $detail['expiry_date'] ? \Carbon\Carbon::createFromFormat('d M Y', $detail['expiry_date'])->format('Y-m-d') : null,
                 ]);
 
                 // Update total keseluruhan belanja

@@ -49,13 +49,13 @@
                             field: $refs.datepicker,
                             format: 'DD MMM YYYY',
                             toString(date, format) {
-                                const day = String(date.getDate()).padStart(2, 0);
-                                const month = String(date.getMonth() + 1).padStart(2, 0);
-                                const year = date.getFullYear();
-                                return `${day}/${month}/${year}`;
+                                return moment(date).format('DD MMM YYYY');
+                            },
+                            parse(dateString, format) {
+                                return moment(dateString, 'DD MMM YYYY').toDate();
                             },
                             onSelect: function() {
-                                @this.set('expense_date', moment(this.getDate()).format('DD MMM YYYY'));
+                                @this.set('hitung_date', moment(this.getDate()).format('DD MMM YYYY'));
                             }
                         });" wire:model.defer="expense_date" id="datepicker"
                         readonly placeholder="01 Jun 2025" />
@@ -194,16 +194,16 @@
 
 
     <div class="flex justify-end items-center gap-[30px] mt-[50px]">
-        <flux:button type="button" variant="subtle" icon="x-mark"
+        <flux:button type="button" variant="filled" icon="x-mark"
             href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja') }}" wire:navigate>
             Batal
         </flux:button>
         @if ($expense_id)
-            <flux:button type="button" wire:click.prevent="update" variant="primary" icon="save">
+            <flux:button type="button" wire:click.prevent="update" variant="secondary" icon="save">
                 Simpan Perubahan
             </flux:button>
         @else
-            <flux:button type="button" wire:click.prevent="store" variant="primary" icon="archive-box">
+            <flux:button type="button" wire:click.prevent="store" variant="secondary" icon="archive-box">
                 Buat Rencana Belanja
             </flux:button>
         @endif

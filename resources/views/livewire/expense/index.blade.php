@@ -95,13 +95,14 @@
                 <tr class="h-[60px] border-b border-[#d4d4d4]">
                     <td class="px-6 py-0">
                         <a href="{{ route('belanja.rincian', $expense->id) }}"
-                            class="text-[14px] font-medium text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block">
+                            class="text-[14px] font-medium text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block"
+                            wire:navigate>
                             {{ $expense->expense_number }}
                         </a>
                     </td>
                     <td class="px-6 py-0">
                         <span class="text-[14px] font-medium text-[#666666] overflow-ellipsis overflow-hidden block">
-                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') : '-' }}
+                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->translatedFormat('d F Y') : '-' }}
                         </span>
                     </td>
                     <td class="px-6 py-0">

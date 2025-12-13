@@ -4,12 +4,13 @@ namespace App\Livewire\Expense;
 
 use App\Models\Expense;
 use Illuminate\Support\Facades\View;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Rencana extends Component
 {
-    use WithPagination;
+    use WithPagination, LivewireAlert;
 
     public $search = '';
 
@@ -26,6 +27,10 @@ class Rencana extends Component
     public function mount()
     {
         View::share('title', 'Rencana Belanja');
+        View::share('mainTitle', 'Inventori');
+        if (session()->has('success')) {
+            $this->alert('success', session('success'));
+        }
     }
 
     public function updatingSearch()
@@ -51,9 +56,9 @@ class Rencana extends Component
             ->where('status', 'Draft')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('expense_number', 'like', '%'.$this->search.'%')
+                    $q->where('expense_number', 'like', '%' . $this->search . '%')
                         ->orWhereHas('supplier', function ($q) {
-                            $q->where('name', 'like', '%'.$this->search.'%');
+                            $q->where('name', 'like', '%' . $this->search . '%');
                         });
                 });
             })

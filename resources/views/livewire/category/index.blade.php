@@ -2,7 +2,8 @@
     <div class="mb-2 flex items-center justify-between">
         <div class="flex items-center gap-4">
             <a href="{{ route('produk') }}"
-                class="bg-[#313131] hover:bg-[#252324] text-white px-5 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors">
+                class="bg-[#313131] hover:bg-[#252324] text-white px-5 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors"
+                wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
@@ -32,11 +33,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button type="button" wire:click="showAddModal"
-                    class="bg-[#74512d] hover:bg-[#5f4224] text-[#f6f6f6] px-6 py-2.5 rounded-[15px] font-montserrat font-semibold text-[16px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors">
-                    <flux:icon.plus class="size-5" />
+                <flux:button variant="primary" icon="plus" type="button" wire:click="showAddModal">
                     Tambah Kategori
-                </button>
+                </flux:button>
             </div>
         </div>
 
@@ -102,12 +101,11 @@
             </div>
             <div class="flex justify-end gap-3">
                 <flux:modal.close>
-                    <button type="button"
-                        class="bg-[#c4c4c4] text-[#333333] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    <flux:button variant="filled" icon="x-mark" type="button">
                         Batal
-                    </button>
+                    </flux:button>
                 </flux:modal.close>
-                <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="store">
+                <flux:button icon="save" type="button" variant="secondary" wire:click="store">
                     Simpan
                 </flux:button>
             </div>
@@ -158,11 +156,11 @@
                     </button>
                 </flux:modal.trigger>
                 <div class="flex items-center gap-3">
-                    <button type="button" wire:click="$set('showEditModal', false)"
-                        class="bg-[#c4c4c4] text-[#333333] font-montserrat font-semibold text-[16px] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                    <flux:button variant="filled" icon="x-mark" type="button"
+                        wire:click="$set('showEditModal', false)">
                         Batal
-                    </button>
-                    <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="update">
+                    </flux:button>
+                    <flux:button icon="save" type="button" variant="secondary" wire:click="update">
                         Simpan Perubahan
                     </flux:button>
                 </div>

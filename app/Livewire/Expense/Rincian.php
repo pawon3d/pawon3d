@@ -4,6 +4,7 @@ namespace App\Livewire\Expense;
 
 use App\Services\NotificationService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -243,7 +244,7 @@ class Rincian extends Component
                 \App\Models\InventoryLog::create([
                     'material_id' => $detail->material_id,
                     'material_batch_id' => $materialBatch->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'action' => 'belanja',
                     'quantity_change' => $quantityInTargetUnit,
                     'quantity_after' => $materialBatch->batch_quantity,
@@ -264,7 +265,7 @@ class Rincian extends Component
                 \App\Models\InventoryLog::create([
                     'material_id' => $detail->material_id,
                     'material_batch_id' => $newBatch->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'action' => 'belanja',
                     'quantity_change' => $quantityInTargetUnit,
                     'quantity_after' => $quantityInTargetUnit,

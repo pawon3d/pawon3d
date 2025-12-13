@@ -1,15 +1,11 @@
 <div>
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center gap-4">
-            <a href="{{ route('bahan-baku') }}"
-                class="px-6 py-2.5 bg-[#313131] hover:bg-[#3a3a3a] text-white rounded-[15px] shadow-sm flex items-center gap-1.5 font-semibold text-base transition">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                        clip-rule="evenodd"></path>
-                </svg>
+            <flux:button variant="secondary" icon="arrow-left" href="{{ route('bahan-baku') }}"
+                class="px-6 py-2.5 bg-[#313131] hover:bg-[#3a3a3a] text-white rounded-[15px] shadow-sm flex items-center gap-1.5 font-semibold text-base transition"
+                wire:navigate>
                 Kembali
-            </a>
+            </flux:button>
             <h1 class="text-xl font-semibold text-[#666666]">Kelola Kategori Persediaan</h1>
         </div>
         <div class="flex gap-2 items-center">
@@ -40,15 +36,10 @@
                 </div>
             </div>
             <div class="flex gap-2 items-center">
-                <button type="button" wire:click="showAddModal"
+                <flux:button variant="primary" icon="plus" type="button" wire:click="showAddModal"
                     class="px-6 py-2.5 bg-[#74512d] hover:bg-[#8a5f35] text-white rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                            clip-rule="evenodd"></path>
-                    </svg>
                     Tambah Kategori
-                </button>
+                </flux:button>
             </div>
         </div>
 
@@ -104,16 +95,11 @@
                 </div>
 
                 <div class="flex justify-end gap-2.5">
-                    <button type="button" wire:click="$set('showModal', false)"
+                    <flux:button variant="filled" icon="x-mark" type="button" wire:click="$set('showModal', false)"
                         class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd"></path>
-                        </svg>
                         Batal
-                    </button>
-                    <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="store">
+                    </flux:button>
+                    <flux:button icon="save" type="button" variant="secondary" wire:click="store">
                         Simpan
                     </flux:button>
                 </div>
@@ -175,16 +161,12 @@
                         </button>
                     </flux:modal.trigger>
                     <div class="flex gap-2.5">
-                        <button type="button" wire:click="$set('showEditModal', false)"
+                        <flux:button variant="filled" icon="x-mark" type="button"
+                            wire:click="$set('showEditModal', false)"
                             class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
                             Batal
-                        </button>
-                        <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click="update">
+                        </flux:button>
+                        <flux:button icon="save" type="button" variant="secondary" wire:click="update">
                             Simpan Pembaruan
                         </flux:button>
                     </div>

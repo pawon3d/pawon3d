@@ -41,13 +41,13 @@
                 <div class="flex flex-col gap-1">
                     <span class="text-base font-medium text-[#666666]">Tanggal Aksi</span>
                     <span class="text-base text-[#666666]">
-                        {{ $this->hitung->hitung_date ? \Carbon\Carbon::parse($this->hitung->hitung_date)->format('d M Y') : '-' }}
+                        {{ $this->hitung->hitung_date ? \Carbon\Carbon::parse($this->hitung->hitung_date)->translatedFormat('d F Y') : '-' }}
                     </span>
                 </div>
                 <div class="flex flex-col gap-1">
                     <span class="text-base font-medium text-[#666666]">Tanggal Selesai</span>
                     <span class="text-base text-[#666666]">
-                        {{ $finish_date ? \Carbon\Carbon::parse($finish_date)->format('d M Y') : '-' }}
+                        {{ $finish_date ? \Carbon\Carbon::parse($finish_date)->translatedFormat('d F Y') : '-' }}
                     </span>
                 </div>
             </div>
@@ -75,11 +75,10 @@
                         Rencana Catat Hilang
                     @endif
                 </span>
-                <button type="button" wire:click="openNoteModal"
+                <flux:button type="button" variant="secondary" icon="pencil" wire:click="openNoteModal"
                     class="px-6 py-2.5 bg-[#666666] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base">
-                    <flux:icon.pencil class="size-3" />
                     {{ $this->hitung->note ? 'Ubah Catatan' : 'Buat Catatan' }}
-                </button>
+                </flux:button>
             </div>
             <div class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-5 py-2.5 min-h-[120px]">
                 <p class="text-base text-[#666666]">{{ $this->hitung->note ?: 'Tidak ada catatan' }}</p>
@@ -259,18 +258,19 @@
     @elseif (!$is_start && !$is_finish)
         <div class="flex justify-between items-center">
             <button wire:click="confirmDelete" type="button"
-                class="px-6 py-2.5 bg-[#eb5757] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-semibold">
+                class="px-6 py-2.5 bg-[#eb5757] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-semibold cursor-pointer">
                 <flux:icon.trash class="size-5" />
                 Hapus Aksi
             </button>
             <div class="flex gap-2.5 items-center">
                 <a href="{{ route('hitung.edit', $hitung_id) }}"
-                    class="px-6 py-2.5 bg-[#feba17] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-bold">
+                    class="px-6 py-2.5 bg-[#feba17] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-bold cursor-pointer"
+                    wire:navigate>
                     <flux:icon.pencil class="size-5" />
                     Ubah Daftar Persediaan
                 </a>
                 <button wire:click="start" type="button"
-                    class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
+                    class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold cursor-pointer">
                     <flux:icon.archive-box class="size-5" />
                     Mulai {{ $this->hitung->action }}
                 </button>

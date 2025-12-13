@@ -40,7 +40,8 @@
         ]" headerBg="#3F4E4F" headerText="#F8F4E1"
             emptyMessage="Tidak ada riwayat persediaan yang tersedia.">
             @foreach ($inventoryLogs as $log)
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                <tr class="border-b border-gray-200 hover:bg-gray-50 {{ $log->reference_type && $log->reference_id ? 'cursor-pointer' : '' }}"
+                    @if ($log->reference_type && $log->reference_id) wire:click="keRincian('{{ $log->reference_type }}', '{{ $log->reference_id }}')" @endif>
                     <td class="px-6 py-4 text-sm text-gray-600">
                         {{ $log->created_at->translatedFormat('d M Y') }}
                     </td>

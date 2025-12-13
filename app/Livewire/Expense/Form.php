@@ -57,7 +57,7 @@ class Form extends Component
             'expenseDetails.unit',
         ]);
         $this->supplier_id = $expense->supplier_id;
-        $this->expense_date = \Carbon\Carbon::parse($expense->expense_date)->format('d F Y');
+        $this->expense_date = \Carbon\Carbon::parse($expense->expense_date)->format('d M Y');
         $this->note = $expense->note;
         $this->grand_total_expect = $expense->grand_total_expect;
         $today = now()->format('Y-m-d');
@@ -260,7 +260,7 @@ class Form extends Component
 
         $expense = \App\Models\Expense::create([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d F Y', $this->expense_date)->format('Y-m-d') : null,
+            'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? \Carbon\Carbon::createFromFormat('d M Y', $this->expense_date)->format('Y-m-d') : null,
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
         ]);
@@ -273,15 +273,6 @@ class Form extends Component
                 'price_expect' => $detail['price_expect'],
                 'total_expect' => $detail['detail_total_expect'],
             ]);
-            $materialDetail = \App\Models\MaterialDetail::where('material_id', $detail['material_id'])
-                ->where('unit_id', $detail['unit_id'])
-                ->first();
-
-            if ($materialDetail) {
-                $materialDetail->update([
-                    'supply_price' => $detail['price_expect'],
-                ]);
-            }
         }
 
         // Kirim notifikasi rencana belanja dibuat
@@ -331,6 +322,62 @@ class Form extends Component
             }
         }
 
+        // Update harga modal produk yang menggunakan material yang harganya berubah
+        $affectedMaterialIds = collect($this->expense_details)->pluck('material_id')->unique();
+
+        foreach ($affectedMaterialIds as $materialId) {
+            // Cari semua produk yang menggunakan material ini
+            $productCompositions = \App\Models\ProductComposition::where('material_id', $materialId)
+                ->with(['product', 'material.material_details'])
+                ->get();
+
+            foreach ($productCompositions as $composition) {
+                $product = $composition->product;
+
+                // Hitung ulang capital produk
+                $compositionTotal = $product->product_compositions->sum(function ($comp) {
+                    $materialDetail = \App\Models\MaterialDetail::where('material_id', $comp->material_id)
+                        ->where('unit_id', $comp->unit_id)
+                        ->first();
+
+                    $materialPrice = $materialDetail?->supply_price ?? 0;
+
+                    // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+                    if ($materialPrice == 0) {
+                        $targetUnit = \App\Models\Unit::find($comp->unit_id);
+                        $otherDetails = \App\Models\MaterialDetail::where('material_id', $comp->material_id)
+                            ->where('unit_id', '!=', $comp->unit_id)
+                            ->where('supply_price', '>', 0)
+                            ->with('unit')
+                            ->get();
+
+                        foreach ($otherDetails as $otherDetail) {
+                            if ($otherDetail->unit && $targetUnit) {
+                                // Konversi harga dari unit lain ke unit target
+                                $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                                if ($convertedQuantity !== null) {
+                                    $materialPrice = $otherDetail->supply_price * $convertedQuantity;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    return $materialPrice * $comp->material_quantity;
+                });
+
+                $otherTotal = $product->other_costs->sum('price');
+                $capital = $otherTotal + $compositionTotal;
+                $pcsCapital = $product->pcs > 0 ? $capital / $product->pcs : $capital;
+
+                // Update capital produk
+                $product->update([
+                    'capital' => $capital,
+                    'pcs_capital' => $pcsCapital,
+                ]);
+            }
+        }
+
         // Kirim notifikasi belanja dimulai
         NotificationService::shoppingStarted($expense->expense_number);
 
@@ -353,7 +400,7 @@ class Form extends Component
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         $expense->update([
             'supplier_id' => $this->supplier_id,
-            'expense_date' => \Carbon\Carbon::createFromFormat('d F Y', $this->expense_date)->format('Y-m-d'),
+            'expense_date' => \Carbon\Carbon::createFromFormat('d M Y', $this->expense_date)->format('Y-m-d'),
             'note' => $this->note,
             'grand_total_expect' => $this->grand_total_expect,
         ]);

@@ -193,6 +193,10 @@
                                             class="font-montserrat font-medium text-[16px] text-[#666666] text-center w-full line-clamp-2">
                                             {{ $product->name }}
                                         </p>
+                                        <p class="text-base font-medium text-[#666666] text-center"
+                                            style="font-family: 'Montserrat', sans-serif;">
+                                            ({{ $product->pcs }} pcs)
+                                        </p>
                                     </div>
                                     <div
                                         class="flex items-center justify-center font-montserrat font-semibold text-[18px] text-[#666666] gap-1">
@@ -201,10 +205,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="{{ route('produk.edit', $product->id) }}"
+                            <flux:button variant="subtle" href="{{ route('produk.edit', $product->id) }}"
                                 class="bg-[#fafafa] border-[1.5px] border-[#74512d] rounded-[20px] w-full flex items-center justify-center px-[25px] py-[10px]">
-                                <p class="font-montserrat font-bold text-[16px] text-[#74512d]">Lihat</p>
-                            </a>
+                                Lihat
+                            </flux:button>
                         </div>
                     @endforeach
                 </div>

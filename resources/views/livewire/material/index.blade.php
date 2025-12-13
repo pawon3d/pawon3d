@@ -2,10 +2,6 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-3xl font-bold">Daftar Barang Persediaan</h1>
         <div class="flex gap-2 items-center">
-            <flux:button variant="secondary" wire:click="cetakInformasi">
-                Cetak Informasi
-            </flux:button>
-
             <!-- Tombol Riwayat Pembaruan -->
             <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
@@ -142,11 +138,12 @@
                                 @endphp
 
                                 <p class="text-gray-600 mb-4 text-sm montserrat-regular">
-                                    {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y') : 'Belum Ada Tanggal' }}
+                                    Tgl Exp:
+                                    {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->translatedFormat('d M Y') : '-' }}
                                 </p>
                             </div>
                             <flux:button class="w-full" variant="subtle" type="button"
-                                href="{{ route('bahan-baku.edit', $material->id) }}">
+                                href="{{ route('bahan-baku.edit', $material->id) }}" wire:navigate>
                                 Lihat
                             </flux:button>
                             {{--
@@ -176,10 +173,11 @@
                 bodyBg="#fafafa" bodyText="#666666"
                 emptyMessage="Belum ada barang persediaan. Tekan tombol 'Tambah Persediaan' untuk menambahkan persediaan.">
                 @foreach ($materials as $material)
-                    <tr class="hover:bg-gray-50 transition-colors divide-y divide-[#d4d4d4]">
+                    <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('bahan-baku.edit', $material->id) }}"
-                                class="text-sm text-[#666666] font-medium montserrat-medium hover:underline">
+                                class="text-sm text-[#666666] font-medium montserrat-medium hover:underline"
+                                wire:navigate>
                                 {{ $material->name }}
                             </a>
                         </td>
@@ -222,7 +220,7 @@
                                     ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
                                     ->first();
                             @endphp
-                            {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->format('d M Y') : 'Belum Ada Tanggal' }}
+                            {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->translatedFormat('d M Y') : '-' }}
                         </td>
                         <td class="px-6 py-4 text-sm text-[#666666] font-medium montserrat-medium text-right">
                             {{ $material->status ?? 'Kosong' }}
@@ -310,13 +308,8 @@
                                                 ->sortBy(fn($batch) => \Carbon\Carbon::parse($batch->date))
                                                 ->first();
                                         @endphp
-
-
-                                        {{ $nextBatch
-                                            ? \Carbon\Carbon::parse($nextBatch->date)->format('d / m / Y')
-                                            : 'Belum
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Ada Tanggal' }}
-
+                                        Tgl Exp:
+                                        {{ $nextBatch ? \Carbon\Carbon::parse($nextBatch->date)->translatedFormat('d M Y') : '-' }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900">
                                         {{ $material->status ?? 'Kosong' }}

@@ -2,7 +2,8 @@
     <!-- Header with Back Button and Title -->
     <div class="mb-6 flex gap-4 items-center">
         <a href="{{ route('belanja') }}"
-            class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
+            class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
+            wire:navigate>
             <flux:icon.arrow-left variant="mini" class="size-4" />
             <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
         </a>
@@ -89,14 +90,15 @@
                 <tr class="h-[60px] border-b border-[#d4d4d4]">
                     <td class="px-6 py-0">
                         <a href="{{ route('belanja.rincian', $expense->id) }}"
-                            class="font-montserrat font-medium text-[14px] text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block">
+                            class="font-montserrat font-medium text-[14px] text-[#666666] hover:underline cursor-pointer overflow-ellipsis overflow-hidden block"
+                            wire:navigate>
                             {{ $expense->expense_number }}
                         </a>
                     </td>
                     <td class="px-6 py-0">
                         <span
                             class="font-montserrat font-medium text-[14px] text-[#666666] overflow-ellipsis overflow-hidden block">
-                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') : '-' }}
+                            {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->translatedFormat('d F Y') : '-' }}
                         </span>
                     </td>
                     <td class="px-6 py-0">

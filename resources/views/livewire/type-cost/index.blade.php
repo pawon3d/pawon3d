@@ -3,7 +3,8 @@
     <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
             <a href="{{ route('produk') }}"
-                class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors">
+                class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
+                wire:navigate>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
@@ -51,15 +52,9 @@
                     Filter
                 </button>
             </div>
-            <button wire:click="showAddModal"
-                class="bg-[#74512d] hover:bg-[#5d4024] text-[#f6f6f6] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clip-rule="evenodd" />
-                </svg>
+            <flux:button variant="primary" icon="plus" wire:click="showAddModal">
                 Tambah Jenis Biaya
-            </button>
+            </flux:button>
         </div>
 
         <!-- Table -->
@@ -185,24 +180,13 @@
             <!-- Buttons -->
             <div class="flex justify-end gap-2.5">
                 <flux:modal.close>
-                    <button type="button"
-                        class="bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
-                        </svg>
+                    <flux:button variant="filled" icon="x-mark" type="button">
                         Batal
-                    </button>
+                    </flux:button>
                 </flux:modal.close>
-                <button type="button" wire:click="store"
-                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                    </svg>
+                <flux:button variant="secondary" icon="save" type="button" wire:click="store">
                     Simpan
-                </button>
+                </flux:button>
             </div>
         </div>
     </flux:modal>
@@ -228,7 +212,7 @@
                     </div>
 
                     <!-- Jumlah Penggunaan -->
-                    <div class="flex items-center justify-between">
+                    {{-- <div class="flex items-center justify-between">
                         <label class="text-base font-medium text-[#666666]">Jumlah Penggunaan</label>
                         <button type="button" wire:click="showUsageModal"
                             class="flex items-center gap-1 text-base font-medium text-[#333333] hover:text-[#666666] transition-colors cursor-pointer">
@@ -239,7 +223,7 @@
                                     d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
@@ -257,24 +241,13 @@
                 </flux:modal.trigger>
                 <div class="flex gap-2.5">
                     <flux:modal.close>
-                        <button type="button"
-                            class="bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
-                            </svg>
+                        <flux:button variant="filled" icon="x-mark" type="button">
                             Batal
-                        </button>
+                        </flux:button>
                     </flux:modal.close>
-                    <button type="button" wire:click="update"
-                        class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                        </svg>
+                    <flux:button variant="secondary" icon="save" type="button" wire:click="update">
                         Simpan Perubahan
-                    </button>
+                    </flux:button>
                 </div>
             </div>
         </div>
@@ -305,7 +278,7 @@
     </flux:modal>
 
     <!-- Modal Jumlah Penggunaan -->
-    <flux:modal name="usage-modal" class="w-full max-w-[700px]" wire:model="showUsageModal">
+    {{-- <flux:modal name="usage-modal" class="w-full max-w-[700px]" wire:model="showUsageModal">
         <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 space-y-8">
             <div class="space-y-5">
                 <h3 class="text-lg font-medium text-[#333333]">Daftar Produk</h3>
@@ -413,7 +386,7 @@
                 </p>
             </div>
         </div>
-    </flux:modal>
+    </flux:modal> --}}
 
     <!-- Modal Riwayat Pembaruan -->
     <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">

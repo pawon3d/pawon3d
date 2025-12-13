@@ -40,7 +40,8 @@
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center">
             <a href="{{ route('produk') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
@@ -180,9 +181,9 @@
             @if ($is_recipe)
                 {{-- Recipe Mode: Product Compositions --}}
                 <div class="flex justify-end gap-4">
-                    <flux:button type="button" wire:click="showUnit" variant="primary" icon="shapes">
+                    {{-- <flux:button type="button" wire:click="showUnit" variant="primary" icon="shapes">
                         Satuan Ukur
-                    </flux:button>
+                    </flux:button> --}}
                     <flux:button type="button" wire:click="addComposition" variant="primary" icon="plus">
                         Tambah Bahan Baku
                     </flux:button>
@@ -607,12 +608,10 @@
             <div></div>
         @endif
         <div class="flex justify-end gap-4 mt-8">
-            <a href="{{ route('produk') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
-                <flux:icon.x-mark class="w-4 h-4 mr-2" />
+            <flux:button variant="filled" icon="x-mark" href="{{ route('produk') }}" wire:navigate>
                 Batal
-            </a>
-            <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click.prevent="save">
+            </flux:button>
+            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save">
                 {{ $product_id ? 'Perbarui' : 'Simpan' }}
             </flux:button>
         </div>

@@ -132,11 +132,34 @@ class Form extends Component
                 ->where('unit_id', $composition->unit_id)
                 ->first();
 
+            $price = $materialDetail?->supply_price ?? 0;
+
+            // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+            if ($price == 0) {
+                $targetUnit = \App\Models\Unit::find($composition->unit_id);
+                $otherDetails = MaterialDetail::where('material_id', $composition->material_id)
+                    ->where('unit_id', '!=', $composition->unit_id)
+                    ->where('supply_price', '>', 0)
+                    ->with('unit')
+                    ->get();
+
+                foreach ($otherDetails as $otherDetail) {
+                    if ($otherDetail->unit && $targetUnit) {
+                        // Konversi harga dari unit lain ke unit target
+                        $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                        if ($convertedQuantity !== null) {
+                            $price = $otherDetail->supply_price * $convertedQuantity;
+                            break;
+                        }
+                    }
+                }
+            }
+
             return [
                 'material_id' => $composition->material_id,
                 'material_quantity' => $composition->material_quantity,
                 'unit_id' => $composition->unit_id,
-                'material_price' => $materialDetail?->supply_price ?? 0,
+                'material_price' => $price,
             ];
         })->toArray();
 
@@ -158,7 +181,7 @@ class Form extends Component
         }
 
         // Set preview image
-        $this->previewImage = $product->product_image ? env('APP_URL').'/storage/'.$product->product_image : null;
+        $this->previewImage = $product->product_image ? env('APP_URL') . '/storage/' . $product->product_image : null;
     }
 
     public function riwayatPembaruan(): void
@@ -254,11 +277,35 @@ class Form extends Component
 
         if ($unitId) {
             $this->product_compositions[$index]['unit_id'] = $unitId;
-            $materialDetail = MaterialDetail::where('material_id', $this->product_compositions[$index]['material_id'] ?? null)
+            $materialId = $this->product_compositions[$index]['material_id'] ?? null;
+            $materialDetail = MaterialDetail::where('material_id', $materialId)
                 ->where('unit_id', $unitId)
                 ->first();
 
-            $this->product_compositions[$index]['material_price'] = $materialDetail?->supply_price ?? 0;
+            $price = $materialDetail?->supply_price ?? 0;
+
+            // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+            if ($price == 0 && $materialId) {
+                $targetUnit = \App\Models\Unit::find($unitId);
+                $otherDetails = MaterialDetail::where('material_id', $materialId)
+                    ->where('unit_id', '!=', $unitId)
+                    ->where('supply_price', '>', 0)
+                    ->with('unit')
+                    ->get();
+
+                foreach ($otherDetails as $otherDetail) {
+                    if ($otherDetail->unit && $targetUnit) {
+                        // Konversi harga dari unit lain ke unit target
+                        $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                        if ($convertedQuantity !== null) {
+                            $price = $otherDetail->supply_price * $convertedQuantity;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $this->product_compositions[$index]['material_price'] = $price;
         } else {
             $this->product_compositions[$index]['unit_id'] = '';
             $this->product_compositions[$index]['material_price'] = 0;
@@ -320,7 +367,7 @@ class Form extends Component
     protected function recalculateCapital(): void
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
@@ -427,7 +474,7 @@ class Form extends Component
         });
 
         return redirect()->intended(route('produk'))
-            ->with('success', 'Produk berhasil '.($this->product_id ? 'diperbarui' : 'ditambahkan').'.');
+            ->with('success', 'Produk berhasil ' . ($this->product_id ? 'diperbarui' : 'ditambahkan') . '.');
     }
 
     protected function createProduct(): void
@@ -552,12 +599,12 @@ class Form extends Component
 
     protected function categoryOptions(): Collection
     {
-        return once(fn () => Category::orderBy('name')->get(['id', 'name']));
+        return once(fn() => Category::orderBy('name')->get(['id', 'name']));
     }
 
     protected function recipeMaterials(): Collection
     {
-        return once(fn () => Material::where('is_recipe', false)
+        return once(fn() => Material::where('is_recipe', false)
             ->with(['material_details.unit'])
             ->orderBy('name')
             ->get());
@@ -565,7 +612,7 @@ class Form extends Component
 
     protected function readyMaterials(): Collection
     {
-        return once(fn () => Material::where('is_recipe', true)
+        return once(fn() => Material::where('is_recipe', true)
             ->with(['material_details.unit', 'batches.unit'])
             ->orderBy('name')
             ->get());
@@ -573,7 +620,7 @@ class Form extends Component
 
     protected function typeCostOptions(): Collection
     {
-        return once(fn () => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
     }
 
     protected function resolveSoloInventory(): ?array

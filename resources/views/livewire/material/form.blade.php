@@ -2,7 +2,8 @@
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center">
             <a href="{{ route('bahan-baku') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
@@ -162,15 +163,9 @@
                             dalam
                             sebuah resep kue.
                         </p>
-                        <button type="button" wire:click="addUnit"
-                            class="bg-[#74512D] text-[#F8F4E1] font-semibold text-base px-6 py-2.5 rounded-2xl shadow-sm flex items-center gap-1.5 hover:bg-[#654520] transition-colors whitespace-nowrap">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                    clip-rule="evenodd" />
-                            </svg>
+                        <flux:button variant="primary" icon="plus" type="button" wire:click="addUnit">
                             Tambah Satuan Lainnya
-                        </button>
+                        </flux:button>
                     </div>
 
                     <div class="w-full overflow-x-auto rounded-2xl shadow-sm">
@@ -464,11 +459,11 @@
         @endif
         <div class="flex justify-end gap-4 mt-8">
             <a href="{{ route('bahan-baku') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center">
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-50 flex items-center" wire:navigate>
                 <flux:icon.x-mark class="w-4 h-4 mr-2" />
                 Batal
             </a>
-            <flux:button icon="bookmark-square" type="button" variant="secondary" wire:click.prevent="save">
+            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save">
                 Simpan
             </flux:button>
         </div>

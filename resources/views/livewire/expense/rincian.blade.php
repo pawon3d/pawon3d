@@ -4,8 +4,9 @@
             <a href="@if ($status == 'Draft') {{ route('belanja.rencana') }}
                  @else
                  {{ route('belanja') }} @endif"
-                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
-                <flux:icon.arrow-left variant="mini" class="size-4" wire:navigate />
+                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
+                wire:navigate>
+                <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Rincian Belanja Persediaan</h1>
@@ -46,13 +47,13 @@
                 <div class="flex flex-col gap-1">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Tanggal Belanja</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">
-                        {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') : '-' }}
+                        {{ $expense->expense_date ? \Carbon\Carbon::parse($expense->expense_date)->translatedFormat('d F Y') : '-' }}
                     </p>
                 </div>
                 <div class="flex flex-col gap-1">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Tanggal Selesai</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">
-                        {{ $end_date ? \Carbon\Carbon::parse($end_date)->format('d M Y') : '-' }}
+                        {{ $end_date ? \Carbon\Carbon::parse($end_date)->translatedFormat('d F Y') : '-' }}
                     </p>
                 </div>
             </div>
@@ -93,7 +94,7 @@
             <div class="flex items-center justify-between">
                 <p class="font-montserrat font-medium text-[18px] text-[#666666]">Rencana Belanja</p>
                 @if (!$is_start)
-                    <flux:button type="button" wire:click="editRencanaBelanja" variant="filled" icon="pencil">
+                    <flux:button type="button" wire:click="editRencanaBelanja" variant="secondary" icon="pencil">
                         Buat Catatan
                     </flux:button>
                 @endif
@@ -185,11 +186,11 @@
 
     @if ($is_start && !$is_finish)
         <div class="flex justify-end mt-16 gap-2.5">
-            <flux:button icon="check-circle" type="button" variant="primary" wire:click="finish">
+            <flux:button icon="check-circle" type="button" variant="outline" wire:click="finish">
                 Selesaikan Belanja
             </flux:button>
             @if ($status != 'Lengkap')
-                <flux:button icon="shopping-cart" type="button" variant="primary"
+                <flux:button icon="shopping-cart" type="button" variant="secondary"
                     href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">
                     Dapatkan Belanja
                 </flux:button>
@@ -198,18 +199,18 @@
     @elseif (!$is_start && !$is_finish)
         <div class="flex justify-between mt-16">
             <button type="button" wire:click="confirmDelete"
-                class="bg-[#eb5757] hover:bg-[#d84545] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
+                class="bg-[#eb5757] hover:bg-[#d84545] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
                 <flux:icon.trash variant="mini" class="size-5" />
                 <span class="font-montserrat font-semibold text-[16px]">Hapus Belanja</span>
             </button>
             <div class="flex gap-2.5">
                 <button type="button" onclick="window.location.href='{{ route('belanja.edit', $expense->id) }}'"
-                    class="bg-[#feba17] hover:bg-[#e5a615] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
+                    class="bg-[#feba17] hover:bg-[#e5a615] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
                     <flux:icon.pencil variant="mini" class="size-5" />
                     <span class="font-montserrat font-bold text-[16px]">Ubah Daftar Belanja</span>
                 </button>
                 <button type="button" wire:click="start"
-                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
+                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
                     <flux:icon.shopping-cart variant="mini" class="size-5" />
                     <span class="font-montserrat font-semibold text-[16px]">Mulai Belanja</span>
                 </button>

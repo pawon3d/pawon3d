@@ -198,11 +198,11 @@
             </flux:button>
         @endif
         <div class="flex justify-end gap-8">
-            <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('supplier') }}"
+            <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('supplier') }}"
                 wire:navigate>
                 Batal
             </flux:button>
-            <flux:button type="button" wire:click.prevent="save" variant="primary" icon="bookmark-square">
+            <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save">
                 {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
             </flux:button>
         </div>

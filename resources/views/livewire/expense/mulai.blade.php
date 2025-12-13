@@ -2,19 +2,11 @@
     <div class="flex flex-col gap-[15px]">
         <div class="flex items-center justify-between gap-[15px] flex-wrap">
             <div class="flex items-center gap-[15px]">
-                <flux:button type="button" variant="filled" icon="arrow-left"
-                    href="{{ route('belanja.rincian', $expense->id) }}">
+                <flux:button type="button" variant="secondary" icon="arrow-left"
+                    href="{{ route('belanja.rincian', $expense->id) }}" wire:navigate>
                     Kembali
                 </flux:button>
                 <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Dapatkan Belanja</h1>
-            </div>
-            <div class="flex items-center gap-[10px] flex-wrap">
-                <flux:button variant="secondary" wire:click="cetakInformasi">
-                    Cetak Informasi
-                </flux:button>
-                <flux:button variant="secondary" wire:click="riwayatPembaruan">
-                    Riwayat Pembaruan
-                </flux:button>
             </div>
         </div>
         <x-alert.info>
@@ -91,15 +83,15 @@
                         <td class="px-[25px] py-[18px] align-top">
                             <div x-data x-init="picker = new Pikaday({
                                 field: $refs['datepicker{{ $index }}'],
-                                format: 'DD/MM/YYYY',
+                                format: 'DD MMM YYYY',
                                 toString(date, format) {
-                                    const day = String(date.getDate()).padStart(2, 0);
-                                    const month = String(date.getMonth() + 1).padStart(2, 0);
-                                    const year = date.getFullYear();
-                                    return `${day}/${month}/${year}`;
+                                    return moment(date).format('DD MMM YYYY');
+                                },
+                                parse(dateString, format) {
+                                    return moment(dateString, 'DD MMM YYYY').toDate();
                                 },
                                 onSelect: function() {
-                                    @this.set('expenseDetails.{{ $index }}.expiry_date', moment(this.getDate()).format('DD/MM/YYYY'));
+                                    @this.set('expenseDetails.{{ $index }}.expiry_date', moment(this.getDate()).format('DD MMM YYYY'));
                                 }
                             })" class="relative w-full">
                                 <input type="text" x-ref="datepicker{{ $index }}"
@@ -118,11 +110,11 @@
     </div>
 
     <div class="flex justify-end gap-[15px] flex-wrap">
-        <flux:button type="button" variant="subtle" icon="x-mark" href="{{ route('belanja.rincian', $expense_id) }}"
+        <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('belanja.rincian', $expense_id) }}"
             wire:navigate>
             Batal
         </flux:button>
-        <flux:button type="button" wire:click="save" variant="primary" icon="save">
+        <flux:button type="button" wire:click="save" variant="secondary" icon="save">
             Simpan
         </flux:button>
     </div>

@@ -2,11 +2,11 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
         <div class="flex gap-4 items-center">
-            <a href="{{ route('hitung.rincian', $hitung_id) }}"
-                class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
-                <flux:icon.arrow-left class="size-5" />
+            <flux:button variant="secondary" icon="arrow-left" href="{{ route('hitung.rincian', $hitung_id) }}"
+                class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold"
+                wire:navigate>
                 Kembali
-            </a>
+            </flux:button>
             <h1 class="text-xl font-semibold text-[#666666]">{{ $hitungAction }}</h1>
         </div>
         <div class="flex gap-2.5 items-center">
@@ -17,22 +17,18 @@
     </div>
 
     <!-- Info Box -->
-    <div class="bg-[#3F4E4F] rounded-[15px] px-6 py-4 mb-8 flex items-start gap-4">
-        <div class="flex-shrink-0 bg-[#F8F4E1] rounded-lg p-2">
-            <flux:icon.megaphone class="size-6 text-[#3F4E4F]" />
-        </div>
-        <p class="text-sm text-[#F8F4E1] leading-relaxed">
+    <x-alert.info>
+        <p>
             <strong>{{ $hitungAction }}.</strong> Masukkan hasil hitung secara bertahap dan jika terjadi kesalahan
             dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus (-)
         </p>
-    </div>
+    </x-alert.info>
 
     <!-- Daftar Persediaan Card -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-6 mb-8">
         <div class="flex justify-between items-center mb-5">
             <p class="text-base font-medium text-[#666666]">Daftar Persediaan</p>
-            <button type="button" wire:click="markAllAs"
-                class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm text-[#F8F4E1] font-semibold text-sm">
+            <flux:button variant="primary" type="button" wire:click="markAllAs">
                 Tandai
                 @if ($hitungAction === 'Hitung Persediaan')
                     Hitung
@@ -42,7 +38,7 @@
                     Hilang
                 @endif
                 Semua
-            </button>
+            </flux:button>
         </div>
 
         <div class="w-full">
@@ -99,7 +95,7 @@
                     <div class="bg-[#fafafa] px-6 py-4 min-w-[180px] w-[180px] flex items-center">
                         <span class="text-sm font-medium text-[#666666]">{{ $detail['material_name'] }}</span>
                     </div>
-                    <div class="bg-[#fafafa] px-6 py-4 min-w-[100px] w-[100px] flex items-center">
+                    <div class="bg-[#fafafa] px-6 py-4 min-w-[100px] w-[100px] flex items-center whitespace-nowrap">
                         <span class="text-sm font-medium text-[#666666]">{{ $detail['batch_number'] }}</span>
                     </div>
                     <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-end">
@@ -130,10 +126,7 @@
                             {{ isset($errorInputs[$index]) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-[#d4d4d4] focus:ring-[#3F4E4F] focus:border-[#3F4E4F]' }}" />
                     </div>
                     <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex items-center justify-center">
-                        <div class="flex items-center gap-1 px-3 py-2 border border-[#d4d4d4] rounded-lg bg-white">
-                            <span class="text-sm text-[#666666]">{{ $detail['unit_alias'] }}</span>
-                            <flux:icon.chevron-down class="size-4 text-[#666666]" />
-                        </div>
+                        <span class="text-sm text-[#666666]">{{ $detail['unit_alias'] }}</span>
                     </div>
                     <div class="bg-[#fafafa] px-6 py-4 flex-1 min-w-[100px] flex flex-col items-end justify-center">
                         @php
@@ -153,16 +146,13 @@
 
     <!-- Action Buttons -->
     <div class="flex justify-end gap-4">
-        <a href="{{ route('hitung.rincian', $hitung_id) }}"
-            class="px-6 py-2.5 bg-[#666666] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
-            <flux:icon.x-mark class="size-4" />
+        <flux:button variant="filled" icon="x-mark" href="{{ route('hitung.rincian', $hitung_id) }}" wire:navigate>
             Batal
-        </a>
-        <button type="button" wire:click="save"
+        </flux:button>
+        <flux:button variant="secondary" icon="save" type="button" wire:click="save"
             class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-semibold">
-            <flux:icon.bookmark class="size-4" />
             Simpan
-        </button>
+        </flux:button>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->
