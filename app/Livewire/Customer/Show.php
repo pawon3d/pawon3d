@@ -312,7 +312,7 @@ class Show extends Component
         }
 
         return $query->orderBy($this->orderSortField, $this->orderSortDirection)
-            ->paginate(1, ['*'], 'ordersPage');
+            ->paginate(5, ['*'], 'ordersPage');
     }
 
     public function getTopProductsProperty()

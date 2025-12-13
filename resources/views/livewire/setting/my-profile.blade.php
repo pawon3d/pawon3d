@@ -1,7 +1,8 @@
 <div>
     <div class="mb-4 flex items-center gap-4">
         <a href="{{ route('pengaturan') }}"
-            class="px-6 py-2 bg-[#313131] rounded-[15px] flex items-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]">
+            class="px-6 py-2 bg-[#313131] rounded-[15px] flex items-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]"
+            wire:navigate>
             <flux:icon.arrow-left variant="mini" class="mr-2 size-5" />
             Kembali
         </a>
@@ -11,8 +12,7 @@
 
     <x-alert.info>
         <p class="text-sm font-semibold leading-normal">
-            Lorem ipsum dolor sit amet consectetur. Sed pharetra netus gravida non curabitur fermentum etiam. Lorem
-            orci auctor adipiscing vel blandit. In in integer viverra proin risus eu eleifend.
+            Profil Anda. Lihat atau ubah informasi Anda jika diperlukan. Ubah kata sandi untuk mengubah kata sandi Anda.
         </p>
     </x-alert.info>
 
@@ -83,28 +83,36 @@
         <div class="flex-1 flex flex-col gap-[30px] min-w-[370px]">
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Nama</flux:label>
-                <flux:input placeholder="Nama Lengkap" wire:model.defer="name" disabled />
+                <input placeholder="Nama Lengkap"
+                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="name" disabled />
                 <flux:error name="name" />
             </div>
 
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Jenis Kelamin</flux:label>
-                <flux:select wire:model.defer="gender" disabled>
+                <select wire:model.defer="gender"
+                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    disabled>
                     <option value="" disabled>Pilih Jenis Kelamin</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
-                </flux:select>
+                </select>
             </div>
 
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Email</flux:label>
-                <flux:input placeholder="namaemail@gmail.com" wire:model.defer="email" disabled />
+                <input placeholder="namaemail@gmail.com"
+                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="email" disabled />
                 <flux:error name="email" />
             </div>
 
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">No. Telepon</flux:label>
-                <flux:input placeholder="08xxxxxx" wire:model.defer="phone" disabled />
+                <input placeholder="08xxxxxx"
+                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="phone" disabled />
                 <flux:error name="phone" />
             </div>
 
@@ -116,7 +124,9 @@
 
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Peran</flux:label>
-                <flux:input placeholder="Pilih Peran" wire:model.defer="role" disabled />
+                <input placeholder="Pilih Peran"
+                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="role" disabled />
                 <flux:error name="role" />
             </div>
         </div>

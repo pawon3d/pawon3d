@@ -2,14 +2,14 @@
     <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-xl font-semibold text-[#666666]">Daftar Peran</h1>
-        <div class="flex gap-2.5">
+        {{-- <div class="flex gap-2.5">
             <flux:button variant="secondary" wire:click="cetakInformasi">
                 Cetak Informasi
             </flux:button>
             <flux:button variant="secondary" wire:click="riwayatPembaruan">
                 Riwayat Pembaruan
             </flux:button>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Info Box -->

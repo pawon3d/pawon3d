@@ -93,7 +93,7 @@
             @endcanany
 
             @can('manajemen.pelanggan.kelola')
-                <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer')"
+                <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer*')"
                     icon="user-group" wire:navigate>
                     {{ __('Pelanggan') }}
                 </flux:navlist.item>

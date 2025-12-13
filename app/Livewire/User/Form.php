@@ -58,7 +58,7 @@ class Form extends Component
             $this->phone = $user->phone;
             $this->gender = $user->gender;
             $this->role = $user->getRoleNames()->first();
-            $this->is_active = $user->is_active ?? true;
+            $this->is_active = $user->is_active ? '1' : '0';
             if ($user->image) {
                 $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
             }

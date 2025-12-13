@@ -3,7 +3,8 @@
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center">
             <a href="{{ route('pengaturan') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
@@ -372,10 +373,10 @@
                         {{ $document->document_number ?? '-' }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->format('d/m/Y') : '-' }}
+                        {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->translatedFormat('d M Y') : '-' }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->format('d/m/Y') : 'Tidak Terbatas' }}
+                        {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->translatedFormat('d M Y') : 'Tidak Terbatas' }}
                     </td>
                 </tr>
             @endforeach
