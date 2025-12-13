@@ -3,16 +3,12 @@
     <div
         style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-            <a href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}" wire:navigate
+            <flux:button variant="secondary" icon="arrow-left"
+                href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}" wire:navigate
                 style="background: #313131; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; padding: 10px 25px; text-decoration: none;">
-                <svg style="width: 20px; height: 20px; min-width: 20px;" viewBox="0 0 20 20" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 16L6 10L12 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
                 <span
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Kembali</span>
-            </a>
+            </flux:button>
             <h1
                 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
                 Rincian Pesanan</h1>
@@ -189,7 +185,7 @@
 
         {{-- Mulai Produksi Button --}}
         @if (empty($transaction->production))
-            <flux:button wire:click="start" variant="secondary" icon="cake">
+            <flux:button wire:click="start" variant="secondary" icon="chef-hat">
                 Mulai Produksi
             </flux:button>
         @endif

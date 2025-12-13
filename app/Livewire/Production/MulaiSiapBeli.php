@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Production;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -101,59 +102,71 @@ class MulaiSiapBeli extends Component
             }
         }
 
+        // FASE 1: Validasi semua bahan cukup
         foreach ($this->production_details as $detail) {
             $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
             $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
-            if ($productionDetail) {
-                // Hitung quantity baru yang ditambahkan
-                $quantityToAdd = $detail['quantity'];
-                $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
-                    ->first();
-                $materialBatches = \App\Models\MaterialBatch::where('material_id', $productComposition->material_id)
-                    ->where('unit_id', $productComposition->unit_id)
-                    ->orderBy('date')
-                    ->where('date', '>=', now()->format('Y-m-d'))
+            if ($productionDetail && $parsed > 0) {
+                $productCompositions = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
                     ->get();
-                $batchQty = $materialBatches->sum('batch_quantity');
-                $requiredQuantity = $parsed * $productComposition->material_quantity;
-                if ($batchQty < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini.');
 
-                    return;
-                }
+                foreach ($productCompositions as $productComposition) {
+                    $material = \App\Models\Material::find($productComposition->material_id);
+                    $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
 
-                $remaining = $requiredQuantity;
+                    $requiredQuantity = $parsed * $productComposition->material_quantity;
+                    $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
 
-                foreach ($materialBatches as $batch) {
-                    if ($remaining <= 0) {
-                        break;
-                    }
+                    if ($availableQuantity < $requiredQuantity) {
+                        $this->alert('error', 'Jumlah bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini. Tersedia: ' . $availableQuantity . ' ' . $compositionUnit->name . ', dibutuhkan: ' . $requiredQuantity . ' ' . $compositionUnit->name);
 
-                    if ($batch->batch_quantity >= $remaining) {
-                        // Batch ini cukup, kurangi langsung
-                        $batch->batch_quantity -= $remaining;
-                        $batch->save();
-                        $remaining = 0;
-                    } else {
-                        // Batch ini tidak cukup, habiskan batch ini dan lanjut
-                        $remaining -= $batch->batch_quantity;
-                        $batch->batch_quantity = 0;
-                        $batch->save();
+                        return;
                     }
                 }
+            }
+        }
 
-                // Recalculate material status after batch quantity changes
-                $productComposition->material->recalculateStatus();
-                // Update detail belanja
+        // FASE 2: Kurangi bahan dan update produksi
+        foreach ($this->production_details as $detail) {
+            $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
+            $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
+            if ($productionDetail && $parsed > 0) {
+                $quantityToAdd = $detail['quantity'];
+                $productCompositions = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
+                    ->get();
+
+                foreach ($productCompositions as $productComposition) {
+                    $material = \App\Models\Material::find($productComposition->material_id);
+                    $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
+
+                    $requiredQuantity = $parsed * $productComposition->material_quantity;
+
+                    // Kurangi stok dengan konversi otomatis (FIFO)
+                    $success = $material->reduceQuantity($requiredQuantity, $compositionUnit, [
+                        'user_id' => Auth::user()->id,
+                        'action' => 'produksi',
+                        'reference_type' => 'production',
+                        'reference_id' => $productionDetail->production_id,
+                        'note' => 'Produksi siap-beli ' . $productionDetail->product->name,
+                    ]);
+
+                    if (! $success) {
+                        $this->alert('error', 'Gagal mengurangi stok bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name);
+
+                        return;
+                    }
+                }
+
+                // Update detail produksi
                 $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
                 $productionDetail->update([
                     'quantity_get' => $updatedQuantityActual - $detail['quantity_fail'],
                     'quantity_fail' => $detail['quantity_fail'] + $detail['quantity_fail_raw'],
                 ]);
 
-                // Update stok produk untuk siap-beli
-                $productComposition->product->update([
-                    'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
+                // Update stok produk
+                $productionDetail->product->update([
+                    'stock' => $productionDetail->product->stock + ($quantityToAdd - $detail['quantity_fail']),
                 ]);
             }
         }

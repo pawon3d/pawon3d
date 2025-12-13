@@ -273,13 +273,14 @@
                 <!-- Tombol Ubah & Mulai -->
                 <div style="display: flex; gap: 10px;">
                     <button wire:click="ubahProduksi"
-                        style="background: #feba17; color: #f8f4e1; padding: 10px 25px; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px;">
+                        style="background: #feba17; color: #f8f4e1; padding: 10px 25px; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px;"
+                        wire:navigate>
                         <flux:icon icon="pencil-square" class="text-[#f6f6f6]" />
                         <span style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 16px;">Ubah
                             Produksi</span>
                     </button>
 
-                    <flux:button variant="secondary" icon="play" iconVariant="solid" wire:click="start">
+                    <flux:button variant="secondary" icon="chef-hat" wire:click="start">
                         <span style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px;">Mulai
                             Produksi</span>
                     </flux:button>

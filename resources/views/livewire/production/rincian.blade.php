@@ -2,15 +2,11 @@
     {{-- Header Section --}}
     <div class="flex items-center justify-between mb-[30px]">
         <div class="flex items-center gap-[15px]">
-            <a href="{{ route('produksi') }}" wire:navigate
+            <flux:button variant="secondary" icon="arrow-left" href="{{ route('produksi') }}" wire:navigate
                 class="bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
-                <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 16L6 10L12 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
                 <span
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Kembali</span>
-            </a>
+            </flux:button>
             <h1
                 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; white-space: nowrap;">
                 Rincian Produksi</h1>
@@ -377,31 +373,20 @@
         {{-- Action Buttons --}}
         @if ($is_start && !$is_finish)
             <div class="flex flex-wrap gap-[30px] items-center justify-end w-full">
-                <button wire:click="finish"
+                <flux:button variant="outline" icon="check-circle" wire:click="finish"
                     class="bg-[#fafafa] border border-[#3f4e4f] rounded-[15px] flex items-center gap-[5px] px-[25px] py-[10px]">
-                    <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="10" cy="10" r="8" stroke="#666666" stroke-width="2"
-                            fill="none" />
-                        <path d="M6 10L8.5 12.5L14 7" stroke="#666666" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
                     <span
                         style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #3f4e4f; white-space: nowrap;">Selesaikan
                         Produksi</span>
-                </button>
+                </flux:button>
                 @if ($total_quantity_get < $total_quantity_plan)
-                    <a href="{{ route('produksi.mulai', $production->id) }}" wire:navigate
+                    <flux:button href="{{ route('produksi.mulai', $production->id) }}" variant="secondary"
+                        icon="clipboard-document-list" wire:navigate
                         class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-                        </svg>
                         <span
                             style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f8f4e1; white-space: nowrap;">Dapatkan
                             Produk</span>
-                    </a>
+                    </flux:button>
                 @endif
             </div>
         @elseif (!$is_start && !$is_finish)

@@ -3,14 +3,11 @@
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div style="display: flex; gap: 15px; align-items: center;">
-                <a href="{{ route('produksi.rincian', $production_id) }}" wire:navigate
+                <flux:button variant="secondary" icon="arrow-left" href="{{ route('produksi.rincian', $production_id) }}"
+                    wire:navigate
                     style="background: #313131; color: #f6f6f6; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                    <svg style="width: 20px; height: 20px; fill: #ffffff;" viewBox="0 0 20 20">
-                        <path
-                            d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18ZM8.70711 7.29289L6 10L8.70711 12.7071L9.41421 12L7.82843 10.5H14V9.5H7.82843L9.41421 8L8.70711 7.29289Z" />
-                    </svg>
                     Kembali
-                </a>
+                </flux:button>
                 <p
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
                     Dapatkan Produk</p>
@@ -23,25 +20,16 @@
         </div>
 
         <!-- Info Penting Box -->
-        <div
-            style="background: #3f4e4f; padding: 24px 30px; border-radius: 20px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; gap: 20px; align-items: center; margin-bottom: 30px; min-height: 110px;">
-            <svg style="width: 60px; height: 60px; flex-shrink: 0;" viewBox="0 0 60 60" fill="none">
-                <path
-                    d="M30 5C16.1929 5 5 16.1929 5 30C5 43.8071 16.1929 55 30 55C43.8071 55 55 43.8071 55 30C55 16.1929 43.8071 5 30 5ZM32.5 42.5H27.5V27.5H32.5V42.5ZM32.5 22.5H27.5V17.5H32.5V22.5Z"
-                    fill="#dcd7c9" />
-            </svg>
-            <div
-                style="flex: 1; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #dcd7c9; text-align: justify; line-height: normal;">
-                Dapatkan Produk. Masukkan jumlah produksi yang selesai secara bertahap.
-                <ul style="list-style-type: disc; margin: 0; padding-left: 21px;">
-                    <li>Jika terjadi kesalahan dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus
-                        (-).</li>
-                    <li>Masukkan jumlah pcs gagal jika produksi gagal.</li>
-                    <li>Tandai ulang saat memasukan hasil produksi ulang dan hanya dapat dilakukan jika sebelumnya
-                        terdapat kegagalan produksi.</li>
-                </ul>
-            </div>
-        </div>
+        <x-alert.info>
+            Dapatkan Produk. Masukkan jumlah produksi yang selesai secara bertahap.
+            <ul style="list-style-type: disc; margin: 0; padding-left: 21px;">
+                <li>Jika terjadi kesalahan dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus
+                    (-).</li>
+                <li>Masukkan jumlah pcs gagal jika produksi gagal.</li>
+                <li>Tandai ulang saat memasukan hasil produksi ulang dan hanya dapat dilakukan jika sebelumnya
+                    terdapat kegagalan produksi.</li>
+            </ul>
+        </x-alert.info>
 
         <!-- Table Container -->
         <div
@@ -131,22 +119,15 @@
 
         <!-- Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
-            <a href="{{ route('produksi.rincian', $production_id) }}" wire:navigate
+            <flux:button variant="filled" icon="x-mark" href="{{ route('produksi.rincian', $production_id) }}"
+                wire:navigate
                 style="background: #c4c4c4; color: #333333; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                <svg style="width: 20px; height: 20px; fill: #333333;" viewBox="0 0 20 20">
-                    <path
-                        d="M10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2ZM13.0607 11.0607L12.3536 11.7678L10 9.41421L7.64645 11.7678L6.93934 11.0607L9.29289 8.70711L6.93934 6.35355L7.64645 5.64645L10 8L12.3536 5.64645L13.0607 6.35355L10.7071 8.70711L13.0607 11.0607Z" />
-                </svg>
                 Batal
-            </a>
-            <button type="button" wire:click="save"
+            </flux:button>
+            <flux:button variant="secondary" icon="save" type="button" wire:click="save"
                 style="background: #3f4e4f; color: #f8f4e1; padding: 10px 25px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer;">
-                <svg style="width: 20px; height: 20px; fill: #f8f4e1;" viewBox="0 0 20 20">
-                    <path
-                        d="M15 2H5C3.89543 2 3 2.89543 3 4V16C3 17.1046 3.89543 18 5 18H15C16.1046 18 17 17.1046 17 16V4C17 2.89543 16.1046 2 15 2ZM7 2V6H13V2H7ZM10 14C8.89543 14 8 13.1046 8 12C8 10.8954 8.89543 10 10 10C11.1046 10 12 10.8954 12 12C12 13.1046 11.1046 14 10 14Z" />
-                </svg>
                 Simpan
-            </button>
+            </flux:button>
         </div>
 
         <!-- Modal Riwayat Pembaruan -->

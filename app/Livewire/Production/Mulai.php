@@ -108,46 +108,64 @@ class Mulai extends Component
         // dd($parsed, $this->production_details);
         // dd($this->selectedProducts);
 
+        // FASE 1: Validasi semua bahan cukup
         foreach ($this->production_details as $detail) {
             $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
             $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
 
-            if ($productionDetail) {
+            if ($productionDetail && $parsed > 0) {
+                $productCompositions = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
+                    ->get();
 
-                // Hitung quantity baru yang ditambahkan
+                foreach ($productCompositions as $productComposition) {
+                    $material = \App\Models\Material::find($productComposition->material_id);
+                    $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
+
+                    $requiredQuantity = $parsed * $productComposition->material_quantity;
+                    $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
+
+                    if ($availableQuantity < $requiredQuantity) {
+                        $this->alert('error', 'Jumlah bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini. Tersedia: ' . $availableQuantity . ' ' . $compositionUnit->name . ', dibutuhkan: ' . $requiredQuantity . ' ' . $compositionUnit->name);
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        // FASE 2: Kurangi bahan dan update produksi
+        foreach ($this->production_details as $detail) {
+            $productionDetail = \App\Models\ProductionDetail::find($detail['id']);
+            $parsed = $this->parseFraction($detail['recipe_quantity'] ?? '');
+
+            if ($productionDetail && $parsed > 0) {
                 $quantityToAdd = $detail['quantity'];
-                $productComposition = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
-                    ->first();
+                $productCompositions = \App\Models\ProductComposition::where('product_id', $productionDetail->product_id)
+                    ->get();
 
-                // Gunakan helper method Material untuk cek stok dengan konversi otomatis
-                $material = \App\Models\Material::find($productComposition->material_id);
-                $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
+                foreach ($productCompositions as $productComposition) {
+                    $material = \App\Models\Material::find($productComposition->material_id);
+                    $compositionUnit = \App\Models\Unit::find($productComposition->unit_id);
 
-                $requiredQuantity = $parsed * $productComposition->material_quantity;
-                $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
+                    $requiredQuantity = $parsed * $productComposition->material_quantity;
 
-                if ($availableQuantity < $requiredQuantity) {
-                    $this->alert('error', 'Jumlah bahan baku produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini. Tersedia: ' . $availableQuantity . ' ' . $compositionUnit->name . ', dibutuhkan: ' . $requiredQuantity . ' ' . $compositionUnit->name);
+                    // Kurangi stok dengan konversi otomatis (FIFO)
+                    $success = $material->reduceQuantity($requiredQuantity, $compositionUnit, [
+                        'user_id' => Auth::user()->id,
+                        'action' => 'produksi',
+                        'reference_type' => 'production',
+                        'reference_id' => $productionDetail->production_id,
+                        'note' => 'Produksi ' . $productionDetail->product->name,
+                    ]);
 
-                    return;
+                    if (! $success) {
+                        $this->alert('error', 'Gagal mengurangi stok bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name);
+
+                        return;
+                    }
                 }
 
-                // Kurangi stok dengan konversi otomatis (FIFO)
-                $success = $material->reduceQuantity($requiredQuantity, $compositionUnit, [
-                    'user_id' => Auth::user()->id,
-                    'action' => 'produksi',
-                    'reference_type' => 'production',
-                    'reference_id' => $productionDetail->production_id,
-                    'note' => 'Produksi ' . $productionDetail->product->name,
-                ]);
-
-                if (! $success) {
-                    $this->alert('error', 'Gagal mengurangi stok bahan baku produk ' . $productionDetail->product->name);
-
-                    return;
-                }
-
-                // Update detail belanja
+                // Update detail produksi
                 $updatedQuantityActual = $detail['quantity_get'] + $quantityToAdd;
                 $productionDetail->update([
                     'quantity_get' => $updatedQuantityActual - $detail['quantity_fail'],
@@ -155,8 +173,8 @@ class Mulai extends Component
                 ]);
 
                 if ($productionDetail->production->method == 'siap-beli') {
-                    $productComposition->product->update([
-                        'stock' => $productComposition->product->stock + ($quantityToAdd - $detail['quantity_fail']),
+                    $productionDetail->product->update([
+                        'stock' => $productionDetail->product->stock + ($quantityToAdd - $detail['quantity_fail']),
                     ]);
                 }
             }

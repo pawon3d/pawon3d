@@ -165,10 +165,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['middleware' => ['permission:produksi.rencana.kelola|produksi.mulai|produksi.laporan.kelola']], function () {
         Route::get('/produksi', App\Livewire\Production\Index::class)->name('produksi');
-        Route::get('/produksi/tambah/{method}', App\Livewire\Production\Tambah::class)->name('produksi.tambah');
         Route::get('/produksi/tambah-siap-beli', App\Livewire\Production\TambahSiapBeli::class)->name('produksi.tambah-siap-beli');
         Route::get('/produksi/{id}/edit-siap-beli', App\Livewire\Production\TambahSiapBeli::class)->name('produksi.edit-siap-beli');
-        Route::get('/produksi/{id}/edit', App\Livewire\Production\Edit::class)->name('produksi.edit');
         Route::get('/produksi/{id}/rincian', App\Livewire\Production\Rincian::class)->name('produksi.rincian');
         Route::get('/produksi/{id}/mulai-produksi', App\Livewire\Production\Mulai::class)->name('produksi.mulai');
         Route::get('/produksi/{id}/mulai-siap-beli', App\Livewire\Production\MulaiSiapBeli::class)->name('produksi.mulai-siap-beli');
@@ -176,10 +174,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/produksi/pesanan/{method}', App\Livewire\Production\Pesanan::class)->name('produksi.pesanan');
         Route::get('/produksi/antrian-produksi', App\Livewire\Production\AntrianProduksi::class)->name('produksi.antrian-produksi');
         Route::get('/produksi/{id}/rincian-siap-beli', App\Livewire\Production\RincianSiapBeli::class)->name('produksi.rincian-siap-beli');
-        Route::get('/produksi/tambah-produksi-pesanan/{id}', App\Livewire\Production\TambahProduksiPesanan::class)
-            ->name('produksi.tambah-produksi-pesanan');
-        Route::get('/produksi/edit-produksi-pesanan/{id}', App\Livewire\Production\EditProduksiPesanan::class)
-            ->name('produksi.edit-produksi-pesanan');
         Route::get('/produksi/{id}/rincian-pesanan', App\Livewire\Production\RincianPesanan::class)->name('produksi.rincian-pesanan');
     });
 

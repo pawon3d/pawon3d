@@ -4,7 +4,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <div style="display: flex; gap: 15px; align-items: center;">
                 <flux:button variant="secondary" icon="arrow-left"
-                    href="{{ route('produksi.rincian-siap-beli', $production_id) }}">
+                    href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate>
                     Kembali
                 </flux:button>
                 <p
@@ -19,25 +19,16 @@
         </div>
 
         <!-- Info Penting Box -->
-        <div
-            style="background: #3f4e4f; padding: 24px 30px; border-radius: 20px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; gap: 20px; align-items: center; margin-bottom: 30px; min-height: 110px;">
-            <svg style="width: 60px; height: 60px; flex-shrink: 0;" viewBox="0 0 60 60" fill="none">
-                <path
-                    d="M30 5C16.1929 5 5 16.1929 5 30C5 43.8071 16.1929 55 30 55C43.8071 55 55 43.8071 55 30C55 16.1929 43.8071 5 30 5ZM32.5 42.5H27.5V27.5H32.5V42.5ZM32.5 22.5H27.5V17.5H32.5V22.5Z"
-                    fill="#dcd7c9" />
-            </svg>
-            <div
-                style="flex: 1; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: #dcd7c9; text-align: justify; line-height: normal;">
-                Dapatkan Produk. Masukkan jumlah produksi yang selesai secara bertahap.
-                <ul style="list-style-type: disc; margin: 0; padding-left: 21px;">
-                    <li>Jika terjadi kesalahan dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus
-                        (-).</li>
-                    <li>Masukkan jumlah pcs gagal jika produksi gagal.</li>
-                    <li>Tandai ulang saat memasukan hasil produksi ulang dan hanya dapat dilakukan jika sebelumnya
-                        terdapat kegagalan produksi.</li>
-                </ul>
-            </div>
-        </div>
+        <x-alert.info>
+            Dapatkan Produk. Masukkan jumlah produksi yang selesai secara bertahap.
+            <ul style="list-style-type: disc; margin: 0; padding-left: 21px;">
+                <li>Jika terjadi kesalahan dalam memasukkan jumlah, masukkan jumlah pengurangan dengan tanda minus
+                    (-).</li>
+                <li>Masukkan jumlah pcs gagal jika produksi gagal.</li>
+                <li>Tandai ulang saat memasukan hasil produksi ulang dan hanya dapat dilakukan jika sebelumnya
+                    terdapat kegagalan produksi.</li>
+            </ul>
+        </x-alert.info>
 
         <!-- Table Container -->
         <div
@@ -127,11 +118,11 @@
 
         <!-- Buttons -->
         <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
-            <flux:button icon="x-circle" href="{{ route('produksi.rincian-siap-beli', $production_id) }}"
-                wire:navigate>
+            <flux:button icon="x-mark" variant="filled"
+                href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate>
                 Batal
             </flux:button>
-            <flux:button variant="secondary" icon="bookmark-square" type="button" wire:click="save">
+            <flux:button variant="secondary" icon="save" type="button" wire:click="save">
                 Simpan
             </flux:button>
         </div>

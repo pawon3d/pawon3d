@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -184,7 +185,7 @@ class Material extends Model
                 \App\Models\InventoryLog::create([
                     'material_id' => $this->id,
                     'material_batch_id' => $batch->id,
-                    'user_id' => $logData['user_id'] ?? auth()->id(),
+                    'user_id' => $logData['user_id'] ?? Auth::user()->id,
                     'action' => $logData['action'] ?? 'produksi',
                     'quantity_change' => -$quantityUsed,
                     'quantity_after' => $batch->batch_quantity,

@@ -53,69 +53,69 @@ class RincianPesanan extends Component
 
     public function start()
     {
-        $produkGagal = [];
-        $bahanKurang = [];
+        // $produkGagal = [];
+        // $bahanKurang = [];
 
-        foreach ($this->details as $detail) {
-            $product = \App\Models\Product::find($detail->product_id);
-            $quantityPlan = $detail->quantity;
-            $kurang = false;
+        // foreach ($this->details as $detail) {
+        //     $product = \App\Models\Product::find($detail->product_id);
+        //     $quantityPlan = $detail->quantity;
+        //     $kurang = false;
 
-            foreach ($product->product_compositions as $composition) {
-                // Gunakan helper method Material untuk cek stok dengan konversi otomatis
-                $material = \App\Models\Material::find($composition->material_id);
-                $compositionUnit = \App\Models\Unit::find($composition->unit_id);
+        //     foreach ($product->product_compositions as $composition) {
+        //         // Gunakan helper method Material untuk cek stok dengan konversi otomatis
+        //         $material = \App\Models\Material::find($composition->material_id);
+        //         $compositionUnit = \App\Models\Unit::find($composition->unit_id);
 
-                if (! $material || ! $compositionUnit) {
-                    $kurang = true;
-                    $bahanKurang[] = [
-                        'product' => $product->name,
-                        'material' => $material ? $material->name : 'Unknown',
-                        'required' => 0,
-                        'available' => 0,
-                        'unit' => $compositionUnit ? $compositionUnit->name : 'Unknown',
-                    ];
-                    break;
-                }
+        //         if (! $material || ! $compositionUnit) {
+        //             $kurang = true;
+        //             $bahanKurang[] = [
+        //                 'product' => $product->name,
+        //                 'material' => $material ? $material->name : 'Unknown',
+        //                 'required' => 0,
+        //                 'available' => 0,
+        //                 'unit' => $compositionUnit ? $compositionUnit->name : 'Unknown',
+        //             ];
+        //             break;
+        //         }
 
-                $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
-                $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
+        //         $requiredQuantity = $quantityPlan / $composition->product->pcs * $composition->material_quantity;
+        //         $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
 
-                if ($availableQuantity < $requiredQuantity) {
-                    $kurang = true;
-                    $bahanKurang[] = [
-                        'product' => $product->name,
-                        'material' => $material->name,
-                        'required' => $requiredQuantity,
-                        'available' => $availableQuantity,
-                        'unit' => $compositionUnit->name,
-                    ];
-                    break;
-                }
-            }
+        //         if ($availableQuantity < $requiredQuantity) {
+        //             $kurang = true;
+        //             $bahanKurang[] = [
+        //                 'product' => $product->name,
+        //                 'material' => $material->name,
+        //                 'required' => $requiredQuantity,
+        //                 'available' => $availableQuantity,
+        //                 'unit' => $compositionUnit->name,
+        //             ];
+        //             break;
+        //         }
+        //     }
 
-            if ($kurang) {
-                $produkGagal[] = $product->name;
-            }
-        }
+        //     if ($kurang) {
+        //         $produkGagal[] = $product->name;
+        //     }
+        // }
 
-        if (! empty($produkGagal)) {
-            $errorMessage = 'Bahan baku tidak cukup:<br><br>';
-            foreach ($bahanKurang as $item) {
-                $errorMessage .= sprintf(
-                    '• <b>%s</b> membutuhkan <b>%s</b>: %.2f %s (tersedia: %.2f %s)<br>',
-                    $item['product'],
-                    $item['material'],
-                    $item['required'],
-                    $item['unit'],
-                    $item['available'],
-                    $item['unit']
-                );
-            }
-            $this->alert('error', $errorMessage, ['html' => true]);
+        // if (! empty($produkGagal)) {
+        //     $errorMessage = 'Bahan baku tidak cukup:<br><br>';
+        //     foreach ($bahanKurang as $item) {
+        //         $errorMessage .= sprintf(
+        //             '• <b>%s</b> membutuhkan <b>%s</b>: %.2f %s (tersedia: %.2f %s)<br>',
+        //             $item['product'],
+        //             $item['material'],
+        //             $item['required'],
+        //             $item['unit'],
+        //             $item['available'],
+        //             $item['unit']
+        //         );
+        //     }
+        //     $this->alert('error', $errorMessage, ['html' => true]);
 
-            return;
-        }
+        //     return;
+        // }
 
         $production = \App\Models\Production::create([
             'start_date' => now()->format('Y-m-d'),
