@@ -99,13 +99,6 @@ class Rincian extends Component
         $this->alert('success', 'Catatan berhasil disimpan.');
     }
 
-    public function cetakInformasi()
-    {
-        return redirect()->route('rincian-hitung.pdf', [
-            'id' => $this->hitung_id,
-        ]);
-    }
-
     public function confirmDelete()
     {
         // Konfirmasi menggunakan Livewire Alert
