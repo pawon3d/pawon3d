@@ -7,7 +7,6 @@ use App\Livewire\User\Index;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', App\Livewire\Landing\Index::class)->name('home');
-Route::get('/landing-cara-pesan', App\Livewire\Landing\Pesan::class)->name('landing-cara-pesan');
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
@@ -22,15 +21,6 @@ Route::get('dashboard', function () {
 })
     ->middleware(['auth'])
     ->name('dashboard');
-Route::get('/ringkasan-kasir', App\Livewire\Dashboard\RingkasanKasir::class)
-    ->middleware(['auth', 'permission:kasir.pesanan.kelola|kasir.laporan.kelola'])
-    ->name('ringkasan-kasir');
-Route::get('/ringkasan-produksi', App\Livewire\Dashboard\RingkasanProduksi::class)
-    ->middleware(['auth', 'permission:produksi.rencana.kelola|produksi.mulai|produksi.laporan.kelola'])
-    ->name('ringkasan-produksi');
-Route::get('/ringkasan-inventori', App\Livewire\Dashboard\RingkasanInventori::class)
-    ->middleware(['auth', 'permission:inventori.produk.kelola|inventori.persediaan.kelola|inventori.belanja.rencana.kelola|inventori.toko.kelola|inventori.belanja.mulai|inventori.hitung.kelola|inventori.alur.lihat|inventori.laporan.kelola'])
-    ->name('ringkasan-inventori');
 Route::get('/ringkasan-umum', [DashboardController::class, 'ringkasan'])
     ->middleware('auth')
     ->name('ringkasan-umum');
