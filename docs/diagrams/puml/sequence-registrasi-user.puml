@@ -1,0 +1,114 @@
+@startuml sequence-registrasi-user
+
+title Sequence Diagram: Registrasi dan Aktivasi User
+
+actor "Admin" as admin
+actor "User Baru" as newuser
+participant "User/Form\n(Livewire)" as form
+participant "ActivateAccount\n(Livewire)" as activate
+participant "User\n(Model)" as user
+participant "UserInvitationNotification\n(Notification)" as notif
+participant "Mail Server" as mail
+database "Database" as db
+
+== Admin Menambah User Baru ==
+
+admin -> form : Akses halaman tambah pekerja
+activate form
+
+form -> form : Render form
+
+admin -> form : Isi data user\n(nama, email, peran, gender)
+
+form -> form : Validasi email unique
+
+form -> user : create(userData)
+activate user
+
+user -> user : boot()\nGenerate UUID
+user -> user : is_active = false
+user -> db : INSERT INTO users
+db --> user : OK
+
+user --> form : User created
+deactivate user
+
+form -> user : sendInvitation()
+activate user
+
+user -> user : Generate invitation_token\n(random 64 char)
+user -> user : invitation_sent_at = now()
+user -> db : UPDATE users SET token, sent_at
+db --> user : OK
+
+user -> notif : notify(UserInvitationNotification)
+activate notif
+notif -> mail : Kirim email undangan\n(dengan link aktivasi)
+mail --> notif : OK
+deactivate notif
+
+user --> form : Undangan terkirim
+deactivate user
+
+form --> admin : Notifikasi undangan terkirim
+
+deactivate form
+
+== User Baru Aktivasi Akun ==
+
+newuser -> activate : Klik link aktivasi dari email
+activate activate
+
+activate -> user : where(invitation_token)
+user -> db : SELECT * FROM users WHERE token = ?
+db --> user : user / null
+
+alt Token ditemukan
+    user --> activate : User object
+    
+    activate -> user : hasValidInvitationToken()
+    user -> user : Check token expired\n(invitation_sent_at + 7 days)
+    
+    alt Token masih valid
+        user --> activate : true
+        activate --> newuser : Tampilkan form set password
+        
+        newuser -> activate : Input password baru
+        newuser -> activate : Konfirmasi password
+        
+        activate -> activate : Validasi password
+        
+        alt Password valid
+            activate -> user : activateWithPassword(password)
+            activate user
+            
+            user -> user : password = bcrypt(password)
+            user -> user : is_active = true
+            user -> user : activated_at = now()
+            user -> user : invitation_token = null
+            
+            user -> db : UPDATE users
+            db --> user : OK
+            
+            user --> activate : Akun diaktivasi
+            deactivate user
+            
+            activate --> newuser : Akun berhasil diaktivasi
+            activate -> activate : Redirect ke login
+            
+        else Password tidak valid
+            activate --> newuser : Tampilkan error password
+        end
+        
+    else Token expired
+        user --> activate : false
+        activate --> newuser : Token sudah kedaluwarsa
+    end
+    
+else Token tidak ditemukan
+    activate --> newuser : Token tidak valid
+end
+
+deactivate activate
+
+@enduml

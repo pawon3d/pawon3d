@@ -1,0 +1,108 @@
+@startuml sequence-pembayaran
+
+title Sequence Diagram: Proses Pembayaran
+
+actor "Kasir" as user
+participant "Transaction/RincianPesanan\n(Livewire)" as form
+participant "Transaction\n(Model)" as trans
+participant "Payment\n(Model)" as payment
+participant "PaymentChannel\n(Model)" as channel
+participant "Customer\n(Model)" as cust
+participant "PointsHistory\n(Model)" as points
+database "Database" as db
+
+user -> form : Akses rincian pesanan
+activate form
+
+form -> trans : find(id)->with(details, customer, payments)
+trans -> db : SELECT * FROM transactions JOIN ...
+db --> trans : transaction data
+trans --> form : Transaction object
+
+form --> user : Tampilkan detail transaksi\ndan total tagihan
+
+opt Gunakan poin pelanggan
+    form -> cust : find(customer_id)
+    cust -> db : SELECT * FROM customers
+    db --> cust : customer with points
+    cust --> form : Customer (poin tersedia)
+    
+    form --> user : Tampilkan poin tersedia
+    
+    user -> form : Input jumlah poin digunakan
+    
+    form -> form : Hitung diskon dari poin
+    form -> form : Update total tagihan
+    
+    form -> trans : update(points_used)
+    trans -> db : UPDATE transactions SET points_used
+    db --> trans : OK
+    
+    form -> cust : decrement(points, used)
+    cust -> db : UPDATE customers SET points = points - used
+    db --> cust : OK
+    
+    form -> points : create(phone, transaction_id, -points, 'Penggunaan')
+    activate points
+    points -> db : INSERT INTO points_histories
+    db --> points : OK
+    deactivate points
+end
+
+user -> form : Pilih metode pembayaran
+
+form -> channel : all()
+channel -> db : SELECT * FROM payment_channels WHERE is_active
+db --> channel : channels
+channel --> form : Payment channels
+
+user -> form : Input jumlah pembayaran
+user -> form : Submit pembayaran
+
+form -> form : Validasi jumlah pembayaran
+
+alt Pembayaran cukup
+    form -> payment : create(transaction_id, channel_id, amount)
+    activate payment
+    
+    payment -> payment : boot()\nGenerate UUID
+    payment -> payment : Generate receipt_number\n(YYMMDD-XXXX)
+    payment -> db : INSERT INTO payments
+    db --> payment : OK
+    payment --> form : Payment created
+    
+    deactivate payment
+    
+    form -> trans : update(status = 'Lunas')
+    trans -> db : UPDATE transactions SET status
+    db --> trans : OK
+    
+    opt Ada customer
+        form -> form : Hitung poin baru dari transaksi
+        
+        form -> cust : increment(points, earned)
+        cust -> db : UPDATE customers SET points = points + earned
+        db --> cust : OK
+        
+        form -> points : create(phone, transaction_id, +points, 'Perolehan')
+        activate points
+        points -> db : INSERT INTO points_histories
+        db --> points : OK
+        deactivate points
+    end
+    
+    opt Cetak struk
+        user -> form : Klik cetak struk
+        form -> form : Generate PDF struk
+        form --> user : Download/print struk
+    end
+    
+    form --> user : Pembayaran berhasil
+    
+else Pembayaran kurang
+    form --> user : Pesan pembayaran kurang
+end
+
+deactivate form
+
+@enduml

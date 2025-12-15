@@ -1,0 +1,89 @@
+@startuml sequence-belanja
+
+title Sequence Diagram: Proses Belanja dari Supplier
+
+actor "Bagian Inventori" as user
+participant "Expense/Form\n(Livewire)" as form
+participant "Expense/Mulai\n(Livewire)" as start
+participant "Expense\n(Model)" as expense
+participant "ExpenseDetail\n(Model)" as detail
+participant "MaterialBatch\n(Model)" as batch
+participant "Material\n(Model)" as material
+database "Database" as db
+
+== Buat Rencana Belanja ==
+
+user -> form : Akses halaman tambah belanja
+activate form
+
+form -> form : Render form
+
+user -> form : Pilih supplier
+user -> form : Tambah item bahan (n items)
+
+form -> expense : create(data)
+activate expense
+
+expense -> expense : boot()\nGenerate UUID\nGenerate expense_number (BP-YYMMDD-XXXX)
+expense -> db : INSERT INTO expenses
+db --> expense : OK
+expense --> form : Expense created
+
+deactivate expense
+
+loop Untuk setiap item
+    form -> detail : create(expense_id, material_id, qty)
+    activate detail
+    detail -> db : INSERT INTO expense_details
+    db --> detail : OK
+    deactivate detail
+end
+
+form --> user : Rencana belanja tersimpan
+deactivate form
+
+== Mulai Belanja ==
+
+user -> start : Akses halaman mulai belanja
+activate start
+
+start -> expense : find(id)
+expense -> db : SELECT * FROM expenses
+db --> expense : expense data
+expense --> start : Expense object
+
+start -> detail : where(expense_id)
+detail -> db : SELECT * FROM expense_details
+db --> detail : details
+start --> user : Tampilkan daftar item
+
+loop Untuk setiap item
+    user -> start : Input harga, qty aktual, tanggal exp
+    
+    start -> batch : create(material_id, unit_id, qty, date)
+    activate batch
+    batch -> batch : Generate UUID
+    batch -> db : INSERT INTO material_batches
+    db --> batch : OK
+    deactivate batch
+    
+    start -> material : recalculateStatus()
+    activate material
+    material -> batch : sum(batch_quantity)
+    batch -> db : SELECT SUM(batch_quantity)
+    db --> batch : total
+    material -> material : Tentukan status baru
+    material -> db : UPDATE materials SET status
+    db --> material : OK
+    deactivate material
+end
+
+start -> expense : update(status = 'Selesai', total)
+expense -> db : UPDATE expenses
+db --> expense : OK
+
+start --> user : Belanja selesai
+
+deactivate start
+
+@enduml

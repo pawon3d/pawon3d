@@ -1,0 +1,95 @@
+@startuml activity-kelola-user
+
+title Activity Diagram: Kelola Pengguna dan Peran
+
+start
+
+:Admin mengakses halaman pekerja;
+
+:Sistem menampilkan daftar pengguna;
+
+if (Pilih aksi?) then (Tambah)
+    
+    partition "Undang Pengguna Baru" {
+        :Tampilkan form tambah pekerja;
+        :Admin mengisi nama;
+        :Admin mengisi email;
+        :Pilih peran (role);
+        :Pilih jenis kelamin;
+        
+        if (Validasi email unik?) then (Duplikat)
+            :Tampilkan pesan email sudah terdaftar;
+            stop
+        else (Unik)
+            :Generate UUID;
+            :Simpan data user;
+            :is_active = false;
+            
+            :Generate invitation token;
+            :Kirim email undangan;
+            :invitation_sent_at = now;
+            
+            :Tampilkan notifikasi undangan terkirim;
+        endif
+    }
+    
+elseif (Aktivasi oleh User Baru) then
+    
+    partition "Aktivasi Akun" {
+        :User baru mengakses link aktivasi;
+        
+        if (Token valid?) then (Ya)
+            if (Token belum expired (7 hari)?) then (Ya)
+                :Tampilkan halaman aktivasi;
+                :User mengisi password baru;
+                :User konfirmasi password;
+                
+                if (Password valid?) then (Ya)
+                    :Hash password;
+                    :is_active = true;
+                    :activated_at = now;
+                    :Hapus invitation_token;
+                    
+                    :Tampilkan notifikasi sukses;
+                    :Redirect ke halaman login;
+                else (Tidak)
+                    :Tampilkan pesan error;
+                endif
+            else (Tidak)
+                :Tampilkan pesan token expired;
+            endif
+        else (Tidak)
+            :Tampilkan pesan token tidak valid;
+        endif
+    }
+    
+elseif (Toggle Status) then
+    :Ubah is_active = !is_active;
+    :Simpan perubahan;
+    :Catat log aktivitas;
+    :Tampilkan notifikasi sukses;
+    
+elseif (Kelola Peran) then
+    
+    partition "Kelola Role & Permission" {
+        :Admin mengakses halaman peran;
+        :Sistem menampilkan daftar role;
+        
+        if (Tambah/Edit Role?) then (Ya)
+            :Masukkan nama role;
+            :Atur maksimum user;
+            :Pilih permission yang diizinkan;
+            :Simpan role;
+            :Catat log aktivitas;
+        else (Tidak)
+        endif
+    }
+    
+else (Batal)
+endif
+
+:Refresh daftar pengguna;
+
+stop
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml activity-laporan
+
+title Activity Diagram: Pembuatan Laporan
+
+start
+
+:Pengguna mengakses halaman laporan;
+
+if (Pilih jenis laporan?) then (Laporan Kasir)
+    :Akses halaman Laporan Kasir;
+    :Tampilkan statistik transaksi;
+    
+elseif (Laporan Produksi) then
+    :Akses halaman Laporan Produksi;
+    :Tampilkan statistik produksi;
+    
+elseif (Laporan Inventori) then
+    :Akses halaman Laporan Inventori;
+    :Tampilkan status stok bahan;
+    
+else (Dashboard)
+    :Akses halaman Ringkasan Umum;
+    :Tampilkan overview sistem;
+endif
+
+partition "Filter dan Tampilan" {
+    :Atur periode tanggal (dari - sampai);
+    
+    if (Filter tambahan?) then (Ya)
+        :Pilih filter berdasarkan kategori;
+        :Pilih filter berdasarkan status;
+    else (Tidak)
+    endif
+    
+    :Submit filter;
+    :Sistem query data sesuai filter;
+    :Tampilkan data laporan;
+    :Tampilkan grafik dan statistik;
+}
+
+partition "Ekspor Laporan" {
+    if (Ekspor laporan?) then (Ya)
+        :Akses halaman export;
+        :Konfirmasi periode data;
+        
+        if (Pilih format?) then (PDF)
+            :Controller memanggil DomPDF;
+            :Render view laporan;
+            :Generate file PDF;
+            :Download file PDF;
+            
+        else (Excel)
+            :Panggil Export class (Maatwebsite);
+            :Query data dari database;
+            :Format data ke spreadsheet;
+            :Generate file Excel;
+            :Download file Excel;
+        endif
+        
+        :Tampilkan notifikasi sukses;
+    else (Tidak)
+    endif
+}
+
+stop
+
+@enduml

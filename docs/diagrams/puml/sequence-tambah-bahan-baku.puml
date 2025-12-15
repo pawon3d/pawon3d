@@ -1,0 +1,46 @@
+@startuml sequence-tambah-bahan-baku
+
+title Sequence Diagram: Tambah Bahan Baku
+
+actor "Bagian Inventori" as user
+participant "Material/Form\n(Livewire)" as form
+participant "Material\n(Model)" as material
+participant "InventoryLog\n(Model)" as log
+database "Database" as db
+
+user -> form : Akses halaman tambah bahan
+activate form
+
+form -> form : Render form input
+
+user -> form : Isi data bahan baku\n(nama, minimum, deskripsi)
+form -> form : Validasi input
+
+alt Validasi gagal
+    form --> user : Tampilkan pesan error
+else Validasi berhasil
+    form -> material : create(data)
+    activate material
+    
+    material -> material : boot()\nGenerate UUID
+    material -> material : Set status = 'Kosong'
+    material -> db : INSERT INTO materials
+    db --> material : OK
+    
+    material -> material : getActivitylogOptions()
+    material -> log : Log aktivitas "ditambahkan"
+    activate log
+    log -> db : INSERT INTO activity_log
+    db --> log : OK
+    deactivate log
+    
+    material --> form : Material created
+    deactivate material
+    
+    form --> user : Tampilkan notifikasi sukses
+    form -> form : Redirect ke daftar bahan
+end
+
+deactivate form
+
+@enduml

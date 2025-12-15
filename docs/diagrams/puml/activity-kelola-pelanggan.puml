@@ -1,0 +1,68 @@
+@startuml activity-kelola-pelanggan
+
+title Activity Diagram: Kelola Pelanggan dan Poin
+
+start
+
+:Kasir mengakses halaman pelanggan;
+
+:Sistem menampilkan daftar pelanggan;
+
+if (Pilih aksi?) then (Lihat Detail)
+    
+    partition "Detail Pelanggan" {
+        :Pilih pelanggan dari daftar;
+        :Sistem menampilkan profil pelanggan;
+        :Sistem menampilkan total poin;
+        
+        fork
+            :Tampilkan riwayat transaksi;
+        fork again
+            :Tampilkan riwayat poin;
+        end fork
+        
+        note right
+            Riwayat poin menunjukkan
+            perolehan dan penggunaan poin
+        end note
+    }
+    
+elseif (Pencarian) then
+    :Masukkan nomor telepon;
+    
+    if (Pelanggan ditemukan?) then (Ya)
+        :Tampilkan data pelanggan;
+    else (Tidak)
+        :Tampilkan pesan tidak ditemukan;
+    endif
+    
+else (Tutup)
+endif
+
+note bottom
+    Pelanggan ditambahkan otomatis
+    saat transaksi dengan nomor telepon
+end note
+
+partition "Sistem Poin (Otomatis)" {
+    
+    if (Transaksi baru selesai?) then (Ya)
+        :Hitung poin dari nilai transaksi;
+        :Tambah poin ke pelanggan;
+        :Buat record points_history;
+        :Set description = "Perolehan dari transaksi";
+    else (Tidak)
+    endif
+    
+    if (Poin digunakan saat pembayaran?) then (Ya)
+        :Kurangi poin pelanggan;
+        :Buat record points_history;
+        :Set description = "Penggunaan untuk diskon";
+        :Hitung nilai diskon;
+    else (Tidak)
+    endif
+}
+
+stop
+
+@enduml

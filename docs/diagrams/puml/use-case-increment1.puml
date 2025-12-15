@@ -1,0 +1,148 @@
+@startuml use-case-increment1
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor White
+    BorderColor Black
+}
+
+title Use Case Diagram - Increment 1: Fungsionalitas Inti Operasional
+
+left to right direction
+
+' Actors
+actor "Pengunjung" as visitor
+actor "Kasir" as cashier
+actor "Bagian Produksi" as production
+actor "Bagian Inventori" as inventory
+
+' System boundary
+rectangle "Sistem Pawon3D - Increment 1" {
+    
+    ' Landing Page Package
+    package "Landing Page" {
+        usecase "Lihat Halaman Utama" as UC34
+        usecase "Lihat Katalog Produk" as UC35
+        usecase "Lihat Detail Produk" as UC36
+        usecase "Lihat FAQ" as UC37
+    }
+    
+    ' Kategori & Satuan Package
+    package "Kategori & Satuan" {
+        usecase "Kelola Kategori" as UC01
+        usecase "Kelola Satuan Ukur" as UC02
+        usecase "Kelola Jenis Biaya" as UC03
+        usecase "Kelola Kategori Bahan" as UC04
+    }
+    
+    ' Supplier Package
+    package "Supplier" {
+        usecase "Lihat Daftar Supplier" as UC05
+        usecase "Tambah Supplier" as UC06
+        usecase "Ubah Data Supplier" as UC07
+        usecase "Cetak Data Supplier" as UC08
+    }
+    
+    ' Bahan Baku Package
+    package "Bahan Baku" {
+        usecase "Lihat Daftar Bahan Baku" as UC09
+        usecase "Tambah Bahan Baku" as UC10
+        usecase "Ubah Data Bahan Baku" as UC11
+        usecase "Cetak Data Bahan Baku" as UC12
+    }
+    
+    ' Belanja Package
+    package "Belanja" {
+        usecase "Lihat Rencana Belanja" as UC13
+        usecase "Buat Rencana Belanja" as UC14
+        usecase "Mulai Belanja" as UC15
+        usecase "Lihat Riwayat Belanja" as UC16
+        usecase "Cetak Detail Belanja" as UC17
+    }
+    
+    ' Produk Package
+    package "Produk" {
+        usecase "Lihat Daftar Produk" as UC18
+        usecase "Tambah Produk" as UC19
+        usecase "Ubah Data Produk" as UC20
+        usecase "Atur Komposisi Produk" as UC21
+    }
+    
+    ' Produksi Package
+    package "Produksi" {
+        usecase "Lihat Antrian Produksi" as UC22
+        usecase "Mulai Produksi Pesanan" as UC23
+        usecase "Tambah Produksi Siap Beli" as UC24
+        usecase "Selesaikan Produksi" as UC25
+        usecase "Lihat Riwayat Produksi" as UC26
+    }
+    
+    ' Transaksi Package
+    package "Transaksi/Kasir" {
+        usecase "Lihat Daftar Transaksi" as UC27
+        usecase "Buat Pesanan Kotak" as UC28
+        usecase "Buat Pesanan Reguler" as UC29
+        usecase "Buat Transaksi Siap Beli" as UC30
+        usecase "Proses Pembayaran" as UC31
+        usecase "Cetak Struk" as UC32
+        usecase "Lihat Riwayat Transaksi" as UC33
+    }
+}
+
+' Visitor connections
+visitor --> UC34
+visitor --> UC35
+visitor --> UC36
+visitor --> UC37
+
+' Inventory connections
+inventory --> UC01
+inventory --> UC02
+inventory --> UC03
+inventory --> UC04
+inventory --> UC05
+inventory --> UC06
+inventory --> UC07
+inventory --> UC08
+inventory --> UC09
+inventory --> UC10
+inventory --> UC11
+inventory --> UC12
+inventory --> UC13
+inventory --> UC14
+inventory --> UC15
+inventory --> UC16
+inventory --> UC17
+inventory --> UC18
+inventory --> UC19
+inventory --> UC20
+inventory --> UC21
+
+' Production connections
+production --> UC22
+production --> UC23
+production --> UC24
+production --> UC25
+production --> UC26
+
+' Cashier connections
+cashier --> UC27
+cashier --> UC28
+cashier --> UC29
+cashier --> UC30
+cashier --> UC31
+cashier --> UC32
+cashier --> UC33
+
+' Include relationships
+UC28 ..> UC31 : <<include>>
+UC29 ..> UC31 : <<include>>
+UC30 ..> UC31 : <<include>>
+UC23 ..> UC25 : <<include>>
+UC24 ..> UC25 : <<include>>
+
+' Extend relationships
+UC15 ..> UC17 : <<extend>>
+
+@enduml

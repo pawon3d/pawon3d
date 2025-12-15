@@ -1,0 +1,95 @@
+@startuml sequence-produksi
+
+title Sequence Diagram: Proses Produksi
+
+actor "Bagian Produksi" as user
+participant "Production/Mulai\n(Livewire)" as form
+participant "Production\n(Model)" as prod
+participant "ProductionDetail\n(Model)" as detail
+participant "ProductionWorker\n(Model)" as worker
+participant "Material\n(Model)" as material
+participant "InventoryLog\n(Model)" as log
+participant "Transaction\n(Model)" as trans
+database "Database" as db
+
+user -> form : Pilih pesanan dari antrian
+activate form
+
+form -> trans : find(transaction_id)
+trans -> db : SELECT * FROM transactions
+db --> trans : transaction data
+trans --> form : Transaction object
+
+form --> user : Tampilkan detail pesanan
+
+user -> form : Pilih pekerja yang bertugas
+user -> form : Klik Mulai Produksi
+
+form -> prod : create(transaction_id, method)
+activate prod
+prod -> prod : boot()\nGenerate UUID\nGenerate production_number
+prod -> db : INSERT INTO productions
+db --> prod : OK
+prod --> form : Production created (production_id)
+deactivate prod
+
+loop Untuk setiap pekerja
+    form -> worker : create(production_id, user_id)
+    activate worker
+    worker -> db : INSERT INTO production_workers
+    db --> worker : OK
+    deactivate worker
+end
+
+loop Untuk setiap produk dalam pesanan
+    form -> detail : create(production_id, product_id, qty)
+    activate detail
+    detail -> db : INSERT INTO production_details
+    db --> detail : OK
+    deactivate detail
+    
+    note right of form
+        Untuk setiap bahan dalam komposisi produk:
+    end note
+    
+    loop Untuk setiap bahan (komposisi)
+        form -> material : reduceQuantity(qty, unit, logData)
+        activate material
+        
+        material -> material : getTotalQuantityInUnit()
+        material -> db : SELECT batches ORDER BY date
+        db --> material : batches (FIFO order)
+        
+        loop Kurangi dari batch (FIFO)
+            material -> db : UPDATE material_batches\nSET batch_quantity = qty - used
+            db --> material : OK
+            
+            material -> log : create(material_id, batch_id, qty_change)
+            activate log
+            log -> db : INSERT INTO inventory_logs
+            db --> log : OK
+            deactivate log
+        end
+        
+        material -> material : recalculateStatus()
+        material -> db : UPDATE materials SET status
+        db --> material : OK
+        
+        material --> form : true (berhasil)
+        deactivate material
+    end
+end
+
+form -> prod : update(status = 'Selesai')
+prod -> db : UPDATE productions
+db --> prod : OK
+
+form -> trans : update(status = 'Siap Diambil')
+trans -> db : UPDATE transactions
+db --> trans : OK
+
+form --> user : Produksi selesai
+
+deactivate form
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml activity-kelola-produk
+
+title Activity Diagram: Kelola Produk dan Komposisi
+
+start
+
+:Pengguna mengakses halaman produk;
+
+:Sistem menampilkan daftar produk;
+
+if (Pilih aksi?) then (Tambah)
+    :Tampilkan form tambah produk;
+    
+    partition "Data Produk" {
+        :Masukkan nama produk;
+        :Pilih kategori;
+        :Masukkan harga jual;
+        :Pilih metode penjualan;
+        :Upload gambar produk (opsional);
+    }
+    
+    partition "Komposisi Bahan" {
+        repeat
+            :Pilih bahan baku;
+            :Pilih satuan;
+            :Masukkan kuantitas per porsi;
+        repeat while (Tambah bahan lagi?) is (Ya)
+        -> Tidak;
+    }
+    
+    partition "Biaya Tambahan (Opsional)" {
+        if (Ada biaya tambahan?) then (Ya)
+            repeat
+                :Pilih jenis biaya;
+                :Masukkan jumlah biaya;
+            repeat while (Tambah biaya lagi?) is (Ya)
+            -> Tidak;
+        else (Tidak)
+        endif
+    }
+    
+    :Hitung harga modal otomatis;
+    
+    if (Validasi data?) then (Valid)
+        :Generate UUID;
+        :Simpan produk;
+        :Simpan komposisi;
+        :Simpan biaya tambahan;
+        :Catat log aktivitas;
+        :Tampilkan notifikasi sukses;
+    else (Tidak Valid)
+        :Tampilkan pesan error;
+    endif
+    
+elseif (Ubah) then
+    :Tampilkan form edit dengan data existing;
+    :Pengguna mengubah data produk;
+    :Pengguna mengubah komposisi;
+    :Pengguna mengubah biaya tambahan;
+    :Hitung ulang harga modal;
+    
+    if (Validasi data?) then (Valid)
+        :Simpan perubahan;
+        :Update komposisi;
+        :Update biaya tambahan;
+        :Catat log aktivitas;
+        :Tampilkan notifikasi sukses;
+    else (Tidak Valid)
+        :Tampilkan pesan error;
+    endif
+    
+else (Batal)
+endif
+
+:Refresh daftar produk;
+
+stop
+
+@enduml

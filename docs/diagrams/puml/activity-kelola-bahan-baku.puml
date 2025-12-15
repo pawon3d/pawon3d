@@ -1,0 +1,58 @@
+@startuml activity-kelola-bahan-baku
+
+title Activity Diagram: Kelola Bahan Baku
+
+start
+
+:Pengguna mengakses halaman bahan baku;
+
+:Sistem menampilkan daftar bahan dengan status;
+
+if (Pilih aksi?) then (Tambah)
+    :Tampilkan form tambah bahan baku;
+    :Pengguna mengisi nama bahan;
+    :Pengguna mengisi minimum stok;
+    :Pengguna mengisi deskripsi (opsional);
+    
+    if (Validasi nama unik?) then (Duplikat)
+        :Tampilkan pesan error;
+        stop
+    else (Unik)
+        :Generate UUID;
+        :Simpan data bahan baku;
+        :Set status awal = Kosong;
+        :Catat log aktivitas;
+        :Tampilkan notifikasi sukses;
+    endif
+    
+elseif (Ubah) then
+    :Tampilkan form edit;
+    :Pengguna mengubah data;
+    
+    if (Validasi data?) then (Valid)
+        :Simpan perubahan;
+        :Hitung ulang status ketersediaan;
+        :Catat log aktivitas;
+        :Tampilkan notifikasi sukses;
+    else (Tidak Valid)
+        :Tampilkan pesan error;
+    endif
+    
+elseif (Lihat Batch) then
+    :Tampilkan daftar batch;
+    :Tampilkan kuantitas per batch;
+    :Tampilkan tanggal kedaluwarsa;
+    
+elseif (Cetak PDF) then
+    :Sistem mengumpulkan data bahan;
+    :Generate PDF dengan status stok;
+    :Download file PDF;
+    
+else (Batal)
+endif
+
+:Refresh daftar bahan baku;
+
+stop
+
+@enduml

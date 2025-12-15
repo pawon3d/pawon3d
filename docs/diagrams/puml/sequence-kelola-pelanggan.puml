@@ -1,0 +1,65 @@
+@startuml sequence-kelola-pelanggan
+
+title Sequence Diagram: Kelola Pelanggan
+
+actor "Kasir" as user
+participant "Customer/Index\n(Livewire)" as index
+participant "Customer/Show\n(Livewire)" as show
+participant "Customer\n(Model)" as customer
+participant "Transaction\n(Model)" as trans
+participant "PointsHistory\n(Model)" as points
+database "Database" as db
+
+== Lihat Daftar Pelanggan ==
+
+user -> index : Akses halaman pelanggan
+activate index
+
+index -> customer : with(transactions)->paginate()
+customer -> db : SELECT * FROM customers
+db --> customer : customers data
+customer --> index : Collection
+
+index --> user : Tampilkan daftar pelanggan\n(nama, telepon, total poin)
+
+opt Pencarian
+    user -> index : Input nomor telepon
+    index -> customer : where(phone, LIKE)
+    customer -> db : SELECT * WHERE phone LIKE ?
+    db --> customer : filtered results
+    customer --> index : Collection
+    index --> user : Tampilkan hasil pencarian
+end
+
+deactivate index
+
+== Lihat Detail Pelanggan ==
+
+user -> show : Pilih pelanggan
+activate show
+
+show -> customer : find(id)
+customer -> db : SELECT * FROM customers WHERE id = ?
+db --> customer : customer data
+customer --> show : Customer object
+
+show --> user : Tampilkan data pelanggan\n(nama, telepon, poin)
+
+par Load data paralel
+    show -> trans : where(customer_id)->with(details)
+    trans -> db : SELECT * FROM transactions WHERE customer_id = ?
+    db --> trans : transactions
+    trans --> show : Transactions Collection
+    
+    show -> points : where(phone)->orderBy(created_at)
+    points -> db : SELECT * FROM points_histories WHERE phone = ?
+    db --> points : points history
+    points --> show : PointsHistory Collection
+end
+
+show --> user : Tampilkan riwayat transaksi
+show --> user : Tampilkan riwayat poin\n(perolehan dan penggunaan)
+
+deactivate show
+
+@enduml

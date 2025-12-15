@@ -1,0 +1,338 @@
+@startuml erd
+
+skinparam linetype ortho
+
+title Entity Relationship Diagram - Sistem Pawon3D
+
+' Use entity notation
+entity "users" as users {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    email : VARCHAR(255) <<UNIQUE>>
+    password : VARCHAR(255)
+    gender : VARCHAR(20)
+    is_active : BOOLEAN
+    invitation_token : VARCHAR(255)
+    invitation_sent_at : TIMESTAMP
+    activated_at : TIMESTAMP
+    remember_token : VARCHAR(100)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "customers" as customers {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    phone : VARCHAR(50) <<UNIQUE>>
+    points : INTEGER
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "categories" as categories {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    description : TEXT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "units" as units {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    alias : VARCHAR(50)
+    group : VARCHAR(100)
+    base_unit_id : UUID <<FK>>
+    conversion_factor : DECIMAL(15,10)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "suppliers" as suppliers {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    description : TEXT
+    contact_name : VARCHAR(255)
+    phone : VARCHAR(50)
+    street : VARCHAR(255)
+    landmark : VARCHAR(255)
+    maps_link : TEXT
+    image : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "materials" as materials {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    description : TEXT
+    minimum : INTEGER
+    status : ENUM
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "material_batches" as material_batches {
+    * id : UUID <<PK>>
+    --
+    material_id : UUID <<FK>>
+    unit_id : UUID <<FK>>
+    batch_quantity : DECIMAL(15,4)
+    date : DATE
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "products" as products {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    category_id : UUID <<FK>>
+    price : DECIMAL(15,2)
+    stock : INTEGER
+    is_ready : BOOLEAN
+    product_image : VARCHAR(255)
+    method : JSON
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "product_compositions" as product_compositions {
+    * id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    material_id : UUID <<FK>>
+    unit_id : UUID <<FK>>
+    quantity : DECIMAL(15,4)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "type_costs" as type_costs {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "other_costs" as other_costs {
+    * id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    type_cost_id : UUID <<FK>>
+    amount : DECIMAL(15,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "expenses" as expenses {
+    * id : UUID <<PK>>
+    --
+    expense_number : VARCHAR(50) <<UNIQUE>>
+    supplier_id : UUID <<FK>>
+    status : VARCHAR(50)
+    total : DECIMAL(15,2)
+    date : DATE
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "expense_details" as expense_details {
+    * id : UUID <<PK>>
+    --
+    expense_id : UUID <<FK>>
+    material_id : UUID <<FK>>
+    quantity : DECIMAL(15,4)
+    price : DECIMAL(15,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "transactions" as transactions {
+    * id : UUID <<PK>>
+    --
+    invoice_number : VARCHAR(50) <<UNIQUE>>
+    user_id : UUID <<FK>>
+    customer_id : UUID <<FK>>
+    method : VARCHAR(50)
+    status : VARCHAR(50)
+    total : DECIMAL(15,2)
+    points_used : INTEGER
+    total_refund : DECIMAL(15,2)
+    cancelled_at : TIMESTAMP
+    cancellation_reason : TEXT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "transaction_details" as transaction_details {
+    * id : UUID <<PK>>
+    --
+    transaction_id : UUID <<FK>>
+    product_id : UUID <<FK>>
+    quantity : INTEGER
+    price : DECIMAL(15,2)
+    refund_quantity : INTEGER
+    pcs_capital_snapshot : DECIMAL(15,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "payment_channels" as payment_channels {
+    * id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "payments" as payments {
+    * id : UUID <<PK>>
+    --
+    transaction_id : UUID <<FK>>
+    payment_channel_id : UUID <<FK>>
+    receipt_number : VARCHAR(50) <<UNIQUE>>
+    amount : DECIMAL(15,2)
+    payment_group : VARCHAR(50)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "productions" as productions {
+    * id : UUID <<PK>>
+    --
+    production_number : VARCHAR(50) <<UNIQUE>>
+    transaction_id : UUID <<FK>>
+    method : VARCHAR(50)
+    status : VARCHAR(50)
+    date : DATE
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "production_details" as production_details {
+    * id : UUID <<PK>>
+    --
+    production_id : UUID <<FK>>
+    product_id : UUID <<FK>>
+    quantity : INTEGER
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "production_workers" as production_workers {
+    * id : UUID <<PK>>
+    --
+    production_id : UUID <<FK>>
+    user_id : UUID <<FK>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "points_histories" as points_histories {
+    * id : UUID <<PK>>
+    --
+    phone : VARCHAR(50) <<FK>>
+    transaction_id : UUID <<FK>>
+    points_change : INTEGER
+    description : TEXT
+    image : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "hitungs" as hitungs {
+    * id : UUID <<PK>>
+    --
+    hitung_number : VARCHAR(50) <<UNIQUE>>
+    user_id : UUID <<FK>>
+    status : VARCHAR(50)
+    date : DATE
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "hitung_details" as hitung_details {
+    * id : UUID <<PK>>
+    --
+    hitung_id : UUID <<FK>>
+    material_id : UUID <<FK>>
+    system_quantity : DECIMAL(15,4)
+    actual_quantity : DECIMAL(15,4)
+    difference : DECIMAL(15,4)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "inventory_logs" as inventory_logs {
+    * id : UUID <<PK>>
+    --
+    material_id : UUID <<FK>>
+    material_batch_id : UUID <<FK>>
+    user_id : UUID <<FK>>
+    action : VARCHAR(50)
+    quantity_change : DECIMAL(15,4)
+    quantity_after : DECIMAL(15,4)
+    reference_type : VARCHAR(100)
+    reference_id : UUID
+    note : TEXT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "notifications" as notifications {
+    * id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    title : VARCHAR(255)
+    message : TEXT
+    type : VARCHAR(50)
+    status : VARCHAR(50)
+    is_read : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+' ===== RELATIONSHIPS =====
+categories ||--o{ products
+units ||--o| units : base_unit
+units ||--o{ material_batches
+suppliers ||--o{ expenses
+materials ||--o{ material_batches
+materials ||--o{ product_compositions
+materials ||--o{ expense_details
+materials ||--o{ hitung_details
+materials ||--o{ inventory_logs
+products ||--o{ product_compositions
+products ||--o{ other_costs
+products ||--o{ transaction_details
+products ||--o{ production_details
+type_costs ||--o{ other_costs
+expenses ||--o{ expense_details
+transactions ||--o{ transaction_details
+transactions ||--o{ payments
+transactions ||--o| productions
+transactions ||--o{ points_histories
+users ||--o{ transactions
+users ||--o{ production_workers
+users ||--o{ notifications
+users ||--o{ hitungs
+users ||--o{ inventory_logs
+customers ||--o{ transactions
+customers ||--o{ points_histories
+payment_channels ||--o{ payments
+productions ||--o{ production_details
+productions ||--o{ production_workers
+hitungs ||--o{ hitung_details
+material_batches ||--o{ inventory_logs
+
+@enduml

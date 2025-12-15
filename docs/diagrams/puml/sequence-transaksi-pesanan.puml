@@ -1,0 +1,84 @@
+@startuml sequence-transaksi-pesanan
+
+title Sequence Diagram: Transaksi Pesanan (Kotak/Reguler)
+
+actor "Kasir" as user
+participant "Transaction/Pesanan\n(Livewire)" as list
+participant "Transaction/BuatPesanan\n(Livewire)" as form
+participant "Transaction\n(Model)" as trans
+participant "TransactionDetail\n(Model)" as detail
+participant "Customer\n(Model)" as cust
+participant "Production\n(Model)" as prod
+database "Database" as db
+
+user -> list : Pilih metode pesanan\n(kotak/reguler)
+activate list
+
+list -> form : redirect dengan method
+deactivate list
+
+activate form
+form -> form : Render form pesanan
+
+opt Ada data pelanggan
+    user -> form : Input nomor telepon
+    
+    form -> cust : where(phone)
+    cust -> db : SELECT * FROM customers
+    db --> cust : customer / null
+    
+    alt Pelanggan ditemukan
+        cust --> form : Customer object
+        form --> user : Tampilkan data pelanggan
+    else Pelanggan baru
+        form -> cust : create(name, phone)
+        activate cust
+        cust -> cust : Generate UUID
+        cust -> db : INSERT INTO customers
+        db --> cust : OK
+        cust --> form : Customer created
+        deactivate cust
+    end
+end
+
+loop Tambah produk ke pesanan
+    user -> form : Pilih produk
+    user -> form : Input kuantitas
+    form -> form : Hitung subtotal
+    form -> form : Update total
+end
+
+user -> form : Submit pesanan
+
+form -> trans : create(user_id, customer_id, method, total)
+activate trans
+
+trans -> trans : boot()\nGenerate UUID
+trans -> trans : Generate invoice_number\n(OK/OR-YYMMDD-XXXX)
+trans -> db : INSERT INTO transactions
+db --> trans : OK
+trans --> form : Transaction created (transaction_id)
+
+deactivate trans
+
+loop Untuk setiap produk
+    form -> detail : create(transaction_id, product_id, qty, price)
+    activate detail
+    detail -> detail : Generate UUID
+    detail -> db : INSERT INTO transaction_details
+    db --> detail : OK
+    deactivate detail
+end
+
+form -> prod : create(transaction_id, method)
+activate prod
+prod -> prod : Generate production_number\n(PK/PR-YYMMDD-XXXX)
+prod -> db : INSERT INTO productions
+db --> prod : OK
+deactivate prod
+
+form --> user : Pesanan berhasil dibuat\nMasuk antrian produksi
+
+deactivate form
+
+@enduml

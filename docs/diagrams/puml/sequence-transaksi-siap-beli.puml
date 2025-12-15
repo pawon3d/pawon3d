@@ -1,0 +1,90 @@
+@startuml sequence-transaksi-siap-beli
+
+title Sequence Diagram: Transaksi Siap Beli
+
+actor "Kasir" as user
+participant "Transaction/SiapBeli\n(Livewire)" as list
+participant "Transaction/TanggalSiapBeli\n(Livewire)" as form
+participant "Transaction\n(Model)" as trans
+participant "TransactionDetail\n(Model)" as detail
+participant "Product\n(Model)" as product
+participant "Customer\n(Model)" as cust
+database "Database" as db
+
+user -> list : Akses halaman siap beli
+activate list
+
+list -> product : where(stock > 0)\ngroupBy(production_date)
+product -> db : SELECT * FROM products
+db --> product : products grouped by date
+product --> list : Available products by date
+
+list --> user : Tampilkan tanggal produksi
+
+user -> list : Pilih tanggal produksi
+
+list -> form : redirect(date)
+deactivate list
+
+activate form
+form -> product : where(production_date, stock > 0)
+product -> db : SELECT * FROM products
+db --> product : available products
+product --> form : Products
+
+form --> user : Tampilkan produk tersedia
+
+loop Pilih produk
+    user -> form : Pilih produk
+    user -> form : Input kuantitas
+    
+    form -> form : Cek stok tersedia
+    
+    alt Stok cukup
+        form -> form : Hitung subtotal
+        form -> form : Update total
+    else Stok tidak cukup
+        form --> user : Peringatan stok tidak cukup
+    end
+end
+
+opt Ada data pelanggan
+    user -> form : Input nomor telepon
+    form -> cust : findOrCreate(phone, name)
+    cust -> db : SELECT/INSERT
+    db --> cust : Customer
+    cust --> form : Customer object
+end
+
+user -> form : Submit transaksi
+
+form -> trans : create(user_id, customer_id, method='siap-beli', total)
+activate trans
+
+trans -> trans : Generate UUID
+trans -> trans : Generate invoice_number\n(OS-YYMMDD-XXXX)
+trans -> db : INSERT INTO transactions
+db --> trans : OK
+trans --> form : Transaction created
+
+deactivate trans
+
+loop Untuk setiap produk
+    form -> detail : create(transaction_id, product_id, qty, price)
+    activate detail
+    detail -> db : INSERT INTO transaction_details
+    db --> detail : OK
+    deactivate detail
+    
+    form -> product : decrement(stock, qty)
+    activate product
+    product -> db : UPDATE products SET stock = stock - qty
+    db --> product : OK
+    deactivate product
+end
+
+form --> user : Transaksi berhasil\nLanjut ke pembayaran
+
+deactivate form
+
+@enduml

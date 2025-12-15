@@ -1,0 +1,122 @@
+@startuml activity-transaksi
+
+title Activity Diagram: Proses Transaksi/Penjualan
+
+start
+
+:Kasir mengakses halaman transaksi;
+
+if (Pilih metode transaksi?) then (Pesanan Kotak/Reguler)
+    
+    partition "Transaksi Pesanan" {
+        :Pilih jenis pesanan (Kotak/Reguler);
+        :Generate invoice number (OK/OR-YYMMDD-XXXX);
+        
+        if (Ada data pelanggan?) then (Ya)
+            :Cari pelanggan berdasarkan nomor telepon;
+            if (Pelanggan ditemukan?) then (Ya)
+                :Gunakan data pelanggan existing;
+            else (Tidak)
+                :Buat pelanggan baru;
+            endif
+        else (Tidak)
+            :Lanjut tanpa pelanggan;
+        endif
+        
+        repeat
+            :Pilih produk dari katalog;
+            :Masukkan kuantitas;
+            :Hitung subtotal;
+        repeat while (Tambah produk lagi?) is (Ya)
+        -> Tidak;
+        
+        :Hitung total transaksi;
+        :Simpan transaksi;
+        :Status = Menunggu Produksi;
+        
+        :Buat production record otomatis;
+        :Transaksi masuk antrian produksi;
+        
+        :Tampilkan notifikasi sukses;
+        :Tunggu produksi selesai;
+        
+        note right
+            Setelah produksi selesai,
+            kasir melanjutkan ke pembayaran
+        end note
+    }
+    
+else (Siap Beli)
+    
+    partition "Transaksi Siap Beli" {
+        :Pilih tanggal produksi;
+        :Sistem menampilkan stok tersedia;
+        :Generate invoice number (OS-YYMMDD-XXXX);
+        
+        if (Ada data pelanggan?) then (Ya)
+            :Cari/buat data pelanggan;
+        else (Tidak)
+            :Lanjut tanpa pelanggan;
+        endif
+        
+        repeat
+            :Pilih produk dari stok tersedia;
+            :Masukkan kuantitas;
+            if (Stok cukup?) then (Ya)
+                :Hitung subtotal;
+            else (Tidak)
+                :Tampilkan peringatan stok tidak cukup;
+            endif
+        repeat while (Tambah produk lagi?) is (Ya)
+        -> Tidak;
+        
+        :Hitung total transaksi;
+        :Kurangi stok produk;
+        :Simpan transaksi;
+        :Status = Menunggu Pembayaran;
+    }
+    
+endif
+
+partition "Proses Pembayaran" {
+    :Tampilkan halaman pembayaran;
+    :Sistem menampilkan total tagihan;
+    
+    if (Gunakan poin?) then (Ya)
+        :Tampilkan poin pelanggan tersedia;
+        :Masukkan jumlah poin yang digunakan;
+        :Hitung diskon dari poin;
+        :Kurangi poin pelanggan;
+        :Catat riwayat poin;
+    else (Tidak)
+    endif
+    
+    :Pilih metode pembayaran;
+    :Masukkan jumlah bayar;
+    
+    if (Pembayaran cukup?) then (Ya)
+        :Generate receipt number;
+        :Simpan payment record;
+        :Status transaksi = Lunas;
+        
+        :Tambah poin pelanggan (dari transaksi baru);
+        :Catat riwayat poin;
+        
+        :Catat log aktivitas;
+        
+        if (Cetak struk?) then (Ya)
+            :Generate PDF struk;
+            :Cetak/download struk;
+        else (Tidak)
+        endif
+        
+        :Tampilkan notifikasi sukses;
+        
+    else (Tidak)
+        :Tampilkan pesan pembayaran kurang;
+    endif
+}
+
+stop
+
+@enduml

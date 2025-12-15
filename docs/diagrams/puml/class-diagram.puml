@@ -1,0 +1,334 @@
+@startuml class-diagram
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+}
+
+title Class Diagram - Sistem Pawon3D
+
+' ===== MASTER DATA =====
+package "Master Data" {
+    
+    class Category {
+        - id: UUID
+        - name: String
+        - description: Text
+        - created_at: Timestamp
+        - updated_at: Timestamp
+        --
+        + products(): HasMany
+    }
+    
+    class Unit {
+        - id: UUID
+        - name: String
+        - alias: String
+        - group: String
+        - base_unit_id: UUID
+        - conversion_factor: Decimal
+        --
+        + baseUnit(): BelongsTo
+        + derivedUnits(): HasMany
+        + isBaseUnit(): Boolean
+        + hasConversionLadder(): Boolean
+        + canAutoConvertTo(targetUnit): Boolean
+        + convertTo(value, targetUnit): Float
+        + getConversionFactorTo(targetUnit): Float
+    }
+    
+    class Supplier {
+        - id: UUID
+        - name: String
+        - description: Text
+        - contact_name: String
+        - phone: String
+        - street: String
+        - landmark: String
+        - maps_link: String
+        - image: String
+        --
+        + expenses(): HasMany
+    }
+    
+    class TypeCost {
+        - id: UUID
+        - name: String
+        --
+        + otherCosts(): HasMany
+    }
+}
+
+' ===== INVENTORY =====
+package "Inventory" {
+    
+    class Material {
+        - id: UUID
+        - name: String
+        - description: Text
+        - minimum: Integer
+        - status: Enum
+        - is_active: Boolean
+        --
+        + batches(): HasMany
+        + material_details(): HasMany
+        + expenseDetails(): HasMany
+        + getTotalQuantityInUnit(targetUnit): Float
+        + reduceQuantity(qty, unit, logData): Boolean
+        + recalculateStatus(): Void
+    }
+    
+    class MaterialBatch {
+        - id: UUID
+        - material_id: UUID
+        - unit_id: UUID
+        - batch_quantity: Decimal
+        - date: Date
+        --
+        + material(): BelongsTo
+        + unit(): BelongsTo
+    }
+    
+    class InventoryLog {
+        - id: UUID
+        - material_id: UUID
+        - material_batch_id: UUID
+        - user_id: UUID
+        - action: String
+        - quantity_change: Decimal
+        - quantity_after: Decimal
+        - reference_type: String
+        - reference_id: UUID
+        - note: Text
+        --
+        + material(): BelongsTo
+        + materialBatch(): BelongsTo
+        + user(): BelongsTo
+    }
+    
+    class Expense {
+        - id: UUID
+        - expense_number: String
+        - supplier_id: UUID
+        - status: String
+        - total: Decimal
+        - date: Date
+        --
+        + supplier(): BelongsTo
+        + expenseDetails(): HasMany
+    }
+    
+    class ExpenseDetail {
+        - id: UUID
+        - expense_id: UUID
+        - material_id: UUID
+        - quantity: Decimal
+        - price: Decimal
+        --
+        + expense(): BelongsTo
+        + material(): BelongsTo
+    }
+}
+
+' ===== PRODUCT =====
+package "Product" {
+    
+    class Product {
+        - id: UUID
+        - name: String
+        - category_id: UUID
+        - price: Decimal
+        - stock: Integer
+        - is_ready: Boolean
+        - product_image: String
+        - method: Array
+        --
+        + category(): BelongsTo
+        + product_compositions(): HasMany
+        + other_costs(): HasMany
+        + productions(): HasMany
+        + transactions(): HasMany
+    }
+    
+    class ProductComposition {
+        - id: UUID
+        - product_id: UUID
+        - material_id: UUID
+        - unit_id: UUID
+        - quantity: Decimal
+        --
+        + product(): BelongsTo
+        + material(): BelongsTo
+        + unit(): BelongsTo
+    }
+    
+    class OtherCost {
+        - id: UUID
+        - product_id: UUID
+        - type_cost_id: UUID
+        - amount: Decimal
+        --
+        + product(): BelongsTo
+        + typeCost(): BelongsTo
+    }
+}
+
+' ===== PRODUCTION =====
+package "Production" {
+    
+    class Production {
+        - id: UUID
+        - production_number: String
+        - transaction_id: UUID
+        - method: String
+        - status: String
+        - date: Date
+        --
+        + transaction(): BelongsTo
+        + details(): HasMany
+        + workers(): HasMany
+    }
+    
+    class ProductionDetail {
+        - id: UUID
+        - production_id: UUID
+        - product_id: UUID
+        - quantity: Integer
+        --
+        + production(): BelongsTo
+        + product(): BelongsTo
+    }
+    
+    class ProductionWorker {
+        - id: UUID
+        - production_id: UUID
+        - user_id: UUID
+        --
+        + production(): BelongsTo
+        + user(): BelongsTo
+    }
+}
+
+' ===== TRANSACTION =====
+package "Transaction" {
+    
+    class Transaction {
+        - id: UUID
+        - invoice_number: String
+        - user_id: UUID
+        - customer_id: UUID
+        - method: String
+        - status: String
+        - total: Decimal
+        - points_used: Integer
+        - total_refund: Decimal
+        --
+        + user(): BelongsTo
+        + customer(): BelongsTo
+        + details(): HasMany
+        + payments(): HasMany
+        + production(): HasOne
+        + refund(): HasOne
+    }
+    
+    class TransactionDetail {
+        - id: UUID
+        - transaction_id: UUID
+        - product_id: UUID
+        - quantity: Integer
+        - price: Decimal
+        - refund_quantity: Integer
+        --
+        + transaction(): BelongsTo
+        + product(): BelongsTo
+    }
+    
+    class Payment {
+        - id: UUID
+        - transaction_id: UUID
+        - payment_channel_id: UUID
+        - receipt_number: String
+        - amount: Decimal
+        - payment_group: String
+        --
+        + transaction(): BelongsTo
+        + channel(): BelongsTo
+    }
+    
+    class PaymentChannel {
+        - id: UUID
+        - name: String
+        - is_active: Boolean
+        --
+        + payments(): HasMany
+    }
+}
+
+' ===== USER =====
+package "User Management" {
+    
+    class User {
+        - id: UUID
+        - name: String
+        - email: String
+        - password: String
+        - gender: String
+        - is_active: Boolean
+        - invitation_token: String
+        - invitation_sent_at: Timestamp
+        - activated_at: Timestamp
+        --
+        + workers(): HasMany
+        + notifications(): HasMany
+        + sendInvitation(): Void
+        + activateWithPassword(password): Void
+        + hasValidInvitationToken(): Boolean
+        + isActivated(): Boolean
+        + toggleActive(): Void
+    }
+    
+    class Customer {
+        - id: UUID
+        - name: String
+        - phone: String
+        - points: Integer
+        --
+        + transactions(): HasMany
+        + pointsHistories(): HasMany
+    }
+    
+    class PointsHistory {
+        - id: UUID
+        - phone: String
+        - transaction_id: UUID
+        - points_change: Integer
+        - description: Text
+        - image: String
+        --
+        + customer(): BelongsTo
+        + transaction(): BelongsTo
+    }
+}
+
+' ===== RELATIONSHIPS =====
+Category "1" -- "*" Product
+Supplier "1" -- "*" Expense
+Material "1" -- "*" MaterialBatch
+Material "1" -- "*" ExpenseDetail
+Material "1" -- "*" ProductComposition
+Product "1" -- "*" ProductComposition
+Product "1" -- "*" TransactionDetail
+Product "1" -- "*" ProductionDetail
+Transaction "1" -- "*" TransactionDetail
+Transaction "1" -- "*" Payment
+Transaction "1" -- "0..1" Production
+User "1" -- "*" Transaction
+User "1" -- "*" ProductionWorker
+Customer "1" -- "*" Transaction
+Customer "1" -- "*" PointsHistory
+PaymentChannel "1" -- "*" Payment
+Unit "1" -- "*" MaterialBatch
+Unit "0..1" -- "*" Unit : base_unit
+
+@enduml

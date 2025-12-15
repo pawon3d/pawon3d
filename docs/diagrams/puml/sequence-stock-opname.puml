@@ -1,0 +1,118 @@
+@startuml sequence-stock-opname
+
+title Sequence Diagram: Stock Opname
+
+actor "Bagian Inventori" as user
+participant "Hitung/Form\n(Livewire)" as form
+participant "Hitung/Mulai\n(Livewire)" as start
+participant "Hitung\n(Model)" as hitung
+participant "HitungDetail\n(Model)" as detail
+participant "MaterialBatch\n(Model)" as batch
+participant "InventoryLog\n(Model)" as log
+database "Database" as db
+
+== Buat Rencana Stock Opname ==
+
+user -> form : Akses halaman tambah hitung
+activate form
+
+form -> form : Render form
+
+user -> form : Pilih tanggal hitung
+
+loop Tambah item bahan
+    user -> form : Pilih bahan baku
+    form -> batch : where(material_id)->sum(batch_quantity)
+    batch -> db : SELECT SUM(batch_quantity)
+    db --> batch : system quantity
+    batch --> form : Kuantitas sistem
+    form --> user : Tampilkan kuantitas sistem
+end
+
+user -> form : Simpan rencana
+
+form -> hitung : create(user_id, date, status)
+activate hitung
+
+hitung -> hitung : boot()\nGenerate UUID
+hitung -> hitung : Generate hitung_number\n(HC-YYMMDD-XXXX)
+hitung -> db : INSERT INTO hitungs
+db --> hitung : OK
+hitung --> form : Hitung created (hitung_id)
+
+deactivate hitung
+
+loop Untuk setiap item
+    form -> detail : create(hitung_id, material_id, system_qty)
+    activate detail
+    detail -> db : INSERT INTO hitung_details
+    db --> detail : OK
+    deactivate detail
+end
+
+form --> user : Rencana hitung tersimpan
+
+deactivate form
+
+== Pelaksanaan Stock Opname ==
+
+user -> start : Mulai penghitungan
+activate start
+
+start -> hitung : find(id)->with(details.material)
+hitung -> db : SELECT * FROM hitungs JOIN ...
+db --> hitung : hitung with details
+hitung --> start : Hitung object
+
+start -> hitung : update(status = 'Dalam Proses')
+hitung -> db : UPDATE hitungs SET status
+db --> hitung : OK
+
+start --> user : Tampilkan daftar item
+
+loop Untuk setiap item
+    start --> user : Tampilkan bahan dan kuantitas sistem
+    
+    user -> start : Input kuantitas aktual
+    
+    start -> start : Hitung selisih\n(aktual - sistem)
+    
+    start -> detail : update(actual_qty, difference)
+    detail -> db : UPDATE hitung_details
+    db --> detail : OK
+    
+    start --> user : Tampilkan selisih
+end
+
+user -> start : Konfirmasi selesai
+
+loop Untuk setiap item dengan selisih
+    start -> batch : adjustQuantity(difference)
+    activate batch
+    
+    alt Selisih positif (stok lebih)
+        batch -> batch : batch_quantity += difference
+    else Selisih negatif (stok kurang)
+        batch -> batch : batch_quantity -= |difference|
+    end
+    
+    batch -> db : UPDATE material_batches
+    db --> batch : OK
+    deactivate batch
+    
+    start -> log : create(action='penyesuaian')
+    activate log
+    log -> db : INSERT INTO inventory_logs
+    db --> log : OK
+    deactivate log
+end
+
+start -> hitung : update(status = 'Selesai')
+hitung -> db : UPDATE hitungs SET status
+db --> hitung : OK
+
+start --> user : Stock opname selesai
+
+deactivate start
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml activity-produksi
+
+title Activity Diagram: Proses Produksi
+
+start
+
+:Pengguna mengakses halaman produksi;
+
+if (Jenis produksi?) then (Produksi Pesanan)
+    
+    partition "Produksi dari Pesanan" {
+        :Lihat antrian pesanan;
+        :Pilih pesanan untuk diproduksi;
+        :Sistem menampilkan detail produk pesanan;
+        
+        :Pilih pekerja yang bertugas;
+        
+        if (Cek ketersediaan bahan?) then (Cukup)
+            :Generate nomor produksi (PK/PR-YYMMDD-XXXX);
+            :Mulai produksi;
+            :Status produksi = Dalam Proses;
+            
+            fork
+                repeat
+                    :Ambil bahan dari batch (FIFO);
+                    :Kurangi stok batch;
+                    :Catat log inventori;
+                repeat while (Masih ada bahan?) is (Ya)
+                -> Tidak;
+            fork again
+                :Update status bahan (recalculateStatus);
+            end fork
+            
+            :Proses produksi berlangsung;
+            
+            :Selesaikan produksi;
+            :Status produksi = Selesai;
+            :Status transaksi = Siap Diambil;
+            :Catat log aktivitas;
+            :Tampilkan notifikasi sukses;
+            
+        else (Tidak Cukup)
+            :Tampilkan peringatan bahan tidak cukup;
+            :Tampilkan daftar bahan yang kurang;
+            stop
+        endif
+    }
+    
+else (Produksi Siap Beli)
+    
+    partition "Produksi untuk Stok" {
+        :Buat produksi siap beli baru;
+        :Generate nomor produksi (PS-YYMMDD-XXXX);
+        
+        repeat
+            :Pilih produk;
+            :Masukkan kuantitas;
+        repeat while (Tambah produk lagi?) is (Ya)
+        -> Tidak;
+        
+        :Pilih tanggal produksi;
+        :Pilih pekerja yang bertugas;
+        
+        if (Cek ketersediaan bahan?) then (Cukup)
+            :Mulai produksi;
+            :Status produksi = Dalam Proses;
+            
+            fork
+                repeat
+                    :Ambil bahan dari batch (FIFO);
+                    :Kurangi stok batch;
+                    :Catat log inventori;
+                repeat while (Masih ada bahan?) is (Ya)
+                -> Tidak;
+            fork again
+                :Update status bahan;
+            end fork
+            
+            :Selesaikan produksi;
+            :Tambah stok produk (Product.stock);
+            :Status produksi = Selesai;
+            :Catat log aktivitas;
+            :Tampilkan notifikasi sukses;
+            
+        else (Tidak Cukup)
+            :Tampilkan peringatan bahan tidak cukup;
+            stop
+        endif
+    }
+    
+endif
+
+stop
+
+@enduml
