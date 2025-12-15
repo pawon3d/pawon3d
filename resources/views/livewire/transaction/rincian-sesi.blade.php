@@ -106,7 +106,7 @@
                             style="font-family: 'Montserrat', sans-serif;">
                             @if ($transaction->method == 'pesanan-reguler')
                                 Pesanan Reguler
-                            @elseif($transaction->method == 'siap-saji')
+                            @elseif($transaction->method == 'siap-beli')
                                 Siap Saji
                             @elseif($transaction->method == 'pesanan-kotak')
                                 Pesanan Kotak

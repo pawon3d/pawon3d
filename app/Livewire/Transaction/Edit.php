@@ -261,11 +261,13 @@ class Edit extends Component
             ]);
 
             foreach ($this->details as $detail) {
+                $product = Product::find($detail['product_id']);
                 $transaction->details()->updateOrCreate(
                     ['product_id' => $detail['product_id']],
                     [
                         'quantity' => $detail['quantity'],
                         'price' => $detail['price'],
+                        'pcs_capital_snapshot' => $product->pcs_capital ?? 0,
                     ]
                 );
             }

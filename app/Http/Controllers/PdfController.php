@@ -7,13 +7,11 @@ use App\Exports\KasirExport;
 use App\Exports\ProduksiExport;
 use App\Models\Category;
 use App\Models\Expense;
-use App\Models\ExpenseDetail;
 use App\Models\IngredientCategory;
 use App\Models\Material;
 use App\Models\MaterialDetail;
 use App\Models\Product;
 use App\Models\Production;
-use App\Models\ProductionDetail;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
@@ -304,6 +302,7 @@ class PdfController extends Controller
     public function laporanKasir(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', 'keuangan');
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -315,9 +314,6 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->startOfDay();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->endOfDay() : Carbon::parse($customStartDate)->endOfDay();
-            $lengthDays = Carbon::parse($customStartDate)->diffInDays(Carbon::parse($customEndDate ?? $customStartDate)) + 1;
-            $prevStart = Carbon::parse($customStartDate)->subDays($lengthDays)->startOfDay();
-            $prevEnd = Carbon::parse($customStartDate)->subDay()->endOfDay();
             $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
@@ -326,41 +322,164 @@ class PdfController extends Controller
                 case 'Hari':
                     $startDate = $selectedDateCarbon->copy()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfDay();
-                    $prevStart = $selectedDateCarbon->copy()->subDay()->startOfDay();
-                    $prevEnd = $selectedDateCarbon->copy()->subDay()->endOfDay();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
                     break;
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek()->endOfDay();
-                    $prevStart = $selectedDateCarbon->copy()->subWeek()->startOfWeek()->startOfDay();
-                    $prevEnd = $selectedDateCarbon->copy()->subWeek()->endOfWeek()->endOfDay();
                     $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfMonth()->endOfDay();
-                    $prevStart = $selectedDateCarbon->copy()->subMonth()->startOfMonth()->startOfDay();
-                    $prevEnd = $selectedDateCarbon->copy()->subMonth()->endOfMonth()->endOfDay();
                     $dateRange = $selectedDateCarbon->translatedFormat('F Y');
                     break;
                 case 'Tahun':
                     $startDate = $selectedDateCarbon->copy()->startOfYear()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfYear()->endOfDay();
-                    $prevStart = $selectedDateCarbon->copy()->subYear()->startOfYear()->startOfDay();
-                    $prevEnd = $selectedDateCarbon->copy()->subYear()->endOfYear()->endOfDay();
-                    $dateRange = 'Tahun ' . $selectedDateCarbon->year;
+                    $dateRange = $selectedDateCarbon->translatedFormat('Y');
                     break;
                 default:
                     $startDate = $selectedDateCarbon->copy()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfDay();
-                    $prevStart = $selectedDateCarbon->copy()->subDay()->startOfDay();
-                    $prevEnd = $selectedDateCarbon->copy()->subDay()->endOfDay();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
             }
         }
 
-        // Query transactions
+        $workerName = $selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($selectedWorker)->name ?? 'Unknown');
+        $methodName = $selectedMethod === 'semua' ? 'Semua Metode' : ucfirst($selectedMethod);
+
+        // Route to appropriate export based on reportContent
+        switch ($reportContent) {
+            case 'sesi':
+                return $this->exportSesi($startDate, $endDate, $dateRange, $selectedWorker, $workerName);
+            case 'customer':
+                return $this->exportCustomer($startDate, $endDate, $dateRange);
+            case 'transaksi':
+                return $this->exportTransaksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+            case 'terjual':
+                return $this->exportTerjual($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+            case 'keuangan':
+            default:
+                return $this->exportKeuangan($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+        }
+    }
+
+    private function exportSesi($startDate, $endDate, $dateRange, $selectedWorker, $workerName)
+    {
+        $shiftsQuery = \App\Models\Shift::with('openedBy')
+            ->whereBetween('start_time', [$startDate, $endDate])
+            ->where('status', 'closed');
+
+        if ($selectedWorker !== 'semua') {
+            $shiftsQuery->where('opened_by', $selectedWorker);
+        }
+
+        $shifts = $shiftsQuery->orderBy('start_time', 'desc')->get();
+
+        $sesiData = $shifts->map(function ($shift) {
+            $duration = '-';
+            if ($shift->start_time && $shift->end_time) {
+                $start = Carbon::parse($shift->start_time);
+                $end = Carbon::parse($shift->end_time);
+                $diff = $start->diff($end);
+                $duration = $diff->format('%H jam %I menit');
+            }
+
+            $totalTransaksi = Transaction::where('created_by_shift', $shift->id)->count();
+            $totalPendapatan = Transaction::where('created_by_shift', $shift->id)->sum('total_amount') ?? 0;
+
+            return [
+                'tanggal' => Carbon::parse($shift->start_time)->translatedFormat('d F Y H:i'),
+                'kasir' => $shift->openedBy->name ?? '-',
+                'durasi' => $duration,
+                'total_transaksi' => $totalTransaksi,
+                'total_pendapatan' => $totalPendapatan,
+            ];
+        })->toArray();
+
+        $pdf = Pdf::loadView('pdf.laporan-kasir-sesi', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'sesiData' => $sesiData,
+        ]);
+
+        return $pdf->stream('laporan-kasir-sesi-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportCustomer($startDate, $endDate, $dateRange)
+    {
+        $customers = Transaction::whereBetween('start_date', [$startDate, $endDate])
+            ->where('status', 'Selesai')
+            ->whereNotNull('phone')
+            ->select('phone', 'name')
+            ->selectRaw('MIN(start_date) as first_transaction')
+            ->selectRaw('COUNT(*) as transaction_count')
+            ->groupBy('phone', 'name')
+            ->havingRaw('MIN(start_date) BETWEEN ? AND ?', [$startDate, $endDate])
+            ->orderBy('first_transaction', 'desc')
+            ->get();
+
+        $customerData = $customers->map(function ($customer) {
+            return [
+                'phone' => $customer->phone,
+                'name' => $customer->name ?? '-',
+                'transaction_count' => $customer->transaction_count,
+                'first_transaction' => Carbon::parse($customer->first_transaction)->translatedFormat('d F Y H:i'),
+            ];
+        })->toArray();
+
+        $pdf = Pdf::loadView('pdf.laporan-kasir-customer', [
+            'dateRange' => $dateRange,
+            'customerData' => $customerData,
+        ]);
+
+        return $pdf->stream('laporan-kasir-customer-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportTransaksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
+        $transactionsQuery = Transaction::with(['details.product', 'user'])
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->where('status', 'Selesai');
+
+        if ($selectedWorker !== 'semua') {
+            $transactionsQuery->where('user_id', $selectedWorker);
+        }
+
+        if ($selectedMethod !== 'semua') {
+            $transactionsQuery->where('method', $selectedMethod);
+        }
+
+        $transactions = $transactionsQuery->orderBy('start_date', 'desc')->get();
+
+        $transaksiData = $transactions->map(function ($trx) {
+            $products = $trx->details->map(function ($detail) {
+                return $detail->product->name . ' (' . $detail->quantity . ')';
+            })->implode(', ');
+
+            return [
+                'invoice' => $trx->invoice_number,
+                'tanggal' => Carbon::parse($trx->start_date)->translatedFormat('d F Y H:i'),
+                'kasir' => $trx->user->name ?? '-',
+                'products' => $products,
+                'total' => $trx->total_amount,
+                'method' => $trx->method ? ucfirst(str_replace('-', ' ', $trx->method)) : 'Tidak Diketahui',
+            ];
+        })->toArray();
+
+        $pdf = Pdf::loadView('pdf.laporan-kasir-transaksi', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'methodName' => $methodName,
+            'transaksiData' => $transaksiData,
+        ]);
+
+        return $pdf->stream('laporan-kasir-transaksi-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportTerjual($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
         $transactionsQuery = Transaction::whereBetween('start_date', [$startDate, $endDate])
             ->where('status', 'Selesai');
 
@@ -373,160 +492,115 @@ class PdfController extends Controller
         }
 
         $transactions = $transactionsQuery->get();
-
-        // Prev transactions
-        $prevTransactionsQuery = Transaction::whereBetween('start_date', [$prevStart, $prevEnd])
-            ->where('status', 'Selesai');
-
-        if ($selectedWorker !== 'semua') {
-            $prevTransactionsQuery->where('user_id', $selectedWorker);
-        }
-
-        if ($selectedMethod !== 'semua') {
-            $prevTransactionsQuery->where('method', $selectedMethod);
-        }
-
-        $prevTransactions = $prevTransactionsQuery->get();
-
         $transactionIds = $transactions->pluck('id');
-        $prevTransactionIds = $prevTransactions->pluck('id');
 
         $details = TransactionDetail::with('product')
             ->whereIn('transaction_id', $transactionIds)
             ->get();
 
-        $prevDetails = TransactionDetail::with('product')
-            ->whereIn('transaction_id', $prevTransactionIds)
-            ->get();
-
-        $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        });
-
-        $sorted = $groupedProducts->sortByDesc('total');
-        $top10 = $sorted->take(10);
-        $best = $sorted->first();
-
-        $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->sortByDesc('total')->first();
-
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $sessionCount = $transactions->unique('created_by_shift')->count();
-        $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
-
-        $transactionCount = $transactions->count();
-        $prevTransactionCount = $prevTransactions->count();
-
-        $customerCount = $transactions->unique('phone')->count();
-        $prevCustomerCount = $prevTransactions->unique('phone')->count();
-
-        $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
-        $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
-
-        $grossRevenue = $transactions->sum('total_amount');
-        $prevGrossRevenue = $prevTransactions->sum('total_amount');
-
-        $discountTotal = $transactions->sum('points_discount');
-        $prevDiscountTotal = $prevTransactions->sum('points_discount');
-
-        $refundTotal = $transactions->sum('total_refund');
-        $prevRefundTotal = $prevTransactions->sum('total_refund');
-
-        $netRevenue = $grossRevenue - $refundTotal - $discountTotal;
-        $prevNetRevenue = $prevGrossRevenue - $prevRefundTotal - $prevDiscountTotal;
-
-        $capitalTotal = $details->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
-        });
-        $prevCapitalTotal = $prevDetails->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
-        });
-        $profit = $netRevenue - $capitalTotal;
-        $prevProfit = $prevNetRevenue - $prevCapitalTotal;
-
-        $diffStats = [
-            'sessionCount' => $this->calculateDiff($sessionCount, $prevSessionCount),
-            'transactionCount' => $this->calculateDiff($transactionCount, $prevTransactionCount),
-            'customerCount' => $this->calculateDiff($customerCount, $prevCustomerCount),
-            'productSold' => $this->calculateDiff($productSold, $prevProductSold),
-            'bestProduct' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
-            'worstProduct' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
-            'grossRevenue' => $this->calculateDiff($grossRevenue, $prevGrossRevenue),
-            'discountTotal' => $this->calculateDiff($discountTotal, $prevDiscountTotal),
-            'refundTotal' => $this->calculateDiff($refundTotal, $prevRefundTotal),
-            'netRevenue' => $this->calculateDiff($netRevenue, $prevNetRevenue),
-            'capitalTotal' => $this->calculateDiff($capitalTotal, $prevCapitalTotal),
-            'profit' => $this->calculateDiff($profit, $prevProfit),
-        ];
-
-        $workerName = $selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($selectedWorker)->name ?? 'Unknown');
-        $methodName = $selectedMethod === 'semua' ? 'Semua Metode' : $selectedMethod;
-
-        // Get product sales data
         $products = Product::with('category')->get();
         $productSales = [];
+
         foreach ($products as $product) {
             $sold = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
             if ($sold > 0) {
+                // Get production count from productions table using start_date
+                $productionDetails = \App\Models\ProductionDetail::whereHas('production', function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('start_date', [$startDate, $endDate]);
+                })
+                    ->where('product_id', $product->id)
+                    ->sum('quantity_get');
+
                 $productSales[] = [
                     'name' => $product->name,
-                    'category' => $product->category->name ?? '-',
+                    'produksi' => $productionDetails,
                     'sold' => $sold,
-                    'price' => $product->price,
-                    'total' => $sold * $product->price,
+                    'unsold' => max(0, $productionDetails - $sold),
                 ];
             }
         }
 
         usort($productSales, fn($a, $b) => $b['sold'] - $a['sold']);
 
-        $pdf = Pdf::loadView('pdf.laporan-kasir', [
+        $pdf = Pdf::loadView('pdf.laporan-kasir-terjual', [
             'dateRange' => $dateRange,
             'workerName' => $workerName,
             'methodName' => $methodName,
-            'sessionCount' => $sessionCount,
-            'transactionCount' => $transactionCount,
-            'customerCount' => $customerCount,
-            'productSold' => $productSold,
-            'bestProduct' => $best,
-            'worstProduct' => $worst,
-            'grossRevenue' => $grossRevenue,
-            'discountTotal' => $discountTotal,
-            'refundTotal' => $refundTotal,
-            'netRevenue' => $netRevenue,
-            'profit' => $profit,
-            'diffStats' => $diffStats,
-            'topProducts' => $top10->toArray(),
             'productSales' => $productSales,
         ]);
 
-        return $pdf->stream('laporan-kasir-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-terjual-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportKeuangan($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
+        $transactionsQuery = Transaction::whereBetween('start_date', [$startDate, $endDate])
+            ->where('status', 'Selesai');
+
+        if ($selectedWorker !== 'semua') {
+            $transactionsQuery->where('user_id', $selectedWorker);
+        }
+
+        if ($selectedMethod !== 'semua') {
+            $transactionsQuery->where('method', $selectedMethod);
+        }
+
+        $transactions = $transactionsQuery->get();
+        $transactionIds = $transactions->pluck('id');
+
+        $details = TransactionDetail::with('product')
+            ->whereIn('transaction_id', $transactionIds)
+            ->get();
+
+        // Build financial reports
+        $keuanganData = [];
+        $year = Carbon::parse($startDate)->year;
+
+        foreach (range(1, 12) as $month) {
+            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->start_date)->month === $month);
+            $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
+                $trx = $transactions->firstWhere('id', $d->transaction_id);
+
+                return $trx && Carbon::parse($trx->start_date)->month === $month;
+            });
+
+            $pendapatanKotor = $monthTransactions->sum('total_amount');
+            $refund = $monthTransactions->sum('total_refund');
+            $potonganHarga = $monthTransactions->sum('points_discount');
+            $pendapatanBersih = $pendapatanKotor - $refund - $potonganHarga;
+            $modal = $monthDetails->sum(function ($d) {
+                return ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity);
+            });
+            $keuntungan = $pendapatanBersih - $modal;
+
+            if ($pendapatanKotor > 0 || $refund > 0) {
+                $monthName = Carbon::create($year, $month, 1)->translatedFormat('F Y');
+                $keuanganData[] = [
+                    'waktu' => $monthName,
+                    'pendapatanKotor' => $pendapatanKotor,
+                    'refund' => $refund,
+                    'potonganHarga' => $potonganHarga,
+                    'pendapatanBersih' => $pendapatanBersih,
+                    'modal' => $modal,
+                    'keuntungan' => $keuntungan,
+                ];
+            }
+        }
+
+        $pdf = Pdf::loadView('pdf.laporan-kasir-keuangan', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'methodName' => $methodName,
+            'keuanganData' => $keuanganData,
+        ]);
+
+        return $pdf->stream('laporan-kasir-keuangan-' . now()->format('Y-m-d') . '.pdf');
     }
 
     public function laporanInventori(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', '');
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -537,9 +611,6 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->startOfDay();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->endOfDay() : Carbon::parse($customStartDate)->endOfDay();
-            $lengthDays = $startDate->diffInDays($endDate) + 1;
-            $prevStart = $startDate->copy()->subDays($lengthDays);
-            $prevEnd = $startDate->copy()->subDay();
             $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
@@ -548,205 +619,196 @@ class PdfController extends Controller
                 case 'Hari':
                     $startDate = $selectedDateCarbon->copy()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfDay();
-                    $prevStart = $startDate->copy()->subDay();
-                    $prevEnd = $endDate->copy()->subDay();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
                     break;
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek();
-                    $prevStart = $startDate->copy()->subWeek();
-                    $prevEnd = $endDate->copy()->subWeek();
                     $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth();
                     $endDate = $selectedDateCarbon->copy()->endOfMonth();
-                    $prevStart = $startDate->copy()->subMonth();
-                    $prevEnd = $endDate->copy()->subMonth();
                     $dateRange = $selectedDateCarbon->translatedFormat('F Y');
                     break;
                 case 'Tahun':
                     $startDate = $selectedDateCarbon->copy()->startOfYear();
                     $endDate = $selectedDateCarbon->copy()->endOfYear();
-                    $prevStart = $startDate->copy()->subYear();
-                    $prevEnd = $endDate->copy()->subYear();
                     $dateRange = 'Tahun ' . $selectedDateCarbon->year;
                     break;
                 default:
                     $startDate = $selectedDateCarbon->copy()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfDay();
-                    $prevStart = $startDate->copy()->subDay();
-                    $prevEnd = $endDate->copy()->subDay();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
             }
         }
 
-        $expensesQuery = Expense::whereBetween('expense_date', [$startDate, $endDate]);
-
-        if ($selectedWorker !== 'semua') {
-            $expensesQuery->where('user_id', $selectedWorker);
-        }
-
-        $expenses = $expensesQuery->get();
-        $prevExpenses = Expense::whereBetween('expense_date', [$prevStart, $prevEnd])->get();
-
-        $expenseIds = $expenses->pluck('id');
-        $prevExpenseIds = $prevExpenses->pluck('id');
-
-        $details = ExpenseDetail::with('material')
-            ->whereIn('expense_id', $expenseIds)
-            ->get();
-
-        $prevDetails = ExpenseDetail::with('material')
-            ->whereIn('expense_id', $prevExpenseIds)
-            ->get();
-
-        $totalExpense = $expenses->count();
-        $prevTotalExpense = $prevExpenses->count();
-
-        $materials = Material::with(['material_details', 'batches'])->get();
-        $remainGrandTotal = 0;
-        foreach ($materials as $material) {
-            $materialTotal = 0;
-            foreach ($material->material_details as $detail) {
-                $remainBatchQty = $material->batches->where('unit_id', $detail->unit_id)->sum('batch_quantity');
-                $detailTotal = $detail->supply_price * $remainBatchQty;
-                $materialTotal += $detailTotal;
-            }
-            $remainGrandTotal += $materialTotal;
-        }
-        $prevRemainGrandTotal = $remainGrandTotal;
-
-        $products = Product::with(['product_compositions.material'])->get();
-        $groupProductByMaterial = $products->flatMap(function ($product) {
-            return $product->product_compositions->map(function ($composition) use ($product) {
-                return [
-                    'material_id' => $composition->material_id,
-                    'material_quantity' => $composition->material_quantity,
-                    'unit_id' => $composition->unit_id,
-                    'pcs' => $product->pcs,
-                    'product_id' => $product->id,
-                    'material_name' => $composition->material->name ?? 'Unknown',
-                ];
-            });
-        })->groupBy('material_id');
-
-        $totalPrice = [];
-        $usedGrandTotal = 0;
-        foreach ($groupProductByMaterial as $materialId => $compositions) {
-            foreach ($compositions as $composition) {
-                $productId = $composition['product_id'];
-
-                $productionDetailsQuery = ProductionDetail::where('product_id', $productId)
-                    ->whereHas('production', function ($query) use ($startDate, $endDate, $selectedWorker) {
-                        $query->whereBetween('date', [$startDate, $endDate]);
-
-                        if ($selectedWorker !== 'semua') {
-                            $query->whereHas('workers', function ($workerQuery) use ($selectedWorker) {
-                                $workerQuery->where('user_id', $selectedWorker);
-                            });
-                        }
-                    });
-
-                $productionDetails = $productionDetailsQuery->get();
-                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
-                $dividedQuantity = $composition['pcs'] > 0 ? $totalProduction / $composition['pcs'] : 0;
-                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
-                $material = Material::find($materialId);
-                $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
-                $priceValue = $totalMaterialQuantity * $materialPrice;
-                $totalPrice[$materialId][] = $priceValue;
-                $usedGrandTotal += $priceValue;
-            }
-        }
-        $prevUsedGrandTotal = $usedGrandTotal;
-
-        $expenseGrandTotal = $expenses->sum('grand_total_actual');
-        $prevExpenseGrandTotal = $prevExpenses->sum('grand_total_actual');
-
-        $groupedMaterials = $details->groupBy('material_id')->map(function ($items) {
-            $total = $items->sum('total_price');
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->material->name ?? 'Unknown',
-            ];
-        });
-
-        $sorted = $groupedMaterials->sortByDesc('total');
-        $best = $sorted->first();
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $prevBest = $prevDetails->groupBy('material_id')->map(function ($items) {
-            return [
-                'total' => $items->sum('total_price'),
-                'name' => $items->first()->material->name ?? 'Unknown',
-            ];
-        })->sortByDesc('total')->first();
-
-        $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
-            return [
-                'total' => $items->sum('total_price'),
-                'name' => $items->first()->material->name ?? 'Unknown',
-            ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $diffStats = [
-            'expenseGrandTotal' => $this->calculateDiff($expenseGrandTotal, $prevExpenseGrandTotal),
-            'usedGrandTotal' => $this->calculateDiff($usedGrandTotal, $prevUsedGrandTotal),
-            'remainGrandTotal' => $this->calculateDiff($remainGrandTotal, $prevRemainGrandTotal),
-            'totalExpense' => $this->calculateDiff($totalExpense, $prevTotalExpense),
-            'bestMaterial' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
-            'worstMaterial' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
-        ];
-
         $workerName = $selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($selectedWorker)->name ?? 'Unknown');
 
-        // Get top materials
-        $topMaterials = $sorted->take(10)->toArray();
-
-        // Get material table data
-        $materialTables = [];
-        $allMaterials = Material::with(['material_details.unit', 'batches'])->get();
-        foreach ($allMaterials as $material) {
-            foreach ($material->material_details as $detail) {
-                $remainBatchQty = $material->batches->where('unit_id', $detail->unit_id)->sum('batch_quantity');
-                $materialTables[] = [
-                    'name' => $material->name,
-                    'unit' => $detail->unit->name ?? '-',
-                    'supply_price' => $detail->supply_price,
-                    'sell_price' => $detail->sell_price,
-                    'min_stock' => $detail->min_stock,
-                    'remain' => $remainBatchQty,
-                    'remain_value' => $detail->supply_price * $remainBatchQty,
-                    'status' => $remainBatchQty <= $detail->min_stock ? 'Rendah' : 'Aman',
-                ];
-            }
-        }
-
-        $pdf = Pdf::loadView('pdf.laporan-inventori', [
+        $viewData = [
+            'reportContent' => $reportContent,
             'dateRange' => $dateRange,
             'workerName' => $workerName,
-            'expenseGrandTotal' => $expenseGrandTotal,
-            'usedGrandTotal' => $usedGrandTotal,
-            'remainGrandTotal' => $remainGrandTotal,
-            'totalExpense' => $totalExpense,
-            'bestMaterial' => $best,
-            'worstMaterial' => $worst,
-            'diffStats' => $diffStats,
-            'topMaterials' => $topMaterials,
-            'materialTables' => $materialTables,
-        ]);
+        ];
+
+        // Load data based on reportContent
+        if ($reportContent === 'belanja') {
+            // Belanja Report
+            $expensesQuery = \App\Models\Expense::with(['supplier', 'expenseDetails.material', 'expenseDetails.unit'])
+                ->whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()]);
+
+            if ($selectedWorker !== 'semua') {
+                $expenseIds = \Spatie\Activitylog\Models\Activity::inLog('expenses')
+                    ->where('causer_id', $selectedWorker)
+                    ->pluck('subject_id')
+                    ->unique();
+
+                $expensesQuery->whereIn('id', $expenseIds);
+            }
+
+            $expenses = $expensesQuery->get();
+
+            $expenseData = $expenses->map(function ($expense) {
+                $workerName = \Spatie\Activitylog\Models\Activity::inLog('expenses')
+                    ->where('subject_id', $expense->id)
+                    ->latest()
+                    ->first()?->causer->name ?? '-';
+
+                return [
+                    'expense_number' => $expense->expense_number,
+                    'expense_date' => Carbon::parse($expense->expense_date)->translatedFormat('d F Y'),
+                    'supplier_name' => $expense->supplier->name ?? '-',
+                    'worker_name' => $workerName,
+                    'status' => $expense->status,
+                    'grand_total' => $expense->grand_total_actual,
+                    'details' => $expense->expenseDetails->map(function ($detail) {
+                        return [
+                            'material_name' => $detail->material->name ?? '-',
+                            'unit_name' => $detail->unit->name ?? '-',
+                            'quantity_expect' => $detail->quantity_expect,
+                            'quantity_get' => $detail->quantity_get,
+                            'price_expect' => $detail->price_expect,
+                            'price_get' => $detail->price_get,
+                            'total_expect' => $detail->total_expect,
+                            'total_actual' => $detail->total_actual,
+                        ];
+                    }),
+                ];
+            });
+
+            $viewData['expenseData'] = $expenseData;
+        } elseif ($reportContent === 'persediaan') {
+            // Persediaan Report
+            // Calculate cumulative expense details until end date
+            $cumulativeExpenseDetails = \App\Models\ExpenseDetail::with('material')
+                ->whereHas('expense', function ($query) use ($endDate) {
+                    $query->where('expense_date', '<=', $endDate->toDateString());
+                })
+                ->get();
+
+            $grandTotal = 0;
+            foreach ($cumulativeExpenseDetails as $detail) {
+                $grandTotal += $detail->total_actual;
+            }
+
+            // Calculate cumulative production material usage until end date
+            $usedGrandTotal = 0;
+            $materialUsage = [];
+
+            $products = \App\Models\Product::with(['product_compositions.material'])->get();
+            $groupProductByMaterial = $products->flatMap(function ($product) {
+                return $product->product_compositions->map(function ($composition) use ($product) {
+                    return [
+                        'material_id' => $composition->material_id,
+                        'material_quantity' => $composition->material_quantity,
+                        'unit_id' => $composition->unit_id,
+                        'pcs' => $product->pcs,
+                        'product_id' => $product->id,
+                        'material_name' => $composition->material->name ?? 'Unknown',
+                    ];
+                });
+            })->groupBy('material_id');
+
+            foreach ($groupProductByMaterial as $materialId => $compositions) {
+                foreach ($compositions as $composition) {
+                    $productId = $composition['product_id'];
+
+                    $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
+                        ->whereHas('production', function ($query) use ($endDate, $selectedWorker) {
+                            $query->where('start_date', '<=', $endDate->toDateString());
+
+                            if ($selectedWorker !== 'semua') {
+                                $query->whereHas('workers', function ($workerQuery) use ($selectedWorker) {
+                                    $workerQuery->where('user_id', $selectedWorker);
+                                });
+                            }
+                        });
+
+                    $productionDetails = $productionDetailsQuery->get();
+                    $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
+                    $dividedQuantity = $composition['pcs'] > 0 ? $totalProduction / $composition['pcs'] : 0;
+                    $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
+                    $material = \App\Models\Material::find($materialId);
+                    $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
+                    $priceValue = $totalMaterialQuantity * $materialPrice;
+
+                    if (! isset($materialUsage[$materialId])) {
+                        $materialUsage[$materialId] = [
+                            'material_name' => $composition['material_name'],
+                            'quantity_used' => 0,
+                            'value_used' => 0,
+                        ];
+                    }
+
+                    $materialUsage[$materialId]['quantity_used'] += $totalMaterialQuantity;
+                    $materialUsage[$materialId]['value_used'] += $priceValue;
+                    $usedGrandTotal += $priceValue;
+                }
+            }
+
+            $remainGrandTotal = $grandTotal - $usedGrandTotal;
+
+            $viewData['grandTotal'] = $grandTotal;
+            $viewData['usedGrandTotal'] = $usedGrandTotal;
+            $viewData['remainGrandTotal'] = $remainGrandTotal;
+            $viewData['materialUsage'] = array_values($materialUsage);
+        } elseif ($reportContent === 'alur') {
+            // Alur Report
+            $flowQuery = \App\Models\InventoryLog::with(['material', 'materialBatch.unit', 'user'])
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            if ($selectedWorker !== 'semua') {
+                $flowQuery->where('user_id', $selectedWorker);
+            }
+
+            $flowData = $flowQuery->orderBy('created_at', 'desc')->get()->map(function ($log) {
+                return [
+                    'created_at' => Carbon::parse($log->created_at)->translatedFormat('d F Y H:i'),
+                    'material_name' => $log->material->name ?? '-',
+                    'batch_number' => $log->materialBatch->batch_number ?? '-',
+                    'unit_name' => $log->materialBatch->unit->name ?? '-',
+                    'action' => $log->action,
+                    'quantity_change' => $log->quantity_change,
+                    'quantity_after' => $log->quantity_after,
+                    'user_name' => $log->user->name ?? '-',
+                    'note' => $log->note ?? '-',
+                ];
+            });
+
+            $viewData['flowData'] = $flowData;
+        }
+
+        $pdf = Pdf::loadView('pdf.export-inventori', $viewData);
 
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->stream('laporan-inventori-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('export-inventori-' . $reportContent . '-' . now()->format('Y-m-d') . '.pdf');
     }
 
     public function laporanProduksi(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', 'produksi');
         $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
         $customStartDate = $request->get('customStartDate');
@@ -758,9 +820,6 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->toDateString();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->toDateString() : $startDate;
-            $lengthDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
-            $prevStart = Carbon::parse($startDate)->subDays($lengthDays)->toDateString();
-            $prevEnd = Carbon::parse($startDate)->subDay()->toDateString();
             $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
@@ -769,42 +828,56 @@ class PdfController extends Controller
                 case 'Hari':
                     $startDate = $selectedDateCarbon->toDateString();
                     $endDate = $selectedDateCarbon->toDateString();
-                    $prevStart = $selectedDateCarbon->copy()->subDay()->toDateString();
-                    $prevEnd = $selectedDateCarbon->copy()->subDay()->toDateString();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
                     break;
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek()->toDateString();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek()->toDateString();
-                    $prevStart = $selectedDateCarbon->copy()->subWeek()->startOfWeek()->toDateString();
-                    $prevEnd = $selectedDateCarbon->copy()->subWeek()->endOfWeek()->toDateString();
                     $dateRange = Carbon::parse($startDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($endDate)->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth()->toDateString();
                     $endDate = $selectedDateCarbon->copy()->endOfMonth()->toDateString();
-                    $prevStart = $selectedDateCarbon->copy()->subMonth()->startOfMonth()->toDateString();
-                    $prevEnd = $selectedDateCarbon->copy()->subMonth()->endOfMonth()->toDateString();
                     $dateRange = $selectedDateCarbon->translatedFormat('F Y');
                     break;
                 case 'Tahun':
                     $startDate = $selectedDateCarbon->copy()->startOfYear()->toDateString();
                     $endDate = $selectedDateCarbon->copy()->endOfYear()->toDateString();
-                    $prevStart = $selectedDateCarbon->copy()->subYear()->startOfYear()->toDateString();
-                    $prevEnd = $selectedDateCarbon->copy()->subYear()->endOfYear()->toDateString();
                     $dateRange = 'Tahun ' . $selectedDateCarbon->year;
                     break;
                 default:
                     $startDate = $selectedDateCarbon->toDateString();
                     $endDate = $selectedDateCarbon->toDateString();
-                    $prevStart = $selectedDateCarbon->copy()->subDay()->toDateString();
-                    $prevEnd = $selectedDateCarbon->copy()->subDay()->toDateString();
                     $dateRange = $selectedDateCarbon->translatedFormat('d F Y');
             }
         }
 
-        // Query productions
-        $productionsQuery = Production::whereBetween('start_date', [$startDate, $endDate])
+        $workerName = $selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($selectedWorker)?->name ?? 'Unknown');
+        $methodName = match ($selectedMethod) {
+            'semua' => 'Semua Metode',
+            'pesanan-reguler' => 'Pesanan Reguler',
+            'pesanan-kotak' => 'Pesanan Kotak',
+            'siap-beli' => 'Siap Saji',
+            default => 'Semua Metode',
+        };
+
+        // Route to appropriate export method based on reportContent
+        switch ($reportContent) {
+            case 'produksi':
+                return $this->exportProduksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+            case 'berhasil':
+                return $this->exportBerhasil($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+            case 'gagal':
+                return $this->exportGagal($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+            default:
+                return $this->exportProduksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName);
+        }
+    }
+
+    private function exportProduksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
+        $productionsQuery = Production::with(['details.product', 'workers.worker'])
+            ->whereBetween('start_date', [$startDate, $endDate])
             ->where('is_finish', true);
 
         if ($selectedWorker !== 'semua') {
@@ -815,124 +888,113 @@ class PdfController extends Controller
             $productionsQuery->where('method', $selectedMethod);
         }
 
-        $productions = $productionsQuery->get();
+        $productions = $productionsQuery->orderBy('start_date', 'desc')->get();
 
-        // Prev productions
-        $prevProductionsQuery = Production::whereBetween('start_date', [$prevStart, $prevEnd])
-            ->where('is_finish', true);
-
-        if ($selectedWorker !== 'semua') {
-            $prevProductionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
-        }
-
-        if ($selectedMethod !== 'semua') {
-            $prevProductionsQuery->where('method', $selectedMethod);
-        }
-
-        $prevProductions = $prevProductionsQuery->get();
-
-        $productionIds = $productions->pluck('id');
-        $prevProductionIds = $prevProductions->pluck('id');
-
-        $details = ProductionDetail::with('product')
-            ->whereIn('production_id', $productionIds)
-            ->get();
-
-        $prevDetails = ProductionDetail::with('product')
-            ->whereIn('production_id', $prevProductionIds)
-            ->get();
-
-        $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum('quantity_get');
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        });
-
-        $sorted = $groupedProducts->sortByDesc('total');
-        $top10 = $sorted->take(10);
-        $best = $sorted->first();
-
-        $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum('quantity_get');
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->sortByDesc('total')->first();
-
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum('quantity_get');
-
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
-
-        $successProduction = $details
-            ->where('quantity_get', '>', 0)
-            ->sum('quantity_get');
-        $prevSuccessProduction = $prevDetails
-            ->where('quantity_get', '>', 0)
-            ->sum('quantity_get');
-
-        $failedProduction = $details->sum('quantity_fail');
-        $prevFailedProduction = $prevDetails->sum('quantity_fail');
-
-        $totalProduction = $successProduction + $failedProduction;
-        $prevTotalProduction = $prevSuccessProduction + $prevFailedProduction;
-
-        $diffStats = [
-            'successProduction' => $this->calculateDiff($successProduction, $prevSuccessProduction),
-            'failedProduction' => $this->calculateDiff($failedProduction, $prevFailedProduction),
-            'totalProduction' => $this->calculateDiff($totalProduction, $prevTotalProduction),
-            'bestProduction' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
-            'worstProduction' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
-        ];
-
-        $workerName = $selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($selectedWorker)->name ?? 'Unknown');
-        $methodName = $selectedMethod === 'semua' ? 'Semua Metode' : $selectedMethod;
-
-        // Get production products data
-        $products = Product::with('category')->get();
-        $productionProducts = [];
-        foreach ($products as $product) {
-            $produced = $details->where('product_id', $product->id)->sum('quantity_get');
-            $failed = $details->where('product_id', $product->id)->sum('quantity_fail');
-            if ($produced > 0 || $failed > 0) {
-                $productionProducts[] = [
-                    'name' => $product->name,
-                    'category' => $product->category->name ?? '-',
-                    'produced' => $produced,
-                    'failed' => $failed,
-                    'total' => $produced + $failed,
+        $productionData = [];
+        foreach ($productions as $production) {
+            foreach ($production->details as $detail) {
+                $productionData[] = [
+                    'date' => Carbon::parse($production->start_date)->translatedFormat('d F Y'),
+                    'product' => $detail->product->name ?? '-',
+                    'total' => $detail->quantity_get + $detail->quantity_fail,
+                    'success' => $detail->quantity_get,
+                    'fail' => $detail->quantity_fail,
+                    'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                    'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
                 ];
             }
         }
 
-        usort($productionProducts, fn($a, $b) => $b['produced'] - $a['produced']);
-
-        $pdf = Pdf::loadView('pdf.laporan-produksi', [
+        $pdf = Pdf::loadView('pdf.laporan-produksi-produksi', [
             'dateRange' => $dateRange,
             'workerName' => $workerName,
             'methodName' => $methodName,
-            'successProduction' => $successProduction,
-            'failedProduction' => $failedProduction,
-            'totalProduction' => $totalProduction,
-            'bestProduction' => $best,
-            'worstProduction' => $worst,
-            'diffStats' => $diffStats,
-            'topProductions' => $top10->toArray(),
-            'productionProducts' => $productionProducts,
+            'productionData' => $productionData,
         ]);
 
         return $pdf->stream('laporan-produksi-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportBerhasil($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
+        $productionsQuery = Production::with(['details.product', 'workers.worker'])
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->where('is_finish', true);
+
+        if ($selectedWorker !== 'semua') {
+            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
+        }
+
+        if ($selectedMethod !== 'semua') {
+            $productionsQuery->where('method', $selectedMethod);
+        }
+
+        $productions = $productionsQuery->orderBy('start_date', 'desc')->get();
+
+        $productionData = [];
+        foreach ($productions as $production) {
+            foreach ($production->details as $detail) {
+                if ($detail->quantity_get > 0) {
+                    $productionData[] = [
+                        'date' => Carbon::parse($production->start_date)->translatedFormat('d F Y'),
+                        'product' => $detail->product->name ?? '-',
+                        'success' => $detail->quantity_get,
+                        'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                        'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
+                    ];
+                }
+            }
+        }
+
+        $pdf = Pdf::loadView('pdf.laporan-produksi-berhasil', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'methodName' => $methodName,
+            'productionData' => $productionData,
+        ]);
+
+        return $pdf->stream('laporan-produksi-berhasil-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function exportGagal($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
+    {
+        $productionsQuery = Production::with(['details.product', 'workers.worker'])
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->where('is_finish', true);
+
+        if ($selectedWorker !== 'semua') {
+            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
+        }
+
+        if ($selectedMethod !== 'semua') {
+            $productionsQuery->where('method', $selectedMethod);
+        }
+
+        $productions = $productionsQuery->orderBy('start_date', 'desc')->get();
+
+        $productionData = [];
+        foreach ($productions as $production) {
+            foreach ($production->details as $detail) {
+                if ($detail->quantity_fail > 0) {
+                    $productionData[] = [
+                        'date' => Carbon::parse($production->start_date)->translatedFormat('d F Y'),
+                        'product' => $detail->product->name ?? '-',
+                        'fail' => $detail->quantity_fail,
+                        'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                        'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
+                    ];
+                }
+            }
+        }
+
+        $pdf = Pdf::loadView('pdf.laporan-produksi-gagal', [
+            'dateRange' => $dateRange,
+            'workerName' => $workerName,
+            'methodName' => $methodName,
+            'productionData' => $productionData,
+        ]);
+
+        return $pdf->stream('laporan-produksi-gagal-' . now()->format('Y-m-d') . '.pdf');
     }
 
     private function calculateDiff($current, $previous)
@@ -950,35 +1012,57 @@ class PdfController extends Controller
     public function kasirExcel(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', 'keuangan');
+        $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $customStartDate = $request->get('customStartDate');
+        $customEndDate = $request->get('customEndDate');
         $selectedWorker = $request->get('selectedWorker', 'semua');
-        $saleMethod = $request->get('saleMethod', 'semua');
+        $selectedMethod = $request->get('selectedMethod', 'semua');
 
-        $filename = 'Laporan_Kasir_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Laporan_Kasir_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
 
-        return Excel::download(new KasirExport($selectedDate, $selectedWorker, $saleMethod), $filename);
+        return Excel::download(
+            new KasirExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker, $selectedMethod),
+            $filename
+        );
     }
 
     public function produksiExcel(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', 'produksi');
+        $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $customStartDate = $request->get('customStartDate');
+        $customEndDate = $request->get('customEndDate');
         $selectedWorker = $request->get('selectedWorker', 'semua');
+        $selectedMethod = $request->get('selectedMethod', 'semua');
 
-        $filename = 'Laporan_Produksi_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Laporan_Produksi_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
 
-        return Excel::download(new ProduksiExport($selectedDate, $selectedWorker), $filename);
+        return Excel::download(
+            new ProduksiExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker, $selectedMethod),
+            $filename
+        );
     }
 
     public function inventoriExcel(Request $request)
     {
         set_time_limit(120);
+        $reportContent = $request->get('reportContent', '');
+        $filterPeriod = $request->get('filterPeriod', 'Hari');
         $selectedDate = $request->get('selectedDate', now()->toDateString());
+        $customStartDate = $request->get('customStartDate');
+        $customEndDate = $request->get('customEndDate');
         $selectedWorker = $request->get('selectedWorker', 'semua');
 
-        $filename = 'Laporan_Inventori_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Export_Inventori_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
 
-        return Excel::download(new InventoriExport($selectedDate, $selectedWorker), $filename);
+        return Excel::download(
+            new InventoriExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker),
+            $filename
+        );
     }
 
     public function generateStrukPDF($id)

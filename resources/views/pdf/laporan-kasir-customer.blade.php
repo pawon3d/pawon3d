@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Kasir - Pelanggan Baru - {{ $dateRange }}</title>
+    <style>
+        @page {
+            margin: 15mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3f4e4f;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #3f4e4f;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #3f4e4f;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        table.data-table th,
+        table.data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.data-table th {
+            background-color: #3f4e4f;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        table.data-table td {
+            font-size: 10px;
+        }
+
+        table.data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 9px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Laporan Kasir - Pelanggan Baru</h1>
+        <p>Periode: {{ $dateRange }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Daftar Pelanggan Baru</div>
+        @if (count($customerData) > 0)
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="20%">Nomor HP</th>
+                        <th width="30%">Nama</th>
+                        <th width="20%" class="text-center">Jumlah Transaksi</th>
+                        <th width="25%">Transaksi Pertama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($customerData as $index => $customer)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $customer['phone'] }}</td>
+                            <td>{{ $customer['name'] }}</td>
+                            <td class="text-center">{{ number_format($customer['transaction_count'], 0, ',', '.') }}
+                            </td>
+                            <td>{{ $customer['first_transaction'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <p style="text-align: center; padding: 20px; color: #999;">Tidak ada data pelanggan baru</p>
+        @endif
+    </div>
+
+    <div class="footer">
+        <p>Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }}</p>
+    </div>
+</body>
+
+</html>

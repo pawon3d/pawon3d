@@ -112,6 +112,45 @@ class LaporanKasir extends Component
         $this->shouldUpdateChart = true;
     }
 
+    public function previousYear()
+    {
+        $this->currentMonth = Carbon::parse($this->currentMonth)->subYear()->toDateString();
+        $this->shouldUpdateChart = true;
+    }
+
+    public function nextYear()
+    {
+        $this->currentMonth = Carbon::parse($this->currentMonth)->addYear()->toDateString();
+        $this->shouldUpdateChart = true;
+    }
+
+    public function selectYear($year)
+    {
+        $this->selectedDate = Carbon::create($year, 1, 1)->toDateString();
+        $this->currentMonth = $this->selectedDate;
+        $this->showCalendar = false;
+        $this->resetPage();
+        $this->shouldUpdateChart = true;
+    }
+
+    public function selectMonth($month)
+    {
+        $year = Carbon::parse($this->currentMonth)->year;
+
+        if ($this->filterPeriod === 'Bulan') {
+            // For Bulan filter, select first day of that month
+            $this->selectedDate = Carbon::create($year, $month, 1)->toDateString();
+        } else {
+            // For Minggu filter, select first day of first week of that month
+            $this->selectedDate = Carbon::create($year, $month, 1)->startOfWeek()->toDateString();
+        }
+
+        $this->currentMonth = Carbon::create($year, $month, 1)->toDateString();
+        $this->showCalendar = false;
+        $this->resetPage();
+        $this->shouldUpdateChart = true;
+    }
+
     public function getCalendarProperty()
     {
         $month = Carbon::parse($this->currentMonth);
@@ -295,225 +334,225 @@ class LaporanKasir extends Component
         $this->currentPage = 1;
     }
 
-    public function exportPdf()
-    {
-        // Determine date range based on filter period
-        if ($this->filterPeriod === 'Custom' && $this->customStartDate) {
-            $startDate = Carbon::parse($this->customStartDate)->startOfDay();
-            $endDate = $this->customEndDate ? Carbon::parse($this->customEndDate)->endOfDay() : Carbon::parse($this->customStartDate)->endOfDay();
-            $lengthDays = Carbon::parse($this->customStartDate)->diffInDays(Carbon::parse($this->customEndDate ?? $this->customStartDate)) + 1;
-            $prevStart = Carbon::parse($this->customStartDate)->subDays($lengthDays)->startOfDay();
-            $prevEnd = Carbon::parse($this->customStartDate)->subDay()->endOfDay();
-            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
-        } else {
-            $selectedDate = Carbon::parse($this->selectedDate);
+    // public function exportPdf()
+    // {
+    //     // Determine date range based on filter period
+    //     if ($this->filterPeriod === 'Custom' && $this->customStartDate) {
+    //         $startDate = Carbon::parse($this->customStartDate)->startOfDay();
+    //         $endDate = $this->customEndDate ? Carbon::parse($this->customEndDate)->endOfDay() : Carbon::parse($this->customStartDate)->endOfDay();
+    //         $lengthDays = Carbon::parse($this->customStartDate)->diffInDays(Carbon::parse($this->customEndDate ?? $this->customStartDate)) + 1;
+    //         $prevStart = Carbon::parse($this->customStartDate)->subDays($lengthDays)->startOfDay();
+    //         $prevEnd = Carbon::parse($this->customStartDate)->subDay()->endOfDay();
+    //         $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+    //     } else {
+    //         $selectedDate = Carbon::parse($this->selectedDate);
 
-            switch ($this->filterPeriod) {
-                case 'Hari':
-                    $startDate = $selectedDate->copy()->startOfDay();
-                    $endDate = $selectedDate->copy()->endOfDay();
-                    $prevStart = $selectedDate->copy()->subDay()->startOfDay();
-                    $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
-                    $dateRange = $selectedDate->translatedFormat('d F Y');
-                    break;
-                case 'Minggu':
-                    $startDate = $selectedDate->copy()->startOfWeek()->startOfDay();
-                    $endDate = $selectedDate->copy()->endOfWeek()->endOfDay();
-                    $prevStart = $selectedDate->copy()->subWeek()->startOfWeek()->startOfDay();
-                    $prevEnd = $selectedDate->copy()->subWeek()->endOfWeek()->endOfDay();
-                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
-                    break;
-                case 'Bulan':
-                    $startDate = $selectedDate->copy()->startOfMonth()->startOfDay();
-                    $endDate = $selectedDate->copy()->endOfMonth()->endOfDay();
-                    $prevStart = $selectedDate->copy()->subMonth()->startOfMonth()->startOfDay();
-                    $prevEnd = $selectedDate->copy()->subMonth()->endOfMonth()->endOfDay();
-                    $dateRange = $selectedDate->translatedFormat('F Y');
-                    break;
-                case 'Tahun':
-                    $startDate = $selectedDate->copy()->startOfYear()->startOfDay();
-                    $endDate = $selectedDate->copy()->endOfYear()->endOfDay();
-                    $prevStart = $selectedDate->copy()->subYear()->startOfYear()->startOfDay();
-                    $prevEnd = $selectedDate->copy()->subYear()->endOfYear()->endOfDay();
-                    $dateRange = 'Tahun ' . $selectedDate->year;
-                    break;
-                default:
-                    $startDate = $selectedDate->copy()->startOfDay();
-                    $endDate = $selectedDate->copy()->endOfDay();
-                    $prevStart = $selectedDate->copy()->subDay()->startOfDay();
-                    $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
-                    $dateRange = $selectedDate->translatedFormat('d F Y');
-            }
-        }
+    //         switch ($this->filterPeriod) {
+    //             case 'Hari':
+    //                 $startDate = $selectedDate->copy()->startOfDay();
+    //                 $endDate = $selectedDate->copy()->endOfDay();
+    //                 $prevStart = $selectedDate->copy()->subDay()->startOfDay();
+    //                 $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
+    //                 $dateRange = $selectedDate->translatedFormat('d F Y');
+    //                 break;
+    //             case 'Minggu':
+    //                 $startDate = $selectedDate->copy()->startOfWeek()->startOfDay();
+    //                 $endDate = $selectedDate->copy()->endOfWeek()->endOfDay();
+    //                 $prevStart = $selectedDate->copy()->subWeek()->startOfWeek()->startOfDay();
+    //                 $prevEnd = $selectedDate->copy()->subWeek()->endOfWeek()->endOfDay();
+    //                 $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+    //                 break;
+    //             case 'Bulan':
+    //                 $startDate = $selectedDate->copy()->startOfMonth()->startOfDay();
+    //                 $endDate = $selectedDate->copy()->endOfMonth()->endOfDay();
+    //                 $prevStart = $selectedDate->copy()->subMonth()->startOfMonth()->startOfDay();
+    //                 $prevEnd = $selectedDate->copy()->subMonth()->endOfMonth()->endOfDay();
+    //                 $dateRange = $selectedDate->translatedFormat('F Y');
+    //                 break;
+    //             case 'Tahun':
+    //                 $startDate = $selectedDate->copy()->startOfYear()->startOfDay();
+    //                 $endDate = $selectedDate->copy()->endOfYear()->endOfDay();
+    //                 $prevStart = $selectedDate->copy()->subYear()->startOfYear()->startOfDay();
+    //                 $prevEnd = $selectedDate->copy()->subYear()->endOfYear()->endOfDay();
+    //                 $dateRange = 'Tahun ' . $selectedDate->year;
+    //                 break;
+    //             default:
+    //                 $startDate = $selectedDate->copy()->startOfDay();
+    //                 $endDate = $selectedDate->copy()->endOfDay();
+    //                 $prevStart = $selectedDate->copy()->subDay()->startOfDay();
+    //                 $prevEnd = $selectedDate->copy()->subDay()->endOfDay();
+    //                 $dateRange = $selectedDate->translatedFormat('d F Y');
+    //         }
+    //     }
 
-        // Query transactions
-        $transactionsQuery = Transaction::whereBetween('start_date', [$startDate, $endDate])
-            ->where('status', 'Selesai');
+    //     // Query transactions
+    //     $transactionsQuery = Transaction::whereBetween('start_date', [$startDate, $endDate])
+    //         ->where('status', 'Selesai');
 
-        if ($this->selectedWorker !== 'semua') {
-            $transactionsQuery->where('user_id', $this->selectedWorker);
-        }
+    //     if ($this->selectedWorker !== 'semua') {
+    //         $transactionsQuery->where('user_id', $this->selectedWorker);
+    //     }
 
-        if ($this->selectedMethod !== 'semua') {
-            $transactionsQuery->where('method', $this->selectedMethod);
-        }
+    //     if ($this->selectedMethod !== 'semua') {
+    //         $transactionsQuery->where('method', $this->selectedMethod);
+    //     }
 
-        $transactions = $transactionsQuery->get();
+    //     $transactions = $transactionsQuery->get();
 
-        // Prev transactions
-        $prevTransactionsQuery = Transaction::whereBetween('start_date', [$prevStart, $prevEnd])
-            ->where('status', 'Selesai');
+    //     // Prev transactions
+    //     $prevTransactionsQuery = Transaction::whereBetween('start_date', [$prevStart, $prevEnd])
+    //         ->where('status', 'Selesai');
 
-        if ($this->selectedWorker !== 'semua') {
-            $prevTransactionsQuery->where('user_id', $this->selectedWorker);
-        }
+    //     if ($this->selectedWorker !== 'semua') {
+    //         $prevTransactionsQuery->where('user_id', $this->selectedWorker);
+    //     }
 
-        if ($this->selectedMethod !== 'semua') {
-            $prevTransactionsQuery->where('method', $this->selectedMethod);
-        }
+    //     if ($this->selectedMethod !== 'semua') {
+    //         $prevTransactionsQuery->where('method', $this->selectedMethod);
+    //     }
 
-        $prevTransactions = $prevTransactionsQuery->get();
+    //     $prevTransactions = $prevTransactionsQuery->get();
 
-        $transactionIds = $transactions->pluck('id');
-        $prevTransactionIds = $prevTransactions->pluck('id');
+    //     $transactionIds = $transactions->pluck('id');
+    //     $prevTransactionIds = $prevTransactions->pluck('id');
 
-        $details = TransactionDetail::with('product')
-            ->whereIn('transaction_id', $transactionIds)
-            ->get();
+    //     $details = TransactionDetail::with('product')
+    //         ->whereIn('transaction_id', $transactionIds)
+    //         ->get();
 
-        $prevDetails = TransactionDetail::with('product')
-            ->whereIn('transaction_id', $prevTransactionIds)
-            ->get();
+    //     $prevDetails = TransactionDetail::with('product')
+    //         ->whereIn('transaction_id', $prevTransactionIds)
+    //         ->get();
 
-        $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //     $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
+    //         $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
 
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        });
+    //         return [
+    //             'total' => $total,
+    //             'name' => $items->first()->product->name ?? 'Unknown',
+    //         ];
+    //     });
 
-        $sorted = $groupedProducts->sortByDesc('total');
-        $top10 = $sorted->take(10);
-        $best = $sorted->first();
+    //     $sorted = $groupedProducts->sortByDesc('total');
+    //     $top10 = $sorted->take(10);
+    //     $best = $sorted->first();
 
-        $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //     $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
+    //         $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
 
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->sortByDesc('total')->first();
+    //         return [
+    //             'total' => $total,
+    //             'name' => $items->first()->product->name ?? 'Unknown',
+    //         ];
+    //     })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+    //     $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
-        $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //     $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
+    //         $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
 
-            return [
-                'total' => $total,
-                'name' => $items->first()->product->name ?? 'Unknown',
-            ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+    //         return [
+    //             'total' => $total,
+    //             'name' => $items->first()->product->name ?? 'Unknown',
+    //         ];
+    //     })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
 
-        $sessionCount = $transactions->unique('created_by_shift')->count();
-        $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
+    //     $sessionCount = $transactions->unique('created_by_shift')->count();
+    //     $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
 
-        $transactionCount = $transactions->count();
-        $prevTransactionCount = $prevTransactions->count();
+    //     $transactionCount = $transactions->count();
+    //     $prevTransactionCount = $prevTransactions->count();
 
-        $customerCount = $transactions->unique('phone')->count();
-        $prevCustomerCount = $prevTransactions->unique('phone')->count();
+    //     $customerCount = $transactions->unique('phone')->count();
+    //     $prevCustomerCount = $prevTransactions->unique('phone')->count();
 
-        $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
-        $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //     $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //     $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
 
-        $grossRevenue = $transactions->sum('total_amount');
-        $prevGrossRevenue = $prevTransactions->sum('total_amount');
+    //     $grossRevenue = $transactions->sum('total_amount');
+    //     $prevGrossRevenue = $prevTransactions->sum('total_amount');
 
-        $discountTotal = $transactions->sum('points_discount');
-        $prevDiscountTotal = $prevTransactions->sum('points_discount');
+    //     $discountTotal = $transactions->sum('points_discount');
+    //     $prevDiscountTotal = $prevTransactions->sum('points_discount');
 
-        $refundTotal = $transactions->sum('total_refund');
-        $prevRefundTotal = $prevTransactions->sum('total_refund');
+    //     $refundTotal = $transactions->sum('total_refund');
+    //     $prevRefundTotal = $prevTransactions->sum('total_refund');
 
-        $netRevenue = $grossRevenue - $refundTotal - $discountTotal;
-        $prevNetRevenue = $prevGrossRevenue - $prevRefundTotal - $prevDiscountTotal;
+    //     $netRevenue = $grossRevenue - $refundTotal - $discountTotal;
+    //     $prevNetRevenue = $prevGrossRevenue - $prevRefundTotal - $prevDiscountTotal;
 
-        $capitalTotal = $details->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
-        });
-        $prevCapitalTotal = $prevDetails->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
-        });
-        $profit = $netRevenue - $capitalTotal;
-        $prevProfit = $prevNetRevenue - $prevCapitalTotal;
+    //     $capitalTotal = $details->sum(function ($d) {
+    //         return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+    //     });
+    //     $prevCapitalTotal = $prevDetails->sum(function ($d) {
+    //         return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+    //     });
+    //     $profit = $netRevenue - $capitalTotal;
+    //     $prevProfit = $prevNetRevenue - $prevCapitalTotal;
 
-        $diffStats = [
-            'sessionCount' => $this->calculateDiff($sessionCount, $prevSessionCount),
-            'transactionCount' => $this->calculateDiff($transactionCount, $prevTransactionCount),
-            'customerCount' => $this->calculateDiff($customerCount, $prevCustomerCount),
-            'productSold' => $this->calculateDiff($productSold, $prevProductSold),
-            'best' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
-            'worst' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
-            'grossRevenue' => $this->calculateDiff($grossRevenue, $prevGrossRevenue),
-            'discount' => $this->calculateDiff($discountTotal, $prevDiscountTotal),
-            'refund' => $this->calculateDiff($refundTotal, $prevRefundTotal),
-            'netRevenue' => $this->calculateDiff($netRevenue, $prevNetRevenue),
-            'profit' => $this->calculateDiff($profit, $prevProfit),
-        ];
+    //     $diffStats = [
+    //         'sessionCount' => $this->calculateDiff($sessionCount, $prevSessionCount),
+    //         'transactionCount' => $this->calculateDiff($transactionCount, $prevTransactionCount),
+    //         'customerCount' => $this->calculateDiff($customerCount, $prevCustomerCount),
+    //         'productSold' => $this->calculateDiff($productSold, $prevProductSold),
+    //         'best' => $this->calculateDiff($best['total'] ?? 0, $prevBest['total'] ?? 0),
+    //         'worst' => $this->calculateDiff($worst['total'] ?? 0, $prevWorst['total'] ?? 0),
+    //         'grossRevenue' => $this->calculateDiff($grossRevenue, $prevGrossRevenue),
+    //         'discount' => $this->calculateDiff($discountTotal, $prevDiscountTotal),
+    //         'refund' => $this->calculateDiff($refundTotal, $prevRefundTotal),
+    //         'netRevenue' => $this->calculateDiff($netRevenue, $prevNetRevenue),
+    //         'profit' => $this->calculateDiff($profit, $prevProfit),
+    //     ];
 
-        // Product sales for table
-        $products = Product::all();
-        $productSales = $products->map(function ($product) use ($details) {
-            $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
-            $produksi = $terjual;
-            $tidakTerjual = max(0, $produksi - $terjual);
+    //     // Product sales for table
+    //     $products = Product::all();
+    //     $productSales = $products->map(function ($product) use ($details) {
+    //         $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
+    //         $produksi = $terjual;
+    //         $tidakTerjual = max(0, $produksi - $terjual);
 
-            return (object) [
-                'name' => $product->name,
-                'produksi' => $produksi,
-                'sold' => $terjual,
-                'unsold' => $tidakTerjual,
-            ];
-        })->filter(fn($item) => $item->sold > 0)->sortByDesc('sold')->values();
+    //         return (object) [
+    //             'name' => $product->name,
+    //             'produksi' => $produksi,
+    //             'sold' => $terjual,
+    //             'unsold' => $tidakTerjual,
+    //         ];
+    //     })->filter(fn($item) => $item->sold > 0)->sortByDesc('sold')->values();
 
-        // Worker and method names
-        $workerName = $this->selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($this->selectedWorker)?->name ?? 'Unknown');
-        $methodName = match ($this->selectedMethod) {
-            'semua' => 'Semua Metode',
-            'pesanan-reguler' => 'Pesanan Reguler',
-            'pesanan-kotak' => 'Pesanan Kotak',
-            'siap-beli' => 'Siap Saji',
-            default => 'Semua Metode',
-        };
+    //     // Worker and method names
+    //     $workerName = $this->selectedWorker === 'semua' ? 'Semua Pekerja' : (User::find($this->selectedWorker)?->name ?? 'Unknown');
+    //     $methodName = match ($this->selectedMethod) {
+    //         'semua' => 'Semua Metode',
+    //         'pesanan-reguler' => 'Pesanan Reguler',
+    //         'pesanan-kotak' => 'Pesanan Kotak',
+    //         'siap-beli' => 'Siap Saji',
+    //         default => 'Semua Metode',
+    //     };
 
-        $pdf = Pdf::loadView('pdf.laporan-kasir', [
-            'dateRange' => $dateRange,
-            'workerName' => $workerName,
-            'methodName' => $methodName,
-            'sessionCount' => $sessionCount,
-            'transactionCount' => $transactionCount,
-            'customerCount' => $customerCount,
-            'productSold' => $productSold,
-            'bestProduct' => $best,
-            'worstProduct' => $worst,
-            'grossRevenue' => $grossRevenue,
-            'discountTotal' => $discountTotal,
-            'refundTotal' => $refundTotal,
-            'netRevenue' => $netRevenue,
-            'profit' => $profit,
-            'diffStats' => $diffStats,
-            'topProducts' => $top10->toArray(),
-            'productSales' => $productSales,
-        ]);
+    //     $pdf = Pdf::loadView('pdf.laporan-kasir', [
+    //         'dateRange' => $dateRange,
+    //         'workerName' => $workerName,
+    //         'methodName' => $methodName,
+    //         'sessionCount' => $sessionCount,
+    //         'transactionCount' => $transactionCount,
+    //         'customerCount' => $customerCount,
+    //         'productSold' => $productSold,
+    //         'bestProduct' => $best,
+    //         'worstProduct' => $worst,
+    //         'grossRevenue' => $grossRevenue,
+    //         'discountTotal' => $discountTotal,
+    //         'refundTotal' => $refundTotal,
+    //         'netRevenue' => $netRevenue,
+    //         'profit' => $profit,
+    //         'diffStats' => $diffStats,
+    //         'topProducts' => $top10->toArray(),
+    //         'productSales' => $productSales,
+    //     ]);
 
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->output();
-        }, 'laporan-kasir-' . now()->format('Y-m-d') . '.pdf');
-    }
+    //     return response()->streamDownload(function () use ($pdf) {
+    //         echo $pdf->output();
+    //     }, 'laporan-kasir-' . now()->format('Y-m-d') . '.pdf');
+    // }
 
     protected function updateChartData($transactions, $details)
     {
@@ -543,9 +582,7 @@ class LaporanKasir extends Component
             return [
                 match ($method) {
                     'tunai' => 'Tunai',
-                    'transfer' => 'Non-tunai',
-                    'qris' => 'QRIS',
-                    default => 'Lainnya',
+                    default => 'Non Tunai',
                 } => $total,
             ];
         });
@@ -790,10 +827,10 @@ class LaporanKasir extends Component
 
         // Calculate profit/keuntungan
         $capitalTotal = $details->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+            return ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity);
         });
         $prevCapitalTotal = $prevDetails->sum(function ($d) {
-            return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+            return ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity);
         });
         $profit = $netRevenue - $capitalTotal;
         $prevProfit = $prevNetRevenue - $prevCapitalTotal;
@@ -817,7 +854,7 @@ class LaporanKasir extends Component
             $refund = $monthTransactions->sum('total_refund');
             $discount = $monthTransactions->sum('points_discount');
             $net = $gross - $refund - $discount;
-            $modal = $monthDetails->sum(fn($d) => ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity));
+            $modal = $monthDetails->sum(fn($d) => ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity));
             $monthProfit = $net - $modal;
 
             $chartGross[] = $gross;
@@ -839,10 +876,16 @@ class LaporanKasir extends Component
 
         // Product sales data for table
         $products = Product::all();
-        $productSales = $products->map(function ($product) use ($details) {
+        $productSales = $products->map(function ($product) use ($details, $startDate, $endDate) {
             $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
-            // produksi = jumlah stok yang dibuat untuk dijual (gunakan dari data produksi atau pcs)
-            $produksi = $terjual; // simplified - seharusnya dari data produksi
+
+            // Get production count from productions table using start_date
+            $produksi = \App\Models\ProductionDetail::whereHas('production', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('start_date', [$startDate, $endDate]);
+            })
+                ->where('product_id', $product->id)
+                ->sum('quantity_get');
+
             $tidakTerjual = max(0, $produksi - $terjual);
 
             return (object) [
@@ -873,7 +916,7 @@ class LaporanKasir extends Component
             $potonganHarga = $monthTransactions->sum('points_discount');
             $pendapatanBersih = $penjualan - $refund - $potonganHarga;
             $modal = $monthDetails->sum(function ($d) {
-                return ($d->product->pcs_capital ?? 0) * ($d->quantity - $d->refund_quantity);
+                return ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity);
             });
 
             $keuntungan = $pendapatanBersih - $modal;

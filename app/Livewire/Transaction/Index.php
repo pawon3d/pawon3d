@@ -386,10 +386,12 @@ class Index extends Component
         ]);
 
         foreach ($this->cart as $item) {
+            $product = Product::find($item['product_id']);
             $transaction->details()->create([
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
+                'pcs_capital_snapshot' => $product->pcs_capital ?? 0,
             ]);
         }
 

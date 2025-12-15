@@ -9,9 +9,9 @@
         {{-- Header --}}
         <div class="flex justify-between items-center">
             <h1 class="text-xl font-semibold text-[#333333]">Laporan Kasir</h1>
-            <flux:button variant="secondary" icon="printer"
-                onclick="window.open('{{ route('laporan-kasir.pdf') }}?filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}&selectedMethod={{ $selectedMethod }}', '_blank')">
-                Cetak Informasi
+            <flux:button variant="secondary" icon="arrow-down-tray" href="{{ route('laporan-kasir.export') }}"
+                wire:navigate>
+                Unduh Laporan Kasir
             </flux:button>
         </div>
 
@@ -29,6 +29,16 @@
                             @else
                                 {{ \Carbon\Carbon::parse($customStartDate ?? $selectedDate)->translatedFormat('d F Y') }}
                             @endif
+                        @elseif ($filterPeriod === 'Tahun')
+                            {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('Y') }}
+                        @elseif ($filterPeriod === 'Bulan')
+                            {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('F Y') }}
+                        @elseif ($filterPeriod === 'Minggu')
+                            @php
+                                $startOfWeek = \Carbon\Carbon::parse($selectedDate)->startOfWeek();
+                                $endOfWeek = \Carbon\Carbon::parse($selectedDate)->endOfWeek();
+                            @endphp
+                            {{ $startOfWeek->translatedFormat('d F Y') }} - {{ $endOfWeek->translatedFormat('d F Y') }}
                         @else
                             {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('d F Y') }}
                         @endif
@@ -59,134 +69,250 @@
                         @endforeach
                     </div>
 
-                    @if ($filterPeriod === 'Custom' && !empty($customStartDate))
-                        <div class="flex justify-end mb-4">
-                            <button type="button" wire:click="clearCustomRange"
-                                class="text-sm px-3 py-2 rounded-[10px] bg-[#fff] border border-[#d4d4d4] text-[#666666] hover:bg-gray-50">
-                                Hapus Rentang
-                            </button>
+                    @if ($filterPeriod === 'Custom')
+                        {{-- Custom Date Range Picker --}}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-[#666666] mb-2">Dari</label>
+                                <input type="text" wire:model="customStartDate" placeholder="01 Dec 2025"
+                                    x-data="{ displayValue: '' }" x-init="if ($wire.customStartDate) {
+                                        const date = new Date($wire.customStartDate);
+                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                        displayValue = date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                        $el.value = displayValue;
+                                    }
+                                    new Pikaday({
+                                        field: $el,
+                                        format: 'DD MMM YYYY',
+                                        toString(date) {
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            return date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                        },
+                                        parse(dateString) {
+                                            const parts = dateString.split(' ');
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            const monthIndex = months.indexOf(parts[1]);
+                                            return new Date(parts[2], monthIndex, parts[0]);
+                                        },
+                                        onSelect: function(date) {
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            displayValue = date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                            $el.value = displayValue;
+                                            $wire.set('customStartDate', date.getFullYear() + '-' +
+                                                (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                                                date.getDate().toString().padStart(2, '0'));
+                                        }
+                                    });"
+                                    class="w-full px-4 py-2 border border-[#d4d4d4] rounded-[10px] text-[#666666] focus:outline-none focus:ring-2 focus:ring-[#3f4e4f]">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#666666] mb-2">Ke</label>
+                                <input type="text" wire:model="customEndDate" placeholder="31 Dec 2025"
+                                    x-data="{ displayValue: '' }" x-init="if ($wire.customEndDate) {
+                                        const date = new Date($wire.customEndDate);
+                                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                        displayValue = date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                        $el.value = displayValue;
+                                    }
+                                    new Pikaday({
+                                        field: $el,
+                                        format: 'DD MMM YYYY',
+                                        toString(date) {
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            return date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                        },
+                                        parse(dateString) {
+                                            const parts = dateString.split(' ');
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            const monthIndex = months.indexOf(parts[1]);
+                                            return new Date(parts[2], monthIndex, parts[0]);
+                                        },
+                                        onSelect: function(date) {
+                                            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            displayValue = date.getDate().toString().padStart(2, '0') + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                                            $el.value = displayValue;
+                                            $wire.set('customEndDate', date.getFullYear() + '-' +
+                                                (date.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                                                date.getDate().toString().padStart(2, '0'));
+                                        }
+                                    });"
+                                    class="w-full px-4 py-2 border border-[#d4d4d4] rounded-[10px] text-[#666666] focus:outline-none focus:ring-2 focus:ring-[#3f4e4f]">
+                            </div>
                         </div>
-                    @endif
-
-                    {{-- Header Navigation --}}
-                    <div class="flex items-center justify-between mb-4">
-                        <button type="button" wire:click="previousMonth"
-                            class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
-                            <flux:icon icon="chevron-left" class="size-3 text-[#666666]" />
-                        </button>
-                        <div class="text-center">
-                            <p class="text-sm font-medium text-[#666666]">
-                                {{ \Carbon\Carbon::parse($currentMonth)->translatedFormat('F') }}
-                            </p>
-                            <p class="text-sm font-medium text-[#666666]">
+                    @elseif ($filterPeriod === 'Tahun')
+                        {{-- Year Grid --}}
+                        <div class="text-center mb-4">
+                            <p class="text-base font-medium text-[#666666]">
                                 {{ \Carbon\Carbon::parse($currentMonth)->year }}
                             </p>
                         </div>
-                        <button type="button" wire:click="nextMonth"
-                            class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
-                            <flux:icon icon="chevron-right" class="size-3 text-[#666666]" />
-                        </button>
-                    </div>
-
-                    {{-- Day Names --}}
-                    <div class="grid grid-cols-7 gap-5 mb-4">
-                        @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $day)
-                            <div
-                                class="w-[35px] text-center text-sm font-medium {{ in_array($day, ['Sab', 'Min']) ? 'text-[#eb5757]' : 'text-[#666666]' }}">
-                                {{ $day }}
+                        <div class="grid grid-cols-3 gap-3">
+                            @for ($year = \Carbon\Carbon::parse($currentMonth)->year; $year >= \Carbon\Carbon::parse($currentMonth)->year - 11; $year--)
+                                <button type="button" wire:click="selectYear({{ $year }})"
+                                    class="px-4 py-3 text-sm rounded-[10px] transition-colors
+                                    {{ \Carbon\Carbon::parse($selectedDate)->year == $year
+                                        ? 'bg-[#3f4e4f] text-white font-medium'
+                                        : 'bg-[#fafafa] text-[#666666] border border-[#d4d4d4] hover:bg-gray-100' }}">
+                                    {{ $year }}
+                                </button>
+                            @endfor
+                        </div>
+                    @elseif ($filterPeriod === 'Bulan')
+                        {{-- Month Grid for Bulan --}}
+                        <div class="flex items-center justify-between mb-4">
+                            <button type="button" wire:click="previousYear"
+                                class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
+                                <flux:icon icon="chevron-left" class="size-3 text-[#666666]" />
+                            </button>
+                            <div class="text-center">
+                                <p class="text-base font-medium text-[#666666]">
+                                    {{ \Carbon\Carbon::parse($currentMonth)->year }}
+                                </p>
                             </div>
-                        @endforeach
-                    </div>
+                            <button type="button" wire:click="nextYear"
+                                class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
+                                <flux:icon icon="chevron-right" class="size-3 text-[#666666]" />
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $index => $monthName)
+                                @php
+                                    $monthNumber = $index + 1;
+                                    $isSelected =
+                                        \Carbon\Carbon::parse($selectedDate)->month == $monthNumber &&
+                                        \Carbon\Carbon::parse($selectedDate)->year ==
+                                            \Carbon\Carbon::parse($currentMonth)->year;
+                                @endphp
+                                <button type="button" wire:click="selectMonth({{ $monthNumber }})"
+                                    class="px-4 py-3 text-sm rounded-[10px] transition-colors
+                                    {{ $isSelected
+                                        ? 'bg-[#3f4e4f] text-white font-medium'
+                                        : 'bg-[#fafafa] text-[#666666] border border-[#d4d4d4] hover:bg-gray-100' }}">
+                                    {{ $monthName }}
+                                </button>
+                            @endforeach
+                        </div>
+                    @else
+                        {{-- Day Calendar Grid (Hari) --}}
+                        <div class="flex items-center justify-between mb-4">
+                            <button type="button" wire:click="previousMonth"
+                                class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
+                                <flux:icon icon="chevron-left" class="size-3 text-[#666666]" />
+                            </button>
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-[#666666]">
+                                    {{ \Carbon\Carbon::parse($currentMonth)->translatedFormat('F') }}
+                                </p>
+                                <p class="text-sm font-medium text-[#666666]">
+                                    {{ \Carbon\Carbon::parse($currentMonth)->year }}
+                                </p>
+                            </div>
+                            <button type="button" wire:click="nextMonth"
+                                class="size-[34px] flex items-center justify-center border border-[#d4d4d4] rounded-[5px] bg-white hover:bg-gray-50 transition-colors">
+                                <flux:icon icon="chevron-right" class="size-3 text-[#666666]" />
+                            </button>
+                        </div>
 
-                    {{-- Calendar Grid --}}
-                    @php $weeks = array_chunk($this->calendar, 7, true); @endphp
-                    <div class="space-y-2">
-                        @foreach ($weeks as $weekIndex => $week)
-                            @php
-                                $positions = [];
-                                $i = 0;
-                                foreach ($week as $d => $inf) {
-                                    if (!empty($inf['inRange'])) {
-                                        $positions[] = $i;
-                                    }
-                                    $i++;
-                                }
-                            @endphp
+                        {{-- Day Names --}}
+                        <div class="grid grid-cols-7 gap-5 mb-4">
+                            @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $day)
+                                <div
+                                    class="w-[35px] text-center text-sm font-medium {{ in_array($day, ['Sab', 'Min']) ? 'text-[#eb5757]' : 'text-[#666666]' }}">
+                                    {{ $day }}
+                                </div>
+                            @endforeach
+                        </div>
 
-                            <div class="relative">
-                                @if (!empty($positions))
-                                    @php
-                                        $startPos = min($positions);
-                                        $endPos = max($positions);
-                                        $leftPct = ($startPos / 7) * 100;
-                                        $widthPct = (($endPos - $startPos + 1) / 7) * 100;
-                                        $weekKeys = array_keys($week);
-                                        $startKey = $weekKeys[$startPos] ?? null;
-                                        $endKey = $weekKeys[$endPos] ?? null;
-                                        $startIsEndpoint = $startKey
-                                            ? $week[$startKey]['isRangeStart'] ?? false
-                                            : false;
-                                        $endIsEndpoint = $endKey ? $week[$endKey]['isRangeEnd'] ?? false : false;
-                                        $borderRadius = '';
-                                        if ($startIsEndpoint && $endIsEndpoint && $startPos == $endPos) {
-                                            $borderRadius = 'border-radius: 6px;';
-                                        } else {
-                                            $borderLeft = $startIsEndpoint ? '6px' : '0';
-                                            $borderRight = $endIsEndpoint ? '6px' : '0';
-                                            $borderRadius = "border-top-left-radius: {$borderLeft}; border-bottom-left-radius: {$borderLeft}; border-top-right-radius: {$borderRight}; border-bottom-right-radius: {$borderRight};";
+                        {{-- Calendar Grid --}}
+                        @php $weeks = array_chunk($this->calendar, 7, true); @endphp
+                        <div class="space-y-2">
+                            @foreach ($weeks as $weekIndex => $week)
+                                @php
+                                    $positions = [];
+                                    $i = 0;
+                                    foreach ($week as $d => $inf) {
+                                        if (!empty($inf['inRange'])) {
+                                            $positions[] = $i;
                                         }
-                                    @endphp
-                                    <div class="absolute top-0 left-0 h-[40px]"
-                                        style="left: {{ $leftPct }}%; width: {{ $widthPct }}%; background: #e6f0ff; {{ $borderRadius }} pointer-events: none;">
-                                    </div>
-                                @endif
+                                        $i++;
+                                    }
+                                @endphp
 
-                                <div class="grid grid-cols-7 gap-x-5 gap-y-4">
-                                    @php $i = 0; @endphp
-                                    @foreach ($week as $date => $info)
+                                <div class="relative">
+                                    @if (!empty($positions))
                                         @php
-                                            $base =
-                                                'w-[35px] h-[40px] flex items-center justify-center text-sm transition-colors relative z-10';
-                                            $textClass = '';
-                                            $bgClass = '';
-                                            $radiusClass = 'rounded-[5px]';
-
-                                            if ($info['isSelected']) {
-                                                $bgClass = 'bg-[#3f4e4f] text-white';
+                                            $startPos = min($positions);
+                                            $endPos = max($positions);
+                                            $leftPct = ($startPos / 7) * 100;
+                                            $widthPct = (($endPos - $startPos + 1) / 7) * 100;
+                                            $weekKeys = array_keys($week);
+                                            $startKey = $weekKeys[$startPos] ?? null;
+                                            $endKey = $weekKeys[$endPos] ?? null;
+                                            $startIsEndpoint = $startKey
+                                                ? $week[$startKey]['isRangeStart'] ?? false
+                                                : false;
+                                            $endIsEndpoint = $endKey ? $week[$endKey]['isRangeEnd'] ?? false : false;
+                                            $borderRadius = '';
+                                            if ($startIsEndpoint && $endIsEndpoint && $startPos == $endPos) {
+                                                $borderRadius = 'border-radius: 6px;';
                                             } else {
-                                                if (!$info['isCurrentMonth']) {
-                                                    $textClass = 'text-[#adadad]';
-                                                } elseif ($info['isWeekend']) {
-                                                    $textClass = 'text-[#eb5757]';
-                                                } else {
-                                                    $textClass = 'text-[#666666]';
-                                                }
-                                                if (!empty($info['isRangeStart'])) {
-                                                    $radiusClass = 'rounded-l-[5px]';
-                                                } elseif (!empty($info['isRangeEnd'])) {
-                                                    $radiusClass = 'rounded-r-[5px]';
-                                                } elseif (!empty($info['inRange'])) {
-                                                    $radiusClass = 'rounded-none';
-                                                }
+                                                $borderLeft = $startIsEndpoint ? '6px' : '0';
+                                                $borderRight = $endIsEndpoint ? '6px' : '0';
+                                                $borderRadius = "border-top-left-radius: {$borderLeft}; border-bottom-left-radius: {$borderLeft}; border-top-right-radius: {$borderRight}; border-bottom-right-radius: {$borderRight};";
                                             }
                                         @endphp
+                                        <div class="absolute top-0 left-0 h-[40px]"
+                                            style="left: {{ $leftPct }}%; width: {{ $widthPct }}%; background: #e6f0ff; {{ $borderRadius }} pointer-events: none;">
+                                        </div>
+                                    @endif
 
-                                        <button type="button" wire:click="selectDate('{{ $date }}')"
-                                            class="{{ $base }} {{ $bgClass }} {{ $textClass }} {{ $radiusClass }} {{ !$info['isSelected'] ? 'hover:bg-gray-100' : '' }}">
-                                            <div class="flex flex-col items-center">
-                                                <span>{{ $info['day'] }}</span>
-                                                @if (!empty($info['hasData']))
-                                                    <span title="{{ $info['transactionCount'] ?? 0 }} transaksi"
-                                                        class="mt-1 w-1.5 h-1.5 rounded-full bg-[#4caf50] transition-all duration-200"></span>
-                                                @endif
-                                            </div>
-                                        </button>
-                                        @php $i++; @endphp
-                                    @endforeach
+                                    <div class="grid grid-cols-7 gap-x-5 gap-y-4">
+                                        @php $i = 0; @endphp
+                                        @foreach ($week as $date => $info)
+                                            @php
+                                                $base =
+                                                    'w-[35px] h-[40px] flex items-center justify-center text-sm transition-colors relative z-10';
+                                                $textClass = '';
+                                                $bgClass = '';
+                                                $radiusClass = 'rounded-[5px]';
+
+                                                if ($info['isSelected']) {
+                                                    $bgClass = 'bg-[#3f4e4f] text-white';
+                                                } else {
+                                                    if (!$info['isCurrentMonth']) {
+                                                        $textClass = 'text-[#adadad]';
+                                                    } elseif ($info['isWeekend']) {
+                                                        $textClass = 'text-[#eb5757]';
+                                                    } else {
+                                                        $textClass = 'text-[#666666]';
+                                                    }
+                                                    if (!empty($info['isRangeStart'])) {
+                                                        $radiusClass = 'rounded-l-[5px]';
+                                                    } elseif (!empty($info['isRangeEnd'])) {
+                                                        $radiusClass = 'rounded-r-[5px]';
+                                                    } elseif (!empty($info['inRange'])) {
+                                                        $radiusClass = 'rounded-none';
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <button type="button" wire:click="selectDate('{{ $date }}')"
+                                                class="{{ $base }} {{ $bgClass }} {{ $textClass }} {{ $radiusClass }} {{ !$info['isSelected'] ? 'hover:bg-gray-100' : '' }}">
+                                                <div class="flex flex-col items-center">
+                                                    <span>{{ $info['day'] }}</span>
+                                                    @if (!empty($info['hasData']))
+                                                        <span title="{{ $info['transactionCount'] ?? 0 }} transaksi"
+                                                            class="mt-1 w-1.5 h-1.5 rounded-full bg-[#4caf50] transition-all duration-200"></span>
+                                                    @endif
+                                                </div>
+                                            </button>
+                                            @php $i++; @endphp
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
 
