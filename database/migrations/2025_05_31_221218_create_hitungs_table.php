@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('hitungs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('hitung_number')->unique();
-            $table->enum('action', ['Hitung Persediaan', 'Catat Persediaan Rusak', 'Catat Persediaan Hilang'])->nullable();
-            $table->string('note')->nullable();
-            $table->string('status')->default('Draft');
+            $table->uuid('user_id')->nullable();
+            $table->string('hitung_number', 30)->unique();
+            $table->string('action', 50)->nullable();
+            $table->string('note', 255)->nullable();
+            $table->string('status', 20)->default('Draft');
             $table->date('hitung_date')->nullable();
             $table->date('hitung_date_finish')->nullable();
             $table->boolean('is_start')->default(false);
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->decimal('grand_total', 15, 2)->default(0);
             $table->decimal('loss_grand_total', 15, 2)->default(0);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

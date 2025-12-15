@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('description', 255)->nullable();
             $table->string('contact_name', 50)->nullable();
             $table->string('phone', 20)->nullable();
+            $table->string('street', 255)->nullable();
+            $table->string('landmark', 255)->nullable();
+            $table->string('maps_link', 500)->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

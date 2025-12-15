@@ -15,8 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('transaction_id')->nullable();
             $table->uuid('product_id')->nullable();
-            $table->decimal('quantity', 3, 0)->nullable();
-            $table->decimal('price', 10, 0)->nullable();
+            $table->smallInteger('quantity')->default(0);
+            $table->decimal('price', 15, 0)->nullable();
+            $table->smallInteger('refund_quantity')->default(0);
+            $table->decimal('pcs_capital_snapshot', 15, 2)->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');

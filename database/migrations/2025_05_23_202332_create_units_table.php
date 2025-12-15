@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 20)->unique();
+            $table->string('name', 30)->unique();
             $table->string('alias', 10)->nullable();
-            $table->string('group', 20)->nullable();
+            $table->string('group', 30)->nullable();
+            $table->uuid('base_unit_id')->nullable();
+            $table->decimal('conversion_factor', 20, 10)->default(1);
             $table->timestamps();
+
+            $table->foreign('base_unit_id')->references('id')->on('units')->onDelete('set null');
         });
     }
 

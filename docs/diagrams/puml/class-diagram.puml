@@ -1,334 +1,523 @@
-@startuml class-diagram
-
+@startuml Class Diagram Pawon3D
 skinparam classAttributeIconSize 0
-skinparam class {
-    BackgroundColor White
-    BorderColor Black
+skinparam linetype ortho
+hide circle
+
+' === MODUL MANAJEMEN PENGGUNA ===
+class User {
+  -id : UUID
+  -name : String
+  -email : String
+  -phone : String
+  -password : String
+  -image : String
+  -gender : String
+  -is_active : Boolean
+  -invitation_token : String
+  -invitation_sent_at : DateTime
+  -activated_at : DateTime
+  --
+  +roles() : HasMany
+  +notifications() : HasMany
+  +shifts() : HasMany
+  +transactions() : HasMany
+  +productions() : HasMany
+  +hitungs() : HasMany
+  +inventoryLogs() : HasMany
+  +hasRole(role) : Boolean
+  +hasPermission(permission) : Boolean
 }
 
-title Class Diagram - Sistem Pawon3D
-
-' ===== MASTER DATA =====
-package "Master Data" {
-    
-    class Category {
-        - id: UUID
-        - name: String
-        - description: Text
-        - created_at: Timestamp
-        - updated_at: Timestamp
-        --
-        + products(): HasMany
-    }
-    
-    class Unit {
-        - id: UUID
-        - name: String
-        - alias: String
-        - group: String
-        - base_unit_id: UUID
-        - conversion_factor: Decimal
-        --
-        + baseUnit(): BelongsTo
-        + derivedUnits(): HasMany
-        + isBaseUnit(): Boolean
-        + hasConversionLadder(): Boolean
-        + canAutoConvertTo(targetUnit): Boolean
-        + convertTo(value, targetUnit): Float
-        + getConversionFactorTo(targetUnit): Float
-    }
-    
-    class Supplier {
-        - id: UUID
-        - name: String
-        - description: Text
-        - contact_name: String
-        - phone: String
-        - street: String
-        - landmark: String
-        - maps_link: String
-        - image: String
-        --
-        + expenses(): HasMany
-    }
-    
-    class TypeCost {
-        - id: UUID
-        - name: String
-        --
-        + otherCosts(): HasMany
-    }
+class Role {
+  -id : BigInt
+  -name : String
+  -guard_name : String
+  -max_users : Integer
+  --
+  +permissions() : BelongsToMany
+  +users() : BelongsToMany
 }
 
-' ===== INVENTORY =====
-package "Inventory" {
-    
-    class Material {
-        - id: UUID
-        - name: String
-        - description: Text
-        - minimum: Integer
-        - status: Enum
-        - is_active: Boolean
-        --
-        + batches(): HasMany
-        + material_details(): HasMany
-        + expenseDetails(): HasMany
-        + getTotalQuantityInUnit(targetUnit): Float
-        + reduceQuantity(qty, unit, logData): Boolean
-        + recalculateStatus(): Void
-    }
-    
-    class MaterialBatch {
-        - id: UUID
-        - material_id: UUID
-        - unit_id: UUID
-        - batch_quantity: Decimal
-        - date: Date
-        --
-        + material(): BelongsTo
-        + unit(): BelongsTo
-    }
-    
-    class InventoryLog {
-        - id: UUID
-        - material_id: UUID
-        - material_batch_id: UUID
-        - user_id: UUID
-        - action: String
-        - quantity_change: Decimal
-        - quantity_after: Decimal
-        - reference_type: String
-        - reference_id: UUID
-        - note: Text
-        --
-        + material(): BelongsTo
-        + materialBatch(): BelongsTo
-        + user(): BelongsTo
-    }
-    
-    class Expense {
-        - id: UUID
-        - expense_number: String
-        - supplier_id: UUID
-        - status: String
-        - total: Decimal
-        - date: Date
-        --
-        + supplier(): BelongsTo
-        + expenseDetails(): HasMany
-    }
-    
-    class ExpenseDetail {
-        - id: UUID
-        - expense_id: UUID
-        - material_id: UUID
-        - quantity: Decimal
-        - price: Decimal
-        --
-        + expense(): BelongsTo
-        + material(): BelongsTo
-    }
+class Permission {
+  -id : BigInt
+  -name : String
+  -guard_name : String
+  --
+  +roles() : BelongsToMany
 }
 
-' ===== PRODUCT =====
-package "Product" {
-    
-    class Product {
-        - id: UUID
-        - name: String
-        - category_id: UUID
-        - price: Decimal
-        - stock: Integer
-        - is_ready: Boolean
-        - product_image: String
-        - method: Array
-        --
-        + category(): BelongsTo
-        + product_compositions(): HasMany
-        + other_costs(): HasMany
-        + productions(): HasMany
-        + transactions(): HasMany
-    }
-    
-    class ProductComposition {
-        - id: UUID
-        - product_id: UUID
-        - material_id: UUID
-        - unit_id: UUID
-        - quantity: Decimal
-        --
-        + product(): BelongsTo
-        + material(): BelongsTo
-        + unit(): BelongsTo
-    }
-    
-    class OtherCost {
-        - id: UUID
-        - product_id: UUID
-        - type_cost_id: UUID
-        - amount: Decimal
-        --
-        + product(): BelongsTo
-        + typeCost(): BelongsTo
-    }
+' === MODUL INVENTORI ===
+class Category {
+  -id : UUID
+  -name : String
+  -is_active : Boolean
+  --
+  +ingredientCategories() : HasMany
+  +productCategories() : HasMany
 }
 
-' ===== PRODUCTION =====
-package "Production" {
-    
-    class Production {
-        - id: UUID
-        - production_number: String
-        - transaction_id: UUID
-        - method: String
-        - status: String
-        - date: Date
-        --
-        + transaction(): BelongsTo
-        + details(): HasMany
-        + workers(): HasMany
-    }
-    
-    class ProductionDetail {
-        - id: UUID
-        - production_id: UUID
-        - product_id: UUID
-        - quantity: Integer
-        --
-        + production(): BelongsTo
-        + product(): BelongsTo
-    }
-    
-    class ProductionWorker {
-        - id: UUID
-        - production_id: UUID
-        - user_id: UUID
-        --
-        + production(): BelongsTo
-        + user(): BelongsTo
-    }
+class Unit {
+  -id : UUID
+  -name : String
+  -alias : String
+  -group : String
+  -base_unit_id : UUID
+  -conversion_factor : Decimal
+  --
+  +baseUnit() : BelongsTo
+  +derivedUnits() : HasMany
+  +convertTo(value, targetUnit) : Float
+  +canAutoConvertTo(targetUnit) : Boolean
 }
 
-' ===== TRANSACTION =====
-package "Transaction" {
-    
-    class Transaction {
-        - id: UUID
-        - invoice_number: String
-        - user_id: UUID
-        - customer_id: UUID
-        - method: String
-        - status: String
-        - total: Decimal
-        - points_used: Integer
-        - total_refund: Decimal
-        --
-        + user(): BelongsTo
-        + customer(): BelongsTo
-        + details(): HasMany
-        + payments(): HasMany
-        + production(): HasOne
-        + refund(): HasOne
-    }
-    
-    class TransactionDetail {
-        - id: UUID
-        - transaction_id: UUID
-        - product_id: UUID
-        - quantity: Integer
-        - price: Decimal
-        - refund_quantity: Integer
-        --
-        + transaction(): BelongsTo
-        + product(): BelongsTo
-    }
-    
-    class Payment {
-        - id: UUID
-        - transaction_id: UUID
-        - payment_channel_id: UUID
-        - receipt_number: String
-        - amount: Decimal
-        - payment_group: String
-        --
-        + transaction(): BelongsTo
-        + channel(): BelongsTo
-    }
-    
-    class PaymentChannel {
-        - id: UUID
-        - name: String
-        - is_active: Boolean
-        --
-        + payments(): HasMany
-    }
+class Supplier {
+  -id : UUID
+  -name : String
+  -description : String
+  -contact_name : String
+  -phone : String
+  -street : String
+  -landmark : String
+  -maps_link : String
+  -image : String
+  --
+  +expenses() : HasMany
 }
 
-' ===== USER =====
-package "User Management" {
-    
-    class User {
-        - id: UUID
-        - name: String
-        - email: String
-        - password: String
-        - gender: String
-        - is_active: Boolean
-        - invitation_token: String
-        - invitation_sent_at: Timestamp
-        - activated_at: Timestamp
-        --
-        + workers(): HasMany
-        + notifications(): HasMany
-        + sendInvitation(): Void
-        + activateWithPassword(password): Void
-        + hasValidInvitationToken(): Boolean
-        + isActivated(): Boolean
-        + toggleActive(): Void
-    }
-    
-    class Customer {
-        - id: UUID
-        - name: String
-        - phone: String
-        - points: Integer
-        --
-        + transactions(): HasMany
-        + pointsHistories(): HasMany
-    }
-    
-    class PointsHistory {
-        - id: UUID
-        - phone: String
-        - transaction_id: UUID
-        - points_change: Integer
-        - description: Text
-        - image: String
-        --
-        + customer(): BelongsTo
-        + transaction(): BelongsTo
-    }
+class Material {
+  -id : UUID
+  -name : String
+  -description : String
+  -image : String
+  -expiry_date : Date
+  -status : String
+  -is_active : Boolean
+  -is_recipe : Boolean
+  -minimum : Decimal
+  --
+  +batches() : HasMany
+  +compositions() : HasMany
+  +expenseDetails() : HasMany
+  +inventoryLogs() : HasMany
+  +getTotalQuantityInUnit(unit) : Float
+  +reduceQuantity(qty, unit, log) : Boolean
+  +recalculateStatus() : void
 }
 
-' ===== RELATIONSHIPS =====
-Category "1" -- "*" Product
-Supplier "1" -- "*" Expense
-Material "1" -- "*" MaterialBatch
-Material "1" -- "*" ExpenseDetail
-Material "1" -- "*" ProductComposition
-Product "1" -- "*" ProductComposition
-Product "1" -- "*" TransactionDetail
-Product "1" -- "*" ProductionDetail
-Transaction "1" -- "*" TransactionDetail
-Transaction "1" -- "*" Payment
-Transaction "1" -- "0..1" Production
-User "1" -- "*" Transaction
-User "1" -- "*" ProductionWorker
-Customer "1" -- "*" Transaction
-Customer "1" -- "*" PointsHistory
-PaymentChannel "1" -- "*" Payment
-Unit "1" -- "*" MaterialBatch
-Unit "0..1" -- "*" Unit : base_unit
+class MaterialBatch {
+  -id : UUID
+  -material_id : UUID
+  -unit_id : UUID
+  -batch_number : String
+  -date : Date
+  -batch_quantity : Decimal
+  --
+  +material() : BelongsTo
+  +unit() : BelongsTo
+  +inventoryLogs() : HasMany
+  +hitungDetails() : HasMany
+}
+
+class InventoryLog {
+  -id : UUID
+  -material_id : UUID
+  -material_batch_id : UUID
+  -user_id : UUID
+  -action : String
+  -quantity_change : Decimal
+  -quantity_after : Decimal
+  -reference_type : String
+  -reference_id : String
+  -note : String
+  --
+  +material() : BelongsTo
+  +batch() : BelongsTo
+  +user() : BelongsTo
+}
+
+' === MODUL BELANJA ===
+class Expense {
+  -id : UUID
+  -expense_number : String
+  -expense_date : Date
+  -end_date : Date
+  -supplier_id : UUID
+  -note : String
+  -status : String
+  -grand_total_expect : Decimal
+  -grand_total_actual : Decimal
+  -is_start : Boolean
+  -is_finish : Boolean
+  --
+  +supplier() : BelongsTo
+  +expenseDetails() : HasMany
+  +startExpense() : void
+  +finishExpense() : void
+  +generateExpenseNumber() : String
+}
+
+class ExpenseDetail {
+  -id : UUID
+  -expense_id : UUID
+  -material_id : UUID
+  -unit_id : UUID
+  -quantity_expect : Decimal
+  -quantity_get : Decimal
+  -price_expect : Decimal
+  -price_get : Decimal
+  -total_expect : Decimal
+  -total_actual : Decimal
+  -expiry_date : Date
+  --
+  +expense() : BelongsTo
+  +material() : BelongsTo
+  +unit() : BelongsTo
+}
+
+' === MODUL PRODUK ===
+class Product {
+  -id : UUID
+  -name : String
+  -description : String
+  -price : Decimal
+  -stock : Decimal
+  -method : JSON
+  -product_image : String
+  -is_recipe : Boolean
+  -is_active : Boolean
+  -is_recommended : Boolean
+  -pcs : Decimal
+  -pcs_capital : Decimal
+  -capital : Decimal
+  -suhu_ruangan : Decimal
+  -suhu_dingin : Decimal
+  -suhu_beku : Decimal
+  --
+  +compositions() : HasMany
+  +otherCosts() : HasMany
+  +transactionDetails() : HasMany
+  +productionDetails() : HasMany
+  +calculateCapital() : Decimal
+}
+
+class ProductComposition {
+  -id : UUID
+  -product_id : UUID
+  -material_id : UUID
+  -unit_id : UUID
+  -material_quantity : Decimal
+  --
+  +product() : BelongsTo
+  +material() : BelongsTo
+  +unit() : BelongsTo
+}
+
+class TypeCost {
+  -id : UUID
+  -name : String
+  --
+  +otherCosts() : HasMany
+}
+
+class OtherCost {
+  -id : UUID
+  -product_id : UUID
+  -type_cost_id : UUID
+  -price : Decimal
+  --
+  +product() : BelongsTo
+  +typeCost() : BelongsTo
+}
+
+' === MODUL PRODUKSI ===
+class Production {
+  -id : UUID
+  -production_number : String
+  -transaction_id : UUID
+  -method : String
+  -date : Date
+  -time : Time
+  -start_date : Date
+  -end_date : Date
+  -note : String
+  -status : String
+  -is_start : Boolean
+  -is_finish : Boolean
+  --
+  +transaction() : BelongsTo
+  +details() : HasMany
+  +workers() : HasMany
+  +startProduction() : void
+  +finishProduction() : void
+  +generateProductionNumber() : String
+}
+
+class ProductionDetail {
+  -id : UUID
+  -production_id : UUID
+  -product_id : UUID
+  -quantity_plan : Decimal
+  -quantity_get : Decimal
+  -quantity_fail : Decimal
+  -cycle : Decimal
+  --
+  +production() : BelongsTo
+  +product() : BelongsTo
+}
+
+class ProductionWorker {
+  -id : UUID
+  -production_id : UUID
+  -user_id : UUID
+  --
+  +production() : BelongsTo
+  +user() : BelongsTo
+}
+
+' === MODUL KASIR ===
+class Customer {
+  -id : UUID
+  -phone : String
+  -name : String
+  -points : Decimal
+  --
+  +transactions() : HasMany
+  +pointsHistories() : HasMany
+  +addPoints(amount) : void
+  +usePoints(amount) : Boolean
+}
+
+class Shift {
+  -id : UUID
+  -shift_number : String
+  -opened_by : UUID
+  -closed_by : UUID
+  -start_time : DateTime
+  -end_time : DateTime
+  -status : String
+  -initial_cash : Decimal
+  -final_cash : Decimal
+  -total_sales : Decimal
+  -total_refunds : Decimal
+  -total_discounts : Decimal
+  --
+  +openedByUser() : BelongsTo
+  +closedByUser() : BelongsTo
+  +transactions() : HasMany
+  +openShift(cash) : void
+  +closeShift(cash) : void
+  +generateShiftNumber() : String
+}
+
+class Transaction {
+  -id : UUID
+  -user_id : UUID
+  -customer_id : UUID
+  -invoice_number : String
+  -name : String
+  -phone : String
+  -date : Date
+  -time : Time
+  -start_date : Date
+  -end_date : Date
+  -note : String
+  -payment_status : String
+  -status : String
+  -method : String
+  -total_amount : Decimal
+  -points_used : Integer
+  -points_discount : Decimal
+  -total_refund : Decimal
+  -cancel_reason : String
+  -created_by_shift : UUID
+  -cancelled_at : DateTime
+  --
+  +user() : BelongsTo
+  +customer() : BelongsTo
+  +shift() : BelongsTo
+  +details() : HasMany
+  +payments() : HasMany
+  +refunds() : HasMany
+  +production() : HasOne
+  +pointsHistories() : HasMany
+  +generateInvoiceNumber(method) : String
+  +calculateTotal() : Decimal
+  +cancel(reason) : void
+}
+
+class TransactionDetail {
+  -id : UUID
+  -transaction_id : UUID
+  -product_id : UUID
+  -quantity : Integer
+  -price : Decimal
+  -refund_quantity : Integer
+  -pcs_capital_snapshot : Decimal
+  --
+  +transaction() : BelongsTo
+  +product() : BelongsTo
+  +getSubtotal() : Decimal
+}
+
+class PaymentChannel {
+  -id : UUID
+  -name : String
+  -type : String
+  -account_name : String
+  -account_number : String
+  -is_active : Boolean
+  --
+  +payments() : HasMany
+}
+
+class Payment {
+  -id : UUID
+  -receipt_number : String
+  -transaction_id : UUID
+  -payment_channel_id : UUID
+  -payment_method : String
+  -payment_group : String
+  -paid_amount : Decimal
+  -image : String
+  -paid_at : DateTime
+  --
+  +transaction() : BelongsTo
+  +paymentChannel() : BelongsTo
+  +generateReceiptNumber() : String
+}
+
+class Refund {
+  -id : UUID
+  -transaction_id : UUID
+  -refund_number : String
+  -refund_amount : Decimal
+  -refund_reason : String
+  -refund_image : String
+  -refunded_at : DateTime
+  --
+  +transaction() : BelongsTo
+  +generateRefundNumber() : String
+}
+
+class PointsHistory {
+  -id : UUID
+  -phone : String
+  -action_id : String
+  -action : String
+  -points : Integer
+  -transaction_id : UUID
+  -image : String
+  --
+  +customer() : BelongsTo
+  +transaction() : BelongsTo
+}
+
+' === MODUL STOCK OPNAME ===
+class Hitung {
+  -id : UUID
+  -user_id : UUID
+  -hitung_number : String
+  -action : String
+  -note : String
+  -status : String
+  -hitung_date : Date
+  -hitung_date_finish : Date
+  -is_start : Boolean
+  -is_finish : Boolean
+  -grand_total : Decimal
+  -loss_grand_total : Decimal
+  --
+  +user() : BelongsTo
+  +details() : HasMany
+  +startHitung() : void
+  +finishHitung() : void
+  +generateHitungNumber() : String
+}
+
+class HitungDetail {
+  -id : UUID
+  -hitung_id : UUID
+  -material_id : UUID
+  -material_batch_id : UUID
+  -quantity_expect : Decimal
+  -quantity_actual : Decimal
+  -total : Decimal
+  -loss_total : Decimal
+  --
+  +hitung() : BelongsTo
+  +material() : BelongsTo
+  +batch() : BelongsTo
+}
+
+class Notification {
+  -id : UUID
+  -user_id : UUID
+  -title : String
+  -body : String
+  -type : String
+  -is_read : Boolean
+  -status : Integer
+  --
+  +user() : BelongsTo
+  +markAsRead() : void
+}
+
+' === RELASI ===
+' User & Role
+User "1" -- "*" Role : has
+Role "1" -- "*" Permission : has
+
+' Unit Self-Reference
+Unit "0..1" -- "*" Unit : baseUnit
+
+' Material & Batch
+Material "1" -- "*" MaterialBatch : batches
+Material "1" -- "*" InventoryLog : logs
+MaterialBatch "1" -- "*" InventoryLog : logs
+User "1" -- "*" InventoryLog : creates
+
+' Expense
+Supplier "1" -- "*" Expense : supplies
+Expense "1" -- "*" ExpenseDetail : details
+Material "1" -- "*" ExpenseDetail : items
+Unit "1" -- "*" ExpenseDetail : unit
+
+' Product
+Product "1" -- "*" ProductComposition : compositions
+Material "1" -- "*" ProductComposition : materials
+Unit "1" -- "*" ProductComposition : unit
+Product "1" -- "*" OtherCost : costs
+TypeCost "1" -- "*" OtherCost : type
+
+' Production
+Transaction "0..1" -- "0..1" Production : produces
+Production "1" -- "*" ProductionDetail : details
+Product "1" -- "*" ProductionDetail : products
+Production "1" -- "*" ProductionWorker : workers
+User "1" -- "*" ProductionWorker : works
+
+' Transaction
+User "1" -- "*" Transaction : creates
+Customer "0..1" -- "*" Transaction : orders
+Shift "1" -- "*" Transaction : records
+Transaction "1" -- "*" TransactionDetail : details
+Product "1" -- "*" TransactionDetail : sold
+Transaction "1" -- "*" Payment : payments
+PaymentChannel "1" -- "*" Payment : channel
+Transaction "1" -- "*" Refund : refunds
+Transaction "0..1" -- "*" PointsHistory : earns
+Customer "1" -- "*" PointsHistory : history
+
+' Shift
+User "1" -- "*" Shift : opens
+
+' Stock Opname
+User "1" -- "*" Hitung : creates
+Hitung "1" -- "*" HitungDetail : details
+Material "1" -- "*" HitungDetail : counted
+MaterialBatch "1" -- "*" HitungDetail : batch
+
+' Notification
+User "1" -- "*" Notification : receives
 
 @enduml

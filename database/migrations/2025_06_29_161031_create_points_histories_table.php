@@ -13,16 +13,22 @@ return new class extends Migration
     {
         Schema::create('points_histories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('phone')->nullable();
-            $table->string('action_id', 20)->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->string('action_id', 30)->nullable();
             $table->string('action', 50)->nullable();
-            $table->decimal('points', 5, 0)->default(0);
+            $table->integer('points')->default(0);
+            $table->uuid('transaction_id')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
 
             $table->foreign('phone')
                 ->references('phone')
                 ->on('customers')
                 ->onDelete('cascade');
+            $table->foreign('transaction_id')
+                ->references('id')
+                ->on('transactions')
+                ->onDelete('set null');
         });
     }
 

@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('receipt_number', 30)->nullable()->unique();
             $table->uuid('transaction_id')->nullable();
             $table->uuid('payment_channel_id')->nullable();
-            $table->string('payment_method')->nullable(); // tunai, transfer, qris
-            $table->decimal('paid_amount', 10, 0)->default(0);
+            $table->string('payment_method', 20)->nullable();
+            $table->string('payment_group', 20)->nullable();
+            $table->decimal('paid_amount', 15, 0)->default(0);
             $table->string('image')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
