@@ -20,6 +20,9 @@
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+{{-- PWA: Load on all pages for mobile compatibility --}}
+@laravelPWA
+
 {{-- Livewire request timeout configuration --}}
 <script>
     document.addEventListener('livewire:init', () => {

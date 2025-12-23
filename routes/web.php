@@ -11,6 +11,11 @@ Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
 
+// PWA Offline Route
+Route::get('/offline', function () {
+    return view('modules.laravelpwa.offline');
+})->name('laravelpwa.offline');
+
 // Aktivasi Akun (guest only)
 Route::get('/aktivasi-akun/{token}', ActivateAccount::class)
     ->middleware('guest')
