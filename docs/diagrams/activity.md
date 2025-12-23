@@ -242,7 +242,30 @@ Proses pembuatan dan ekspor laporan operasional.
 4. Sistem menampilkan laporan
 5. Pengguna memilih format ekspor (PDF/Excel)
 6. Sistem menghasilkan file laporan
-7. Pengguna mengunduh file
+7. Sistem menghasilkan file laporan
+8. Pengguna mengunduh file
+
+---
+
+### 12. Login
+
+**Referensi:** `puml/activity-login.puml`
+
+**Deskripsi:**
+Proses otentikasi pengguna untuk masuk ke dalam sistem dengan pengecekan status akun.
+
+**Alur Utama:**
+1. Pengguna memasukkan identitas (email dan password)
+2. Sistem memvalidasi input
+3. Sistem memeriksa batas percobaan login (rate limiting)
+4. Sistem memverifikasi kredensial ke database
+5. Sistem memeriksa apakah akun sudah diaktivasi
+6. Sistem memeriksa apakah status akun aktif
+7. Sistem memberikan akses dan mengarahkan ke halaman ringkasan umum
+
+**Percabangan:**
+- Jika salah kredensial atau mencapai batas percobaan, sistem menampilkan pesan error
+- Jika akun belum diaktivasi atau dinonaktifkan, sistem membatalkan akses
 
 ---
 
@@ -261,3 +284,4 @@ Proses pembuatan dan ekspor laporan operasional.
 | 9 | Kelola Pelanggan | 2 | activity-kelola-pelanggan.puml |
 | 10 | Stock Opname | 2 | activity-stock-opname.puml |
 | 11 | Pembuatan Laporan | 2 | activity-laporan.puml |
+| 12 | Login | 2 | activity-login.puml |

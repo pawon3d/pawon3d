@@ -36,12 +36,13 @@
             ['label' => 'Selisih Didapatkan', 'class' => 'text-right px-[25px] py-[21px] min-w-[120px]'],
             ['label' => 'Jumlah Didapatkan', 'class' => 'text-right px-[25px] py-[21px] min-w-[120px]'],
             ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-[25px] py-[21px] min-w-[160px]'],
+            ['label' => 'Harga Satuan Didapat', 'class' => 'text-right px-[25px] py-[21px] min-w-[150px]'],
             ['label' => 'Belanja Didapatkan', 'class' => 'text-right px-[25px] py-[21px] min-w-[150px]'],
             ['label' => 'Tanggal Expired', 'class' => 'text-left px-[25px] py-[21px] min-w-[200px]'],
         ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
-            body-text="text-[#666666]" empty-message="Belum ada barang belanja.">
+            body-text="text-[#666666]" empty-message="Semua item sudah lengkap!">
             <x-slot:rows>
-                @foreach ($expenseDetails as $index => $detail)
+                @forelse ($expenseDetails as $index => $detail)
                     <tr class="border-b border-[#d4d4d4] bg-[#fafafa]">
                         <td class="px-[25px] py-[18px] align-top">
                             <p class="font-['Montserrat'] font-medium text-[14px] text-[#666666]">
@@ -70,6 +71,16 @@
                         </td>
                         <td class="px-[25px] py-[18px] align-top">
                             <div class="space-y-1">
+                                <input type="number" placeholder="0" min="0" step="0.01"
+                                    wire:model.number="expenseDetails.{{ $index }}.price_get"
+                                    class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
+                                @error("expenseDetails.{$index}.price_get")
+                                    <span class="text-xs text-red-500 font-['Montserrat']">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </td>
+                        <td class="px-[25px] py-[18px] align-top">
+                            <div class="space-y-1">
                                 <input type="number" placeholder="0" min="0"
                                     wire:model.number.live="expenseDetails.{{ $index }}.quantity"
                                     class="w-full bg-[#fafafa] border {{ isset($errorInputs[$index]) ? 'border-red-500' : 'border-[#adadad]' }} rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
@@ -78,6 +89,9 @@
                                         yang
                                         diharapkan</span>
                                 @endif
+                                @error("expenseDetails.{$index}.quantity")
+                                    <span class="text-xs text-red-500 font-['Montserrat']">{{ $message }}</span>
+                                @enderror
                             </div>
                         </td>
                         <td class="px-[25px] py-[18px] align-top">
@@ -104,7 +118,15 @@
                             </div>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="8" class="px-[25px] py-[40px] text-center">
+                            <p class="font-['Montserrat'] font-medium text-[14px] text-[#959595]">
+                                Semua item sudah lengkap!
+                            </p>
+                        </td>
+                    </tr>
+                @endforelse
             </x-slot:rows>
         </x-table.form>
     </div>

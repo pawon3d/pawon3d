@@ -1,0 +1,52 @@
+@startuml sequence-login
+title Sequence Diagram - Login
+
+actor Pengguna
+boundary "Auth/Login (Livewire)" as LoginView
+control "Auth::attempt" as Auth
+control "RateLimiter" as Limiter
+entity "User" as UserModel
+database Database
+
+Pengguna -> LoginView : Input email & password
+Pengguna -> LoginView : Klik "Masuk"
+
+LoginView -> LoginView : validate()
+alt Validasi Gagal
+    LoginView -> Pengguna : Tampilkan error validasi
+else Validasi Sukses
+    LoginView -> Limiter : tooManyAttempts(throttleKey, 5)
+    alt Rate Limited
+        Limiter -> LoginView : true
+        LoginView -> Pengguna : Tampilkan error throttle
+    else Not Rate Limited
+        LoginView -> Auth : attempt(['email', 'password'], remember)
+        
+        Auth -> Database : select * from users where email = ?
+        Database -> Auth : data user & hash password
+        
+        alt Otentikasi Gagal
+            Auth -> LoginView : false
+            LoginView -> Limiter : hit(throttleKey)
+            LoginView -> Pengguna : Tampilkan error "Salah email/password"
+        else Otentikasi Berhasil
+            Auth -> LoginView : true
+            LoginView -> Auth : user()
+            Auth -> UserModel : current user
+            
+            alt Akun Belum Aktivasi (!activated_at)
+                LoginView -> Auth : logout()
+                LoginView -> Pengguna : Tampilkan error "Belum diaktifkan"
+            else Akun Dinonaktifkan (!is_active)
+                LoginView -> Auth : logout()
+                LoginView -> Pengguna : Tampilkan error "Dinonaktifkan"
+            else Akun Valid
+                LoginView -> Limiter : clear(throttleKey)
+                LoginView -> LoginView : Session::regenerate()
+                LoginView -> Pengguna : Redirect ke Dashboard
+            end
+        end
+    end
+end
+
+@enduml

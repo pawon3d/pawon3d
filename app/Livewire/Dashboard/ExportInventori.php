@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Models\Production;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Livewire\Component;
 
@@ -32,6 +33,10 @@ class ExportInventori extends Component
         $this->currentMonth = Carbon::parse($this->selectedDate)->startOfMonth()->toDateString();
         View::share('title', 'Export Laporan Inventori');
         View::share('mainTitle', 'Dashboard');
+
+        if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
+            $this->selectedWorker = Auth::user()->id;
+        }
     }
 
     public function toggleCalendar()

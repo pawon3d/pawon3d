@@ -140,7 +140,7 @@
                     <tr class="border-b border-[#d4d4d4] last:border-0 h-[60px]">
                         <td class="px-[25px] py-4">
                             <a href="{{ route('produk.edit', $product->id) }}"
-                                class="font-montserrat font-medium text-[14px] text-[#666666] hover:text-[#74512d]">
+                                class="font-montserrat font-medium text-[14px] text-[#666666] hover:text-[#74512d]" wire:navigate>
                                 {{ $product->name }}
                             </a>
                         </td>
@@ -206,7 +206,7 @@
                                 </div>
                             </div>
                             <flux:button variant="subtle" href="{{ route('produk.edit', $product->id) }}"
-                                class="bg-[#fafafa] border-[1.5px] border-[#74512d] rounded-[20px] w-full flex items-center justify-center px-[25px] py-[10px]">
+                                class="bg-[#fafafa] border-[1.5px] border-[#74512d] rounded-[20px] w-full flex items-center justify-center px-[25px] py-[10px]" wire:navigate>
                                 Lihat
                             </flux:button>
                         </div>

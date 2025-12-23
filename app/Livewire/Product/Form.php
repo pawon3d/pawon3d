@@ -146,9 +146,10 @@ class Form extends Component
                 foreach ($otherDetails as $otherDetail) {
                     if ($otherDetail->unit && $targetUnit) {
                         // Konversi harga dari unit lain ke unit target
+                        // Misal: 1kg = 1000gram, harga Rp10.000/kg → Rp10.000/1000 = Rp10/gram
                         $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
-                        if ($convertedQuantity !== null) {
-                            $price = $otherDetail->supply_price * $convertedQuantity;
+                        if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                            $price = $otherDetail->supply_price / $convertedQuantity;
                             break;
                         }
                     }
@@ -296,9 +297,10 @@ class Form extends Component
                 foreach ($otherDetails as $otherDetail) {
                     if ($otherDetail->unit && $targetUnit) {
                         // Konversi harga dari unit lain ke unit target
+                        // Misal: 1kg = 1000gram, harga Rp10.000/kg → Rp10.000/1000 = Rp10/gram
                         $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
-                        if ($convertedQuantity !== null) {
-                            $price = $otherDetail->supply_price * $convertedQuantity;
+                        if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                            $price = $otherDetail->supply_price / $convertedQuantity;
                             break;
                         }
                     }

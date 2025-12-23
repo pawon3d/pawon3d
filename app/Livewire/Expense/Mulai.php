@@ -36,16 +36,24 @@ class Mulai extends Component
         $this->total_quantity_expect = $this->expense->expenseDetails->sum('quantity_expect');
         $this->total_quantity_get = $this->expense->expenseDetails->sum('quantity_get');
         $this->percentage = $this->total_quantity_expect > 0 ? ($this->total_quantity_get / $this->total_quantity_expect) * 100 : 0;
-        $this->expenseDetails = $this->expense->expenseDetails->map(function ($detail) {
-            return [
-                'id' => $detail->id,
-                'material_name' => $detail->material->name,
-                'quantity_expect' => $detail->quantity_expect,
-                'quantity_get' => $detail->quantity_get,
-                'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
-                'quantity' => 0,
-            ];
-        })->toArray();
+        
+        // Filter hanya item yang masih kurang (quantity_get < quantity_expect)
+        $this->expenseDetails = $this->expense->expenseDetails
+            ->filter(fn($detail) => $detail->quantity_get < $detail->quantity_expect)
+            ->map(function ($detail) {
+                return [
+                    'id' => $detail->id,
+                    'material_name' => $detail->material->name,
+                    'quantity_expect' => $detail->quantity_expect,
+                    'quantity_get' => $detail->quantity_get,
+                    'price_expect' => $detail->price_expect,
+                    'price_get' => $detail->price_get ?? $detail->price_expect,
+                    'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
+                    'quantity' => 0,
+                    'expiry_date' => null,
+                ];
+            })->values()->toArray();
+            
         View::share('title', 'Dapatkan Belanja');
         View::share('mainTitle', 'Inventori');
     }
@@ -91,11 +99,15 @@ class Mulai extends Component
     public function save()
     {
         $this->validate([
-            'expenseDetails.*.quantity' => 'required|numeric',
+            'expenseDetails.*.quantity' => 'required|numeric|min:0',
+            'expenseDetails.*.price_get' => 'required|numeric|min:0',
         ], [
             'expenseDetails.*.quantity.required' => 'Jumlah yang didapatkan harus diisi.',
             'expenseDetails.*.quantity.numeric' => 'Jumlah yang didapatkan harus berupa angka.',
             'expenseDetails.*.quantity.min' => 'Jumlah yang didapatkan tidak boleh kurang dari 0.',
+            'expenseDetails.*.price_get.required' => 'Harga satuan didapat harus diisi.',
+            'expenseDetails.*.price_get.numeric' => 'Harga satuan didapat harus berupa angka.',
+            'expenseDetails.*.price_get.min' => 'Harga satuan didapat tidak boleh kurang dari 0.',
         ]);
 
         $this->validateQuantities();
@@ -112,11 +124,12 @@ class Mulai extends Component
                 // Hitung quantity baru yang ditambahkan
                 $quantityToAdd = $detail['quantity'];
 
-                // Update detail belanja
+                // Update detail belanja dengan price_get
                 $updatedQuantityGet = $detail['quantity_get'] + $quantityToAdd;
                 $expenseDetail->update([
                     'quantity_get' => $updatedQuantityGet,
-                    'total_actual' => $updatedQuantityGet * $expenseDetail->price_expect,
+                    'price_get' => $detail['price_get'],
+                    'total_actual' => $updatedQuantityGet * $detail['price_get'],
                     'expiry_date' => $detail['expiry_date'] ? \Carbon\Carbon::createFromFormat('d M Y', $detail['expiry_date'])->format('Y-m-d') : null,
                 ]);
 

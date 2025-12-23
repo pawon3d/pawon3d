@@ -272,6 +272,8 @@ class BuatPesanan extends Component
                 ->get()
                 ->unique('type')
                 ->values();
+        } elseif($value == 'tunai') {
+            $this->paymentMethod = 'tunai';
         }
     }
 

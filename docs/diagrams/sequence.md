@@ -329,6 +329,30 @@ Komponen utama yang terlibat dalam sequence diagram:
 
 ---
 
+### 13. Login
+
+**Referensi:** `puml/sequence-login.puml`
+
+**Aktor:** Pengguna
+
+**Partisipan:**
+- Auth/Login (Livewire)
+- Auth (Laravel)
+- RateLimiter (Laravel)
+- User (Model)
+- Database
+
+**Alur Interaksi:**
+1. User memasukkan email dan password
+2. Livewire memvalidasi format input
+3. Sistem memeriksa Rate Limiter
+4. Auth::attempt memanggil database untuk verifikasi kredensial
+5. Jika berhasil, sistem mengambil data User
+6. Sistem memverifikasi status `activated_at` dan `is_active`
+7. Sistem me-regenerasi session dan mengarahkan pengguna ke dashboard
+
+---
+
 ## Ringkasan Sequence Diagram
 
 | No | Diagram | Increment | File PUML |
@@ -345,3 +369,4 @@ Komponen utama yang terlibat dalam sequence diagram:
 | 10 | Penggunaan Poin | 2 | sequence-poin-pelanggan.puml |
 | 11 | Stock Opname | 2 | sequence-stock-opname.puml |
 | 12 | Generate Laporan | 2 | sequence-generate-laporan.puml |
+| 13 | Login | 2 | sequence-login.puml |

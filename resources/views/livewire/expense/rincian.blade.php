@@ -116,8 +116,9 @@
             ['label' => 'Rencana Belanja', 'class' => 'text-right px-6 py-5'],
             ['label' => 'Jumlah Didapatkan', 'class' => 'text-right px-6 py-5'],
             ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-6 py-5'],
-            ['label' => 'Harga Satuan', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Total Harga', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Harga Satuan (Perkiraan)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Harga Satuan (Sebenarnya)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Total Harga (Perkiraan)', 'class' => 'text-right px-6 py-5'],
             ['label' => 'Total Harga (Sebenarnya)', 'class' => 'text-right px-6 py-5'],
         ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
             body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
@@ -152,6 +153,11 @@
                         </td>
                         <td class="px-6 py-0 text-right">
                             <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                                Rp{{ number_format($detail->price_get, 0, ',', '.') }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-0 text-right">
+                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
                                 Rp{{ number_format($detail->total_expect, 0, ',', '.') }}
                             </span>
                         </td>
@@ -166,7 +172,7 @@
 
             <x-slot:footer>
                 <tr class="h-[60px]">
-                    <td class="px-6 py-0 rounded-bl-[15px]" colspan="5">
+                    <td class="px-6 py-0 rounded-bl-[15px]" colspan="6">
                         <span class="font-montserrat font-bold text-[14px] text-[#666666]">Total</span>
                     </td>
                     <td class="px-6 py-0 text-right">

@@ -468,9 +468,8 @@
                             $jumlahPembayaran = $payments->count();
                             $posisiDariAwal = $jumlahPembayaran - $index; // 1 = pertama, 2 = kedua, dst
 
-                            if ($posisiDariAwal == 1 && $payment->paid_amount < $totalAmount) {
-                                $tipe = 'Uang Muka';
-                            } elseif ($posisiDariAwal == $jumlahPembayaran) {
+                            // Pembayaran terakhir = Lunas, sebelumnya = Uang Muka
+                            if ($posisiDariAwal == $jumlahPembayaran) {
                                 $tipe = 'Lunas';
                             } else {
                                 $tipe = 'Uang Muka';
@@ -571,8 +570,7 @@
             </div>
         @endif
 
-        @if (in_array(!$transaction->status, ['Batal', 'Selesai']) &&
-                in_array($transaction->payment_status, ['Belum Lunas', 'Refund']))
+        @if (in_array($transaction->payment_status, ['Belum Lunas', 'Refund', '']))
             <div class="w-full flex flex-col gap-4">
                 <flux:label>Metode Pembayaran</flux:label>
                 <p class="text-sm text-gray-500">
@@ -987,7 +985,8 @@
                                                 if ($paymentCount == 1) {
                                                     $tipe = 'Lunas';
                                                 } else {
-                                                    $tipe = $paymentIndex == $paymentCount - 1 ? 'Lunas' : 'Uang Muka';
+                                                    // latest() = terbaru dulu, jadi index 0 = terakhir (Lunas)
+                                                    $tipe = $paymentIndex == 0 ? 'Lunas' : 'Uang Muka';
                                                 }
 
                                                 $label = "($tipe) $method" . ($bank ? " - $bank" : '');

@@ -50,7 +50,7 @@ class Rincian extends Component
         $this->expense_id = $id;
         $this->expense = \App\Models\Expense::select('id', 'supplier_id', 'expense_number', 'expense_date', 'note', 'grand_total_expect', 'grand_total_actual', 'is_start', 'is_finish', 'status', 'end_date')
             ->with([
-                'expenseDetails:id,expense_id,material_id,unit_id,quantity_expect,quantity_get,price_expect,price_actual,total_expect,total_actual,expiry_date',
+                'expenseDetails:id,expense_id,material_id,unit_id,quantity_expect,quantity_get,price_expect,price_get,total_expect,total_actual,expiry_date',
                 'supplier:id,name,contact_name,phone',
             ])
             ->findOrFail($this->expense_id);
@@ -191,6 +191,7 @@ class Rincian extends Component
             if ($materialDetail) {
                 $materialDetail->update([
                     'supply_quantity' => $materialDetail->supply_quantity + $detail->quantity_get,
+                    'supply_price' => $detail->price_get ?? $detail->price_expect,
                 ]);
             }
 
@@ -307,7 +308,15 @@ class Rincian extends Component
         NotificationService::shoppingCompleted($this->expense->expense_number);
         NotificationService::purchaseReceived($this->expense->expense_number);
 
-        $this->alert('success', 'Belanja berhasil diselesaikan.');
+        // Notifikasi jika belanja masih kurang
+        $totalExpect = $this->expense->expenseDetails->sum('quantity_expect');
+        $totalGet = $this->expense->expenseDetails->sum('quantity_get');
+        
+        if ($totalGet < $totalExpect) {
+            $this->alert('warning', 'Belanja telah diselesaikan, namun masih ada barang yang kurang dari rencana.');
+        } else {
+            $this->alert('success', 'Belanja berhasil diselesaikan.');
+        }
     }
 
     public function render()

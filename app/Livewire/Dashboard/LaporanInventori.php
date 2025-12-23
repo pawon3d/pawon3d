@@ -11,6 +11,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -68,6 +69,10 @@ class LaporanInventori extends Component
         $this->currentMonth = Carbon::parse($this->selectedDate)->startOfMonth()->toDateString();
         View::share('title', 'Laporan Inventori');
         View::share('mainTitle', 'Dashboard');
+
+        if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
+            $this->selectedWorker = Auth::user()->id;
+        }
     }
 
     public function toggleCalendar()

@@ -321,10 +321,16 @@
             <div class="flex-1">
                 <flux:select wire:model.live="selectedWorker"
                     class="!bg-[#fafafa] !border-[#adadad] !rounded-[15px] !px-5 !py-2.5 !text-[#666666]" searchable>
-                    <option value="semua">Semua Pekerja</option>
-                    @foreach (\App\Models\User::all() as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
+                    @can('manajemen.pembayaran.kelola')
+                        <option value="semua">Semua Pekerja</option>
+                    @endcan
+                    @can('manajemen.pembayaran.kelola')
+                        @foreach (\App\Models\User::all() as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    @else
+                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                    @endcan
                 </flux:select>
             </div>
 

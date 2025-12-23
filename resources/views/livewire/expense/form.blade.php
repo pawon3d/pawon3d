@@ -55,7 +55,7 @@
                                 return moment(dateString, 'DD MMM YYYY').toDate();
                             },
                             onSelect: function() {
-                                @this.set('hitung_date', moment(this.getDate()).format('DD MMM YYYY'));
+                                @this.set('expense_date', moment(this.getDate()).format('DD MMM YYYY'));
                             }
                         });" wire:model.defer="expense_date" id="datepicker"
                         readonly placeholder="01 Jun 2025" />

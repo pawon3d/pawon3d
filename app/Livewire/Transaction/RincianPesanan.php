@@ -284,7 +284,18 @@ class RincianPesanan extends Component
 
     public function getChangeAmountProperty()
     {
-        if ($this->paymentMethod !== 'tunai') {
+        // Cek apakah metode pembayaran adalah tunai
+        $isTunai = false;
+        
+        if ($this->paymentGroup === 'tunai') {
+            $isTunai = true;
+        } elseif (empty($this->paymentGroup) && $this->payments && $this->payments->count() > 0) {
+            // Jika paymentGroup kosong (pembayaran kedua), cek dari pembayaran sebelumnya
+            $lastPayment = $this->payments->first();
+            $isTunai = ($lastPayment->payment_group === 'tunai');
+        }
+        
+        if (!$isTunai) {
             return 0;
         }
 
@@ -398,6 +409,19 @@ class RincianPesanan extends Component
                 ->get()
                 ->unique('type')
                 ->values();
+        } elseif($value == 'tunai') {
+            $this->paymentMethod = 'tunai';
+        } else {
+            // Reset semua field payment ketika kembali ke tunai
+            $this->paymentMethod = '';
+            $this->paymentChannelId = '';
+            $this->paymentBank = '';
+            $this->paymentAccountNumber = '';
+            $this->paymentAccountName = '';
+            $this->paymentAccount = '';
+            $this->paymentChannels = [];
+            $this->paymentMethods = [];
+            $this->image = null;
         }
     }
 
@@ -442,21 +466,25 @@ class RincianPesanan extends Component
 
     public function pay()
     {
-        if ($this->paymentGroup == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
+        // Validasi metode pembayaran untuk SEMUA pembayaran
+        if (empty($this->paymentGroup)) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
-
             return;
-        } elseif ($this->paymentChannelId == '' && $this->paymentMethod == 'transfer') {
-            $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
-
-            return;
-            // } elseif ($this->image == null && $this->paymentMethod != 'tunai') {
-            //     $this->alert('warning', 'Silakan unggah bukti pembayaran.');
-            //     return;
-            // }
-
-            // sementara
         }
+        
+        // Validasi untuk metode non-tunai
+        if ($this->paymentGroup === 'non-tunai') {
+            if (empty($this->paymentMethod)) {
+                $this->alert('warning', 'Tipe pembayaran harus dipilih (Transfer/E-wallet/dll).');
+                return;
+            }
+            if ($this->paymentMethod === 'transfer' && empty($this->paymentChannelId)) {
+                $this->alert('warning', 'Bank Tujuan harus dipilih.');
+                return;
+            }
+        }
+        
+
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             $totalAfterPoints = $this->transaction->total_amount - ($this->transaction->points_discount ?? 0);
 
@@ -485,13 +513,22 @@ class RincianPesanan extends Component
                 }
             }
         } else {
-            if (! empty($this->payments) && ($this->paidAmount < ($this->totalAmount - $this->totalPayment))) {
-                $this->alert('warning', 'Jumlah pembayaran harus lunas.');
-
+            // Untuk pembayaran kedua/pelunasan
+            $sisaTagihan = $this->totalAmount - $this->totalPayment;
+            
+            // Cek apakah sudah lunas
+            if ($sisaTagihan <= 0) {
+                $this->alert('warning', 'Transaksi sudah lunas. Tidak perlu pembayaran lagi.');
+                return;
+            }
+            
+            // Validasi jumlah pembayaran harus melunasi sisa tagihan
+            if (!empty($this->payments) && ($this->paidAmount < $sisaTagihan)) {
+                $this->alert('warning', 'Jumlah pembayaran harus lunas (minimal Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').');
                 return;
             } else {
                 $status = 'Lunas';
-                $this->paidAmount = $this->totalAmount - $this->totalPayment;
+                $this->paidAmount = $sisaTagihan;
             }
         }
         $this->validate([
@@ -561,7 +598,7 @@ class RincianPesanan extends Component
                 }
             }
 
-            if ($this->paidAmount > 0 && $this->paymentMethod != '') {
+            if ($this->paidAmount > 0 && !empty($this->paymentGroup)) {
                 $payment = Payment::create([
                     'transaction_id' => $transaction->id,
                     'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,

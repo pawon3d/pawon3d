@@ -29,6 +29,8 @@ class ActivateAccount extends Component
 
     public function mount(string $token): void
     {
+        View::share('title', 'Aktivasi Akun');
+
         $this->token = $token;
 
         $this->user = User::where('invitation_token', $token)->first();
@@ -52,7 +54,6 @@ class ActivateAccount extends Component
         }
 
         $this->tokenValid = true;
-        View::share('title', 'Aktivasi Akun');
     }
 
     public function activate(): void
