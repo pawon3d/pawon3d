@@ -171,8 +171,8 @@
                                 </span>
                             @endif
                         </div>
-                        <span class="font-semibold text-gray-100">{{ auth()->user()->name }}
-                            ({{ auth()->user()->getRoleNames()->first() }})</span>
+                        <span class="font-semibold text-gray-100">{{ auth()->user()->name }}</span>
+                        <span class="font-semibold text-gray-100 hidden lg:inline">({{ auth()->user()->getRoleNames()->first() }})</span>
                         <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
                     </flux:button>
 

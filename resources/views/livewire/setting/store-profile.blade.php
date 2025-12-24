@@ -1,14 +1,14 @@
 <div>
     {{-- Header --}}
-    <div class="mb-4 flex items-center justify-between">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center">
             <a href="{{ route('pengaturan') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                class="mr-2 w-full sm:w-auto px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center justify-center text-white"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
-            <h1 class="text-2xl hidden md:block">Profil Usaha</h1>
+            <h1 class="text-xl sm:text-2xl hidden md:block">Profil Usaha</h1>
         </div>
     </div>
 
@@ -62,7 +62,7 @@
         </div>
 
         {{-- Image Uploads: Logo, Banner, Contoh Produk --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {{-- Logo Usaha --}}
             <div class="flex flex-col gap-4">
                 <flux:field>
@@ -349,17 +349,17 @@
             Informasi Legalitas Usaha
         </h4>
 
-        <div class="flex flex-row items-center justify-between mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
             <flux:text class="text-gray-600">Daftar Dokumen</flux:text>
-            <flux:button type="button" variant="primary" icon="plus" wire:click='addModal'>
+            <flux:button type="button" variant="primary" icon="plus" wire:click='addModal' class="w-full sm:w-auto">
                 Tambah Dokumen
             </flux:button>
         </div>
 
         <x-table.paginated :paginator="$storeDocuments" :headers="[
             ['label' => 'Dokumen Legalitas', 'class' => 'bg-[#3F4E4F] text-white'],
-            ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white'],
-            ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white'],
+            ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white hidden md:table-cell'],
+            ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white hidden md:table-cell'],
             ['label' => 'Berlaku Hingga', 'class' => 'bg-[#3F4E4F] text-white'],
         ]"
             emptyMessage="Tidak ada dokumen legalitas yang tersedia.">
@@ -369,10 +369,10 @@
                         wire:click="editModal('{{ $document->id }}')">
                         {{ $document->document_name }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 hidden md:table-cell">
                         {{ $document->document_number ?? '-' }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 hidden md:table-cell">
                         {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->translatedFormat('d M Y') : '-' }}
                     </td>
                     <td class="px-6 py-4">
@@ -384,9 +384,9 @@
     </div>
 
     {{-- Action Buttons --}}
-    <div class="flex justify-end gap-4 mt-6">
-        <flux:button href="{{ route('pengaturan') }}" icon="x-mark" wire:navigate>Batal</flux:button>
-        <flux:button wire:click="updateStore" icon="save" variant="primary">Simpan</flux:button>
+    <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
+        <flux:button href="{{ route('pengaturan') }}" icon="x-mark" wire:navigate class="w-full sm:w-auto">Batal</flux:button>
+        <flux:button wire:click="updateStore" icon="save" variant="primary" class="w-full sm:w-auto">Simpan</flux:button>
     </div>
 
     {{-- Document Modal --}}
@@ -426,28 +426,30 @@
 
                 <div class="mb-5 w-full">
                     <flux:label class="mb-2">File Dokumen</flux:label>
-                    <div class="flex flex-row items-center gap-4">
-                        <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap h-10 text-sm rounded-lg px-4 inline-flex bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow w-1/4">
-                            Pilih File
-                            <input type="file" wire:model.live="documentFile"
-                                accept="image/jpeg, image/png, image/jpg, application/pdf" class="hidden" />
-                        </label>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-4">
+                            <label
+                                class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap h-10 text-sm rounded-lg px-4 inline-flex bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow shrink-0">
+                                Pilih File
+                                <input type="file" wire:model.live="documentFile"
+                                    accept="image/jpeg, image/png, image/jpg, application/pdf" class="hidden" />
+                            </label>
 
-                        @if ($documentFile)
+                            @if ($documentFile)
+                                <input type="text"
+                                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 truncate"
+                                    value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
+                                    readonly wire:loading.remove wire:target="documentFile">
+                            @else
+                                <input type="text"
+                                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                    value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
+                            @endif
                             <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
-                                readonly wire:loading.remove wire:target="documentFile">
-                        @else
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
-                        @endif
-                        <input type="text"
-                            class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 hidden"
-                            value="Mengupload File..." readonly wire:loading.class.remove="hidden"
-                            wire:target="documentFile">
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 hidden"
+                                value="Mengupload File..." readonly wire:loading.class.remove="hidden"
+                                wire:target="documentFile">
+                        </div>
                     </div>
                     <flux:error name="documentFile" />
                 </div>

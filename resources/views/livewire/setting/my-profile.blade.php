@@ -1,7 +1,7 @@
 <div>
-    <div class="mb-4 flex items-center gap-4">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
         <a href="{{ route('pengaturan') }}"
-            class="px-6 py-2 bg-[#313131] rounded-[15px] flex items-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]"
+            class="w-full sm:w-auto px-6 py-2 bg-[#313131] rounded-[15px] flex items-center justify-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]"
             wire:navigate>
             <flux:icon.arrow-left variant="mini" class="mr-2 size-5" />
             Kembali
@@ -17,13 +17,13 @@
     </x-alert.info>
 
     <div
-        class="w-full flex md:flex-row flex-col gap-[130px] bg-[#fafafa] p-[30px] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-        <div class="flex flex-col gap-4 min-w-[300px]">
+        class="w-full flex lg:flex-row flex-col gap-8 lg:gap-[130px] bg-[#fafafa] p-6 sm:p-[30px] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+        <div class="flex flex-col gap-4 w-full lg:w-auto lg:min-w-[300px]">
             <flux:label class="text-[#666666] text-base font-medium">Foto Profil</flux:label>
 
             <div class="flex flex-col items-center w-full space-y-5">
                 <!-- Dropzone Area -->
-                <div class="relative w-[300px] h-[170px] border-2 border-dashed border-black rounded-[15px] bg-[#fafafa] hover:bg-gray-50 transition-colors duration-200 overflow-hidden"
+                <div class="relative w-full sm:w-[300px] h-[170px] border-2 border-dashed border-black rounded-[15px] bg-[#fafafa] hover:bg-gray-50 transition-colors duration-200 overflow-hidden"
                     wire:ignore
                     ondragover="event.preventDefault(); this.classList.add('border-[#74512d]', 'bg-gray-50');"
                     ondragleave="this.classList.remove('border-[#74512d]', 'bg-gray-50');" ondrop="handleDrop(event)"
@@ -80,7 +80,7 @@
         </div>
 
 
-        <div class="flex-1 flex flex-col gap-[30px] min-w-[370px]">
+        <div class="flex-1 flex flex-col gap-6 sm:gap-[30px] w-full">
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Nama</flux:label>
                 <input placeholder="Nama Lengkap"
@@ -132,8 +132,8 @@
         </div>
     </div>
 
-    <div class="flex justify-end mt-[50px]">
-        <flux:button wire:click="updateUser" variant="primary" icon="bookmark">
+    <div class="flex justify-end mt-8 sm:mt-[50px]">
+        <flux:button wire:click="updateUser" variant="primary" icon="bookmark" class="w-full sm:w-auto">
             Simpan Perubahan
         </flux:button>
     </div>

@@ -7,7 +7,7 @@
         </div>
     @else
         {{-- Header --}}
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between flex-col lg:flex-row items-center gap-3">
             <h1 class="text-xl font-semibold text-[#333333]">Laporan Inventori</h1>
             {{-- <flux:button variant="secondary" icon="printer"
                 onclick="window.open('{{ route('laporan-inventori.pdf') }}?filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}', '_blank')">
@@ -20,9 +20,9 @@
         </div>
 
         {{-- Date and Worker Filter --}}
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-4">
             {{-- Custom Calendar Dropdown --}}
-            <div class="flex-1 max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
+            <div class="w-full sm:max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
                 <button type="button" @click="open = !open"
                     class="w-full bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[30px] py-[10px] flex items-center justify-between cursor-pointer hover:border-[#666666] transition-colors">
                     <span class="text-[#666666] text-base">
@@ -57,7 +57,7 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 translate-y-0"
                     x-transition:leave-end="opacity-0 translate-y-1"
-                    class="absolute z-50 mt-2 left-0 bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[385px] overflow-hidden"
+                    class="absolute z-50 mt-2 left-0 sm:left-auto bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[calc(100vw-2rem)] sm:w-[385px] overflow-hidden"
                     @click.stop>
 
                     {{-- Filter Period Buttons --}}
@@ -353,7 +353,7 @@
 
         {{-- Statistics Cards --}}
         {{-- Top Card - Sesi Belanja Persediaan --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px]">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px]">
             <div class="flex items-start justify-between">
                 <div class="flex flex-col gap-[15px]">
                     <p class="text-base font-medium text-[#333333]/70">Sesi Belanja Persediaan</p>
@@ -377,7 +377,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             {{-- Nilai Persediaan --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] min-h-[120px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] min-h-[120px]">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col gap-[15px]">
                         <p class="text-base font-medium text-[#333333]/70">Nilai Persediaan</p>
@@ -400,7 +400,7 @@
 
             {{-- Nilai Persediaan Terpakai --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] min-h-[120px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] min-h-[120px]">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col gap-[15px]">
                         <p class="text-base font-medium text-[#333333]/70">Nilai Persediaan Terpakai</p>
@@ -431,7 +431,7 @@
 
             {{-- Nilai Persediaan Saat Ini --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] min-h-[120px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] min-h-[120px]">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col gap-[15px]">
                         <p class="text-base font-medium text-[#333333]/70">Nilai Persediaan Saat Ini</p>
@@ -467,7 +467,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {{-- Chart: 10 Persediaan Banyak Digunakan --}}
             <div
-                class="lg:col-span-2 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-[30px] relative">
+                class="lg:col-span-2 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-5 sm:p-[30px] relative">
                 <h3 class="text-base font-semibold text-[#333333] mb-4">10 Persediaan Banyak Digunakan</h3>
                 <div id="topMaterialChartEmpty"
                     class="absolute inset-0 flex items-center justify-center bg-white/50 opacity-0 pointer-events-none transition-opacity duration-300">
@@ -491,7 +491,7 @@
             <div class="flex flex-col gap-5">
                 {{-- Persediaan Banyak Digunakan --}}
                 <div
-                    class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] flex-1 min-h-[180px]">
+                    class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] flex-1 min-h-[180px]">
                     <div class="flex items-start justify-between">
                         <div class="flex flex-col gap-[15px]">
                             <p class="text-base font-medium text-[#333333]/70">Persediaan Banyak Digunakan</p>
@@ -527,7 +527,7 @@
 
                 {{-- Persediaan Sedikit Digunakan --}}
                 <div
-                    class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] flex-1 min-h-[180px]">
+                    class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] flex-1 min-h-[180px]">
                     <div class="flex items-start justify-between">
                         <div class="flex flex-col gap-[15px]">
                             <p class="text-base font-medium text-[#333333]/70">Persediaan Sedikit Digunanakan</p>
@@ -561,20 +561,15 @@
         </div>
 
         {{-- Persediaan Table --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                 <h3 class="text-base font-semibold text-[#333333]">Modal Persediaan</h3>
-                <div class="flex gap-3 items-center">
-                    <div class="relative flex items-center">
+                <div class="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
+                    <div class="relative flex items-center w-full sm:w-auto">
                         <flux:icon icon="magnifying-glass" class="absolute left-[15px] text-gray-400 size-5" />
                         <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Persediaan"
-                            class="pl-[45px] pr-4 py-[10px] text-sm border border-[#d4d4d4] rounded-[10px] bg-white focus:ring-2 focus:ring-[#74512D] focus:border-transparent w-[200px]">
+                            class="pl-[45px] pr-4 py-[10px] text-sm border border-[#d4d4d4] rounded-[10px] bg-white focus:ring-2 focus:ring-[#74512D] focus:border-transparent w-full sm:w-[200px]">
                     </div>
-                    <button
-                        class="flex items-center gap-[5px] px-4 py-[10px] text-[#666666] hover:bg-gray-100 rounded-[10px] transition-colors">
-                        <flux:icon icon="funnel" class="size-[25px]" />
-                        <span class="text-sm">Filter</span>
-                    </button>
                 </div>
             </div>
 
@@ -583,15 +578,18 @@
                 @foreach ($paginator as $item)
                     <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
                         <td class="py-5 px-6 text-[#333333]">{{ $item->name }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->total }} {{ $item->total_alias }}
+                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">{{ $item->total }}
+                            {{ $item->total_alias }}
                         </td>
-                        <td class="py-5 px-6 text-right text-[#333333]">
+                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">
                             Rp{{ number_format($item->total_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">-{{ $item->used }} {{ $item->used_alias }}
+                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">-{{ $item->used }}
+                            {{ $item->used_alias }}
                         </td>
                         <td class="py-5 px-6 text-right text-[#333333]">
                             -Rp{{ number_format($item->used_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->remain }} {{ $item->remain_alias }}
+                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">{{ $item->remain }}
+                            {{ $item->remain_alias }}
                         </td>
                         <td class="py-5 px-6 text-right text-[#333333]">
                             Rp{{ number_format($item->remain_price, 0, ',', '.') }}</td>
@@ -603,7 +601,7 @@
         {{-- Grid Layout for Low Stock and Expiring Tables --}}
         <div class="grid grid-cols-1 gap-5">
             {{-- Persediaan Hampir Habis dan Habis --}}
-            <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
+            <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
                 <h3 class="text-base font-semibold text-[#333333] mb-6">Persediaan Hampir Habis dan Habis</h3>
 
                 <div class="overflow-x-auto">
@@ -652,7 +650,7 @@
             </div>
 
             {{-- Persediaan Hampir dan Telah Expired --}}
-            <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
+            <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
                 <h3 class="text-base font-semibold text-[#333333] mb-6">Persediaan Hampir dan Telah Expired</h3>
 
                 <div class="overflow-x-auto">

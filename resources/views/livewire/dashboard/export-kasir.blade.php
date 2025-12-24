@@ -8,10 +8,10 @@
     </div>
 
     {{-- Form Container --}}
-    <div class="bg-[#fafafa] rounded-[15px] px-[30px] py-[25px]">
+    <div class="bg-[#fafafa] rounded-[15px] px-5 sm:px-[30px] py-[25px]">
         <div class="flex flex-col gap-[30px] pb-[50px]">
             {{-- Report Content Selection --}}
-            <div class="flex flex-col gap-[15px] w-[500px]">
+            <div class="flex flex-col gap-[15px] w-full max-w-lg">
                 <label class="text-[#666666] text-[16px] font-medium">
                     Pilih Isi Laporan Kasir <span class="text-[#eb5757]">*</span>
                 </label>
@@ -27,7 +27,7 @@
             </div>
 
             {{-- Date Selection --}}
-            <div class="flex flex-col gap-[15px] w-[500px]">
+            <div class="flex flex-col gap-[15px] w-full max-w-lg">
                 <label class="text-[#666666] text-[16px] font-medium">
                     Tanggal Laporan <span class="text-[#eb5757]">*</span>
                 </label>
@@ -67,7 +67,7 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 translate-y-0"
                         x-transition:leave-end="opacity-0 translate-y-1"
-                        class="absolute z-50 mt-2 left-0 bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[385px] overflow-hidden"
+                        class="absolute z-50 mt-2 left-0 sm:left-auto bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[calc(100vw-2rem)] sm:w-[385px] overflow-hidden"
                         @click.stop>
 
                         {{-- Filter Period Buttons --}}
@@ -273,7 +273,7 @@
             </div>
 
             {{-- Worker Selection --}}
-            <div class="flex flex-col gap-[15px] w-[500px]">
+            <div class="flex flex-col gap-[15px] w-full max-w-lg">
                 <label class="text-[#666666] text-[16px] font-medium">
                     Pekerja <span class="text-[#eb5757]">*</span>
                 </label>
@@ -293,7 +293,7 @@
             </div>
 
             {{-- Sale Method Selection --}}
-            <div class="flex flex-col gap-[15px] w-[500px]">
+            <div class="flex flex-col gap-[15px] w-full max-w-lg">
                 <label class="text-[#666666] text-[16px] font-medium">
                     Metode Penjualan <span class="text-[#eb5757]">*</span>
                 </label>
@@ -309,16 +309,16 @@
     </div>
 
     {{-- Export Buttons --}}
-    <div class="flex gap-[10px] justify-end">
+    <div class="flex flex-col sm:flex-row gap-[10px] justify-end">
         <flux:button
             onclick="window.open('{{ route('laporan-kasir.pdf') }}?reportContent={{ $reportContent }}&filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}&selectedMethod={{ $selectedMethod }}', '_blank')"
-            class="!bg-[#eb5757] hover:!bg-[#d94444] !text-[#f6f6f6] !rounded-[15px] !px-[25px] !py-[10px] !font-semibold !shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+            class="w-full sm:w-auto !bg-[#eb5757] hover:!bg-[#d94444] !text-[#f6f6f6] !rounded-[15px] !px-[25px] !py-[10px] !font-semibold !shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
             <flux:icon icon="document" class="size-5" />
             Unduh PDF
         </flux:button>
         <flux:button
             onclick="window.open('{{ route('laporan-kasir.excel') }}?reportContent={{ $reportContent }}&filterPeriod={{ $filterPeriod }}&selectedDate={{ $selectedDate }}&customStartDate={{ $customStartDate }}&customEndDate={{ $customEndDate }}&selectedWorker={{ $selectedWorker }}&selectedMethod={{ $selectedMethod }}', '_blank')"
-            class="!bg-[#56c568] hover:!bg-[#48b05a] !text-[#f6f6f6] !rounded-[15px] !px-[25px] !py-[10px] !font-semibold !shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+            class="w-full sm:w-auto !bg-[#56c568] hover:!bg-[#48b05a] !text-[#f6f6f6] !rounded-[15px] !px-[25px] !py-[10px] !font-semibold !shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
             <flux:icon icon="table-cells" class="size-5" />
             Unduh Excel
         </flux:button>

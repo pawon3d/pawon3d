@@ -1,8 +1,8 @@
 <div class="flex flex-col gap-6">
     <!-- Header -->
-    <div class="flex items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
         <a href="{{ route('pengaturan') }}" wire:navigate
-            class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold">
+            class="w-full sm:w-auto px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold">
             <flux:icon.arrow-left class="size-5" />
             Kembali
         </a>
@@ -20,10 +20,10 @@
 
     <!-- Table Section -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-6">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
             <p class="text-base font-medium text-[#666666]">Daftar Metode</p>
             <flux:button type="button" wire:click="openModal" icon="plus"
-                class="!bg-[#74512D] hover:!bg-[#5d4024] !text-[#F8F4E1] !px-6 !py-2.5 !rounded-[15px] !font-semibold">
+                class="!bg-[#74512D] hover:!bg-[#5d4024] !text-[#F8F4E1] !px-6 !py-2.5 !rounded-[15px] !font-semibold w-full sm:w-auto">
                 Tambah Metode
             </flux:button>
         </div>
@@ -186,24 +186,26 @@
                 <div>
                     <label class="block text-sm font-medium text-[#666666] mb-2">Unggah File (Jika ada QR
                         Code)</label>
-                    <div class="flex items-center gap-3">
-                        <label
-                            class="px-6 py-2.5 bg-[#74512D] hover:bg-[#5d4024] text-[#F8F4E1] rounded-[10px] font-semibold text-sm cursor-pointer inline-flex items-center gap-2">
-                            Pilih File
-                            <input type="file" wire:model="qrisImage" accept="image/*" class="hidden" />
-                        </label>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            <label
+                                class="px-6 py-2.5 bg-[#74512D] hover:bg-[#5d4024] text-[#F8F4E1] rounded-[10px] font-semibold text-sm cursor-pointer inline-flex items-center gap-2 shrink-0">
+                                Pilih File
+                                <input type="file" wire:model="qrisImage" accept="image/*" class="hidden" />
+                            </label>
 
-                        <input type="text"
-                            class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa]"
-                            value="{{ $qrisImage ? (is_string($qrisImage) ? basename($qrisImage) : $qrisImage->getClientOriginalName()) : 'File Belum Dipilih' }}"
-                            readonly wire:loading.remove wire:target="qrisImage">
+                            <input type="text"
+                                class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa] truncate"
+                                value="{{ $qrisImage ? (is_string($qrisImage) ? basename($qrisImage) : $qrisImage->getClientOriginalName()) : 'File Belum Dipilih' }}"
+                                readonly wire:loading.remove wire:target="qrisImage">
 
-                        <input type="text"
-                            class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa]"
-                            value="Mengupload File..." readonly wire:loading wire:target="qrisImage">
+                            <input type="text"
+                                class="flex-1 px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#666666] bg-[#fafafa]"
+                                value="Mengupload File..." readonly wire:loading wire:target="qrisImage">
+                        </div>
 
                         @if ($edit && $qrisImage)
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 justify-end sm:justify-start">
                                 <button type="button" wire:click="previewImage"
                                     class="p-2 bg-[#525252] hover:bg-[#404040] rounded-full">
                                     <flux:icon.eye class="size-5 text-white" />

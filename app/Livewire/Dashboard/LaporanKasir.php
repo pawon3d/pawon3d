@@ -659,18 +659,18 @@ class LaporanKasir extends Component
             'productSalesPaginator' => $emptyPaginator,
             'productSalesHeaders' => [
                 ['label' => 'Produk', 'class' => 'text-left text-[#fff]'],
-                ['label' => 'Produksi', 'class' => 'text-center text-[#fff]'],
+                ['label' => 'Produksi', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
                 ['label' => 'Terjual', 'class' => 'text-center text-[#fff]'],
-                ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff]'],
+                ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
             ],
             'monthlyReportsPaginator' => $emptyPaginator,
             'monthlyReportsHeaders' => [
                 ['label' => 'Waktu', 'class' => 'text-left text-[#fff]'],
-                ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff]'],
-                ['label' => 'Refund', 'class' => 'text-center text-[#fff]'],
-                ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff]'],
+                ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
+                ['label' => 'Refund', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
+                ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
                 ['label' => 'Pendapatan Bersih', 'class' => 'text-center text-[#fff]'],
-                ['label' => 'Modal', 'class' => 'text-center text-[#fff]'],
+                ['label' => 'Modal', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
                 ['label' => 'Keuntungan', 'class' => 'text-center text-[#fff]'],
             ],
         ];
@@ -987,18 +987,18 @@ class LaporanKasir extends Component
 
         $productSalesHeaders = [
             ['label' => 'Produk', 'class' => 'text-left text-[#fff]'],
-            ['label' => 'Produksi', 'class' => 'text-center text-[#fff]'],
+            ['label' => 'Produksi', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
             ['label' => 'Terjual', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff]'],
+            ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
         ];
 
         $monthlyReportsHeaders = [
             ['label' => 'Waktu', 'class' => 'text-left text-[#fff]'],
-            ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Refund', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff]'],
+            ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
+            ['label' => 'Refund', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
+            ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
             ['label' => 'Pendapatan Bersih', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Modal', 'class' => 'text-center text-[#fff]'],
+            ['label' => 'Modal', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
             ['label' => 'Keuntungan', 'class' => 'text-center text-[#fff]'],
         ];
 

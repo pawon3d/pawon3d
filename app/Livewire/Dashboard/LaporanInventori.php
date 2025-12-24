@@ -647,11 +647,11 @@ class LaporanInventori extends Component
             'totalPages' => 0,
             'tableHeaders' => [
                 ['label' => 'Persediaan', 'class' => 'text-left'],
-                ['label' => 'Jumlah Belanja', 'class' => 'text-right', 'align' => 'right'],
-                ['label' => 'Modal Belanja', 'class' => 'text-right', 'align' => 'right'],
-                ['label' => 'Jumlah Terpakai', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Jumlah Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
+                ['label' => 'Modal Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
+                ['label' => 'Jumlah Terpakai', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
                 ['label' => 'Modal Terpakai', 'class' => 'text-right', 'align' => 'right'],
-                ['label' => 'Jumlah Tersisa', 'class' => 'text-right', 'align' => 'right'],
+                ['label' => 'Jumlah Tersisa', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
                 ['label' => 'Modal Tersisa', 'class' => 'text-right', 'align' => 'right'],
             ],
             'lowStockMaterials' => collect([]),
@@ -1145,11 +1145,11 @@ class LaporanInventori extends Component
 
         $tableHeaders = [
             ['label' => 'Persediaan', 'class' => 'text-left'],
-            ['label' => 'Jumlah Belanja', 'class' => 'text-right', 'align' => 'right'],
-            ['label' => 'Modal Belanja', 'class' => 'text-right', 'align' => 'right'],
-            ['label' => 'Jumlah Terpakai', 'class' => 'text-right', 'align' => 'right'],
+            ['label' => 'Jumlah Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
+            ['label' => 'Modal Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
+            ['label' => 'Jumlah Terpakai', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
             ['label' => 'Modal Terpakai', 'class' => 'text-right', 'align' => 'right'],
-            ['label' => 'Jumlah Tersisa', 'class' => 'text-right', 'align' => 'right'],
+            ['label' => 'Jumlah Tersisa', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
             ['label' => 'Modal Tersisa', 'class' => 'text-right', 'align' => 'right'],
         ];
 

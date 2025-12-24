@@ -7,7 +7,7 @@
         </div>
     @else
         {{-- Header --}}
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between flex-col lg:flex-row items-center gap-3">
             <h1 class="text-xl font-semibold text-[#333333]">Laporan Produksi</h1>
             <flux:button variant="secondary" icon="arrow-down-tray" href="{{ route('laporan-produksi.export') }}"
                 wire:navigate>
@@ -16,9 +16,9 @@
         </div>
 
         {{-- Filters Row: Date Calendar, Worker, Method --}}
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-4">
             {{-- Custom Calendar Dropdown --}}
-            <div class="flex-1 max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
+            <div class="w-full sm:max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
                 <button type="button" @click="open = !open"
                     class="w-full bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[30px] py-[10px] flex items-center justify-between cursor-pointer hover:border-[#666666] transition-colors">
                     <span class="text-[#666666] text-base">
@@ -53,7 +53,7 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 translate-y-0"
                     x-transition:leave-end="opacity-0 translate-y-1"
-                    class="absolute z-50 mt-2 left-0 bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[385px] overflow-hidden"
+                    class="absolute z-50 mt-2 left-0 sm:left-auto bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[calc(100vw-2rem)] sm:w-[385px] overflow-hidden"
                     @click.stop>
 
                     {{-- Filter Period Buttons --}}
@@ -348,7 +348,7 @@
 
         {{-- Statistics Cards --}}
         {{-- Top Card - Produksi --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px]">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px]">
             <div class="flex items-start justify-between">
                 <div class="flex flex-col gap-[15px]">
                     <p class="text-base font-medium text-[#333333]/70">Produksi</p>
@@ -378,7 +378,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             {{-- Produksi Berhasil --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] min-h-[120px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] min-h-[120px]">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col gap-[15px]">
                         <p class="text-base font-medium text-[#333333]/70">Produksi Berhasil</p>
@@ -412,7 +412,7 @@
 
             {{-- Produksi Gagal --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px] min-h-[120px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px] min-h-[120px]">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-col gap-[15px]">
                         <p class="text-base font-medium text-[#333333]/70">Produksi Gagal</p>
@@ -449,7 +449,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {{-- Top 10 Chart --}}
             <div
-                class="lg:col-span-2 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
+                class="lg:col-span-2 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
                 <p class="font-medium text-[#333333]/70 mb-4">10 Produksi Tertinggi</p>
                 <div class="relative" style="min-height: 320px;">
                     @if (empty($topProductionsChartData['labels']) || count($topProductionsChartData['labels']) == 0)
@@ -469,7 +469,7 @@
             <div class="flex flex-col gap-5">
                 {{-- Produksi Tertinggi --}}
                 <div
-                    class="flex-1 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px]">
+                    class="flex-1 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px]">
                     <div class="flex items-start justify-between">
                         <div class="flex flex-col gap-[10px]">
                             <p class="text-base font-medium text-[#333333]/70">Produksi Tertinggi</p>
@@ -501,7 +501,7 @@
 
                 {{-- Produksi Terendah --}}
                 <div
-                    class="flex-1 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[15px]">
+                    class="flex-1 bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[15px]">
                     <div class="flex items-start justify-between">
                         <div class="flex flex-col gap-[10px]">
                             <p class="text-base font-medium text-[#333333]/70">Produksi Terendah</p>
@@ -534,7 +534,7 @@
         </div>
 
         {{-- Pie Chart: Metode Produksi --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
             <p class="font-medium text-[#333333]/70 mb-4">Metode Produksi Teratas</p>
             @if (count($productionChartData['labels']) == 0 || count($productionChartData['data']) == 0)
                 <p class="text-[#666666] text-center py-8">Tidak ada data untuk ditampilkan</p>
@@ -546,12 +546,12 @@
         </div>
 
         {{-- Table: Produksi Produk --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
-            <div class="flex items-center justify-between mb-5">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
                 <p class="font-medium text-[#333333]/70">Produksi Produk</p>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
                     <div
-                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 min-w-[250px]">
+                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 flex-1 sm:min-w-[250px]">
                         <flux:icon icon="magnifying-glass" class="size-5 text-[#959595]" />
                         <input type="text" placeholder="Cari Produk"
                             class="ml-2 py-2 text-sm text-[#959595] bg-transparent border-none focus:outline-none w-full"
@@ -569,12 +569,12 @@
                 @foreach ($paginator as $product)
                     <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
                         <td class="py-5 px-6 text-[#333333]">{{ $product->name }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333]">
+                        <td class="py-5 px-6 text-left text-[#333333] hidden md:table-cell">
                             {{ number_format($product->total, 0, ',', '.') }}
                         </td>
                         <td class="py-5 px-6 text-left text-[#333333]">
                             {{ number_format($product->success, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333]">
+                        <td class="py-5 px-6 text-left text-[#333333] hidden md:table-cell">
                             {{ number_format($product->fail, 0, ',', '.') }}
                         </td>
                     </tr>

@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-10">
     <!-- Profile Card -->
-    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px] flex items-center justify-between">
-        <div class="flex gap-5 items-center">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-6 sm:px-[30px] py-5 sm:py-[25px] flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div class="flex gap-4 sm:gap-5 items-center">
             <!-- Avatar -->
             <div class="relative flex h-[53px] w-[53px] shrink-0 overflow-hidden rounded-full">
                 @if (auth()->user()->image)
@@ -15,19 +15,19 @@
                 @endif
             </div>
             <!-- User Info -->
-            <div class="flex flex-col gap-[5px]">
-                <div class="flex gap-[5px] items-center">
-                    <span class="text-xl font-medium text-[#333333]">{{ auth()->user()->name }}</span>
+            <div class="flex flex-col gap-1">
+                <div class="flex flex-wrap gap-1 sm:gap-[5px] items-center">
+                    <span class="text-lg sm:text-xl font-medium text-[#333333]">{{ auth()->user()->name }}</span>
                     <span
-                        class="text-base font-normal text-[#666666]">({{ auth()->user()->getRoleNames()->first() ?? 'User' }})</span>
+                        class="text-sm sm:text-base font-normal text-[#666666]">({{ auth()->user()->getRoleNames()->first() ?? 'User' }})</span>
                 </div>
-                <span class="text-base text-[#333333]">{{ auth()->user()->email }}</span>
+                <span class="text-sm sm:text-base text-[#333333] break-all">{{ auth()->user()->email }}</span>
             </div>
         </div>
         <!-- Logout Button -->
         <flux:modal.trigger name="logoutModal">
             <flux:button type="button" icon="arrow-right-start-on-rectangle" variant="danger"
-                class="!px-[25px] !py-[10px] !rounded-[15px] !text-base !font-semibold">
+                class="!w-full sm:!w-auto !px-[25px] !py-[10px] !rounded-[15px] !text-base !font-semibold">
                 Keluar
             </flux:button>
         </flux:modal.trigger>

@@ -580,9 +580,9 @@ class LaporanProduksi extends Component
             'paginator' => $emptyPaginator,
             'tableHeaders' => [
                 ['label' => 'Produk', 'class' => 'text-left'],
-                ['label' => 'Produksi', 'class' => 'text-left'],
+                ['label' => 'Produksi', 'class' => 'text-left hidden md:table-cell'],
                 ['label' => 'Berhasil', 'class' => 'text-left'],
-                ['label' => 'Gagal', 'class' => 'text-left'],
+                ['label' => 'Gagal', 'class' => 'text-left hidden md:table-cell'],
             ],
         ];
     }
@@ -779,9 +779,9 @@ class LaporanProduksi extends Component
 
         $tableHeaders = [
             ['label' => 'Produk', 'class' => 'text-left'],
-            ['label' => 'Produksi', 'class' => 'text-left'],
+            ['label' => 'Produksi', 'class' => 'text-left hidden md:table-cell'],
             ['label' => 'Berhasil', 'class' => 'text-left'],
-            ['label' => 'Gagal', 'class' => 'text-left'],
+            ['label' => 'Gagal', 'class' => 'text-left hidden md:table-cell'],
         ];
 
         return view('livewire.dashboard.laporan-produksi', [

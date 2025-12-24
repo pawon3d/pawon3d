@@ -7,7 +7,7 @@
         </div>
     @else
         {{-- Header --}}
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between flex-col lg:flex-row items-center gap-3">
             <h1 class="text-xl font-semibold text-[#333333]">Laporan Kasir</h1>
             <flux:button variant="secondary" icon="arrow-down-tray" href="{{ route('laporan-kasir.export') }}"
                 wire:navigate>
@@ -16,9 +16,9 @@
         </div>
 
         {{-- Filters Row: Date Calendar, Worker, Method --}}
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-4">
             {{-- Custom Calendar Dropdown --}}
-            <div class="flex-1 max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
+            <div class="w-full sm:max-w-[500px] relative" x-data="{ open: @entangle('showCalendar') }" @click.away="open = false">
                 <button type="button" @click="open = !open"
                     class="w-full bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[30px] py-[10px] flex items-center justify-between cursor-pointer hover:border-[#666666] transition-colors">
                     <span class="text-[#666666] text-base">
@@ -53,7 +53,7 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 translate-y-0"
                     x-transition:leave-end="opacity-0 translate-y-1"
-                    class="absolute z-50 mt-2 left-0 bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[385px] overflow-hidden"
+                    class="absolute z-50 mt-2 left-0 sm:left-auto bg-white border border-[#d4d4d4] rounded-[15px] shadow-lg p-5 w-[calc(100vw-2rem)] sm:w-[385px] overflow-hidden"
                     @click.stop>
 
                     {{-- Filter Period Buttons --}}
@@ -538,21 +538,17 @@
         </div>
 
         {{-- Tabel Penjualan Produk --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px]">
-            <div class="flex items-center justify-between mb-5">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-5 sm:px-[30px] py-[25px]">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
                 <p class="font-medium text-[#333333]/70">Penjualan Produk</p>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
                     <div
-                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 min-w-[250px]">
+                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 flex-1 sm:min-w-[250px]">
                         <flux:icon icon="magnifying-glass" class="size-5 text-[#959595]" />
                         <input type="text" placeholder="Cari Produk"
                             class="ml-2 py-2 text-sm text-[#959595] bg-transparent border-none focus:outline-none w-full"
                             wire:model.live.debounce.300ms="searchProduct" />
                     </div>
-                    <button class="flex items-center gap-1 text-[#666666]">
-                        <flux:icon icon="funnel" class="size-5" />
-                        <span class="text-sm">Filter</span>
-                    </button>
                 </div>
             </div>
 
@@ -561,12 +557,12 @@
                 @foreach ($productSalesPaginator as $item)
                     <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
                         <td class="py-3 px-4 text-left text-[#333333]">{{ $item->name }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333]">
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">
                             {{ number_format($item->produksi, 0, ',', '.') }}
                         </td>
                         <td class="py-3 px-4 text-center text-[#333333]">{{ number_format($item->sold, 0, ',', '.') }}
                         </td>
-                        <td class="py-3 px-4 text-center text-[#333333]">
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">
                             {{ number_format($item->unsold, 0, ',', '.') }}
                         </td>
                     </tr>
@@ -781,21 +777,17 @@
         </div>
 
         {{-- ==================== PART 5 & 6: Tabel Rincian Penjualan ==================== --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                 <h2 class="text-lg font-semibold text-[#333333]">Rincian Penjualan</h2>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
                     <div
-                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 min-w-[250px]">
+                        class="flex items-center bg-white border border-[#d4d4d4] rounded-[20px] px-4 py-1 flex-1 sm:min-w-[250px]">
                         <flux:icon icon="magnifying-glass" class="size-5 text-[#959595]" />
                         <input type="text" placeholder="Cari..."
                             class="ml-2 py-2 text-sm text-[#959595] bg-transparent border-none focus:outline-none w-full"
                             wire:model.live.debounce.300ms="searchReport" />
                     </div>
-                    <button class="flex items-center gap-1 text-[#666666]">
-                        <flux:icon icon="funnel" class="size-5" />
-                        <span class="text-sm">Filter</span>
-                    </button>
                 </div>
             </div>
 
@@ -804,15 +796,15 @@
                 @foreach ($monthlyReportsPaginator as $item)
                     <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
                         <td class="py-3 px-4 text-left text-[#333333]">{{ $item->waktu }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333]">Rp
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
                             {{ number_format($item->pendapatanKotor, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333]">Rp
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
                             {{ number_format($item->refund, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333]">Rp
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
                             {{ number_format($item->potonganHarga, 0, ',', '.') }}</td>
                         <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->pendapatanBersih, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333]">Rp
+                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
                             {{ number_format($item->modal, 0, ',', '.') }}</td>
                         <td
                             class="py-3 px-4 text-center {{ $item->keuntungan >= 0 ? 'text-green-600' : 'text-red-600' }}">
