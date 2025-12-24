@@ -21,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
                 BackfillPointsUsage::class,
             ]);
         }
+
+        $this->app->bind('path.public', function () {
+            return env('PUBLIC_PATH', base_path('public'));
+        });
     }
 
     /**
