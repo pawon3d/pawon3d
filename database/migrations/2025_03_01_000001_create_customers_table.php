@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('phone')->unique()->nullable()->default('000000000000');
+            $table->string('phone', 20)->unique()->nullable()->default('000000000000');
             $table->string('name', 50)->nullable()->default('Unregistered');
             $table->decimal('points', 9, 0)->default(0);
 
