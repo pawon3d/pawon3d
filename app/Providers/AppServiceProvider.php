@@ -22,9 +22,13 @@ class AppServiceProvider extends ServiceProvider
             ]);
         }
 
-        $this->app->bind('path.public', function () {
-            return env('PUBLIC_PATH', base_path('public'));
-        });
+        if ($envPath = env('PUBLIC_PATH')) {
+            $this->app->instance('path.public', $envPath);
+        } else {
+            $this->app->bind('path.public', function () {
+                return base_path('public');
+            });
+        }
     }
 
     /**
