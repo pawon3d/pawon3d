@@ -1,15 +1,15 @@
 <div class="space-y-6">
-    <div class="mb-2 flex items-center justify-between">
-        <div class="flex items-center gap-4">
+    <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('produk') }}"
-                class="bg-[#313131] hover:bg-[#252324] text-white px-5 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-2 transition-colors"
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] text-white px-5 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2 transition-colors"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
-            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Kategori Produk</h1>
+            <h1 class="font-montserrat font-semibold text-lg sm:text-[20px] text-[#666666]">Daftar Kategori Produk</h1>
         </div>
-        <flux:button variant="secondary" wire:click="riwayatPembaruan">
+        <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
             Riwayat Pembaruan
         </flux:button>
     </div>
@@ -23,8 +23,8 @@
 
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-6 border border-[#ececec]">
-        <div class="flex flex-wrap gap-4 items-center justify-between">
-            <div class="flex-1 min-w-[220px] max-w-[545px]">
+        <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="w-full sm:flex-1 sm:max-w-[545px]">
                 <div
                     class="flex items-center gap-2 bg-white border border-[#666666] rounded-[20px] px-4 h-[40px] w-full">
                     <flux:icon.magnifying-glass class="size-5 text-[#666666]" />
@@ -32,8 +32,8 @@
                         class="flex-1 bg-transparent border-0 font-montserrat font-medium text-[16px] text-[#959595] focus:outline-none focus:ring-0" />
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <flux:button variant="primary" icon="plus" type="button" wire:click="showAddModal">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <flux:button variant="primary" icon="plus" type="button" wire:click="showAddModal" class="w-full sm:w-auto">
                     Tambah Kategori
                 </flux:button>
             </div>
@@ -43,7 +43,7 @@
             ['label' => 'Kategori Produk', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
             [
-                'label' => 'Jumlah Penggunaan',
+                'label' => 'Jumlah',
                 'align' => 'right',
                 'sortable' => true,
                 'sort-by' => 'products_count',
@@ -99,13 +99,13 @@
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end gap-3">
-                <flux:modal.close>
-                    <flux:button variant="filled" icon="x-mark" type="button">
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <flux:modal.close class="w-full sm:w-auto">
+                    <flux:button variant="filled" icon="x-mark" type="button" class="w-full sm:w-auto">
                         Batal
                     </flux:button>
                 </flux:modal.close>
-                <flux:button icon="save" type="button" variant="secondary" wire:click="store">
+                <flux:button icon="save" type="button" variant="secondary" wire:click="store" class="w-full sm:w-auto">
                     Simpan
                 </flux:button>
             </div>
@@ -148,20 +148,22 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-between">
-                <flux:modal.trigger name="delete-category">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <flux:modal.trigger name="delete-category" class="w-full sm:w-auto">
                     <button type="button"
-                        class="bg-[#eb5757] rounded-[15px] p-3 text-white hover:bg-[#d64545] transition-colors">
-                        <flux:icon.trash class="size-5" />
+                        class="w-full sm:w-11 h-11 bg-[#eb5757] rounded-[15px] flex items-center justify-center text-white hover:bg-[#d64545] transition-colors">
+                        <flux:icon.trash class="size-5 hidden sm:block" />
+                        <span class="sm:hidden font-semibold">Hapus Kategori</span>
                     </button>
                 </flux:modal.trigger>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
                     <flux:button variant="filled" icon="x-mark" type="button"
-                        wire:click="$set('showEditModal', false)">
-                        Batal
+                            wire:click="$set('showEditModal', false)"
+                            class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center justify-center gap-2 font-semibold text-base transition w-full sm:w-auto">
+                            Batal
                     </flux:button>
-                    <flux:button icon="save" type="button" variant="secondary" wire:click="update">
-                        Simpan Perubahan
+                    <flux:button icon="save" type="button" variant="secondary" wire:click="update" class="w-full sm:w-auto">
+                            Simpan Pembaruan
                     </flux:button>
                 </div>
             </div>
@@ -172,13 +174,13 @@
                 <flux:heading size="lg">Hapus Kategori</flux:heading>
                 <p class="font-montserrat text-[14px] text-[#666666]">Apakah Anda yakin ingin menghapus kategori ini?
                 </p>
-                <div class="flex justify-end gap-2">
-                    <flux:modal.close>
+                <div class="flex flex-col sm:flex-row justify-end gap-3">
+                    <flux:modal.close class="w-full sm:w-auto">
                         <button type="button"
-                            class="px-4 py-2 rounded-[10px] bg-[#f5f5f5] text-[#333333] font-montserrat">Batal</button>
+                            class="w-full px-4 py-2 rounded-[10px] bg-[#f5f5f5] text-[#333333] font-montserrat">Batal</button>
                     </flux:modal.close>
                     <button type="button" wire:click="delete"
-                        class="px-4 py-2 rounded-[10px] bg-[#eb5757] text-white font-montserrat">Hapus</button>
+                        class="w-full sm:w-auto px-4 py-2 rounded-[10px] bg-[#eb5757] text-white font-montserrat">Hapus</button>
                 </div>
             </div>
         </flux:modal>

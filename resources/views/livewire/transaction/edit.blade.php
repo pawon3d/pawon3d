@@ -1,13 +1,13 @@
 <div>
     <!-- Header Section -->
-    <div class="flex items-center gap-4 mb-8" style="margin-bottom: 30px; gap: 15px;">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-8" style="margin-bottom: 30px; gap: 15px;">
         <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}" wire:navigate
-            class="inline-flex items-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
             style="background-color: #313131; color: #f6f6f6; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
             <flux:icon.arrow-left class="size-4" />
             Kembali
         </a>
-        <h1 class="text-xl font-semibold"
+        <h1 class="text-xl font-semibold text-center sm:text-left"
             style="font-family: Montserrat, sans-serif; font-size: 20px; line-height: 1; color: #666666; font-weight: 600;">
             Ubah Pesanan</h1>
     </div>
@@ -22,10 +22,10 @@
     </x-alert.info>
 
     <!-- Form Section -->
-    <div class="w-full flex flex-wrap gap-20 p-6 rounded-2xl mb-8"
-        style="background-color: #fafafa; border-radius: 15px; padding: 25px 30px; gap: 90px;">
+    <div class="w-full flex flex-col lg:flex-row gap-8 lg:gap-20 p-4 sm:px-[30px] sm:py-[25px] rounded-2xl mb-8"
+        style="background-color: #fafafa; border-radius: 15px;">
         <!-- Left Column -->
-        <div class="flex-1 flex flex-col gap-8" style="gap: 30px; min-width: 300px;">
+        <div class="flex-1 flex flex-col gap-8" style="gap: 30px; width: 100%;">
             <!-- Phone Number -->
             <div class="flex flex-col gap-4" style="gap: 15px;">
                 <div class="flex flex-col gap-4" style="gap: 15px;">
@@ -86,7 +86,7 @@
                         style="font-family: Montserrat, sans-serif; font-size: 14px; line-height: 1; color: #666666;">
                         Masukkan tanggal Ambil Pesanan.</p>
                 </div>
-                <div class="flex flex-wrap gap-4 w-full" style="gap: 15px;">
+                <div class="flex flex-col xl:flex-row gap-4 w-full" style="gap: 15px;">
                     <div x-init="picker = new Pikaday({
                         field: $refs.datepicker,
                         format: 'DD MMM YYYY',
@@ -99,7 +99,7 @@
                         onSelect: function() {
                             @this.set('date', moment(this.getDate()).format('DD MMM YYYY'));
                         }
-                    });" class="relative flex-1" style="min-width: 190px;">
+                    });" class="relative flex-1 w-full">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <flux:icon.calendar class="size-5" style="color: #666666;" />
                         </div>
@@ -112,11 +112,12 @@
                         noCalendar: true,
                         dateFormat: 'H:i',
                         time_24hr: true,
+                        disableMobile: true,
                         onChange: function(selectedDates, dateStr) {
                             time = dateStr;
                             @this.set('time', dateStr);
                         }
-                    });" class="relative flex-1">
+                    });" class="relative flex-1 w-full">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke="#666666">
@@ -134,7 +135,7 @@
         </div>
 
         <!-- Right Column - Notes -->
-        <div class="flex-1 flex flex-col gap-4" style="gap: 15px; min-width: 300px; height: 399px;">
+        <div class="flex-1 flex flex-col gap-4" style="gap: 15px; width: 100%; lg:height: 399px;">
             <div class="flex flex-col gap-4" style="gap: 15px;">
                 <p class="font-medium"
                     style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
@@ -144,7 +145,7 @@
                     Masukkan catatan pesanan apabila diperlukan.</p>
             </div>
             <textarea wire:model.defer="note" placeholder="Masukkan catatan pesanan..." rows="7"
-                class="flex-1 px-5 py-2 rounded-2xl border focus:outline-none focus:ring-0 w-full resize-none"
+                class="flex-1 px-5 py-2 rounded-2xl border focus:outline-none focus:ring-0 w-full resize-none min-h-[150px]"
                 style="background-color: #fafafa; border: 1px solid #adadad; border-radius: 15px; padding: 10px 20px; font-family: Montserrat, sans-serif; font-size: 16px; color: #666666;"></textarea>
         </div>
     </div>
@@ -153,7 +154,7 @@
     <!-- Product List Section -->
     <div class="w-full border rounded-2xl overflow-hidden mb-8"
         style="background-color: #fafafa; border: 1px solid #d4d4d4; border-radius: 15px;">
-        <div class="p-6 flex flex-col gap-5" style="padding: 25px 30px; gap: 20px;">
+        <div class="p-4 sm:px-[30px] sm:py-[25px] flex flex-col gap-5" style="gap: 20px;">
             <!-- Title -->
             <div class="flex items-center gap-5" style="gap: 20px;">
                 <p class="font-medium"
@@ -164,16 +165,16 @@
             <!-- Product Items -->
             <div class="flex flex-col gap-0 pb-4" style="padding-bottom: 15px;">
                 @foreach ($details as $id => $item)
-                    <div class="flex flex-wrap items-center justify-between gap-4 py-2 border-b border-white"
-                        style="padding: 10px 0; border-bottom: 1px solid #ffffff; gap: 15px; min-width: 180px;">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4 border-b border-white"
+                        style="border-bottom: 1px solid #ffffff;">
                         <!-- Left Side: Product Info -->
-                        <div class="flex flex-col gap-2" style="gap: 10px; height: 73px;">
-                            <div class="flex items-center gap-1" style="gap: 5px; height: 24px;">
-                                <p class="font-medium truncate"
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1" style="gap: 5px;">
+                                <p class="font-medium"
                                     style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">
                                     {{ $item['name'] }}</p>
                             </div>
-                            <div class="flex items-center gap-1" style="gap: 5px; height: 40px;">
+                            <div class="flex items-center gap-1" style="gap: 5px;">
                                 <span class="font-normal"
                                     style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666;">{{ $item['quantity'] }}</span>
                                 <span class="font-normal"
@@ -184,7 +185,7 @@
                         </div>
 
                         <!-- Right Side: Total and Controls -->
-                        <div class="flex flex-col items-end gap-2" style="gap: 10px;">
+                        <div class="flex flex-col md:flex-row items-end md:items-center gap-4 w-full md:w-auto">
                             <!-- Total -->
                             <div class="flex items-center gap-1" style="gap: 5px;">
                                 <span class="font-normal"
@@ -194,16 +195,16 @@
                             </div>
 
                             <!-- Controls -->
-                            <div class="flex items-center gap-6" style="gap: 25px; height: 40px;">
+                            <div class="flex items-center gap-4 sm:gap-6">
                                 <!-- Delete Button -->
                                 <button type="button" wire:click="removeItem('{{ $id }}')"
-                                    class="flex items-center justify-center rounded-2xl"
+                                    class="flex items-center justify-center rounded-2xl shrink-0"
                                     style="background-color: #eb5757; width: 32px; height: 32px; border-radius: 15px;">
                                     <flux:icon.trash class="size-4" style="color: #f8f4e1;" />
                                 </button>
 
                                 <!-- Quantity Controls -->
-                                <div class="flex items-center gap-3" style="gap: 11px;">
+                                <div class="flex items-center gap-3 shrink-0" style="gap: 11px;">
                                     <!-- Minus Button -->
                                     <button type="button" wire:click="decrementItem('{{ $id }}')"
                                         class="flex items-center justify-center rounded-full border-2"
@@ -241,8 +242,8 @@
         </div>
 
         <!-- Subtotal Section -->
-        <div class="border-t p-6 flex flex-col items-end gap-4"
-            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; padding: 25px 30px; gap: 15px;">
+        <div class="border-t p-4 sm:px-[30px] sm:py-[25px] flex flex-col items-end gap-4"
+            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; gap: 15px;">
             <div class="flex items-center justify-between w-full font-medium"
                 style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
                 <span>Subtotal {{ count($details) }} Produk</span>
@@ -256,8 +257,8 @@
         </div>
 
         <!-- Payment Section -->
-        <div class="border-t p-6 flex flex-col items-end gap-4"
-            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; padding: 25px 30px; gap: 15px;">
+        <div class="border-t p-4 sm:px-[30px] sm:py-[25px] flex flex-col items-end gap-4"
+            style="background-color: #fafafa; border-top: 1px solid #d4d4d4; gap: 15px;">
             <div class="flex items-center justify-between w-full font-medium"
                 style="font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; color: #666666; font-weight: 500;">
                 <span>Total Bayar</span>
@@ -272,15 +273,15 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex items-center justify-end gap-8 mt-8" style="gap: 30px;">
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-4 mt-8">
         <a href="{{ route('transaksi.rincian-pesanan', $transactionId) }}" wire:navigate
-            class="inline-flex items-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
             style="background-color: #c4c4c4; color: #333333; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
             <flux:icon.x-mark class="size-5" />
             Batal
         </a>
         <button type="button" wire:click.prevent="save"
-            class="inline-flex items-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-6 py-2 rounded-2xl font-semibold transition-colors"
             style="background-color: #3f4e4f; color: #f8f4e1; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px; gap: 5px;">
             <flux:icon.check class="size-5" />
             Simpan Perubahan
@@ -290,11 +291,11 @@
     <flux:modal name="tambah-item" class="w-full max-w-[700px] h-full" variant="bare" wire:model="showItemModal">
         <div class="bg-[#fafafa] rounded-tl-[15px] h-full rounded-tr-[15px] p-[30px] flex flex-col gap-[30px]">
             {{-- Search & Filter --}}
-            <div class="flex items-start gap-[30px]">
-                <div class="flex-1 flex items-center gap-[15px]">
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[30px]">
+                <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 sm:gap-[15px] w-full">
                     {{-- Search Input --}}
                     <div
-                        class="flex-1 bg-[#ffffff] border border-[#666666] rounded-[20px] px-[15px] flex items-center">
+                        class="flex-1 bg-[#ffffff] border border-[#666666] rounded-[20px] px-[15px] flex items-center w-full">
                         <flux:icon icon="magnifying-glass" class="size-[30px]" style="color: #666666;" />
                         <input type="text" wire:model.live="search" placeholder="Cari Produk"
                             class="flex-1 font-['Montserrat'] font-medium text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-[10px]"
@@ -302,7 +303,7 @@
                     </div>
 
                     {{-- Filter --}}
-                    <div class="flex items-center">
+                    <div class="flex items-center justify-center">
                         <flux:icon icon="funnel" class="size-[25px]" style="color: #666666;" />
                         <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666] px-[5px] py-[10px]"
                             style="line-height: 1;">Filter</span>
@@ -314,19 +315,19 @@
             <div class="h-0 w-full border-t border-[#d4d4d4]"></div>
 
             {{-- Product Grid --}}
-            <div class="flex gap-[15px] h-[530px] overflow-y-auto">
-                <div class="flex-1 flex flex-wrap gap-[30px] content-start">
+            <div class="flex gap-[15px] h-[530px] overflow-y-auto w-full">
+                <div class="flex-1 flex flex-wrap gap-[30px] content-start justify-center sm:justify-start">
                     @forelse ($products as $product)
-                        <div class="min-w-[180px] max-w-[210px] flex flex-col gap-[20px] pb-[25px]">
+                        <div class="w-full sm:min-w-[180px] sm:max-w-[210px] flex flex-col gap-[20px] pb-[25px]">
                             {{-- Product Card --}}
-                            <div class="flex flex-col gap-[15px]">
+                            <div class="flex flex-col gap-[15px] items-center">
                                 @if ($product->product_image)
                                     <img src="{{ asset('storage/' . $product->product_image) }}"
                                         alt="{{ $product->name }}"
-                                        class="h-[119px] w-[182px] object-cover rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                                        class="h-[119px] w-full sm:w-[182px] object-cover rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
                                 @else
                                     <div
-                                        class="h-[119px] w-[182px] bg-[#eaeaea] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center">
+                                        class="h-[119px] w-full sm:w-[182px] bg-[#eaeaea] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center">
                                         <span class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">No
                                             Image</span>
                                     </div>
@@ -407,19 +408,19 @@
 
         {{-- Footer --}}
         <div
-            class="bg-[#fafafa] shadow-[4px_0px_4px_0px_rgba(0,0,0,0.25)] p-[20px] flex items-center justify-end gap-[10px]">
-            <flux:modal.close>
+            class="bg-[#fafafa] shadow-[4px_0px_4px_0px_rgba(0,0,0,0.25)] p-[20px] flex flex-col sm:flex-row items-center justify-end gap-[10px]">
+            <flux:modal.close class="w-full sm:w-auto">
                 <button
-                    class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                    class="w-full sm:w-auto bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-[5px]">
                     <flux:icon icon="x-mark" class="size-5" style="color: #333333;" />
                     <span class="font-['Montserrat'] font-semibold text-[16px] text-[#333333]"
                         style="line-height: 1;">Batal</span>
                 </button>
             </flux:modal.close>
 
-            <flux:modal.close>
+            <flux:modal.close class="w-full sm:w-auto">
                 <button
-                    class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                    class="w-full sm:w-auto bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-[5px]">
                     <flux:icon icon="check" class="size-5" style="color: #f6f6f6;" />
                     <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]"
                         style="line-height: 1;">Simpan Perubahan</span>

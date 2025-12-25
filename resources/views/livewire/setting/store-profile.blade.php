@@ -358,8 +358,8 @@
 
         <x-table.paginated :paginator="$storeDocuments" :headers="[
             ['label' => 'Dokumen Legalitas', 'class' => 'bg-[#3F4E4F] text-white'],
-            ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white hidden md:table-cell'],
-            ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white hidden md:table-cell'],
+            ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white'],
+            ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white'],
             ['label' => 'Berlaku Hingga', 'class' => 'bg-[#3F4E4F] text-white'],
         ]"
             emptyMessage="Tidak ada dokumen legalitas yang tersedia.">
@@ -369,10 +369,10 @@
                         wire:click="editModal('{{ $document->id }}')">
                         {{ $document->document_name }}
                     </td>
-                    <td class="px-6 py-4 hidden md:table-cell">
+                    <td class="px-6 py-4">
                         {{ $document->document_number ?? '-' }}
                     </td>
-                    <td class="px-6 py-4 hidden md:table-cell">
+                    <td class="px-6 py-4">
                         {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->translatedFormat('d M Y') : '-' }}
                     </td>
                     <td class="px-6 py-4">

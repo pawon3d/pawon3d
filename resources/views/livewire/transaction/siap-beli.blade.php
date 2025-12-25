@@ -1,27 +1,27 @@
-<div class="flex flex-col gap-[30px]">
+<div class="flex flex-col gap-[30px] px-4 sm:px-0">
     <!-- Header Section -->
-    <div class="flex items-center gap-[15px]">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-[15px]">
         <flux:button href="{{ route('transaksi') }}" wire:navigate
-            class="!bg-[#313131] !text-white !px-[25px] !py-[10px] !rounded-[15px] !shadow-[0px_2px_3px_rgba(0,0,0,0.1)] flex items-center gap-[5px]">
+            class="w-full sm:w-auto !bg-[#313131] !text-white !px-[25px] !py-[10px] !rounded-[15px] !shadow-[0px_2px_3px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px]">
             <flux:icon icon="arrow-left" class="size-[16px]" />
             Kembali
         </flux:button>
-        <h1 class="font-semibold text-[20px] text-[#333333]">Daftar Produk Siap Saji</h1>
+        <h1 class="font-semibold text-[20px] text-[#333333] text-center sm:text-left">Daftar Produk Siap Saji</h1>
     </div>
 
     <!-- Content Section -->
-    <div class="bg-[#fafafa] rounded-[15px] flex flex-col gap-[20px] p-[30px]">
+    <div class="bg-[#fafafa] rounded-[15px] flex flex-col gap-[20px] p-4 sm:p-[30px]">
         <!-- Search and Filter Section -->
-        <div class="flex items-center justify-between gap-[15px] w-full">
-            <div class="flex items-center gap-[15px] flex-1">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-[15px] w-full">
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[15px] flex-1 w-full">
                 <div
-                    class="bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex items-center gap-3 flex-1">
+                    class="bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex items-center gap-3 flex-1 w-full">
                     <flux:icon icon="magnifying-glass" class="size-[16px] text-[#666666]" />
                     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Tanggal"
                         class="border-0 focus:ring-0 text-[16px] text-[#959595] py-[10px] flex-1 bg-transparent" />
                 </div>
                 <div
-                    class="flex items-center gap-[5px] text-[#666666] cursor-pointer hover:opacity-70 transition-opacity">
+                    class="flex items-center gap-[5px] text-[#666666] cursor-pointer hover:opacity-70 transition-opacity justify-center">
                     <flux:icon icon="adjustments-horizontal" class="size-[25px]" />
                     <span class="text-[16px] font-medium">Filter</span>
                 </div>
@@ -29,57 +29,59 @@
         </div>
 
         <!-- Table Section -->
-        <div class="flex flex-col overflow-hidden rounded-[15px] border border-[#d4d4d4]">
-            <!-- Table Header -->
-            <div class="bg-[#3f4e4f] flex">
-                <div class="flex-1 px-[25px] py-[21px] min-w-[100px]">
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Tanggal Siap Saji</p>
+        <div class="overflow-x-auto">
+            <div class="min-w-[800px] flex flex-col overflow-hidden rounded-[15px] border border-[#d4d4d4]">
+                <!-- Table Header -->
+                <div class="bg-[#3f4e4f] flex">
+                    <div class="flex-1 px-[25px] py-[21px] min-w-[100px]">
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Tanggal Siap Saji</p>
+                    </div>
+                    <div class="w-[170px] px-[25px] py-[21px] text-right">
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Jenis</p>
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Produk</p>
+                    </div>
+                    <div class="w-[170px] px-[25px] py-[21px] text-right">
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Produksi</p>
+                    </div>
+                    <div class="w-[170px] px-[25px] py-[21px] text-right">
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Terjual</p>
+                    </div>
+                    <div class="w-[170px] px-[25px] py-[21px] text-right">
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
+                        <p class="font-bold text-[14px] text-[#f8f4e1]">Tersisa</p>
+                    </div>
                 </div>
-                <div class="w-[170px] px-[25px] py-[21px] text-right">
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Jenis</p>
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Produk</p>
-                </div>
-                <div class="w-[170px] px-[25px] py-[21px] text-right">
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Produksi</p>
-                </div>
-                <div class="w-[170px] px-[25px] py-[21px] text-right">
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Terjual</p>
-                </div>
-                <div class="w-[170px] px-[25px] py-[21px] text-right">
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Total</p>
-                    <p class="font-bold text-[14px] text-[#f8f4e1]">Tersisa</p>
-                </div>
-            </div>
 
-            <!-- Table Body -->
-            <div class="bg-[#fafafa] flex flex-col overflow-y-auto">
-                @forelse ($products as $item)
-                    <div class="flex border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
-                        <div class="flex-1 px-[25px] py-[15px] min-w-[100px]">
-                            <a href="{{ route('transaksi.tanggal-siap-beli', ['date' => $item['date']]) }}"
-                                class="font-medium text-[14px] text-[#666666] hover:underline" wire:navigate>
-                                {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}</a>
+                <!-- Table Body -->
+                <div class="bg-[#fafafa] flex flex-col overflow-y-auto">
+                    @forelse ($products as $item)
+                        <div class="flex border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
+                            <div class="flex-1 px-[25px] py-[15px] min-w-[100px]">
+                                <a href="{{ route('transaksi.tanggal-siap-beli', ['date' => $item['date']]) }}"
+                                    class="font-medium text-[14px] text-[#666666] hover:underline" wire:navigate>
+                                    {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}</a>
+                            </div>
+                            <div class="w-[170px] px-[25px] py-[15px] text-right">
+                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['jenis_produk'] }}</p>
+                            </div>
+                            <div class="w-[170px] px-[25px] py-[15px] text-right">
+                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_produksi'] }}</p>
+                            </div>
+                            <div class="w-[170px] px-[25px] py-[15px] text-right">
+                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_terjual'] }}</p>
+                            </div>
+                            <div class="w-[170px] px-[25px] py-[15px] text-right">
+                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_tersisa'] }}</p>
+                            </div>
                         </div>
-                        <div class="w-[170px] px-[25px] py-[15px] text-right">
-                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['jenis_produk'] }}</p>
+                    @empty
+                        <div class="px-[25px] py-[40px] text-center">
+                            <p class="font-medium text-[14px] text-[#666666]">Tidak ada produk yang ditemukan.</p>
                         </div>
-                        <div class="w-[170px] px-[25px] py-[15px] text-right">
-                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_produksi'] }}</p>
-                        </div>
-                        <div class="w-[170px] px-[25px] py-[15px] text-right">
-                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_terjual'] }}</p>
-                        </div>
-                        <div class="w-[170px] px-[25px] py-[15px] text-right">
-                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_tersisa'] }}</p>
-                        </div>
-                    </div>
-                @empty
-                    <div class="px-[25px] py-[40px] text-center">
-                        <p class="font-medium text-[14px] text-[#666666]">Tidak ada produk yang ditemukan.</p>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
             </div>
         </div>
 

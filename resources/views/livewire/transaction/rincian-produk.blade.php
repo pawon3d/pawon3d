@@ -1,8 +1,8 @@
-<div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-4">
+<div class="px-4 sm:px-0 py-4 sm:py-0">
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+        <div class="flex items-center gap-4 w-full sm:w-auto">
             <a href="{{ route('transaksi') }}"
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
+                class="w-full sm:w-auto mr-0 sm:mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center justify-center text-white"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
@@ -13,7 +13,7 @@
 
     <div class="flex flex-col gap-6">
         {{-- Card Informasi Produk --}}
-        <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
             <div class="flex flex-col md:flex-row justify-between gap-6">
                 <div class="flex flex-col gap-6 flex-1">
                     <div class="flex flex-col gap-3">
@@ -62,17 +62,17 @@
 
             {{-- Card Produk Lainnya --}}
             @if ($relatedProducts->isNotEmpty())
-                <div class="bg-white rounded-xl p-6 shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-medium text-gray-600">Produk Lainnya</h3>
-                        <a href="{{ route('transaksi') }}"
-                            class="px-6 py-2 bg-amber-800 text-white rounded-xl font-semibold hover:bg-amber-900 transition"
-                            wire:navigate>
-                            Lihat Lainnya
-                        </a>
-                    </div>
+                <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                    <h3 class="text-lg font-medium text-gray-600 text-center sm:text-left">Produk Lainnya</h3>
+                    <a href="{{ route('transaksi') }}"
+                        class="w-full sm:w-auto px-6 py-2 bg-amber-800 text-white rounded-xl font-semibold hover:bg-amber-900 transition flex items-center justify-center"
+                        wire:navigate>
+                        Lihat Lainnya
+                    </a>
+                </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
                         @foreach ($relatedProducts as $relatedProduct)
                             <a href="{{ route('transaksi.rincian-produk', $relatedProduct->id) }}"
                                 class="flex flex-col items-center gap-4 w-full max-w-[180px] pb-4 hover:opacity-80 transition"

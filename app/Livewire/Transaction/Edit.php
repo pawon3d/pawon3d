@@ -71,7 +71,7 @@ class Edit extends Component
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);
-        if ($transaction->status != 'Draft') {
+        if (!in_array($transaction->status, ['Draft', 'temp'])) {
             return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
         }
         $this->transaction = $transaction;
@@ -250,6 +250,11 @@ class Edit extends Component
         ]);
 
         $transaction = \App\Models\Transaction::find($this->transactionId);
+        if ($transaction->status == 'temp') {
+            $transaction->update([
+                'status' => 'Draft',
+            ]);
+        }
         if ($transaction) {
             $transaction->update([
                 'name' => $this->name,

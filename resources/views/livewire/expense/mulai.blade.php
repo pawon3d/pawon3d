@@ -1,14 +1,14 @@
 <div class="space-y-[30px]">
     <div class="flex flex-col gap-[15px]">
-        <div class="flex items-center justify-between gap-[15px] flex-wrap">
-            <div class="flex items-center gap-[15px]">
-                <flux:button type="button" variant="secondary" icon="arrow-left"
-                    href="{{ route('belanja.rincian', $expense->id) }}" wire:navigate>
-                    Kembali
-                </flux:button>
-                <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Dapatkan Belanja</h1>
-            </div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-[15px] flex-wrap">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-[15px] w-full">
+            <flux:button type="button" variant="secondary" icon="arrow-left"
+                href="{{ route('belanja.rincian', $expense->id) }}" wire:navigate class="w-full sm:w-auto">
+                Kembali
+            </flux:button>
+            <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666] text-center sm:text-left">Dapatkan Belanja</h1>
         </div>
+    </div>
         <x-alert.info>
             <p class="font-['Montserrat'] font-semibold text-[14px] text-[#dcd7c9] mb-1">Dapatkan Belanja. Masukkan
                 jumlah
@@ -23,12 +23,14 @@
 
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] space-y-[20px]">
-        <div class="flex items-center justify-between gap-[15px] flex-wrap">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-[15px] flex-wrap">
             <h2 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</h2>
-            <flux:button type="button" wire:click="markAllReceived" variant="primary">
+            <flux:button type="button" wire:click="markAllReceived" variant="primary" class="w-full sm:w-auto">
                 Tandai Didapatkan Semua
             </flux:button>
         </div>
+
+        <div class="w-full overflow-x-auto rounded-[15px] shadow-sm">
 
         <x-table.form :headers="[
             ['label' => 'Barang Persediaan', 'class' => 'text-left px-[25px] py-[21px] min-w-[200px]'],
@@ -128,15 +130,16 @@
                     </tr>
                 @endforelse
             </x-slot:rows>
-        </x-table.form>
+            </x-table.form>
+        </div>
     </div>
 
-    <div class="flex justify-end gap-[15px] flex-wrap">
+    <div class="flex flex-col sm:flex-row justify-end items-center gap-[15px] flex-wrap">
         <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('belanja.rincian', $expense_id) }}"
-            wire:navigate>
+            wire:navigate class="w-full sm:w-auto">
             Batal
         </flux:button>
-        <flux:button type="button" wire:click="save" variant="secondary" icon="save">
+        <flux:button type="button" wire:click="save" variant="secondary" icon="save" class="w-full sm:w-auto">
             Simpan
         </flux:button>
     </div>

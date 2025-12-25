@@ -1,9 +1,9 @@
 <div>
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('user') }}" wire:navigate
-                class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
                 wire:navigate>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -17,8 +17,8 @@
             </h1>
         </div>
         @if ($this->isEditMode())
-            <div class="flex gap-2.5">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            <div class="flex gap-2.5 w-full lg:w-auto">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
                     Riwayat Pembaruan
                 </flux:button>
             </div>
@@ -38,10 +38,10 @@
     </x-alert.info>
 
     <!-- Main Form Card -->
-    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
-        <div class="flex flex-col lg:flex-row gap-[130px]">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-6 sm:px-8 py-6 mt-5">
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-[130px]">
             <!-- Left Column - Photo Upload -->
-            <div class="flex flex-col gap-4 min-w-[300px]">
+            <div class="flex flex-col gap-4 w-full lg:w-auto lg:min-w-[300px]">
                 <div class="flex flex-col gap-4">
                     <p class="text-base font-medium text-[#666666]">
                         {{ $this->isEditMode() ? 'Unggah Foto' : 'Foto Pekerja' }}
@@ -51,9 +51,9 @@
                     </p>
                 </div>
 
-                <div class="flex flex-col gap-5 items-start">
+                <div class="flex flex-col gap-5 items-center lg:items-start">
                     <!-- Dropzone Area -->
-                    <div class="relative w-[300px] h-[170px] border border-dashed border-black rounded-[15px] overflow-hidden"
+                    <div class="relative w-full max-w-[300px] h-[170px] border border-dashed border-black rounded-[15px] overflow-hidden"
                         ondragover="event.preventDefault(); this.classList.add('border-[#74512d]');"
                         ondragleave="this.classList.remove('border-[#74512d]');" ondrop="handleDrop(event)"
                         id="dropzone-container">
@@ -92,7 +92,7 @@
 
                     <!-- Upload Button -->
                     <button type="button" onclick="document.getElementById('dropzone-file').click()"
-                        class="w-[300px] bg-[#74512d] hover:bg-[#5d4024] text-[#f6f6f6] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm transition-colors cursor-pointer">
+                        class="w-full max-w-[300px] bg-[#74512d] hover:bg-[#5d4024] text-[#f6f6f6] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm transition-colors cursor-pointer">
                         Pilih Foto
                     </button>
 
@@ -259,11 +259,11 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex {{ $this->isEditMode() ? 'justify-between' : 'justify-end' }} items-center mt-12 gap-8">
+    <div class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center mt-12 gap-4 sm:gap-8 mb-8">
         @if ($this->isEditMode())
             <!-- Delete Button (Only in Edit Mode) -->
             <button type="button" wire:click="confirmDelete"
-                class="bg-[#eb5757] hover:bg-[#d64545] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer">
+                class="w-full sm:w-auto bg-[#eb5757] hover:bg-[#d64545] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -273,11 +273,11 @@
             </button>
         @endif
 
-        <div class="flex gap-2.5 items-center">
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
             @if (!$this->isEditMode())
                 <!-- Cancel Button (Only in Add Mode) -->
                 <a href="{{ route('user') }}"
-                    class="bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 transition-colors cursor-pointer"
+                    class="w-full sm:w-auto bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     wire:navigate>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -289,7 +289,7 @@
             @endif
 
             <!-- Save Button -->
-            <flux:button type="button" variant="secondary" icon="save" wire:click="save">
+            <flux:button type="button" variant="secondary" icon="save" wire:click="save" class="w-full sm:w-auto">
                 {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
             </flux:button>
         </div>

@@ -1,21 +1,21 @@
-<div>
+<div class="px-4 sm:px-0 py-4 sm:py-0">
     {{-- Header: Back Button + Title --}}
-    <div class="flex items-center gap-4 mb-5">
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-5">
         <a href="{{ route('produksi') }}" wire:navigate
-            class="inline-flex items-center gap-[5px] px-[25px] py-[10px] bg-[#313131] text-white rounded-[15px] shadow-sm hover:bg-[#252324] transition font-['Montserrat'] font-semibold text-[16px]"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] text-white rounded-[15px] shadow-sm hover:bg-[#252324] transition font-['Montserrat'] font-semibold text-[16px]"
             wire:navigate>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Kembali</span>
         </a>
-        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666]">Antrian {{ $methodName }}</h1>
+        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666] text-center sm:text-left">Antrian {{ $methodName }}</h1>
     </div>
 
     {{-- Container with Background --}}
-    <div class="bg-[#fafafa] rounded-[15px] p-[30px]">
+    <div class="bg-[#fafafa] rounded-[15px] p-4 sm:p-[30px]">
         {{-- Search Bar + Filter Button --}}
-        <div class="flex items-center gap-4 mb-4 w-full">
+        <div class="flex flex-col sm:flex-row items-center gap-4 mb-4 w-full">
             <!-- Search Bar -->
             <div class="flex items-center border border-[#666666] rounded-[20px] bg-white px-4 py-2 w-full">
                 <svg class="w-[30px] h-[30px] text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,7 +27,7 @@
             </div>
 
             <!-- Filter -->
-            <div class="flex items-center gap-1 text-[#666666]">
+            <div class="flex items-center gap-1 text-[#666666] justify-center">
                 <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
                 </svg>
@@ -36,15 +36,17 @@
         </div>
 
         {{-- Table --}}
-        <x-table.paginated :paginator="$transactions" :headers="[
-            ['label' => 'ID Transaksi', 'sortable' => true, 'sort-by' => 'invoice_number'],
-            ['label' => 'Tanggal Ambil', 'sortable' => true, 'sort-by' => 'date'],
-            ['label' => 'Daftar Produk'],
-            ['label' => 'Pembeli', 'sortable' => true, 'sort-by' => 'customer_name'],
-            ['label' => 'Kasir', 'sortable' => true, 'sort-by' => 'user_name'],
-            ['label' => 'Status Pesanan', 'sortable' => true, 'sort-by' => 'status'],
-        ]" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
-            bodyText="#666666" wrapperClass="rounded-[15px] border-0 overflow-hidden">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :paginator="$transactions" :headers="[
+                    ['label' => 'ID Transaksi', 'sortable' => true, 'sort-by' => 'invoice_number'],
+                    ['label' => 'Tanggal Ambil', 'sortable' => true, 'sort-by' => 'date'],
+                    ['label' => 'Daftar Produk'],
+                    ['label' => 'Pembeli', 'sortable' => true, 'sort-by' => 'customer_name'],
+                    ['label' => 'Kasir', 'sortable' => true, 'sort-by' => 'user_name'],
+                    ['label' => 'Status Pesanan', 'sortable' => true, 'sort-by' => 'status'],
+                ]" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
+                    bodyText="#666666" wrapperClass="rounded-[15px] border-0 overflow-hidden">
             @foreach ($transactions as $transaction)
                 @php
                     // Determine which date field to use based on method
@@ -108,6 +110,8 @@
                 </tr>
             @endforeach
         </x-table.paginated>
+            </div>
+        </div>
     </div>
 
 </div>

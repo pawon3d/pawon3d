@@ -1,19 +1,19 @@
 <div class="h-full">
     @if ($todayShiftStatus == 'open')
         {{-- Header untuk kondisi shift open --}}
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-xl font-semibold text-[#666666]" style="font-family: 'Montserrat', sans-serif;">Daftar Menu
+        <div class="px-4 sm:px-0 flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <h1 class="text-xl font-semibold text-[#666666] text-center sm:text-left" style="font-family: 'Montserrat', sans-serif;">Daftar Menu
             </h1>
-            <div class="flex gap-2 items-center">
+            <div class="flex flex-col sm:flex-row gap-2 items-center w-full sm:w-auto">
                 <button type="button" wire:click="$set('closeShiftModal', true)"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors"
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
                     <flux:icon icon="cashier" class="size-5" />
                     <span>Tutup Sesi Penjualan</span>
                 </button>
                 <flux:button type="button" variant="secondary" href="{{ route('transaksi.riwayat-sesi') }}"
                     wire:navigate
-                    class="inline-flex items-center justify-center px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors">
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors">
                     <flux:icon icon="history" class="size-5" />
                 </flux:button>
             </div>
@@ -38,9 +38,9 @@
         </x-alert.info>
 
         {{-- Method Selection Tabs --}}
-        <div class="flex h-[120px] mb-8">
+        <div class="px-4 sm:px-0 flex flex-col sm:flex-row sm:h-[120px] mb-8 gap-1 sm:gap-0">
             <button wire:click="$set('method', 'pesanan-reguler')"
-                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 rounded-tl-[15px] rounded-bl-[15px] shadow-sm transition-all
+                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 rounded-[15px] sm:rounded-none sm:rounded-tl-[15px] sm:rounded-bl-[15px] shadow-sm transition-all py-4 sm:py-0
                     {{ $method === 'pesanan-reguler' ? 'border-b-[4px] border-[#74512d]' : '' }}">
                 <flux:icon icon="cake" class="size-[34px] text-[#666666]" />
                 <span
@@ -51,7 +51,7 @@
             </button>
 
             <button wire:click="$set('method', 'pesanan-kotak')"
-                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 shadow-sm transition-all
+                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 sm:rounded-none shadow-sm transition-all py-4 sm:py-0
                     {{ $method === 'pesanan-kotak' ? 'border-b-[4px] border-[#74512d]' : '' }}">
                 <flux:icon icon="cube" class="size-[30px] text-[#666666]" />
                 <span
@@ -62,7 +62,7 @@
             </button>
 
             <button wire:click="$set('method', 'siap-beli')"
-                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 rounded-tr-[15px] rounded-br-[15px] shadow-sm transition-all
+                class="flex-1 bg-[#fafafa] flex flex-col items-center justify-center gap-1 rounded-[15px] sm:rounded-none sm:rounded-tr-[15px] sm:rounded-br-[15px] shadow-sm transition-all py-4 sm:py-0
                     {{ $method === 'siap-beli' ? 'border-b-[4px] border-[#74512d]' : '' }}">
                 <flux:icon icon="dessert" class="size-[30px] text-[#666666]" />
                 <span
@@ -74,38 +74,41 @@
         </div>
 
         {{-- Content Area --}}
-        <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-8">
+        <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-4 sm:p-8">
             {{-- Search and Actions --}}
-            <div class="flex justify-between items-center mb-8 gap-4 flex-wrap">
-                <div class="flex gap-4 items-center flex-1 max-w-[550px]">
+            <div class="flex flex-col lg:flex-row justify-between lg:items-center mb-8 gap-4 flex-wrap">
+                <div class="flex flex-col sm:flex-row gap-4 items-center flex-1 w-full lg:max-w-[550px]">
                     <div
-                        class="flex-1 bg-white border border-[#666666] rounded-[20px] px-4 py-2 flex items-center gap-3">
+                        class="flex-1 bg-white border border-[#666666] rounded-[20px] px-4 py-2 flex items-center gap-3 w-full">
                         <flux:icon icon="magnifying-glass" class="size-[30px] text-[#666666]" />
                         <input type="text" wire:model.live="search" placeholder="Cari Produk"
-                            class="flex-1 border-0 focus:ring-0 text-[16px] text-[#959595]"
+                            class="flex-1 w-full border-0 focus:ring-0 text-[16px] text-[#959595]"
                             style="font-family: 'Montserrat', sans-serif; font-weight: 500;" />
                     </div>
-                    <button class="flex items-center gap-2 text-[#666666] hover:text-[#74512d] transition-colors">
+                    <button class="flex items-center gap-2 text-[#666666] hover:text-[#74512d] transition-colors justify-center">
                         <flux:icon icon="funnel" class="size-[25px]" />
                         <span class="text-[16px] font-medium"
                             style="font-family: 'Montserrat', sans-serif;">Filter</span>
                     </button>
                 </div>
 
-                <div class="flex gap-2 items-center">
+                <div class="flex gap-2 items-center flex-wrap justify-center w-full lg:w-auto">
                     @if ($method != 'siap-beli')
                         <flux:button type="button" variant="primary"
+                            class="flex-1 sm:flex-none"
                             href="{{ route('transaksi.pesanan', ['method' => $method]) }}" icon="clipboard"
                             wire:navigate>
                             <span>Daftar Pesanan</span>
                         </flux:button>
                     @else
                         <flux:button type="button" variant="primary" href="{{ route('transaksi.siap-beli') }}"
+                            class="flex-1 sm:flex-none"
                             icon="clipboard" wire:navigate>
                             <span>Daftar Produk</span>
                         </flux:button>
                     @endif
                     <flux:button type="button" variant="primary" icon="history"
+                        class="flex-none"
                         href="{{ route('transaksi.riwayat', ['method' => $method]) }}" wire:navigate>
                     </flux:button>
                 </div>
@@ -114,13 +117,13 @@
             <div class="h-px bg-[#d4d4d4] mb-8"></div>
 
             {{-- Content Container with Product Grid and Cart Sidebar --}}
-            <div class="flex gap-[20px] @if (count($cart) > 0) justify-between @endif">
+            <div class="flex flex-col xl:flex-row gap-[20px] @if (count($cart) > 0) justify-between @endif">
                 {{-- Product Grid --}}
                 <div class="@if (count($cart) > 0) flex-1 @else w-full @endif">
                     <div @class([
                         'grid gap-8 max-h-[530px] overflow-y-auto pr-2',
-                        'grid-cols-3' => count($cart) > 0,
-                        'grid-cols-5' => count($cart) === 0,
+                        'grid-cols-2 lg:grid-cols-3' => count($cart) > 0,
+                        'grid-cols-2 md:grid-cols-3 lg:grid-cols-5' => count($cart) === 0,
                     ])>
                         @forelse ($products as $product)
                             <div class="flex flex-col gap-5 pb-6">
@@ -219,7 +222,7 @@
 
                 {{-- Cart Sidebar - Only show when cart has items --}}
                 @if (count($cart) > 0)
-                    <div class="w-[420px] flex-shrink-0">
+                    <div class="w-full xl:w-[420px] flex-shrink-0">
                         <div
                             class="bg-white border border-[#d4d4d4] rounded-[15px] h-full flex flex-col justify-between overflow-hidden">
                             {{-- Cart Items Section --}}
@@ -388,20 +391,20 @@
         </div>
     @else
         {{-- Header untuk kondisi shift closed --}}
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-xl font-semibold text-[#666666]" style="font-family: 'Montserrat', sans-serif;">Daftar
+        <div class="px-4 sm:px-0 flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <h1 class="text-xl font-semibold text-[#666666] text-center sm:text-left" style="font-family: 'Montserrat', sans-serif;">Daftar
                 Menu
             </h1>
-            <div class="flex gap-2 items-center">
+            <div class="flex flex-col sm:flex-row gap-2 items-center w-full sm:w-auto">
                 <button type="button" wire:click="$set('openShiftModal', true)"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors"
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
                     <flux:icon icon="cashier" class="size-5" />
                     <span>Buka Sesi Penjualan</span>
                 </button>
                 <flux:button type="button" variant="secondary" href="{{ route('transaksi.riwayat-sesi') }}"
                     wire:navigate
-                    class="inline-flex items-center justify-center px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors">
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 bg-[#252324] text-[#f6f6f6] rounded-[15px] shadow-sm hover:bg-[#1a1819] transition-colors">
                     <flux:icon icon="history" class="size-5" />
                 </flux:button>
             </div>
@@ -426,7 +429,7 @@
         </x-alert.info>
 
         {{-- Empty State --}}
-        <div class="bg-[#eaeaea] rounded-[15px] p-8 min-h-[400px] flex flex-col items-center justify-center gap-6">
+        <div class="bg-[#eaeaea] rounded-[15px] p-4 sm:p-8 min-h-[400px] flex flex-col items-center justify-center gap-6">
             <flux:icon icon="cashier" class="size-[40px] text-[#666666]" />
             <div class="text-center">
                 <h2 class="text-lg font-medium text-[#313131] mb-2" style="font-family: 'Montserrat', sans-serif;">
@@ -494,7 +497,7 @@
                 </div>
                 {{-- Content Area (Scrollable) --}}
                 <div class="flex flex-col gap-[30px] h-[500px]">
-                    <div class="flex-1 overflow-y-auto px-[30px] py-[40px]">
+                    <div class="flex-1 overflow-y-auto px-4 py-8 sm:px-[30px] sm:py-[40px]">
                         {{-- Info Sesi --}}
                         <div class="flex flex-col gap-[15px]">
                             <div class="flex items-center justify-between">
@@ -689,7 +692,7 @@
 
 
             {{-- Footer: Action Buttons (Fixed/Sticky) --}}
-            <div class="px-[30px] flex items-center justify-end gap-[10px] flex-shrink-0">
+            <div class="px-4 sm:px-[30px] flex items-center justify-end gap-[10px] flex-shrink-0">
                 <flux:modal.close>
                     <button type="button"
                         class="bg-[#c4c4c4] border border-[#bababa] rounded-[15px] px-[25px] py-[10px] flex items-center gap-[5px] hover:bg-[#b0b0b0] transition-colors">
@@ -941,7 +944,7 @@
 
 
             {{-- Footer: Action Button (Sticky) --}}
-            <div class="px-[30px] w-full">
+            <div class="px-4 sm:px-[30px] w-full">
                 <flux:modal.close class="w-full">
                     <button type="button"
                         class="w-full bg-[#3f4e4f] rounded-[15px] px-[25px] py-[10px] flex items-center justify-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#2f3e3f] transition-colors">

@@ -569,12 +569,12 @@
                 @foreach ($paginator as $product)
                     <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
                         <td class="py-5 px-6 text-[#333333]">{{ $product->name }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333] hidden md:table-cell">
+                        <td class="py-5 px-6 text-left text-[#333333]">
                             {{ number_format($product->total, 0, ',', '.') }}
                         </td>
                         <td class="py-5 px-6 text-left text-[#333333]">
                             {{ number_format($product->success, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333] hidden md:table-cell">
+                        <td class="py-5 px-6 text-left text-[#333333]">
                             {{ number_format($product->fail, 0, ',', '.') }}
                         </td>
                     </tr>

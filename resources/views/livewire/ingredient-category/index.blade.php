@@ -1,15 +1,15 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <flux:button variant="secondary" icon="arrow-left" href="{{ route('bahan-baku') }}"
-                class="px-6 py-2.5 bg-[#313131] hover:bg-[#3a3a3a] text-white rounded-[15px] shadow-sm flex items-center gap-1.5 font-semibold text-base transition"
+                class="w-full sm:w-auto px-6 py-2.5 bg-[#313131] hover:bg-[#3a3a3a] text-white rounded-[15px] shadow-sm flex items-center justify-center gap-1.5 font-semibold text-base transition"
                 wire:navigate>
                 Kembali
             </flux:button>
             <h1 class="text-xl font-semibold text-[#666666]">Kelola Kategori Persediaan</h1>
         </div>
-        <div class="flex gap-2 items-center">
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+        <div class="flex gap-2 items-center w-full lg:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
                 Riwayat Pembaruan
             </flux:button>
         </div>
@@ -22,22 +22,22 @@
     </x-alert.info>
 
     <div class="bg-white shadow-lg rounded-[15px] p-7">
-        <div class="flex justify-between items-center mb-7">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-7 gap-4">
             <!-- Search Input -->
-            <div class="flex-1">
-                <div class="bg-white border border-[#666666] rounded-[20px] px-4 py-2 flex items-center max-w-md">
+            <div class="flex-1 w-full sm:w-auto">
+                <div class="bg-white border border-[#666666] rounded-[20px] px-4 py-2 flex items-center max-w-md w-full">
                     <svg class="w-5 h-5 text-[#666666] mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                             clip-rule="evenodd"></path>
                     </svg>
                     <input wire:model.live="search" placeholder="Cari Kategori"
-                        class="flex-1 outline-none text-[#959595] font-medium text-base" />
+                        class="flex-1 outline-none text-[#959595] font-medium text-base bg-transparent" />
                 </div>
             </div>
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center w-full sm:w-auto">
                 <flux:button variant="primary" icon="plus" type="button" wire:click="showAddModal"
-                    class="px-6 py-2.5 bg-[#74512d] hover:bg-[#8a5f35] text-white rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
+                    class="w-full sm:w-auto px-6 py-2.5 bg-[#74512d] hover:bg-[#8a5f35] text-white rounded-[15px] shadow-sm flex items-center justify-center gap-2 font-semibold text-base transition">
                     Tambah Kategori
                 </flux:button>
             </div>
@@ -46,7 +46,7 @@
         <x-table.paginated :headers="[
             ['label' => 'Kategori Persediaan', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
-            ['label' => 'Jumlah Penggunaan', 'sortable' => true, 'sort-by' => 'details_count', 'align' => 'right'],
+            ['label' => 'Jumlah', 'sortable' => true, 'sort-by' => 'details_count', 'align' => 'right'],
         ]" :paginator="$categories" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
             bodyText="#666666" emptyMessage="Tidak ada data.">
             @foreach ($categories as $category)
@@ -94,12 +94,12 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2.5">
+                <div class="flex flex-col sm:flex-row justify-end gap-2.5">
                     <flux:button variant="filled" icon="x-mark" type="button" wire:click="$set('showModal', false)"
-                        class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
+                        class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center justify-center gap-2 font-semibold text-base transition w-full sm:w-auto">
                         Batal
                     </flux:button>
-                    <flux:button icon="save" type="button" variant="secondary" wire:click="store">
+                    <flux:button icon="save" type="button" variant="secondary" wire:click="store" class="w-full sm:w-auto">
                         Simpan
                     </flux:button>
                 </div>
@@ -148,25 +148,25 @@
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <flux:modal.trigger name="delete-category">
-
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <flux:modal.trigger name="delete-category" class="w-full sm:w-auto">
                         <button type="button"
-                            class="w-10 h-10 bg-[#eb5757] hover:bg-[#d64545] rounded-[15px] flex items-center justify-center transition">
-                            <svg class="w-5 h-5 text-[#f8f4e1]" fill="currentColor" viewBox="0 0 20 20">
+                            class="w-full sm:w-10 h-10 bg-[#eb5757] hover:bg-[#d64545] rounded-[15px] flex items-center justify-center transition">
+                            <svg class="w-5 h-5 text-[#f8f4e1] hidden sm:block" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                     clip-rule="evenodd"></path>
                             </svg>
+                            <span class="sm:hidden text-[#f8f4e1] font-semibold">Hapus Kategori</span>
                         </button>
                     </flux:modal.trigger>
-                    <div class="flex gap-2.5">
+                    <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
                         <flux:button variant="filled" icon="x-mark" type="button"
                             wire:click="$set('showEditModal', false)"
-                            class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center gap-2 font-semibold text-base transition">
+                            class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] shadow-sm flex items-center justify-center gap-2 font-semibold text-base transition w-full sm:w-auto">
                             Batal
                         </flux:button>
-                        <flux:button icon="save" type="button" variant="secondary" wire:click="update">
+                        <flux:button icon="save" type="button" variant="secondary" wire:click="update" class="w-full sm:w-auto">
                             Simpan Pembaruan
                         </flux:button>
                     </div>
@@ -182,15 +182,15 @@
                         <p class="mt-2 text-[#666666]">Apakah Anda yakin ingin menghapus kategori ini?</p>
                     </div>
 
-                    <div class="flex justify-end gap-2">
-                        <flux:modal.close>
+                    <div class="flex flex-col sm:flex-row justify-end gap-2.5">
+                        <flux:modal.close class="w-full sm:w-auto">
                             <button type="button"
-                                class="px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] font-semibold text-base transition">
+                                class="w-full px-6 py-2.5 bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] rounded-[15px] font-semibold text-base transition">
                                 Batal
                             </button>
                         </flux:modal.close>
                         <button type="button" wire:click="delete"
-                            class="px-6 py-2.5 bg-[#eb5757] hover:bg-[#d64545] text-white rounded-[15px] font-semibold text-base transition">
+                            class="w-full sm:w-auto px-6 py-2.5 bg-[#eb5757] hover:bg-[#d64545] text-white rounded-[15px] font-semibold text-base transition">
                             Hapus
                         </button>
                     </div>

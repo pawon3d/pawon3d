@@ -1,8 +1,8 @@
 <div>
-    <div class="mb-6 flex gap-4 items-center justify-between">
-        <div class="flex gap-4 items-center">
+    <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('supplier') }}" wire:navigate
-                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
@@ -12,8 +12,8 @@
             </h1>
         </div>
         @if ($this->isEditMode())
-            <div class="flex gap-2.5 items-center">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
                     Riwayat Pembaruan
                 </flux:button>
             </div>
@@ -25,14 +25,14 @@
     </x-alert.info>
 
     <!-- First Section: Foto Toko + Basic Info -->
-    <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 mb-8">
-        <div class="flex flex-col lg:flex-row gap-[130px]">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-6 sm:px-8 py-6 mb-8 mt-6">
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-[130px]">
             <!-- Left: Foto Toko -->
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-4 items-center lg:items-start">
                 <h3 class="font-montserrat font-medium text-[18px] text-[#666666]">Foto Toko</h3>
 
                 <!-- Image Upload Area -->
-                <div class="relative w-[300px] h-[170px] border border-dashed border-[#d4d4d4] rounded-[5px] bg-white overflow-hidden"
+                <div class="relative w-full max-w-[300px] h-[170px] border border-dashed border-[#d4d4d4] rounded-[5px] bg-white overflow-hidden shadow-sm"
                     wire:ignore ondragover="event.preventDefault(); this.classList.add('border-[#74512d]');"
                     ondragleave="this.classList.remove('border-[#74512d]');" ondrop="handleDrop(event)"
                     id="dropzone-container">
@@ -77,20 +77,20 @@
 
                 <!-- Upload Button -->
                 <button type="button" onclick="document.getElementById('dropzone-file').click()"
-                    class="w-[300px] h-[46px] bg-[#74512d] rounded-[5px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-semibold text-[16px] text-white hover:bg-[#5d3f23] transition-colors">
+                    class="w-full max-w-[300px] h-[46px] bg-[#74512d] rounded-[5px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] font-montserrat font-semibold text-[16px] text-white hover:bg-[#5d3f23] transition-colors">
                     Pilih Gambar
                 </button>
 
                 <!-- Error Message -->
                 @error('image')
-                    <div class="w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                    <div class="w-full max-w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
                         {{ $message }}
                     </div>
                 @enderror
 
                 <!-- Loading Indicator -->
                 <div wire:loading wire:target="image"
-                    class="w-[300px] p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                    class="w-full max-w-[300px] p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
                     Mengupload gambar...
                 </div>
             </div>
@@ -191,18 +191,18 @@
         </div>
     </div>
 
-    <div class="flex {{ $this->isEditMode() ? 'justify-between' : 'justify-end' }} flex-row items-center">
+    <div class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
         @if ($this->isEditMode())
-            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()">
-                Hapus Toko
+            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
+                {{ __('Hapus Toko') }}
             </flux:button>
         @endif
-        <div class="flex justify-end gap-8">
+        <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto">
             <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('supplier') }}"
-                wire:navigate>
+                wire:navigate class="w-full sm:w-auto">
                 Batal
             </flux:button>
-            <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save">
+            <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save" class="w-full sm:w-auto">
                 {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
             </flux:button>
         </div>

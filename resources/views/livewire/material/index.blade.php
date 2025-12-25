@@ -1,9 +1,8 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-3xl font-bold">Daftar Barang Persediaan</h1>
-        <div class="flex gap-2 items-center">
-            <!-- Tombol Riwayat Pembaruan -->
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 class="text-xl font-semibold text-[#666666]">Daftar Barang Persediaan</h1>
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
                 Riwayat Pembaruan
             </flux:button>
         </div>
@@ -16,66 +15,63 @@
     </x-alert.info>
 
     <div class="mt-4 bg-white shadow-lg rounded-lg p-4">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-4 mb-6">
             <!-- Search Input -->
-            <div class="p-4 flex">
-                <input wire:model.live="search" placeholder="Cari..."
-                    class="w-lg px-4 py-2 border border-accent rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <flux:button :loading="false" class="ml-2" variant="ghost">
-                    <flux:icon.funnel variant="mini" />
-                    <span>Filter</span>
-                </flux:button>
+            <div class="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 w-full">
+                <div
+                    class="flex-1 bg-white border border-[#666666] rounded-full px-4 py-0 min-h-[46px] flex items-center">
+                    <flux:icon.magnifying-glass class="size-[20px] text-[#666666] shrink-0" />
+                    <input wire:model.live="search" placeholder="Cari Barang Persediaan..."
+                        class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
+                </div>
+                <div class="flex items-center gap-1 cursor-pointer justify-center">
+                    <flux:icon.funnel class="size-[20px] text-[#666666]" />
+                    <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
+                </div>
             </div>
-            <div class="flex gap-2 items-center">
-                {{-- <a href="{{ route('bahan-baku.tambah') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest focus:outline-none bg-gray-800 text-white hover:bg-gray-700 active:bg-gray-900 transition ease-in-out duration-150">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Tambah Persediaan
-                </a> --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full xl:w-auto">
                 <flux:button type="button" variant="primary" href="{{ route('satuan-ukur') }}" icon="lamp-ceiling"
-                    wire:navigate>
-                    Daftar
+                    wire:navigate class="w-full sm:w-auto">
                     Satuan Ukur</flux:button>
                 <flux:button type="button" variant="primary" href="{{ route('kategori-persediaan') }}" icon="shapes"
-                    wire:navigate>
+                    wire:navigate class="w-full sm:w-auto">
                     Kategori
                 </flux:button>
-                <flux:button type="button" variant="primary" href="{{ route('bahan-baku.tambah') }}" icon="plus"
-                    wire:navigate>
-                    Tambah
-                    Persediaan
+                <flux:button type="button" variant="primary" icon="plus" href="{{ route('bahan-baku.tambah') }}"
+                    wire:navigate class="w-full sm:w-auto">
+                    Tambah Persediaan
                 </flux:button>
             </div>
         </div>
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex gap-2 items-center p-4">
-                <flux:text class="text-xl mr-2">
-                    Jumlah Persediaan : {{ $materials->total() }}
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+            <div class="flex gap-2 items-center sm:px-4">
+                <flux:text class="text-base font-medium text-[#666666]">
+                    Jumlah Persediaan: {{ $materials->total() }}
                 </flux:text>
             </div>
-            <div class="flex gap-2 mr-4 items-center">
-                <span class="text-sm mr-2">Tampilan Produk:</span>
+            <div class="flex gap-4 items-center sm:pr-4 justify-between sm:justify-end">
+                <span class="text-sm font-medium text-[#666666]">Tampilan:</span>
 
-                <!-- Grid View -->
-                <div class="relative">
-                    <input type="radio" name="viewMode" id="grid-view" value="grid" wire:model.live="viewMode"
-                        class="absolute opacity-0 w-0 h-0">
-                    <label for="grid-view" class="cursor-pointer">
-                        <flux:icon icon="squares-2x2"
-                            class="{{ $viewMode === 'grid' ? 'text-gray-100 bg-[#74512D]' : 'text-gray-800 bg-white' }} rounded-xl border border-[#74512D] hover:text-gray-100 hover:bg-[#74512D] transition-colors size-8" />
-                    </label>
-                </div>
+                <div class="flex gap-2">
+                    <!-- Grid View -->
+                    <div class="relative">
+                        <input type="radio" name="viewMode" id="grid-view" value="grid" wire:model.live="viewMode"
+                            class="absolute opacity-0 w-0 h-0">
+                        <label for="grid-view" class="cursor-pointer">
+                            <flux:icon icon="squares-2x2"
+                                class="{{ $viewMode === 'grid' ? 'text-gray-100 bg-[#74512D]' : 'text-gray-800 bg-white' }} rounded-xl border border-[#74512D] hover:text-gray-100 hover:bg-[#74512D] transition-colors size-8" />
+                        </label>
+                    </div>
 
-                <!-- List View -->
-                <div class="relative">
-                    <input type="radio" name="viewMode" id="list-view" value="list" wire:model.live="viewMode"
-                        class="absolute opacity-0 w-0 h-0">
-                    <label for="list-view" class="cursor-pointer">
-                        <flux:icon icon="list-bullet"
-                            class="{{ $viewMode === 'list' ? 'text-gray-100 bg-[#74512D]' : 'text-gray-800 bg-white' }} rounded-xl border border-[#74512D] hover:text-gray-100 hover:bg-[#74512D] transition-colors size-8" />
-                    </label>
+                    <!-- List View -->
+                    <div class="relative">
+                        <input type="radio" name="viewMode" id="list-view" value="list" wire:model.live="viewMode"
+                            class="absolute opacity-0 w-0 h-0">
+                        <label for="list-view" class="cursor-pointer">
+                            <flux:icon icon="list-bullet"
+                                class="{{ $viewMode === 'list' ? 'text-gray-100 bg-[#74512D]' : 'text-gray-800 bg-white' }} rounded-xl border border-[#74512D] hover:text-gray-100 hover:bg-[#74512D] transition-colors size-8" />
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,10 +161,10 @@
             {{-- list view --}}
             <x-table.paginated :headers="[
                 ['label' => 'Barang Persediaan', 'sortable' => true, 'sort-by' => 'name'],
-                ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active'],
-                ['label' => 'Jumlah Persediaan', 'align' => 'right'],
-                ['label' => 'Tanggal Expired', 'sortable' => true, 'sort-by' => 'expiry_date'],
-                ['label' => 'Status Persediaan', 'sortable' => true, 'sort-by' => 'status', 'align' => 'right'],
+                ['label' => 'Aktif', 'sortable' => true, 'sort-by' => 'is_active'],
+                ['label' => 'Jumlah', 'align' => 'right'],
+                ['label' => 'Expired', 'sortable' => true, 'sort-by' => 'expiry_date'],
+                ['label' => 'Status', 'sortable' => true, 'sort-by' => 'status', 'align' => 'right'],
             ]" :paginator="$materials" headerBg="#3f4e4f" headerText="#f8f4e1"
                 bodyBg="#fafafa" bodyText="#666666"
                 emptyMessage="Belum ada barang persediaan. Tekan tombol 'Tambah Persediaan' untuk menambahkan persediaan.">

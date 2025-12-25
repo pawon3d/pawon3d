@@ -1,30 +1,28 @@
-<div style="padding: 0 15px;">
+<div class="px-4 sm:px-[30px] py-4 sm:py-[30px]" style="background: #eaeaea; min-height: 100vh;">
     {{-- Header Section --}}
-    <div
-        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
-        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-[30px] gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto sm:gap-[15px]">
             <flux:button variant="secondary" icon="arrow-left"
                 href="{{ route('produksi.pesanan', ['method' => $transaction->method]) }}" wire:navigate
-                style="background: #313131; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px; padding: 10px 25px; text-decoration: none;">
+                class="w-full sm:w-auto flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] no-underline">
                 <span
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Kembali</span>
             </flux:button>
-            <h1
+            <h1 class="text-center sm:text-left"
                 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
                 Rincian Pesanan</h1>
         </div>
     </div>
 
     {{-- Main Content Container --}}
-    <div style="display: flex; flex-direction: column; gap: 50px; align-items: flex-end;">
-        <div style="display: flex; flex-direction: column; gap: 30px; width: 100%;">
+    <div class="flex flex-col gap-[30px] sm:gap-[50px] items-end">
+        <div class="flex flex-col gap-[30px] w-full">
             {{-- Order Information Card --}}
             <div
-                style="background: #fafafa; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); padding: 25px 30px; display: flex; flex-direction: column; gap: 30px;">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] p-4 sm:p-[30px] flex flex-col gap-[30px]">
                 {{-- Invoice Number and Status --}}
-                <div
-                    style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 15px;">
-                    <p
+                <div class="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                    <p class="text-center sm:text-left"
                         style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: clamp(20px, 5vw, 30px); color: #666666; margin: 0; word-break: break-word;">
                         {{ $transaction->invoice_number }}</p>
                     @php
@@ -45,71 +43,62 @@
                 </div>
 
                 {{-- Date and User Information --}}
-                <div style="display: flex; flex-direction: row; gap: 20px; width: 100%;" class="justify-between">
-                    <div style="display: flex; flex-wrap: wrap; gap: 30px; width: 100%;">
+                <div class="flex flex-col lg:flex-row gap-6 w-full justify-between">
+                    <div class="flex flex-col md:flex-row flex-wrap gap-6 md:gap-[30px] w-full">
                         {{-- Tanggal Pesanan Masuk --}}
-                        <div style="display: flex; flex-direction: column; gap: 5px; min-width: 200px; flex: 1;">
-                            <p
-                                style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                        <div class="flex flex-col gap-[5px] min-w-[200px] flex-1">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
                                 Tanggal Pesanan Masuk</p>
-                            <div
-                                style="display: flex; flex-wrap: wrap; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                            <div class="flex flex-wrap gap-[10px] font-['Montserrat'] font-normal text-[16px] text-[#666666]">
                                 @if ($transaction->start_date)
-                                    <p style="margin: 0;">
+                                    <p class="m-0">
                                         {{ \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d M Y') }}
                                     </p>
-                                    <p style="margin: 0;">
+                                    <p class="m-0">
                                         {{ \Carbon\Carbon::parse($transaction->start_date)->format('H:i') }}</p>
                                 @else
-                                    <p style="margin: 0;">-</p>
+                                    <p class="m-0">-</p>
                                 @endif
                             </div>
                         </div>
                         {{-- Tanggal Ambil Pesanan --}}
-                        <div style="display: flex; flex-direction: column; gap: 5px; min-width: 200px; flex: 1;">
-                            <p
-                                style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                        <div class="flex flex-col gap-[5px] min-w-[200px] flex-1">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
                                 Tanggal Ambil Pesanan</p>
-                            <div
-                                style="display: flex; flex-wrap: wrap; gap: 10px; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                            <div class="flex flex-wrap gap-[10px] font-['Montserrat'] font-normal text-[16px] text-[#666666]">
                                 @if ($transaction->date)
-                                    <p style="margin: 0;">
+                                    <p class="m-0">
                                         {{ \Carbon\Carbon::parse($transaction->date)->translatedFormat('d M Y') }}</p>
-                                    <p style="margin: 0;">
+                                    <p class="m-0">
                                         {{ $transaction->time ? \Carbon\Carbon::parse($transaction->time)->format('H:i') : '00:00' }}
                                     </p>
                                 @else
-                                    <p style="margin: 0;">-</p>
+                                    <p class="m-0">-</p>
                                 @endif
                             </div>
                         </div>
                     </div>
                     {{-- Pembeli and Kasir --}}
-                    <div style="display: flex; flex-wrap: wrap; gap: 30px; width: 100%;" class="justify-end text-right">
-                        <div
-                            style="display: flex; flex-direction: column; gap: 5px; font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; min-width: 150px;">
-                            <p style="font-weight: 500; margin: 0;">Pembeli</p>
-                            <p style="font-weight: 400; margin: 0; word-break: break-word;">
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-6 sm:gap-[30px] w-full justify-between lg:justify-end lg:text-right">
+                        <div class="flex flex-col gap-[5px] font-['Montserrat'] text-[16px] text-[#666666] min-w-[150px]">
+                            <p class="font-medium m-0">Pembeli</p>
+                            <p class="font-normal m-0 break-words">
                                 {{ $transaction->name ?? '-' }}</p>
                         </div>
-                        <div
-                            style="display: flex; flex-direction: column; gap: 5px; font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; min-width: 150px;">
-                            <p style="font-weight: 500; margin: 0;">Kasir</p>
-                            <p style="font-weight: 400; margin: 0; word-break: break-word;">
+                        <div class="flex flex-col gap-[5px] font-['Montserrat'] text-[16px] text-[#666666] min-w-[150px]">
+                            <p class="font-medium m-0">Kasir</p>
+                            <p class="font-normal m-0 break-words">
                                 {{ $transaction->user->name ?? '-' }}</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- Catatan Pesanan Section --}}
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <p
-                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 18px; color: #666666; margin: 0;">
+                <div class="flex flex-col gap-[20px]">
+                    <p class="font-['Montserrat'] font-medium text-[18px] text-[#666666] m-0">
                         Catatan Pesanan</p>
-                    <div
-                        style="background: #eaeaea; border: 1px solid #d4d4d4; border-radius: 15px; padding: 10px 20px; min-height: 120px;">
-                        <p
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666; text-align: justify; margin: 0; word-wrap: break-word;">
+                    <div class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] p-4 sm:px-[20px] sm:py-[10px] min-h-[120px]">
+                        <p class="font-['Montserrat'] font-normal text-[16px] text-[#666666] text-justify m-0 break-words">
                             {{ $transaction->note ?: 'Tidak ada catatan' }}
                         </p>
                     </div>
@@ -118,9 +107,8 @@
 
             {{-- Product Table Card --}}
             <div
-                style="background: #fafafa; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1); padding: 25px 30px; display: flex; flex-direction: column; gap: 20px;">
-                <p
-                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] p-4 sm:p-[30px] flex flex-col gap-[20px]">
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
                     Daftar Produk</p>
 
                 <div style="width: 100%; overflow-x: auto;">
@@ -185,7 +173,7 @@
 
         {{-- Mulai Produksi Button --}}
         @if (empty($transaction->production))
-            <flux:button wire:click="start" variant="secondary" icon="chef-hat">
+            <flux:button wire:click="start" variant="secondary" icon="chef-hat" class="w-full sm:w-auto">
                 Mulai Produksi
             </flux:button>
         @endif

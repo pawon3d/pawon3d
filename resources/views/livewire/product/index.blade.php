@@ -1,9 +1,11 @@
 <div class="space-y-[30px]">
-    <div class="flex items-center justify-between h-[40px]">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Kelola Produk</h1>
-        <flux:button variant="secondary" wire:click="riwayatPembaruan">
-            Riwayat Pembaruan
-        </flux:button>
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
+                Riwayat Pembaruan
+            </flux:button>
+        </div>
     </div>
 
 
@@ -23,84 +25,71 @@
         </ul>
     </x-alert.info>
 
-    <div class="flex items-center">
-        @php
-            $tabs = [
-                ['value' => 'pesanan-reguler', 'label' => 'Pesanan Reguler', 'icon' => 'cake'],
-                ['value' => 'pesanan-kotak', 'label' => 'Pesanan Kotak', 'icon' => 'cube'],
-                ['value' => 'siap-beli', 'label' => 'Siap Saji', 'icon' => 'shopping-bag'],
-            ];
-        @endphp
-
-        @foreach ($tabs as $index => $tab)
-            @php
-                $isActive = $method === $tab['value'];
-                $roundedClass =
-                    $index === 0
-                        ? 'rounded-tl-[15px] rounded-bl-[15px]'
-                        : ($index === count($tabs) - 1
-                            ? 'rounded-tr-[15px] rounded-br-[15px]'
-                            : '');
-            @endphp
-            <button type="button" wire:click="$set('method', '{{ $tab['value'] }}')"
-                class="flex-1 bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden px-[20px] py-[15px] h-[105px] flex flex-col items-center justify-center gap-[5px] {{ $roundedClass }}"
-                aria-pressed="{{ $isActive ? 'true' : 'false' }}">
-                <flux:icon :icon="$tab['icon']"
-                    class="size-[34px] {{ $isActive ? 'text-[#74512d]' : 'text-[#6c7068]' }}" />
-                <span
-                    class="font-montserrat {{ $isActive ? 'font-bold text-[#74512d]' : 'font-medium text-[#6c7068] opacity-90' }} text-[16px] text-center">
-                    {{ $tab['label'] }}
-                </span>
-                @if ($isActive)
-                    <div class="h-[4px] w-full border-b-[4px] border-[#74512d]"></div>
-                @endif
-            </button>
-        @endforeach
+    <div class="flex items-center overflow-x-auto pb-2 scrollbar-hide">
+        <div class="flex min-w-max w-full">
+            @foreach ($tabs as $index => $tab)
+                @php
+                    $isActive = $method === $tab['value'];
+                    $roundedClass =
+                        $index === 0
+                            ? 'rounded-tl-[15px] rounded-bl-[15px]'
+                            : ($index === count($tabs) - 1
+                                ? 'rounded-tr-[15px] rounded-br-[15px]'
+                                : '');
+                @endphp
+                <button type="button" wire:click="$set('method', '{{ $tab['value'] }}')"
+                    class="flex-1 bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] overflow-hidden px-[20px] py-[15px] h-[105px] flex flex-col items-center justify-center gap-[5px] {{ $roundedClass }}"
+                    aria-pressed="{{ $isActive ? 'true' : 'false' }}">
+                    <flux:icon :icon="$tab['icon']"
+                        class="size-[34px] {{ $isActive ? 'text-[#74512d]' : 'text-[#6c7068]' }}" />
+                    <span
+                        class="font-montserrat {{ $isActive ? 'font-bold text-[#74512d]' : 'font-medium text-[#6c7068] opacity-90' }} text-[16px] text-center">
+                        {{ $tab['label'] }}
+                    </span>
+                    @if ($isActive)
+                        <div class="h-[4px] w-full border-b-[4px] border-[#74512d]"></div>
+                    @endif
+                </button>
+            @endforeach
+        </div>
     </div>
 
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col gap-[20px]">
-        <div class="flex flex-col gap-[30px]">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-[15px] flex-1">
-                    <div class="bg-white border border-[#666666] rounded-[20px] px-[15px] flex items-center w-[450px]">
-                        <flux:icon.magnifying-glass class="size-[30px] text-[#666666]" />
-                        <input wire:model.live="search" placeholder="Cari Produk"
-                            class="flex-1 bg-transparent border-0 font-montserrat font-medium text-[16px] text-[#959595] focus:outline-none focus:ring-0 px-[10px] py-[10px]" />
-                    </div>
-                    <div class="flex items-center cursor-pointer">
-                        <flux:icon.funnel class="size-[25px] text-[#666666]" />
-                        <p class="font-montserrat font-medium text-[16px] text-[#666666] px-[5px] py-[10px]">Filter</p>
-                    </div>
+        <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-6">
+            <div class="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 w-full">
+                <div
+                    class="flex-1 bg-white border border-[#666666] rounded-full px-4 py-0 min-h-[46px] flex items-center">
+                    <flux:icon.magnifying-glass class="size-[20px] text-[#666666] shrink-0" />
+                    <input wire:model.live="search" placeholder="Cari Produk..."
+                        class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
                 </div>
-                <div class="flex items-center gap-[15px] justify-end flex-1">
-                    <flux:button variant="primary" icon="shapes" href="{{ route('kategori') }}" wire:navigate>
-                        Kategori
-                    </flux:button>
-                    <flux:button variant="primary" icon="plus" href="{{ route('produk.tambah') }}" wire:navigate>
-                        Tambah Produk
-                    </flux:button>
+                <div class="flex items-center gap-1 cursor-pointer justify-center">
+                    <flux:icon.funnel class="size-[20px] text-[#666666]" />
+                    <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
                 </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full xl:w-auto">
+                <flux:button variant="primary" icon="shapes" href="{{ route('kategori') }}" wire:navigate class="w-full sm:w-auto">
+                    Kategori
+                </flux:button>
+                <flux:button variant="primary" icon="plus" href="{{ route('produk.tambah') }}" wire:navigate class="w-full sm:w-auto">
+                    Tambah Produk
+                </flux:button>
             </div>
         </div>
 
-        <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <p class="font-montserrat font-medium text-[16px] text-[#666666] px-[5px] py-[10px]">
-                    Jumlah Produk
-                </p>
-                <p class="font-montserrat font-medium text-[16px] text-[#666666] px-0 py-[10px]">
-                    :
-                </p>
-                <p class="font-montserrat font-medium text-[16px] text-[#666666] px-[5px] py-[10px]">
-                    {{ $products->total() }}
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div class="flex items-center sm:px-4">
+                <p class="font-montserrat font-medium text-[16px] text-[#666666]">
+                    Jumlah Produk: {{ $products->total() }}
                 </p>
             </div>
-            <div class="flex items-center gap-[20px] justify-center">
-                <p class="font-montserrat font-medium text-[16px] text-[#666666] text-center">
-                    Tampilan Produk:
+            <div class="flex gap-4 items-center sm:pr-4 justify-between sm:justify-end">
+                <p class="font-montserrat font-medium text-[14px] text-[#666666]">
+                    Tampilan:
                 </p>
-                <div class="flex items-center gap-[10px] cursor-pointer">
+                <div class="flex gap-2">
                     <button type="button" wire:click="$set('viewMode', 'grid')"
                         class="size-[40px] rounded-[15px] flex items-center justify-center overflow-hidden p-[10px] {{ $viewMode === 'grid' ? 'bg-[#74512d]' : 'bg-white border border-[#959595]' }}">
                         <flux:icon.squares-2x2
@@ -118,19 +107,17 @@
         @if ($viewMode === 'list')
             <x-table.paginated :headers="[
                 ['label' => 'Produk', 'sortable' => true, 'sort-by' => 'name'],
-                ['label' => 'Status Tampil', 'sortable' => true, 'sort-by' => 'is_active', 'class' => 'w-[150px]'],
+                ['label' => 'Aktif', 'sortable' => true, 'sort-by' => 'is_active'],
                 [
-                    'label' => 'Status Rekomendasi',
+                    'label' => 'Rekomendasi',
                     'sortable' => true,
                     'sort-by' => 'is_recommended',
-                    'class' => 'w-[190px]',
                 ],
                 [
                     'label' => 'Harga Jual',
                     'sortable' => true,
                     'sort-by' => 'price',
                     'align' => 'right',
-                    'class' => 'w-[150px]',
                 ],
             ]" :paginator="$products" headerBg="#3f4e4f" headerText="#f8f4e1"
                 bodyBg="#fafafa" bodyText="#666666"
@@ -172,41 +159,41 @@
                         kartu ringkasannya di sini.</p>
                 </div>
             @else
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-[35px]">
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 md:gap-[35px]">
                     @foreach ($products as $product)
-                        <div class="flex flex-col gap-[20px] items-center pb-[25px]">
+                        <div class="flex flex-col gap-4 sm:gap-[20px] items-center pb-6 sm:pb-[25px]">
                             <div class="flex flex-col gap-[15px] items-center w-full">
                                 <div
-                                    class="h-[119px] w-[182px] relative rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] bg-[#eaeaea] mx-auto">
+                                    class="w-full aspect-video relative rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] bg-[#eaeaea] overflow-hidden">
                                     @if ($product->product_image)
                                         <img src="{{ asset('storage/' . $product->product_image) }}"
                                             alt="{{ $product->name }}"
-                                            class="absolute inset-0 w-full h-full object-cover rounded-[15px]" />
+                                            class="absolute inset-0 w-full h-full object-cover" />
                                     @else
                                         <img src="{{ asset('img/no-img.jpg') }}" alt="Gambar Produk"
-                                            class="absolute inset-0 w-full h-full object-cover rounded-[15px]" />
+                                            class="absolute inset-0 w-full h-full object-cover" />
                                     @endif
                                 </div>
-                                <div class="flex flex-col gap-[30px] items-center w-full">
-                                    <div class="flex flex-col gap-[10px] items-center min-h-[70px] w-full px-[15px]">
+                                <div class="flex flex-col gap-4 sm:gap-[30px] items-center w-full">
+                                    <div class="flex flex-col gap-[10px] items-center min-h-[60px] sm:min-h-[70px] w-full px-2 sm:px-[15px]">
                                         <p
-                                            class="font-montserrat font-medium text-[16px] text-[#666666] text-center w-full line-clamp-2">
+                                            class="font-montserrat font-medium text-sm sm:text-[16px] text-[#666666] text-center w-full line-clamp-2">
                                             {{ $product->name }}
                                         </p>
-                                        <p class="text-base font-medium text-[#666666] text-center"
+                                        <p class="text-xs sm:text-base font-medium text-[#666666] text-center"
                                             style="font-family: 'Montserrat', sans-serif;">
                                             ({{ $product->pcs }} pcs)
                                         </p>
                                     </div>
                                     <div
-                                        class="flex items-center justify-center font-montserrat font-semibold text-[18px] text-[#666666] gap-1">
+                                        class="flex items-center justify-center font-montserrat font-semibold text-base sm:text-[18px] text-[#666666] gap-1">
                                         <p>Rp</p>
                                         <p>{{ number_format($product->price, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                             </div>
                             <flux:button variant="subtle" href="{{ route('produk.edit', $product->id) }}"
-                                class="bg-[#fafafa] border-[1.5px] border-[#74512d] rounded-[20px] w-full flex items-center justify-center px-[25px] py-[10px]" wire:navigate>
+                                class="bg-[#fafafa] border-[1.5px] border-[#74512D] rounded-[20px] w-full flex items-center justify-center px-4 sm:px-[25px] py-2 sm:py-[10px]" wire:navigate>
                                 Lihat
                             </flux:button>
                         </div>

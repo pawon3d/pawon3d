@@ -1,12 +1,12 @@
-<div style="background: #eaeaea; padding: 30px;">
+<div class="px-4 sm:px-[30px] py-4 sm:py-[30px]" style="background: #eaeaea;">
     <!-- Header -->
-    <div class="flex items-center gap-4 mb-8" style="height: 40px;">
+    <div class="flex flex-col sm:flex-row items-center sm:gap-4 mb-8 h-auto gap-4">
         <!-- Tombol Kembali -->
-        <flux:button href="{{ route('produksi.antrian-produksi') }}" icon="arrow-left" variant="secondary" wire:navigate>
+        <flux:button href="{{ route('produksi.antrian-produksi') }}" icon="arrow-left" variant="secondary" wire:navigate class="w-full sm:w-auto flex justify-center">
             <span class="text-[16px] font-semibold text-[#f6f6f6]" style="font-family: Montserrat;">Kembali</span>
         </flux:button>
 
-        <h1 class="text-[20px] font-semibold text-[#666666]" style="font-family: Montserrat;">
+        <h1 class="text-[20px] font-semibold text-[#666666] text-center sm:text-left" style="font-family: Montserrat;">
             {{ $isEditMode ? 'Ubah Produksi' : 'Tambah Produksi' }}</h1>
     </div>
 
@@ -27,9 +27,9 @@
     <div class="flex flex-col gap-[30px]">
         <!-- Form Card -->
         <div
-            class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex gap-[50px]">
+            class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col lg:flex-row gap-[30px] lg:gap-[50px]">
             <!-- Tanggal Produksi -->
-            <div class="flex flex-col gap-[15px] w-[450px]">
+            <div class="flex flex-col gap-[15px] w-full lg:w-[450px]">
                 <div class="flex flex-col gap-[15px]">
                     <p class="text-[16px] font-medium text-[#666666]" style="font-family: Montserrat; margin: 0;">
                         Tanggal Produksi
@@ -40,7 +40,7 @@
                     </p>
                 </div>
 
-                <div class="flex gap-[15px] items-center">
+                <div class="flex flex-col sm:flex-row gap-[15px] items-center">
                     <!-- Date Picker -->
                     <div x-data x-init="picker = new Pikaday({
                         field: $refs.datepicker,
@@ -56,7 +56,7 @@
                         }
                     });" class="relative">
                         <input type="text" x-ref="datepicker" wire:model.live="start_date"
-                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] text-[16px] font-normal text-[#666666] w-[200px]"
+                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] text-[16px] font-normal text-[#666666] w-full sm:w-[200px]"
                             style="font-family: Montserrat;" placeholder="dd/mm/yyyy" readonly />
                         <svg class="w-[20px] h-[20px] text-[#666666] absolute right-[20px] top-1/2 transform -translate-y-1/2 pointer-events-none"
                             fill="currentColor" viewBox="0 0 24 24">
@@ -71,12 +71,13 @@
                         noCalendar: true,
                         dateFormat: 'H:i',
                         time_24hr: true,
+                        disableMobile: true,
                         onChange: function(selectedDates, dateStr) {
                             @this.set('time', dateStr);
                         }
                     });" class="relative">
                         <input type="text" x-ref="timepicker" wire:model.live="time"
-                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] text-[16px] font-normal text-[#666666] w-[110px]"
+                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] text-[16px] font-normal text-[#666666] w-full sm:w-[110px]"
                             style="font-family: Montserrat;" placeholder="00:00" />
                         <svg class="w-[20px] h-[20px] text-[#666666] absolute right-[20px] top-1/2 transform -translate-y-1/2 pointer-events-none"
                             fill="currentColor" viewBox="0 0 24 24">
@@ -126,24 +127,26 @@
                         Daftar Produk
                     </p>
                 </div>
-                <div class="flex items-center justify-between w-full">
-                    <p class="flex-1 text-[14px] font-normal text-[#666666] text-justify"
+                <div class="flex flex-col sm:flex-row items-center justify-between w-full gap-4 sm:gap-0">
+                    <p class="text-[14px] font-normal text-[#666666] text-center sm:text-justify lg:max-w-md"
                         style="font-family: Montserrat; margin: 0;">
                         Tambah produk sesuai dengan kebutuhan operasional.
                     </p>
                     <button wire:click="addProduct"
-                        class="bg-[#74512d] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-2">
-                        <svg class="w-[20px] h-[20px] text-white" fill="currentColor" viewBox="0 0 24 24">
+                        class="w-full sm:w-auto bg-[#74512d] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-2">
+                        <svg class="w-[20px] h-[20px] text-white shrink-0" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                         </svg>
-                        <span class="text-[16px] font-semibold text-[#f6f6f6]" style="font-family: Montserrat;">Tambah
+                        <span class="text-[16px] font-semibold text-[#f6f6f6] whitespace-nowrap"
+                            style="font-family: Montserrat;">Tambah
                             Produk</span>
                     </button>
                 </div>
             </div>
 
             <!-- Tabel Produk -->
-            <div class="flex flex-col w-full overflow-hidden rounded-[15px]">
+            <div class="overflow-x-auto w-full">
+                <div class="flex flex-col min-w-[800px] overflow-hidden rounded-[15px]">
                 <!-- Table Header -->
                 <div class="flex w-full bg-[#3f4e4f] rounded-t-[15px]" style="height: 60px;">
                     <div class="flex items-center px-[25px] py-[21px] w-[255px]">
@@ -259,6 +262,7 @@
                     </div>
                 </div>
             </div>
+        </div>
 
             @error('production_details.*')
                 <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
@@ -266,15 +270,15 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center gap-[30px] justify-end">
+        <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[30px] justify-end">
             <flux:button variant="filled" icon="x-mark" href="{{ route('produksi.antrian-produksi') }}"
                 wire:navigate
-                class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-2">
+                class="w-full sm:w-auto bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-2">
                 <span class="text-[16px] font-semibold text-[#333333]" style="font-family: Montserrat;">Batal</span>
             </flux:button>
 
             <flux:button wire:click="store" icon="save" variant="secondary" type="button"
-                class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-2">
+                class="w-full sm:w-auto bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-2">
                 <span class="text-[16px] font-medium text-white" style="font-family: Montserrat;">
                     {{ $isEditMode ? 'Simpan Perubahan' : 'Buat Rencana Produksi' }}
                 </span>

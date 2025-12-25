@@ -1,17 +1,17 @@
 <div>
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex gap-4 items-center">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full md:w-auto">
             <a href="{{ route('hitung') }}"
-                class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold"
+                class="px-6 py-2.5 bg-[#313131] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold w-full sm:w-auto"
                 wire:navigate>
                 <flux:icon.arrow-left class="size-5" />
                 Kembali
             </a>
-            <h1 class="text-xl font-semibold text-[#666666]">Rincian {{ $this->hitung->action }}</h1>
+            <h1 class="text-xl font-semibold text-[#666666] text-center sm:text-left">Rincian {{ $this->hitung->action }}</h1>
         </div>
-        <div class="flex gap-2.5 items-center">
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+        <div class="flex gap-2.5 items-center w-full md:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="flex-1 sm:flex-none">
                 Riwayat Pembaruan
             </flux:button>
         </div>
@@ -20,8 +20,8 @@
     <!-- Info Card -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-6 mb-8">
         <!-- Nomor & Status -->
-        <div class="flex justify-between items-start mb-8">
-            <h2 class="text-3xl font-medium text-[#666666]">{{ $this->hitung->hitung_number }}</h2>
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+            <h2 class="text-2xl sm:text-3xl font-medium text-[#666666]">{{ $this->hitung->hitung_number }}</h2>
             @php
                 $statusClass = match ($status) {
                     'Selesai' => 'bg-green-500',
@@ -30,14 +30,14 @@
                     default => 'bg-[#adadad]',
                 };
             @endphp
-            <span class="px-5 py-2 {{ $statusClass }} rounded-full text-[#fafafa] font-bold text-base">
+            <span class="px-5 py-2 {{ $statusClass }} rounded-full text-[#fafafa] font-bold text-base w-full sm:w-auto text-center">
                 {{ $status }}
             </span>
         </div>
 
         <!-- Info Details -->
-        <div class="flex justify-between items-center mb-8">
-            <div class="flex gap-9 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-8">
                 <div class="flex flex-col gap-1">
                     <span class="text-base font-medium text-[#666666]">Tanggal Aksi</span>
                     <span class="text-base text-[#666666]">
@@ -51,12 +51,12 @@
                     </span>
                 </div>
             </div>
-            <div class="flex gap-9 items-center">
-                <div class="flex flex-col gap-1 items-end">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-8 md:justify-end">
+                <div class="flex flex-col gap-1 md:items-end">
                     <span class="text-base font-medium text-[#666666]">Jenis Aksi</span>
                     <span class="text-base text-[#666666]">{{ $this->hitung->action }}</span>
                 </div>
-                <div class="flex flex-col gap-1 items-end">
+                <div class="flex flex-col gap-1 md:items-end">
                     <span class="text-base font-medium text-[#666666]">Inventaris</span>
                     <span class="text-base text-[#666666]">{{ $logName }}</span>
                 </div>
@@ -65,7 +65,7 @@
 
         <!-- Catatan -->
         <div class="flex flex-col gap-5">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <span class="text-base font-medium text-[#666666]">
                     @if ($this->hitung->action == 'Hitung Persediaan')
                         Rencana Hitung
@@ -76,7 +76,7 @@
                     @endif
                 </span>
                 <flux:button type="button" variant="secondary" icon="pencil" wire:click="openNoteModal"
-                    class="px-6 py-2.5 bg-[#666666] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base">
+                    class="px-6 py-2.5 bg-[#666666] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold text-base w-full sm:w-auto">
                     {{ $this->hitung->note ? 'Ubah Catatan' : 'Buat Catatan' }}
                 </flux:button>
             </div>
@@ -96,11 +96,11 @@
                 <!-- Table Header -->
                 <thead>
                     <tr>
-                        <th class="bg-[#3F4E4F] px-6 py-5 text-left rounded-tl-[15px]">
+                        <th class="bg-[#3F4E4F] px-6 py-5 text-left rounded-tl-[15px] min-w-[150px]">
                             <span
-                                class="text-sm font-bold text-[#F8F4E1] leading-tight block">Barang<br>Persediaan</span>
+                                class="text-sm font-bold text-[#F8F4E1] leading-tight block">Barang</span>
                         </th>
-                        <th class="bg-[#3F4E4F] px-6 py-5 text-left">
+                        <th class="bg-[#3F4E4F] px-6 py-5 text-left min-w-[100px]">
                             <span class="text-sm font-bold text-[#F8F4E1]">Batch</span>
                         </th>
                         <th class="bg-[#3F4E4F] px-6 py-5 text-right">
@@ -203,9 +203,11 @@
                 <!-- Table Footer -->
                 <tfoot>
                     <tr>
-                        <td colspan="5" class="bg-[#eaeaea] px-6 py-4 rounded-bl-[15px]">
+                        <td class="bg-[#eaeaea] px-6 py-4 rounded-bl-[15px]" colspan="3">
                             <span class="text-sm font-bold text-[#666666]">Total</span>
                         </td>
+                        <td class="bg-[#eaeaea] px-6 py-4"></td>
+                        <td class="bg-[#eaeaea] px-6 py-4"></td>
                         <td class="bg-[#eaeaea] px-6 py-4 text-right">
                             <span
                                 class="text-sm font-bold text-[#666666]">Rp{{ number_format($this->hitung->grand_total, 0, ',', '.') }}</span>
@@ -230,15 +232,15 @@
 
     <!-- Action Buttons -->
     @if ($is_start && !$is_finish)
-        <div class="flex justify-between items-center">
-            <div class="flex gap-2.5 items-center">
-                <flux:button variant="danger" icon="ban" type="button" wire:click="cancelAction">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex gap-2.5 items-center w-full sm:w-auto">
+                <flux:button variant="danger" icon="ban" type="button" wire:click="cancelAction" class="w-full sm:w-auto">
                     Batalkan Aksi
                 </flux:button>
             </div>
-            <div class="flex gap-2.5 items-center">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
                 <flux:button icon="check-circle" type="button" wire:click="finish"
-                    class="!px-6 !py-2.5 !rounded-[15px] !shadow-sm !font-semibold">
+                    class="!px-6 !py-2.5 !rounded-[15px] !shadow-sm !font-semibold w-full sm:w-auto">
                     Selesaikan
                     @if ($this->hitung->action == 'Hitung Persediaan')
                         Hitung
@@ -249,28 +251,28 @@
                 @if ($status != 'Selesai')
                     <flux:button icon="pencil-square" type="button" variant="primary"
                         href="{{ route('hitung.mulai', $this->hitung->id) }}"
-                        class="!px-6 !py-2.5 !bg-[#3F4E4F] !rounded-[15px] !shadow-sm !font-semibold" wire:navigate>
+                        class="!px-6 !py-2.5 !bg-[#3F4E4F] !rounded-[15px] !shadow-sm !font-semibold w-full sm:w-auto" wire:navigate>
                         {{ $this->hitung->action }}
                     </flux:button>
                 @endif
             </div>
         </div>
     @elseif (!$is_start && !$is_finish)
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
             <button wire:click="confirmDelete" type="button"
-                class="px-6 py-2.5 bg-[#eb5757] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-semibold cursor-pointer">
+                class="px-6 py-2.5 bg-[#eb5757] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#F8F4E1] font-semibold cursor-pointer w-full sm:w-auto">
                 <flux:icon.trash class="size-5" />
                 Hapus Aksi
             </button>
-            <div class="flex gap-2.5 items-center">
+            <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
                 <a href="{{ route('hitung.edit', $hitung_id) }}"
-                    class="px-6 py-2.5 bg-[#feba17] rounded-[15px] shadow-sm flex items-center gap-2 text-[#F8F4E1] font-bold cursor-pointer"
+                    class="px-6 py-2.5 bg-[#feba17] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#F8F4E1] font-bold cursor-pointer w-full sm:w-auto"
                     wire:navigate>
                     <flux:icon.pencil class="size-5" />
-                    Ubah Daftar Persediaan
+                    Ubah
                 </a>
                 <button wire:click="start" type="button"
-                    class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold cursor-pointer">
+                    class="px-6 py-2.5 bg-[#3F4E4F] rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold cursor-pointer w-full sm:w-auto">
                     <flux:icon.archive-box class="size-5" />
                     Mulai {{ $this->hitung->action }}
                 </button>

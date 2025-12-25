@@ -128,6 +128,11 @@ class Index extends Component
             'products' => $products,
             'statusSummary' => $this->statusSummary,
             'methodSummary' => $this->methodSummary ?? $this->buildMethodSummary(),
+            'tabs' => [
+                ['value' => 'pesanan-reguler', 'label' => 'Pesanan Reguler', 'icon' => 'cake'],
+                ['value' => 'pesanan-kotak', 'label' => 'Pesanan Kotak', 'icon' => 'package-open'],
+                ['value' => 'siap-beli', 'label' => 'Siap Saji', 'icon' => 'dessert'],
+            ],
         ]);
     }
 

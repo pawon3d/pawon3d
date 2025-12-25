@@ -1,21 +1,21 @@
 <div>
-    <div class="mb-6 flex justify-between items-center">
-        <div class="flex gap-4 items-center">
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full md:w-auto">
             <a href="@if ($status == 'Draft') {{ route('belanja.rencana') }}
                  @else
                  {{ route('belanja') }} @endif"
-                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors"
+                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors w-full sm:w-auto"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
-            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Rincian Belanja Persediaan</h1>
+            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666] text-center sm:text-left">Rincian Belanja Persediaan</h1>
         </div>
-        <div class="flex gap-2.5 items-center">
-            <flux:button variant="secondary" wire:click="cetakInformasi">
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full md:w-auto">
+            <flux:button variant="secondary" wire:click="cetakInformasi" class="w-full sm:w-auto">
                 Cetak Informasi
             </flux:button>
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
                 Riwayat Pembaruan
             </flux:button>
         </div>
@@ -24,26 +24,26 @@
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-8 mt-6">
         <!-- Expense Number and Status -->
-        <div class="flex items-center justify-between">
-            <h1 class="font-montserrat font-medium text-[30px] text-[#666666]">{{ $expense->expense_number }}</h1>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h1 class="font-montserrat font-medium text-[24px] sm:text-[30px] text-[#666666]">{{ $expense->expense_number }}</h1>
             @if ($status == 'Draft')
-                <div class="bg-[#adadad] px-5 py-2 rounded-[30px]">
+                <div class="bg-[#adadad] px-5 py-2 rounded-[30px] w-full sm:w-auto text-center">
                     <span class="font-montserrat font-bold text-[16px] text-[#fafafa]">Belum Diproses</span>
                 </div>
             @elseif($status == 'Dimulai')
-                <div class="bg-[#ffc400] px-5 py-2 rounded-[30px]">
+                <div class="bg-[#ffc400] px-5 py-2 rounded-[30px] w-full sm:w-auto text-center">
                     <span class="font-montserrat font-bold text-[16px] text-[#fafafa]">Sedang Diproses</span>
                 </div>
             @elseif($status == 'Selesai')
-                <div class="bg-[#56c568] px-5 py-2 rounded-[30px]">
+                <div class="bg-[#56c568] px-5 py-2 rounded-[30px] w-full sm:w-auto text-center">
                     <span class="font-montserrat font-bold text-[16px] text-[#fafafa]">Selesai</span>
                 </div>
             @endif
         </div>
 
         <!-- Info Section -->
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-9">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-1">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Tanggal Belanja</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">
@@ -57,17 +57,19 @@
                     </p>
                 </div>
             </div>
-            <div class="flex items-center gap-9">
-                <div class="flex flex-col gap-1 items-end">
+            <div class="flex flex-col gap-4 sm:items-end lg:items-center">
+                <div class="flex flex-col gap-1 sm:items-end lg:items-center w-full">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Toko Persediaan</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">{{ $expense->supplier->name }}</p>
                 </div>
-                <div class="flex flex-col gap-1 items-end">
+                <div class="flex flex-col gap-1 sm:items-end lg:items-center w-full">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Kontak Toko</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">
                         {{ $expense->supplier->phone ?? '-' }}</p>
                 </div>
-                <div class="flex flex-col gap-1 items-end">
+            </div>
+            <div class="flex flex-col gap-4 sm:col-span-2 lg:col-span-1 lg:items-end">
+                <div class="flex flex-col gap-1 lg:items-end w-full">
                     <p class="font-montserrat font-medium text-[16px] text-[#666666]">Inventaris</p>
                     <p class="font-montserrat font-normal text-[16px] text-[#666666]">{{ $logName }}</p>
                 </div>
@@ -91,10 +93,10 @@
 
         <!-- Rencana Belanja Section -->
         <div class="flex flex-col gap-5">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <p class="font-montserrat font-medium text-[18px] text-[#666666]">Rencana Belanja</p>
                 @if (!$is_start)
-                    <flux:button type="button" wire:click="editRencanaBelanja" variant="secondary" icon="pencil">
+                    <flux:button type="button" wire:click="editRencanaBelanja" variant="secondary" icon="pencil" class="w-full sm:w-auto">
                         Buat Catatan
                     </flux:button>
                 @endif
@@ -109,17 +111,17 @@
 
 
     <div
-        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-5 mt-12">
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-5 mt-12 overflow-x-auto">
         <p class="font-montserrat font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</p>
         <x-table.form :headers="[
-            ['label' => 'Barang Persediaan', 'class' => 'text-left px-6 py-5'],
-            ['label' => 'Rencana Belanja', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Jumlah Didapatkan', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-6 py-5'],
-            ['label' => 'Harga Satuan (Perkiraan)', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Harga Satuan (Sebenarnya)', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Total Harga (Perkiraan)', 'class' => 'text-right px-6 py-5'],
-            ['label' => 'Total Harga (Sebenarnya)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Barang Persediaan', 'class' => 'text-left px-6 py-5 min-w-[200px]'],
+            ['label' => 'Rencana', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Dapat', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Satuan', 'class' => 'text-left px-6 py-5'],
+            ['label' => 'Harga (Kira)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Harga (Asli)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Total (Kira)', 'class' => 'text-right px-6 py-5'],
+            ['label' => 'Total (Asli)', 'class' => 'text-right px-6 py-5'],
         ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
             body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
             empty-message="Belum ada data belanja.">
@@ -172,9 +174,13 @@
 
             <x-slot:footer>
                 <tr class="h-[60px]">
-                    <td class="px-6 py-0 rounded-bl-[15px]" colspan="6">
+                    <td class="px-6 py-0 rounded-bl-[15px]" colspan="2">
                         <span class="font-montserrat font-bold text-[14px] text-[#666666]">Total</span>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td class="px-6 py-0 text-right">
                         <span class="font-montserrat font-bold text-[14px] text-[#666666]">
                             Rp{{ number_format($expense->grand_total_expect, 0, ',', '.') }}
@@ -191,32 +197,32 @@
     </div>
 
     @if ($is_start && !$is_finish)
-        <div class="flex justify-end mt-16 gap-2.5">
-            <flux:button icon="check-circle" type="button" variant="outline" wire:click="finish">
+        <div class="flex flex-col sm:flex-row justify-end mt-16 gap-2.5">
+            <flux:button icon="check-circle" type="button" variant="outline" wire:click="finish" class="w-full sm:w-auto">
                 Selesaikan Belanja
             </flux:button>
             @if ($status != 'Lengkap')
                 <flux:button icon="shopping-cart" type="button" variant="secondary"
-                    href="{{ route('belanja.dapatkan-belanja', $expense->id) }}">
+                    href="{{ route('belanja.dapatkan-belanja', $expense->id) }}" class="w-full sm:w-auto">
                     Dapatkan Belanja
                 </flux:button>
             @endif
         </div>
     @elseif (!$is_start && !$is_finish)
-        <div class="flex justify-between mt-16">
+        <div class="flex flex-col sm:flex-row justify-between mt-16 gap-4">
             <button type="button" wire:click="confirmDelete"
-                class="bg-[#eb5757] hover:bg-[#d84545] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
+                class="bg-[#eb5757] hover:bg-[#d84545] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors cursor-pointer w-full sm:w-auto">
                 <flux:icon.trash variant="mini" class="size-5" />
                 <span class="font-montserrat font-semibold text-[16px]">Hapus Belanja</span>
             </button>
-            <div class="flex gap-2.5">
+            <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
                 <button type="button" onclick="window.location.href='{{ route('belanja.edit', $expense->id) }}'"
-                    class="bg-[#feba17] hover:bg-[#e5a615] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
+                    class="bg-[#feba17] hover:bg-[#e5a615] text-[#f8f4e1] px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors cursor-pointer w-full sm:w-auto">
                     <flux:icon.pencil variant="mini" class="size-5" />
                     <span class="font-montserrat font-bold text-[16px]">Ubah Daftar Belanja</span>
                 </button>
                 <button type="button" wire:click="start"
-                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors cursor-pointer">
+                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors cursor-pointer w-full sm:w-auto">
                     <flux:icon.shopping-cart variant="mini" class="size-5" />
                     <span class="font-montserrat font-semibold text-[16px]">Mulai Belanja</span>
                 </button>

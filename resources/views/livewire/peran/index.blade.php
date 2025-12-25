@@ -1,15 +1,7 @@
 <div>
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 class="text-xl font-semibold text-[#666666]">Daftar Peran</h1>
-        {{-- <div class="flex gap-2.5">
-            <flux:button variant="secondary" wire:click="cetakInformasi">
-                Cetak Informasi
-            </flux:button>
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
-                Riwayat Pembaruan
-            </flux:button>
-        </div> --}}
     </div>
 
     <!-- Info Box -->
@@ -21,19 +13,19 @@
     <!-- Main Content Card -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
         <!-- Search and Add Button -->
-        <div class="flex justify-between items-center mb-5">
-            <div class="flex items-center gap-4 flex-1">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 flex-1 w-full">
                 <div
-                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full max-w-[545px]">
+                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full lg:max-w-[545px]">
                     <svg class="w-[30px] h-[30px] text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                             clip-rule="evenodd" />
                     </svg>
                     <input wire:model.live.debounce.300ms="search" placeholder="Cari Peran"
-                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none" />
+                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none bg-transparent" />
                 </div>
-                <button class="flex items-center gap-2 text-[#666666] font-medium text-base">
+                <button class="flex items-center gap-2 text-[#666666] font-medium text-base w-full sm:w-auto justify-center">
                     <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
@@ -42,7 +34,7 @@
                     Filter
                 </button>
             </div>
-            <flux:button variant="primary" icon="plus" href="{{ route('role.tambah') }}" wire:navigate>
+            <flux:button variant="primary" icon="plus" href="{{ route('role.tambah') }}" wire:navigate class="w-full sm:w-auto">
                 Tambah Peran
             </flux:button>
         </div>
@@ -51,7 +43,7 @@
         <x-table.paginated :headers="[
             ['label' => 'Peran', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Akses', 'sortable' => false],
-            ['label' => 'Jumlah Pekerja', 'sortable' => true, 'sort-by' => 'users_count', 'align' => 'right'],
+            ['label' => 'Jumlah', 'sortable' => true, 'sort-by' => 'users_count', 'align' => 'right'],
         ]" :paginator="$roles" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
             bodyText="#666666" emptyMessage="Tidak ada data peran.">
             @foreach ($roles as $role)

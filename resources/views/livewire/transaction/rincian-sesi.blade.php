@@ -1,27 +1,31 @@
-<div class="flex flex-col gap-[30px] px-[30px] py-[30px]">
+<div class="flex flex-col gap-[30px] px-4 sm:px-[30px] py-4 sm:py-[30px]">
     {{-- Header with Back Button, Session Info, and View Details Button --}}
-    <div class="flex items-center justify-between h-[40px]">
-        <div class="flex items-center gap-[15px]">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[15px] w-full sm:w-auto">
             {{-- Back Button --}}
             <flux:button variant="secondary" href="{{ route('transaksi.riwayat-sesi') }}" wire:navigate
-                class="flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                class="w-full sm:w-auto flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
                 <flux:icon.arrow-left class="w-[20px] h-[20px] text-[#f8f4e1]" />
                 <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f8f4e1] leading-[1]">Kembali</span>
             </flux:button>
 
             {{-- Session Info --}}
-            <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
-                Sesi {{ $shift->shift_number }}
-            </p>
-            <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1]">:</p>
-            <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
-                {{ $shift->openedBy->name }}
-            </p>
+            <div class="flex flex-col sm:flex-row items-center gap-2 justify-center">
+                <div class="flex items-center gap-2">
+                    <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
+                        Sesi {{ $shift->shift_number }}
+                    </p>
+                    <p class="hidden sm:block font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1]">:</p>
+                </div>
+                <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
+                    {{ $shift->openedBy->name }}
+                </p>
+            </div>
         </div>
 
         {{-- View Details Button --}}
         <button wire:click="$dispatch('openDetailShiftModal', { shiftId: '{{ $shift->id }}' })"
-            class="flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+            class="w-full sm:w-auto flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
             <flux:icon.cashier class="w-[20px] h-[20px] text-white" />
             <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6] leading-[1]">Lihat Rincian
                 Sesi</span>
@@ -29,19 +33,19 @@
     </div>
 
     {{-- Main Content Card --}}
-    <div class="bg-[#fafafa] rounded-[15px] px-[30px] py-[25px] flex flex-col gap-[30px]">
+    <div class="bg-[#fafafa] rounded-[15px] p-4 sm:px-[30px] sm:py-[25px] flex flex-col gap-[30px]">
         {{-- Search and Filter --}}
-        <div class="flex items-center gap-[30px]">
-            <div class="flex-1 flex items-center gap-[15px]">
+        <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[30px]">
+            <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 sm:gap-[15px] w-full">
                 {{-- Search Input --}}
-                <div class="flex-1 flex items-center gap-0 bg-white border border-[#666666] rounded-[20px] px-[15px]">
+                <div class="flex-1 flex items-center gap-0 bg-white border border-[#666666] rounded-[20px] px-[15px] w-full">
                     <flux:icon.magnifying-glass class="w-[30px] h-[30px] text-[#666666]" />
                     <input type="text" wire:model.live="search" placeholder="Cari Struk"
-                        class="flex-1 px-[10px] py-[10px] font-['Montserrat'] font-medium text-[16px] text-[#666666] placeholder-[#959595] border-0 focus:ring-0 focus:outline-none leading-[1]">
+                        class="flex-1 w-full px-[10px] py-[10px] font-['Montserrat'] font-medium text-[16px] text-[#666666] placeholder-[#959595] border-0 focus:ring-0 focus:outline-none leading-[1]">
                 </div>
 
                 {{-- Filter Button --}}
-                <div class="flex items-center gap-0">
+                <div class="flex items-center gap-0 justify-center">
                     <flux:icon.funnel class="w-[25px] h-[25px] text-[#666666]" />
                     <button class="px-[5px] py-[10px]">
                         <span
@@ -52,16 +56,18 @@
         </div>
 
         {{-- Table --}}
-        <x-table.paginated :headers="[
-            ['label' => 'ID Struk', 'sortable' => true, 'sort-by' => 'receipt_number', 'class' => 'w-[160px]'],
-            ['label' => 'ID Transaksi', 'sortable' => true, 'sort-by' => 'invoice_number', 'class' => 'w-[180px]'],
-            ['label' => 'Jenis Penjualan', 'sortable' => true, 'sort-by' => 'method', 'class' => 'w-[180px]'],
-            ['label' => 'Pembeli', 'sortable' => true, 'sort-by' => 'name', 'class' => 'w-[180px]'],
-            ['label' => 'Status Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
-            ['label' => 'Tanggal Cetak', 'sortable' => true, 'sort-by' => 'created_at', 'class' => 'w-[190px]'],
-        ]" :paginator="$transactions" emptyMessage="Tidak ada data transaksi."
-            headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
-            wrapperClass="rounded-[15px] border border-[#d4d4d4]">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :headers="[
+                    ['label' => 'ID Struk', 'sortable' => true, 'sort-by' => 'receipt_number', 'class' => 'w-[160px]'],
+                    ['label' => 'ID Transaksi', 'sortable' => true, 'sort-by' => 'invoice_number', 'class' => 'w-[180px]'],
+                    ['label' => 'Jenis Penjualan', 'sortable' => true, 'sort-by' => 'method', 'class' => 'w-[180px]'],
+                    ['label' => 'Pembeli', 'sortable' => true, 'sort-by' => 'name', 'class' => 'w-[180px]'],
+                    ['label' => 'Status Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
+                    ['label' => 'Tanggal Cetak', 'sortable' => true, 'sort-by' => 'created_at', 'class' => 'w-[190px]'],
+                ]" :paginator="$transactions" emptyMessage="Tidak ada data transaksi."
+                    headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                    wrapperClass="rounded-[15px] border border-[#d4d4d4]">
             @foreach ($transactions as $transaction)
                 <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
                     {{-- ID Struk --}}
@@ -128,13 +134,13 @@
                     <td class="px-6 py-4">
                         @if ($transaction->payment_status == 'Lunas')
                             <div
-                                class="bg-[#56c568] rounded-[15px] px-[15px] py-[5px] min-w-[90px] inline-flex items-center justify-center">
+                                class="bg-[#56c568] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <span class="font-bold text-[12px] text-[#fafafa]"
                                     style="font-family: 'Montserrat', sans-serif;">Lunas</span>
                             </div>
                         @elseif ($transaction->payment_status == 'Belum Lunas')
                             <div
-                                class="bg-[#ffc400] rounded-[15px] px-[15px] py-[5px] min-w-[90px] inline-flex items-center justify-center">
+                                class="bg-[#ffc400] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <span class="font-bold text-[12px] text-[#fafafa] leading-[1.2]"
                                         style="font-family: 'Montserrat', sans-serif;">Belum</span>
@@ -144,7 +150,7 @@
                             </div>
                         @elseif ($transaction->payment_status == 'Refund')
                             <div
-                                class="bg-[#ff4d4d] rounded-[15px] px-[15px] py-[5px] min-w-[90px] inline-flex items-center justify-center">
+                                class="bg-[#ff4d4d] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <span class="font-bold text-[12px] text-[#fafafa]"
                                     style="font-family: 'Montserrat', sans-serif;">Refund</span>
                             </div>
@@ -166,7 +172,9 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
+                </x-table.paginated>
+            </div>
+        </div>
     </div>
 
     {{-- Modal Struk --}}

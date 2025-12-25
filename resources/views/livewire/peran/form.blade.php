@@ -1,9 +1,9 @@
 <div>
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('role') }}"
-                class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
                 wire:navigate>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -154,7 +154,7 @@
                     </div>
 
                     <!-- Table -->
-                    <div class="overflow-hidden rounded-[15px]">
+                    <div class="overflow-x-auto rounded-[15px] border border-[#e4e4e4]">
                         <table class="min-w-full">
                             <thead>
                                 <tr class="bg-[#3F4E4F]">
@@ -210,12 +210,12 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex items-center justify-between mt-8">
+    <div class="flex flex-col sm:flex-row items-center justify-between mt-8 gap-4">
         <!-- Delete Button (Only in Edit Mode) -->
-        <div>
+        <div class="w-full sm:w-auto">
             @if ($this->isEditMode())
                 <button type="button" wire:click="confirmDelete"
-                    class="bg-[#eb5757] hover:bg-[#d64545] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
+                    class="w-full sm:w-auto bg-[#eb5757] hover:bg-[#d64545] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                         <path
                             d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" />
@@ -226,14 +226,14 @@
         </div>
 
         <!-- Save Button -->
-        <div class="flex gap-2.5">
+        <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto mb-8">
             <button type="button" wire:click="save"
-                class="bg-[#3F4E4F] hover:bg-[#2f3c3d] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
+                class="w-full sm:w-auto bg-[#3F4E4F] hover:bg-[#2f3c3d] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                     <path
                         d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
                 </svg>
-                {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
+                {{ $this->isEditMode() ? 'Simpan Pembaruan' : 'Simpan' }}
             </button>
         </div>
     </div>

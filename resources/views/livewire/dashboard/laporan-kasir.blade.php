@@ -557,12 +557,12 @@
                 @foreach ($productSalesPaginator as $item)
                     <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
                         <td class="py-3 px-4 text-left text-[#333333]">{{ $item->name }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">
+                        <td class="py-3 px-4 text-center text-[#333333]">
                             {{ number_format($item->produksi, 0, ',', '.') }}
                         </td>
                         <td class="py-3 px-4 text-center text-[#333333]">{{ number_format($item->sold, 0, ',', '.') }}
                         </td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">
+                        <td class="py-3 px-4 text-center text-[#333333]">
                             {{ number_format($item->unsold, 0, ',', '.') }}
                         </td>
                     </tr>
@@ -796,15 +796,15 @@
                 @foreach ($monthlyReportsPaginator as $item)
                     <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
                         <td class="py-3 px-4 text-left text-[#333333]">{{ $item->waktu }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
+                        <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->pendapatanKotor, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
+                        <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->refund, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
+                        <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->potonganHarga, 0, ',', '.') }}</td>
                         <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->pendapatanBersih, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4 text-center text-[#333333] hidden md:table-cell">Rp
+                        <td class="py-3 px-4 text-center text-[#333333]">Rp
                             {{ number_format($item->modal, 0, ',', '.') }}</td>
                         <td
                             class="py-3 px-4 text-center {{ $item->keuntungan >= 0 ? 'text-green-600' : 'text-red-600' }}">

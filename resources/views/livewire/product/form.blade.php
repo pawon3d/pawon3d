@@ -37,19 +37,19 @@
         }
     </style>
 
-    <div class="mb-4 flex items-center justify-between">
-        <div class="flex items-center">
+    <div class="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center w-full sm:w-auto">
             <a href="{{ route('produk') }}"
                 class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white"
                 wire:navigate>
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
-            <h1 class="text-2xl hidden md:block">{{ $product_id ? 'Rincian' : 'Tambah' }} Produk</h1>
+            <h1 class="text-xl md:text-2xl">{{ $product_id ? 'Rincian' : 'Tambah' }} Produk</h1>
         </div>
         @if ($product_id)
-            <div class="flex gap-2 items-center">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan">Riwayat Pembaruan</flux:button>
+            <div class="flex gap-2 items-center w-full sm:w-auto justify-end">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">Riwayat Pembaruan</flux:button>
             </div>
         @endif
     </div>
@@ -68,7 +68,7 @@
                     Pilih gambar produk yang ingin diunggah.
                 </p>
 
-                <div class="flex flex-col items-center w-full max-w-[300px] space-y-5">
+                <div class="flex flex-col items-center sm:items-start w-full max-w-[300px] space-y-5">
                     <!-- Dropzone Area -->
                     <div class="relative w-full h-[170px] border-2 border-dashed border-black rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200 overflow-hidden"
                         wire:ignore
@@ -113,17 +113,19 @@
                         Pilih Gambar
                     </button>
 
-                    <!-- Error Message -->
-                    @error('product_image')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
-                    @enderror
+                    <!-- Message Bag -->
+                    <div class="w-full space-y-2">
+                        @error('product_image')
+                            <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                                {{ $message }}
+                            </div>
+                        @enderror
 
-                    <!-- Loading Indicator -->
-                    <div wire:loading wire:target="product_image"
-                        class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
-                        Mengupload gambar...
+                        <!-- Loading Indicator -->
+                        <div wire:loading wire:target="product_image"
+                            class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
+                            Mengupload gambar...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,9 +166,9 @@
         </div>
     </div>
 
-    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
         <div class="w-full flex flex-col gap-4">
-            <div class="flex items-center justify-between pb-4 border-b border-dashed border-slate-200">
+            <div class="flex items-center justify-between gap-2 pb-4 border-b border-dashed border-slate-200">
                 <div class="flex-1">
                     <h3 class="text-lg font-medium text-[#666666]">Resep Produk</h3>
                     <p class="mt-2 text-sm font-normal text-[#666666] text-justify leading-relaxed">
@@ -180,16 +182,84 @@
 
             @if ($is_recipe)
                 {{-- Recipe Mode: Product Compositions --}}
-                <div class="flex justify-end gap-4">
-                    {{-- <flux:button type="button" wire:click="showUnit" variant="primary" icon="shapes">
-                        Satuan Ukur
-                    </flux:button> --}}
-                    <flux:button type="button" wire:click="addComposition" variant="primary" icon="plus">
+                <div class="flex flex-col sm:flex-row justify-end gap-4">
+                    <flux:button type="button" wire:click="addComposition" variant="primary" icon="plus" class="w-full sm:w-auto">
                         Tambah Bahan Baku
                     </flux:button>
                 </div>
 
-                <div class="w-full overflow-x-auto rounded-2xl shadow-sm">
+                {{-- Mobile View: Cards --}}
+                <div class="block md:hidden space-y-4">
+                    @foreach ($product_compositions as $index => $composition)
+                        @php
+                            $material = $recipeMaterials->firstWhere('id', $composition['material_id']);
+                            $units = $material?->material_details->map(fn($detail) => $detail->unit)->filter();
+                        @endphp
+                        <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold text-[#666666] mb-1">Bahan Baku</label>
+                                    <select
+                                        wire:model.live="product_compositions.{{ $index }}.material_id"
+                                        wire:change="setMaterial({{ $index }}, $event.target.value)"
+                                        class="w-full bg-transparent border-0 border-b border-[#D4D4D4] focus:border-[#74512D] focus:outline-none focus:ring-0 text-[#666666] font-medium appearance-none pr-8">
+                                        <option value="">- Pilih Bahan Baku -</option>
+                                        @foreach ($recipeMaterials as $mat)
+                                            <option value="{{ $mat->id }}">{{ $mat->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button type="button"
+                                    wire:click.prevent="removeComposition({{ $index }})"
+                                    class="ml-2 inline-flex items-center justify-center w-8 h-8 text-[#666666] hover:text-red-600 transition-colors">
+                                    <svg class="w-4 h-5" fill="currentColor" viewBox="0 0 12 16">
+                                        <path d="M11 2H8.5L7.5 1H4.5L3.5 2H1V4H11V2ZM2 14C2 15.1 2.9 16 4 16H8C9.1 16 10 15.1 10 14V5H2V14Z" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-[#666666] mb-1">Jumlah</label>
+                                    <input type="number" min="0" step="0.01"
+                                        wire:model.live="product_compositions.{{ $index }}.material_quantity"
+                                        placeholder="0"
+                                        class="w-full px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-[#666666] mb-1">Satuan</label>
+                                    <select wire:model.live="product_compositions.{{ $index }}.unit_id"
+                                        wire:change="setUnit({{ $index }}, $event.target.value)"
+                                        class="w-full bg-transparent border-0 border-b border-[#D4D4D4] focus:border-[#74512D] focus:outline-none focus:ring-0 text-[#666666] font-medium appearance-none pr-8">
+                                        <option value="">- Pilih Satuan -</option>
+                                        @if ($units)
+                                            @foreach ($units as $unit)
+                                                <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->alias }})</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center pt-2 border-t border-dashed border-[#D4D4D4]">
+                                <span class="text-sm font-bold text-[#666666]">Jumlah Harga</span>
+                                <span class="text-sm font-bold text-[#666666]">
+                                    Rp{{ number_format(($composition['material_price'] ?? 0) * ($composition['material_quantity'] ?? 0), 0, ',', '.') }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <div class="p-4 bg-[#EAEAEA] rounded-xl border border-[#D4D4D4] flex justify-between items-center">
+                        <span class="font-bold text-sm text-[#666666]">Total Harga Bahan Baku</span>
+                        <span class="font-bold text-sm text-[#666666]">
+                            Rp{{ number_format(collect($product_compositions)->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0)), 0, ',', '.') }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Desktop View: Table --}}
+                <div class="hidden md:block w-full overflow-x-auto rounded-2xl shadow-sm">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="bg-[#3F4E4F] h-[60px]">
@@ -300,7 +370,48 @@
                                 expired, kuning
                                 hampir expired, hijau belum expired).
                             </p>
-                            <div class="w-full overflow-x-auto rounded-2xl shadow-sm">
+                            
+                            {{-- Mobile View: Batch Cards --}}
+                            <div class="block md:hidden space-y-4">
+                                @forelse ($soloInventory['batches'] as $batch)
+                                    <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-3">
+                                        <div class="flex justify-between items-center pb-2 border-b border-dashed border-[#D4D4D4]">
+                                            <span class="text-xs font-bold text-[#666666]">Batch</span>
+                                            <span class="text-sm font-medium text-[#666666]">{{ $batch['number'] }}</span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-[#ADADAD] uppercase tracking-wider mb-1">Jumlah</label>
+                                                <span class="text-sm font-medium text-[#666666]">{{ $batch['quantity'] }} {{ $batch['unit_alias'] }}</span>
+                                            </div>
+                                            <div class="text-right">
+                                                <label class="block text-[10px] font-bold text-[#ADADAD] uppercase tracking-wider mb-1">Jumlah (Utama)</label>
+                                                <span class="text-sm font-medium text-[#666666]">{{ $batch['main_quantity'] }} {{ $soloInventory['main_unit_alias'] }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-1">
+                                            <span class="text-xs font-bold text-[#666666]">Tanggal Expired</span>
+                                            <span class="text-sm font-medium text-[#666666]">{{ \Carbon\Carbon::parse($batch['date'])->format('d  M  Y') }}</span>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] text-center">
+                                        <p class="text-sm font-medium text-[#959595]">Tidak ada data batch</p>
+                                    </div>
+                                @endforelse
+
+                                @if ($soloInventory['batches']->isNotEmpty())
+                                    <div class="p-4 bg-[#EAEAEA] rounded-xl border border-[#D4D4D4] flex justify-between items-center">
+                                        <span class="font-bold text-sm text-[#666666]">Total</span>
+                                        <span class="font-bold text-sm text-[#666666]">
+                                            {{ $soloInventory['total_main'] }} {{ $soloInventory['main_unit_alias'] }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Desktop View: Table --}}
+                            <div class="hidden md:block w-full overflow-x-auto rounded-2xl shadow-sm">
                                 <table class="w-full text-sm">
                                     <thead>
                                         <tr class="bg-[#3F4E4F] h-[60px]">
@@ -332,7 +443,7 @@
                                             <tr>
                                                 <td colspan="4"
                                                     class="px-6 py-4 text-center text-[#959595] font-medium">Tidak ada
-                                                    data batch</td>
+                                                     data batch</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -358,9 +469,9 @@
     </div>
 
     @if ($is_recipe)
-        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
             <div class="w-full flex flex-col gap-4">
-                <div class="flex items-center justify-between pb-4 border-b border-dashed border-slate-200">
+                <div class="flex items-center justify-between gap-2 pb-4 border-b border-dashed border-slate-200">
                     <div class="flex-1">
                         <h3 class="text-lg font-medium text-[#666666]">Biaya Produksi</h3>
                         <p class="mt-2 text-sm font-normal text-[#666666] text-justify leading-relaxed">
@@ -374,17 +485,62 @@
                 </div>
 
                 @if ($is_other)
-                    <div class="flex justify-end gap-4">
+                    <div class="flex flex-col sm:flex-row justify-end gap-4">
                         <flux:button variant="primary" icon="bolt" href="{{ route('jenis-biaya') }}"
-                            wire:navigate>
+                            wire:navigate class="w-full sm:w-auto">
                             Jenis Biaya Produksi
                         </flux:button>
-                        <flux:button type="button" wire:click="addOther" variant="primary" icon="plus">
+                        <flux:button type="button" wire:click="addOther" variant="primary" icon="plus" class="w-full sm:w-auto">
                             Tambah Biaya Produksi
                         </flux:button>
                     </div>
 
-                    <div class="w-full overflow-x-auto rounded-2xl shadow-sm">
+                    {{-- Mobile View: Cost Cards --}}
+                    <div class="block md:hidden space-y-4">
+                        @foreach ($other_costs as $index => $other)
+                            <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-bold text-[#666666] mb-1">Jenis Biaya</label>
+                                        <select
+                                            wire:model.defer="other_costs.{{ $index }}.type_cost_id"
+                                            class="w-full bg-transparent border-0 border-b border-[#D4D4D4] focus:border-[#74512D] focus:outline-none focus:ring-0 text-[#666666] font-medium appearance-none pr-8">
+                                            <option value="">- Pilih Jenis Biaya -</option>
+                                            @foreach ($typeCosts as $typeCost)
+                                                <option value="{{ $typeCost->id }}">{{ $typeCost->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="button"
+                                        wire:click.prevent="removeOther({{ $index }})"
+                                        class="ml-2 inline-flex items-center justify-center w-8 h-8 text-[#666666] hover:text-red-600 transition-colors">
+                                        <svg class="w-4 h-5" fill="currentColor" viewBox="0 0 12 16">
+                                            <path d="M11 2H8.5L7.5 1H4.5L3.5 2H1V4H11V2ZM2 14C2 15.1 2.9 16 4 16H8C9.1 16 10 15.1 10 14V5H2V14Z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                                    <label class="text-sm font-bold text-[#666666]">Jumlah Harga</label>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-bold text-[#666666]">Rp</span>
+                                        <input type="number" min="0" wire:model.live="other_costs.{{ $index }}.price"
+                                            placeholder="0"
+                                            class="w-full sm:w-[150px] px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <div class="p-4 bg-[#EAEAEA] rounded-xl border border-[#D4D4D4] flex justify-between items-center">
+                            <span class="font-bold text-sm text-[#666666]">Total Biaya Produksi</span>
+                            <span class="font-bold text-sm text-[#666666]">
+                                Rp{{ number_format(collect($other_costs)->sum('price'), 0, ',', '.') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Desktop View: Table --}}
+                    <div class="hidden md:block w-full overflow-x-auto rounded-2xl shadow-sm">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="bg-[#3F4E4F] h-[60px]">
@@ -447,7 +603,7 @@
             </div>
         </div>
 
-        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
             <div class="w-full flex flex-col gap-4">
                 <h3 class="text-lg font-medium text-[#666666]">Jumlah Produk yang Dihasilkan dari Satu Resep</h3>
                 <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
@@ -460,14 +616,45 @@
             </div>
         </div>
 
-        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
             <div class="w-full flex flex-col gap-4">
                 <h3 class="text-lg font-medium text-[#666666]">Expired Produk</h3>
                 <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
                     Masukkan expired produk pasca produksi baik ketika disimpan di suhu ruangan (20–25°C),
                     dingin (4–8°C), dan beku (-18°C atau lebih rendah).
                 </p>
-                <div class="w-full overflow-x-auto rounded-2xl shadow-sm">
+                {{-- Mobile View: Expiry Cards --}}
+                <div class="block md:hidden space-y-4">
+                    <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-[#666666]">Suhu Ruangan <span class="font-normal text-xs">(20–25°C)</span></span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" wire:model.defer="suhu_ruangan" placeholder="0"
+                                    class="w-20 px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                <span class="text-xs font-bold text-[#666666]">Hari</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-dashed border-[#D4D4D4]">
+                            <span class="text-sm font-medium text-[#666666]">Suhu Dingin <span class="font-normal text-xs">(4–8°C)</span></span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" wire:model.defer="suhu_dingin" placeholder="0"
+                                    class="w-20 px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                <span class="text-xs font-bold text-[#666666]">Hari</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-dashed border-[#D4D4D4]">
+                            <span class="text-sm font-medium text-[#666666]">Suhu Beku <span class="font-normal text-xs">(-18°C+)</span></span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="0" wire:model.defer="suhu_beku" placeholder="0"
+                                    class="w-20 px-2.5 py-1.5 bg-[#FAFAFA] border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D]" />
+                                <span class="text-xs font-bold text-[#666666]">Hari</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Desktop View: Table --}}
+                <div class="hidden md:block w-full overflow-x-auto rounded-2xl shadow-sm">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="bg-[#3F4E4F] h-[60px]">
@@ -510,7 +697,7 @@
         </div>
     @endif
 
-    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
         <div class="w-full flex md:flex-row flex-col gap-8">
             {{-- Modal Section - Left --}}
             <div class="md:w-1/2 flex flex-col gap-4">
@@ -520,8 +707,38 @@
                     jual
                     yang sesuai.
                 </p>
-                <div class="w-full overflow-x-auto">
-                    <table class="w-full text-sm">
+                <div class="w-full">
+                    {{-- Mobile View: Pricing --}}
+                    <div class="block md:hidden space-y-4">
+                        <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-4">
+                            @if ($pcs > 1)
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                                    <span class="text-sm font-medium text-[#666666]">Modal per Resep</span>
+                                    <span class="text-sm font-bold text-[#666666]">Rp{{ number_format($capital, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 pt-2 border-t border-dashed border-[#D4D4D4]">
+                                    <span class="text-sm font-medium text-[#666666]">Modal per PCS</span>
+                                    <span class="text-sm font-bold text-[#666666]">Rp{{ number_format($pcs_capital, 0, ',', '.') }}</span>
+                                </div>
+                            @else
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                                    <span class="text-sm font-medium text-[#666666]">Total Modal</span>
+                                    <span class="text-sm font-bold text-[#666666]">Rp{{ number_format($capital, 0, ',', '.') }}</span>
+                                </div>
+                            @endif
+                            <div class="pt-4 border-t border-dashed border-[#D4D4D4] space-y-2">
+                                <label class="block text-sm font-medium text-[#666666]">Harga Jual</label>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold text-[#666666]">Rp</span>
+                                    <input type="number" min="0" wire:model.live="price" placeholder="0"
+                                        class="w-full px-4 py-2 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-xl text-right text-base font-medium text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Desktop View: Table --}}
+                    <table class="hidden md:table w-full text-sm">
                         <tbody class="bg-[#FAFAFA]">
                             @if ($pcs > 1)
                                 <tr class="h-[60px]">
@@ -574,9 +791,9 @@
         </div>
     </div>
 
-    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
-        <div class="w-full flex flex-wrap gap-8 items-center justify-between">
-            <div class="flex-1 min-w-[300px] max-w-[445px] flex flex-col gap-4">
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-6 sm:p-8">
+        <div class="w-full flex flex-col lg:flex-row gap-8 lg:items-center justify-between">
+            <div class="w-full lg:flex-1 flex flex-col gap-4">
                 <div class="flex items-center justify-between gap-4">
                     <h3 class="text-lg font-medium text-[#666666]">Tampilan Produk</h3>
                     <flux:switch wire:model.live="is_active" class="data-checked:bg-green-500"
@@ -586,7 +803,7 @@
                     Aktifkan opsi ini jika produk ingin ditampilkan dan dapat dijual.
                 </p>
             </div>
-            <div class="flex-1 min-w-[300px] max-w-[445px] flex flex-col gap-4">
+            <div class="w-full lg:flex-1 flex flex-col gap-4">
                 <div class="flex items-center justify-between gap-4">
                     <h3 class="text-lg font-medium text-[#666666]">Rekomendasikan Produk</h3>
                     <flux:switch wire:model.live="is_recommended" class="data-checked:bg-green-500"
@@ -599,19 +816,19 @@
         </div>
     </div>
 
-    <div class="flex justify-between flex-row items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pb-8">
         @if ($product_id)
-            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()">
+            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
                 Hapus Produk
             </flux:button>
         @else
-            <div></div>
+            <div class="hidden sm:block"></div>
         @endif
-        <div class="flex justify-end gap-4 mt-8">
-            <flux:button variant="filled" icon="x-mark" href="{{ route('produk') }}" wire:navigate>
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <flux:button variant="filled" icon="x-mark" href="{{ route('produk') }}" wire:navigate class="w-full sm:w-auto">
                 Batal
             </flux:button>
-            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save">
+            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save" class="w-full sm:w-auto">
                 {{ $product_id ? 'Perbarui' : 'Simpan' }}
             </flux:button>
         </div>

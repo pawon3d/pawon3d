@@ -1,9 +1,10 @@
 <div>
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center gap-4">
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6 gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('customer') }}" wire:navigate
-                class="bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors"
                 wire:navigate>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -81,14 +82,14 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <button type="button" wire:click="confirmDelete"
-                    class="bg-[#eb5757] hover:bg-red-600 px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
+                    class="w-full sm:w-auto bg-[#eb5757] hover:bg-red-600 px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f8f4e1] font-semibold text-base transition-colors cursor-pointer">
                     <flux:icon icon="trash" class="size-5" />
                     Hapus Pelanggan
                 </button>
                 <button type="button" wire:click="update"
-                    class="bg-[#3f4e4f] hover:bg-[#2f3e3f] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors cursor-pointer">
+                    class="w-full sm:w-auto bg-[#3f4e4f] hover:bg-[#2f3e3f] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#f6f6f6] font-semibold text-base transition-colors cursor-pointer">
                     <flux:icon icon="save" class="size-5" />
                     Simpan Perubahan
                 </button>
@@ -99,10 +100,10 @@
         <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
             <div class="flex flex-col gap-[15px]">
                 <!-- Header -->
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     <span class="text-base font-medium text-[#666666]">Riwayat Poin</span>
                     <button type="button" wire:click="showModalTambahPoin"
-                        class="bg-[#74512d] hover:bg-[#5d4024] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center gap-2 text-[#fafafa] font-semibold text-base transition-colors cursor-pointer">
+                        class="w-full sm:w-auto bg-[#74512d] hover:bg-[#5d4024] px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 text-[#fafafa] font-semibold text-base transition-colors cursor-pointer">
                         <flux:icon icon="plus" class="size-4" />
                         Tambah Poin
                     </button>
@@ -153,7 +154,7 @@
                         transaksi terkait.</p>
                 </div>
 
-                <div class="max-h-[60vh] overflow-y-auto">
+                <div class="max-h-[60vh] overflow-y-auto overflow-x-auto">
                     <div class="mb-4 flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600">Total Bayar:
@@ -189,7 +190,7 @@
                                         <td class="px-4 py-3">
                                             {{ ucfirst($payment->payment_method ?? ($payment->payment_group ?? '-')) }}
                                         </td>
-                                        <td class="px-4 py-3 text-right">
+                                        <td class="px-4 py-3 text-right font-medium">
                                             Rp{{ number_format($payment->paid_amount, 0, ',', '.') }}</td>
                                         <td class="px-4 py-3">{{ $payment->channel?->bank_name ?? '-' }}</td>
                                         <td class="px-4 py-3">
@@ -231,7 +232,7 @@
                                             <td class="px-4 py-3">{{ $refund->transaction->invoice_number ?? '-' }}
                                             </td>
                                             <td class="px-4 py-3">{{ ucfirst($refund->refund_method ?? '-') }}</td>
-                                            <td class="px-4 py-3 text-right text-red-600">
+                                            <td class="px-4 py-3 text-right text-red-600 font-medium">
                                                 -Rp{{ number_format($refund->total_amount, 0, ',', '.') }}</td>
                                             <td class="px-4 py-3">{{ $refund->channel?->bank_name ?? '-' }}</td>
                                             <td class="px-4 py-3">
@@ -262,9 +263,9 @@
                             <table class="w-full text-sm bg-white rounded">
                                 <thead class="bg-gray-100">
                                     <tr>
-                                        <th class="px-4 py-2 text-left">No. Transaksi</th>
+                                        <th class="px-4 py-2 text-left">ID</th>
                                         <th class="px-4 py-2 text-left">Alasan</th>
-                                        <th class="px-4 py-2 text-left">Pengembalian Poin</th>
+                                        <th class="px-4 py-2 text-left">Poin</th>
                                         <th class="px-4 py-2 text-left">Waktu</th>
                                         <th class="px-4 py-2">Bukti</th>
                                     </tr>
@@ -275,9 +276,9 @@
                                             <td class="px-4 py-3">{{ $c->invoice_number }}</td>
                                             <td class="px-4 py-3">{{ $c->cancel_reason ?? '-' }}</td>
                                             <td class="px-4 py-3">
-                                                {{ $c->points_used ? '+' . $c->points_used . ' poin' : '-' }}</td>
+                                                {{ $c->points_used ? '+' . $c->points_used : '-' }}</td>
                                             <td class="px-4 py-3">
-                                                {{ \Carbon\Carbon::parse($c->cancelled_at)->format('d M Y H:i') }}</td>
+                                                {{ \Carbon\Carbon::parse($c->cancelled_at)->format('d/m/y H:i') }}</td>
                                             <td class="px-4 py-3 text-center">
                                                 @if ($c->cancel_proof_image)
                                                     <a href="{{ asset('storage/' . $c->cancel_proof_image) }}"
@@ -316,14 +317,14 @@
                     @endphp
                     <div class="flex flex-col gap-3">
                         @foreach ($topProducts as $product)
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 sm:gap-4">
                                 <span
-                                    class="text-xs text-gray-600 w-32 text-right truncate">{{ $product['name'] }}</span>
-                                <div class="flex-1 bg-gray-200 rounded h-5 relative">
+                                    class="text-[10px] sm:text-xs text-gray-600 w-24 sm:w-32 text-right truncate">{{ $product['name'] }}</span>
+                                <div class="flex-1 bg-gray-200 rounded h-4 sm:h-5 relative">
                                     <div class="bg-[#933c24] h-full rounded opacity-80"
                                         style="width: {{ ($product['quantity'] / $maxQuantity) * 100 }}%"></div>
                                 </div>
-                                <span class="text-xs text-gray-600 w-8">{{ $product['quantity'] }}</span>
+                                <span class="text-[10px] sm:text-xs text-gray-600 w-6 sm:w-8">{{ $product['quantity'] }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -343,74 +344,73 @@
         <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
             <div class="flex flex-col gap-[25px]">
                 <!-- Header with Order Type Filter -->
-                <div class="flex justify-between items-center">
+                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <span class="text-base font-medium text-[#666666]">Pesanan Terbaru</span>
-                    <div class="flex gap-2.5">
+                    <div class="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                         <button type="button" wire:click="setOrderType('pesanan-reguler')"
-                            class="{{ $orderType === 'pesanan-reguler' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
+                            class="{{ $orderType === 'pesanan-reguler' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} w-full sm:w-auto px-4 py-2.5 rounded-[15px] shadow-sm font-semibold text-sm transition-colors cursor-pointer text-center">
                             Pesanan Reguler
                         </button>
                         <button type="button" wire:click="setOrderType('pesanan-kotak')"
-                            class="{{ $orderType === 'pesanan-kotak' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
+                            class="{{ $orderType === 'pesanan-kotak' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} w-full sm:w-auto px-4 py-2.5 rounded-[15px] shadow-sm font-semibold text-sm transition-colors cursor-pointer text-center">
                             Pesanan Kotak
                         </button>
                         <button type="button" wire:click="setOrderType('siap-beli')"
-                            class="{{ $orderType === 'siap-beli' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} px-6 py-2.5 rounded-[15px] shadow-sm font-semibold text-base transition-colors cursor-pointer">
+                            class="{{ $orderType === 'siap-beli' ? 'bg-[#3f4e4f] text-[#f8f4e1]' : 'bg-[#fafafa] border border-[#3f4e4f] text-[#3f4e4f]' }} w-full sm:w-auto px-4 py-2.5 rounded-[15px] shadow-sm font-semibold text-sm transition-colors cursor-pointer text-center">
                             Siap Saji
                         </button>
                     </div>
                 </div>
 
                 <!-- Search -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 w-full">
                     <div
-                        class="flex-1 bg-white border border-[#adadad] rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500">
+                        class="flex-1 bg-white border border-[#adadad] rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500 w-full">
                         <flux:icon icon="magnifying-glass" class="size-5 text-[#adadad]" />
                         <input type="text" wire:model.live.debounce.300ms="orderSearch"
                             placeholder="Cari Pesanan atau Pembelian"
-                            class="flex-1 px-3 py-2 border-0 focus:outline-none focus:ring-0 bg-transparent text-[#666666] placeholder-[#959595] text-base font-medium" />
+                            class="flex-1 px-3 py-2 border-0 focus:outline-none focus:ring-0 bg-transparent text-[#666666] placeholder-[#959595] text-base font-medium w-full" />
                     </div>
                 </div>
 
                 <!-- Orders Table -->
                 <x-table.paginated :paginator="$orders" :headers="array_merge([
-                    ['label' => 'ID Transaksi', 'width' => 'w-[170px]'],
+                    ['label' => 'ID', 'class' => 'max-w-[100px]'],
                     $orderType === 'siap-beli'
-                        ? ['label' => 'Tanggal Beli', 'sortable' => true, 'sort-by' => 'date', 'width' => 'w-[190px]']
-                        : ['label' => 'Tanggal Ambil', 'sortable' => true, 'sort-by' => 'date', 'width' => 'w-[190px]'],
-                    ['label' => 'Daftar Produk'],
+                        ? ['label' => 'Tanggal', 'sortable' => true, 'sort-by' => 'date']
+                        : ['label' => 'Ambil', 'sortable' => true, 'sort-by' => 'date'],
+                    ['label' => 'Produk'],
                     ['label' => 'Pembeli'],
-                    ['label' => 'Kasir', 'width' => 'max-w-[120px]'],
+                    ['label' => 'Kasir'],
                 ], $orderType !== 'siap-beli' ? [
-                    ['label' => 'Status Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
-                    ['label' => 'Status Pesanan', 'sortable' => true, 'sort-by' => 'status'],
+                    ['label' => 'Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
+                    ['label' => 'Status', 'sortable' => true, 'sort-by' => 'status'],
                 ] : [])" headerBg="#3F4E4F" headerText="#F8F4E1"
                     emptyMessage="Tidak ada pesanan." pageName="ordersPage">
                     @foreach ($orders as $order)
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
-                            <td class="px-6 py-4 text-sm text-gray-600">
+                            <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                 {{ $order->invoice_number }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
-                                {{ \Carbon\Carbon::parse($order->date)->translatedFormat('d F Y') }}
-                                {{ \Carbon\Carbon::parse($order->time)->format('H:i') }}
+                            <td class="px-6 py-4 text-sm text-[#666666] font-medium">
+                                {{ \Carbon\Carbon::parse($order->date)->translatedFormat('d/m/y') }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
+                            <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                 <div class="truncate max-w-[200px]">
                                     {{ $order->details->map(fn($d) => $d->product?->name)->filter()->implode(', ') ?: '-' }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
+                            <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                 {{ $order->customer_name ?: $order->customer?->name ?? '-' }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">
+                            <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                 {{ $order->user?->name ?? '-' }}
                             </td>
                             @if ($orderType !== 'siap-beli')
-                                <td class="px-6 py-4 text-sm text-gray-600">
+                                <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                     {{ ucfirst($order->payment_status ?? '-') }}
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-600">
+                                <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                                     {{ ucfirst($order->status ?? '-') }}
                                 </td>
                             @endif
@@ -430,9 +430,9 @@
             <div class="space-y-4">
                 <div class="mb-5 w-full">
                     <flux:label class="mb-2">Bukti Story Instagram (5 Poin)</flux:label>
-                    <div class="flex flex-row items-center gap-4 mt-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
                         <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4 text-xs text-center">
+                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 text-sm rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
                             Unggah Bukti
                             <input type="file" wire:model.live="ig_image"
                                 accept="image/jpeg, image/png, image/jpg" class="hidden" />
@@ -459,9 +459,9 @@
                 <flux:error name="ig_image" />
                 <div class="mb-5 w-full">
                     <flux:label class="mb-2">Bukti Rating Gmaps (10 Poin)</flux:label>
-                    <div class="flex flex-row items-center gap-4 mt-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
                         <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2) w-1/4 text-xs text-center">
+                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 text-sm rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
                             Unggah Bukti
                             <input type="file" wire:model.live="gmaps_image"
                                 accept="image/jpeg, image/png, image/jpg" class="hidden" />
@@ -475,7 +475,7 @@
                             <input type="text"
                                 class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
                                 value="Mengupload File..." readonly wire:loading wire:target="gmaps_image">
-                        @else
+@else
                             <input type="text"
                                 class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
                                 value="File Belum Dipilih" readonly wire:loading.remove wire:target="gmaps_image">

@@ -578,17 +578,17 @@
                 @foreach ($paginator as $item)
                     <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
                         <td class="py-5 px-6 text-[#333333]">{{ $item->name }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">{{ $item->total }}
+                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->total }}
                             {{ $item->total_alias }}
                         </td>
-                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">
+                        <td class="py-5 px-6 text-right text-[#333333]">
                             Rp{{ number_format($item->total_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">-{{ $item->used }}
+                        <td class="py-5 px-6 text-right text-[#333333]">-{{ $item->used }}
                             {{ $item->used_alias }}
                         </td>
                         <td class="py-5 px-6 text-right text-[#333333]">
                             -Rp{{ number_format($item->used_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333] hidden md:table-cell">{{ $item->remain }}
+                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->remain }}
                             {{ $item->remain_alias }}
                         </td>
                         <td class="py-5 px-6 text-right text-[#333333]">

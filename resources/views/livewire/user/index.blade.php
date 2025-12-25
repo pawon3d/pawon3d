@@ -1,15 +1,7 @@
 <div>
     <!-- Header Section -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 class="text-xl font-semibold text-[#666666]">Daftar Pekerja</h1>
-        {{-- <div class="flex gap-2.5">
-            <flux:button variant="secondary" wire:click="cetakInformasi">
-                Cetak Informasi
-            </flux:button>
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
-                Riwayat Pembaruan
-            </flux:button>
-        </div> --}}
     </div>
 
     <!-- Info Box -->
@@ -21,26 +13,26 @@
     <!-- Main Content Card -->
     <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-8 py-6 mt-5">
         <!-- Search and Add Button -->
-        <div class="flex justify-between items-center mb-5 gap-3">
-            <div class="flex items-center gap-4 flex-1">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-5 gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 flex-1 w-full">
                 <div
-                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full max-w-[545px]">
+                    class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 w-full lg:max-w-[545px]">
                     <svg class="w-[30px] h-[30px] text-[#666666]" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                             clip-rule="evenodd" />
                     </svg>
                     <input wire:model.live.debounce.300ms="search" placeholder="Cari Pekerja"
-                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none" />
+                        class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none bg-transparent" />
                 </div>
-                <flux:select wire:model.live="filterStatus" class="w-40">
+                <flux:select wire:model.live="filterStatus" class="w-full sm:w-40">
                     <option value="">Semua Status</option>
                     <option value="active">Aktif</option>
                     <option value="inactive">Nonaktif</option>
                     <option value="pending">Menunggu Aktivasi</option>
                 </flux:select>
             </div>
-            <flux:button variant="primary" icon="plus" href="{{ route('user.tambah') }}" wire:navigate>
+            <flux:button variant="primary" icon="plus" href="{{ route('user.tambah') }}" wire:navigate class="w-full sm:w-auto">
                 Tambah Pekerja
             </flux:button>
         </div>

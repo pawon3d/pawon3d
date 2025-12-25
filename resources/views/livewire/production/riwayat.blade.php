@@ -1,31 +1,31 @@
-<div>
+<div class="px-4 sm:px-0">
     <!-- Header dengan tombol kembali dan judul -->
-    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-[15px] mb-[30px]">
         <a href="{{ route('produksi') }}" wire:navigate
-            style="background-color: #313131; color: white; padding: 10px 25px; border-radius: 15px; display: flex; align-items: center; gap: 5px; text-decoration: none; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);"
+            class="w-full sm:w-auto flex items-center justify-center gap-[5px] px-[25px] py-[10px] bg-[#313131] text-white rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] no-underline"
             wire:navigate>
             <flux:icon.arrow-left style="width: 20px; height: 20px;" />
             <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Kembali</span>
         </a>
-        <h1 style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
+        <h1 class="text-center sm:text-left" style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
             Riwayat Produksi {{ $methodName }}
         </h1>
     </div>
 
     <!-- Container utama -->
-    <div style="background-color: #fafafa; padding: 30px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] p-4 sm:p-[30px]">
         <!-- Baris search dan filter -->
-        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center mb-5">
             <!-- Search bar -->
             <div
-                style="flex: 1; background-color: white; border: 1px solid #666666; border-radius: 20px; display: flex; align-items: center; padding: 0 15px; height: 40px;">
+                class="flex-1 w-full bg-white border border-[#666666] rounded-[20px] flex items-center px-[15px] h-[40px]">
                 <flux:icon.magnifying-glass style="width: 30px; height: 30px; color: #666666;" />
                 <input wire:model.live="search" placeholder="Cari Produksi"
                     style="flex: 1; border: none; outline: none; padding: 10px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #959595;" />
             </div>
 
             <!-- Filter button -->
-            <div style="display: flex; align-items: center; cursor: pointer;">
+            <div class="flex items-center cursor-pointer justify-center">
                 <div style="width: 25px; height: 25px; color: #666666;">
                     <svg viewBox="0 0 25 25" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -41,15 +41,17 @@
         </div>
 
         <!-- Tabel dengan custom component -->
-        <x-table.paginated :headers="[
-            ['label' => 'ID Produksi', 'field' => 'production_number', 'sortable' => true],
-            ['label' => 'Tanggal Selesai', 'field' => 'end_date', 'sortable' => true],
-            ['label' => 'Daftar Produk', 'field' => 'product_name', 'sortable' => false],
-            ['label' => 'Koki', 'field' => 'worker_name', 'sortable' => true],
-            ['label' => 'Status Produksi', 'field' => 'status', 'sortable' => true, 'multiline' => true],
-            ['label' => 'Kemajuan Produksi', 'field' => '', 'sortable' => false],
-        ]" :paginator="$productions" :sortField="$sortField" :sortDirection="$sortDirection" headerBg="#3f4e4f"
-            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :headers="[
+                    ['label' => 'ID Produksi', 'field' => 'production_number', 'sortable' => true],
+                    ['label' => 'Tanggal Selesai', 'field' => 'end_date', 'sortable' => true],
+                    ['label' => 'Daftar Produk', 'field' => 'product_name', 'sortable' => false],
+                    ['label' => 'Koki', 'field' => 'worker_name', 'sortable' => true],
+                    ['label' => 'Status Produksi', 'field' => 'status', 'sortable' => true, 'multiline' => true],
+                    ['label' => 'Kemajuan Produksi', 'field' => '', 'sortable' => false],
+                ]" :paginator="$productions" :sortField="$sortField" :sortDirection="$sortDirection" headerBg="#3f4e4f"
+                    headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666">
             @foreach ($productions as $production)
                 @php
                     $finishDate = $production->end_date ?? $production->updated_at;
@@ -128,6 +130,8 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
+                </x-table.paginated>
+            </div>
+        </div>
     </div>
 </div>

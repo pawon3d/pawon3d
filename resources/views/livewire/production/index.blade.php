@@ -1,7 +1,6 @@
 <div>
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8" style="height: 40px;">
-        <h1 class="text-[20px] font-semibold text-[#666666]">Daftar Produksi</h1>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <h1 class="text-[20px] font-semibold text-[#666666] text-center sm:text-left">Daftar Produksi</h1>
     </div>
 
     <!-- Info Alert -->
@@ -21,9 +20,9 @@
     </x-alert.info>
 
     <!-- Method Tabs -->
-    <div class="flex items-center w-full mb-9">
+    <div class="flex flex-col sm:flex-row items-center w-full mb-9 gap-4 sm:gap-0">
         <label wire:click="$set('method', 'pesanan-reguler')"
-            class="flex-1 h-[105px] bg-[#fafafa] rounded-tl-[15px] rounded-bl-[15px] shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'pesanan-reguler' ? 'border-b-4 border-[#74512d]' : '' }}">
+            class="w-full sm:flex-1 h-auto sm:h-[105px] bg-[#fafafa] rounded-tl-[15px] rounded-tr-[15px] sm:rounded-tr-none rounded-bl-[15px] rounded-br-[15px] sm:rounded-br-none shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'pesanan-reguler' ? 'border-b-4 border-[#74512d]' : '' }}">
             <flux:icon icon="cake" class=" size-8" />
             <p
                 class="text-[16px] text-center {{ $method === 'pesanan-reguler' ? 'font-bold text-[#74512d]' : 'font-medium text-[#6c7068] opacity-90' }}">
@@ -31,7 +30,7 @@
             </p>
         </label>
         <label wire:click="$set('method', 'pesanan-kotak')"
-            class="flex-1 h-[105px] bg-[#fafafa] shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'pesanan-kotak' ? 'border-b-4 border-[#74512d]' : '' }}">
+            class="w-full sm:flex-1 h-auto sm:h-[105px] bg-[#fafafa] rounded-[15px] sm:rounded-none shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'pesanan-kotak' ? 'border-b-4 border-[#74512d]' : '' }}">
             <flux:icon icon="package-open" class="size-8" />
             <p
                 class="text-[16px] text-center {{ $method === 'pesanan-kotak' ? 'font-bold text-[#74512d]' : 'font-medium text-[#6c7068] opacity-90' }}">
@@ -39,7 +38,7 @@
             </p>
         </label>
         <label wire:click="$set('method', 'siap-beli')"
-            class="flex-1 h-[105px] bg-[#fafafa] rounded-tr-[15px] rounded-br-[15px] shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'siap-beli' ? 'border-b-4 border-[#74512d]' : '' }}">
+            class="w-full sm:flex-1 h-auto sm:h-[105px] bg-[#fafafa] rounded-tr-[15px] rounded-tl-[15px] sm:rounded-tl-none rounded-br-[15px] rounded-bl-[15px] sm:rounded-bl-none shadow-sm flex flex-col items-center justify-center gap-1 cursor-pointer px-5 py-4 {{ $method === 'siap-beli' ? 'border-b-4 border-[#74512d]' : '' }}">
             <flux:icon icon="dessert" class="size-8" />
             <p
                 class="text-[16px] text-center {{ $method === 'siap-beli' ? 'font-bold text-[#74512d]' : 'font-medium text-[#6c7068] opacity-90' }}">
@@ -48,12 +47,12 @@
         </label>
     </div>
     <!-- Content Card -->
-    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-6">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-4 sm:px-[30px] sm:py-6">
         <!-- Search and Actions -->
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
+        <div class="flex flex-col lg:flex-row items-center justify-between mb-8 gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
                 <!-- Search Bar -->
-                <div class="w-[450px] flex items-center border border-[#666666] rounded-[20px] bg-white px-4 py-2">
+                <div class="w-full lg:w-[450px] flex items-center border border-[#666666] rounded-[20px] bg-white px-4 py-2">
                     <svg class="w-[30px] h-[30px] text-[#666666]" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -64,7 +63,7 @@
                 </div>
 
                 <!-- Filter -->
-                <div class="flex items-center gap-1 text-[#666666]">
+                <div class="flex items-center gap-1 text-[#666666] justify-center">
                     <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
                     </svg>
@@ -73,21 +72,21 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-3">
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 @if ($method === 'siap-beli')
                     <flux:button variant="primary" icon="list-bullet" href="{{ route('produksi.antrian-produksi') }}"
-                        wire:navigate wire:navigate>
+                        wire:navigate class="w-full sm:w-auto">
                         Antrian Produksi
                     </flux:button>
                 @else
                     <flux:button variant="primary" icon="list-bullet"
-                        href="{{ route('produksi.pesanan', ['method' => $method]) }}" wire:navigate>
+                        href="{{ route('produksi.pesanan', ['method' => $method]) }}" wire:navigate class="w-full sm:w-auto">
                         Antrian Pesanan
                     </flux:button>
                 @endif
 
                 <flux:button variant="primary" icon="history"
-                    href="{{ route('produksi.riwayat', ['method' => $method]) }}" wire:navigate />
+                    href="{{ route('produksi.riwayat', ['method' => $method]) }}" wire:navigate class="w-full sm:w-10" />
             </div>
         </div>
 
@@ -137,8 +136,10 @@
             }
         @endphp
 
-        <x-table.paginated :headers="$headers" :paginator="$productions" :empty-message="'Belum ada produksi.'" header-bg="#3f4e4f"
-            header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :headers="$headers" :paginator="$productions" :empty-message="'Belum ada produksi.'" header-bg="#3f4e4f"
+                    header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666">
             @foreach ($productions as $production)
                 <tr class="border-b border-[#d4d4d4] hover:bg-gray-50" wire:key="production-{{ $production->id }}">
                     <td class="px-6 py-5 w-[180px]">
@@ -245,8 +246,9 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
-    </div>
+                </x-table.paginated>
+            </div>
+        </div>
 
 
     <!-- Modal Riwayat Pembaruan -->

@@ -1,5 +1,5 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <h1 class="text-xl font-semibold text-gray-600">Alur Persediaan</h1>
     </div>
 
@@ -10,17 +10,17 @@
 
     <div class="mt-4 bg-[#fafafa] shadow-md rounded-[15px] p-6 overflow-hidden">
         {{-- Search and Filter --}}
-        <div class="flex items-center gap-4 mb-6">
+        <div class="flex flex-col lg:flex-row items-center gap-6 mb-6">
             <div
-                class="flex-1 bg-white border border-gray-500 rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500">
-                <flux:icon icon="magnifying-glass" class="size-5 text-gray-500" />
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Riwayat Persediaan"
-                    class="flex-1 px-3 py-2 border-0 focus:outline-none focus:ring-0 bg-transparent text-gray-600 placeholder-gray-400" />
+                class="flex-1 bg-white border border-gray-500 rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500 w-full">
+                <flux:icon icon="magnifying-glass" class="size-5 text-gray-500 shrink-0" />
+                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Riwayat..."
+                    class="flex-1 px-3 py-2.5 border-0 focus:outline-none focus:ring-0 bg-transparent text-gray-600 placeholder-gray-400" />
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 justify-center w-full lg:w-auto">
                 <flux:icon icon="funnel" class="size-5 text-gray-500" />
                 <select wire:model.live="filterAction"
-                    class="border-0 bg-transparent text-gray-600 font-medium focus:outline-none focus:ring-0 cursor-pointer">
+                    class="border-0 bg-transparent text-gray-600 font-medium focus:outline-none focus:ring-0 cursor-pointer py-2.5">
                     @foreach ($actionOptions as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
@@ -29,16 +29,17 @@
         </div>
 
         {{-- Table --}}
-        <x-table.paginated :paginator="$inventoryLogs" :headers="[
-            ['label' => 'Tanggal'],
-            ['label' => 'Barang'],
-            ['label' => 'Batch'],
-            ['label' => 'Aksi'],
-            ['label' => 'Pekerja'],
-            ['label' => 'Perubahan', 'align' => 'right'],
-            ['label' => 'Persediaan Akhir', 'align' => 'right'],
-        ]" headerBg="#3F4E4F" headerText="#F8F4E1"
-            emptyMessage="Tidak ada riwayat persediaan yang tersedia.">
+        <div class="w-full overflow-x-auto rounded-[15px] shadow-sm">
+            <x-table.paginated :paginator="$inventoryLogs" :headers="[
+                ['label' => 'Tanggal'],
+                ['label' => 'Barang', 'class' => 'min-w-[150px]'],
+                ['label' => 'Batch'],
+                ['label' => 'Aksi'],
+                ['label' => 'Pekerja'],
+                ['label' => 'Perubahan', 'align' => 'right'],
+                ['label' => 'Persediaan Akhir', 'align' => 'right'],
+            ]" headerBg="#3F4E4F" headerText="#F8F4E1"
+                emptyMessage="Tidak ada riwayat persediaan yang tersedia." wrapperClass="mb-0">
             @foreach ($inventoryLogs as $log)
                 <tr class="border-b border-gray-200 hover:bg-gray-50 {{ $log->reference_type && $log->reference_id ? 'cursor-pointer' : '' }}"
                     @if ($log->reference_type && $log->reference_id) wire:click="keRincian('{{ $log->reference_type }}', '{{ $log->reference_id }}')" @endif>
@@ -68,6 +69,7 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
+            </x-table.paginated>
+        </div>
     </div>
 </div>

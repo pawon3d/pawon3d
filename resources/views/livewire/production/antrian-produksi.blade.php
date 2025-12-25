@@ -1,35 +1,35 @@
 <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8" style="height: 40px;">
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
             <!-- Tombol Kembali -->
             <flux:button wire:navigate href="{{ route('produksi', ['method' => 'siap-beli']) }}" icon="arrow-left"
-                variant="secondary">
+                variant="secondary" class="w-full sm:w-auto">
                 Kembali
             </flux:button>
 
-            <h1 class="text-[20px] font-semibold text-[#666666]">Rencana Produksi Siap Saji</h1>
+            <h1 class="text-[20px] font-semibold text-[#666666] text-center sm:text-left">Rencana Produksi Siap Saji</h1>
         </div>
     </div>
 
     <!-- Content Card -->
-    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-4 sm:px-[30px] sm:py-[25px]">
         <!-- Search and Actions -->
-        <div class="flex items-center justify-between mb-[20px]">
-            <div class="flex items-center gap-4">
+        <div class="flex flex-col lg:flex-row items-center justify-between mb-[20px] gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full">
                 <!-- Search Bar -->
-                <div class="w-[450px] flex items-center border border-[#666666] rounded-[20px] bg-white px-4 py-2">
+                <div class="w-full lg:w-[450px] flex items-center border border-[#666666] rounded-[20px] bg-white px-4 py-2">
                     <svg class="w-[30px] h-[30px] text-[#666666]" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input wire:model.live="search" type="text" placeholder="Cari Rencana Produksi"
-                        class="ml-2 flex-1 border-0 focus:ring-0 text-[16px] font-medium text-[#666666] placeholder:text-[#959595]" />
+                        class="ml-2 w-full lg:w-[450px] flex-1 border-0 focus:ring-0 text-[16px] font-medium text-[#666666] placeholder:text-[#959595]" />
                 </div>
 
                 <!-- Filter -->
-                <div class="flex items-center gap-1 text-[#666666]">
+                <div class="flex items-center gap-1 text-[#666666] justify-center">
                     <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" />
                     </svg>
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Tombol Tambah Produksi -->
-            <flux:button variant="primary" icon="plus" href="{{ route('produksi.tambah-siap-beli') }}" wire:navigate>
+            <flux:button variant="primary" icon="plus" href="{{ route('produksi.tambah-siap-beli') }}" wire:navigate class="w-full lg:w-auto">
                 Tambah Produksi
             </flux:button>
         </div>
@@ -63,8 +63,10 @@
             ];
         @endphp
 
-        <x-table.paginated :headers="$headers" :paginator="$productions" :empty-message="'Belum ada rencana produksi.'" header-bg="#3f4e4f"
-            header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :headers="$headers" :paginator="$productions" :empty-message="'Belum ada rencana produksi.'" header-bg="#3f4e4f"
+                    header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666">
             @foreach ($productions as $production)
                 <tr class="border-b border-[#d4d4d4] hover:bg-gray-50" wire:key="production-{{ $production->id }}">
                     <td class="px-6 py-5 w-[180px]">
@@ -113,5 +115,7 @@
                 </tr>
             @endforeach
         </x-table.paginated>
+            </div>
+        </div>
     </div>
 </div>

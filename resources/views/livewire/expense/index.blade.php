@@ -1,7 +1,7 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Belanja Persediaan</h1>
-        <flux:button variant="secondary" wire:click="riwayatPembaruan">
+        <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
             Riwayat Pembaruan
         </flux:button>
     </div>
@@ -13,26 +13,27 @@
     </x-alert.info>
 
     <div class="mt-4 bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] rounded-[15px] px-[30px] py-[25px]">
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-5">
             <!-- Search Input -->
-            <div class="flex gap-[15px] items-center max-w-[350px]">
-                <div class="flex items-center bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex-1">
-                    <flux:icon.magnifying-glass class="size-[16px] text-[#666666]" />
-                    <input wire:model.live="search" placeholder="Cari Belanja"
-                        class="px-2.5 py-2.5 border-0 focus:outline-none focus:ring-0 text-[16px] font-medium text-[#959595] bg-transparent flex-1" />
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1 w-full">
+                <div
+                    class="flex-1 bg-white border border-[#666666] rounded-full px-4 py-0 min-h-[46px] flex items-center w-full">
+                    <flux:icon.magnifying-glass class="size-[20px] text-[#666666] shrink-0" />
+                    <input wire:model.live="search" placeholder="Cari Belanja..."
+                        class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
                 </div>
-                <div class="flex items-center cursor-pointer">
-                    <flux:icon.funnel class="size-[25px] text-[#666666]" />
-                    <p class="text-[16px] font-medium text-[#666666] px-1.5 py-2.5">Filter</p>
+                <div class="flex items-center gap-1 cursor-pointer justify-center w-full sm:w-auto">
+                    <flux:icon.funnel class="size-[20px] text-[#666666]" />
+                    <p class="text-[16px] font-medium text-[#666666] py-2.5">Filter</p>
                 </div>
             </div>
-            <div class="flex gap-2.5 items-center">
+            <div class="flex flex-wrap gap-2.5 items-center justify-center sm:justify-start w-full lg:w-auto">
                 <flux:button type="button" variant="primary" icon="archive-box" href="{{ route('supplier') }}"
-                    wire:navigate>
+                    wire:navigate class="flex-1 sm:flex-none">
                     Toko Persediaan
                 </flux:button>
                 <flux:button type="button" variant="primary" icon="list-bullet" href="{{ route('belanja.rencana') }}"
-                    wire:navigate>
+                    wire:navigate class="flex-1 sm:flex-none text-nowrap">
                     Rencana Belanja
                 </flux:button>
                 <flux:button type="button" variant="primary" icon="clock" href="{{ route('belanja.riwayat') }}"
@@ -41,56 +42,56 @@
             </div>
         </div>
 
-        <x-table.paginated :paginator="$expenses" :headers="[
-            [
-                'label' => 'ID Belanja',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'expense_number',
-                'class' => 'min-w-[170px]',
-            ],
-            [
-                'label' => 'Tanggal Belanja',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'expense_date',
-                'class' => 'max-w-[150px]',
-            ],
-            [
-                'label' => 'Toko Persediaan',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'supplier_name',
-                'class' => 'w-[192px]',
-            ],
-            [
-                'label' => 'Total Harga',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'grand_total_expect',
-                'class' => 'max-w-[160px]',
-                'align' => 'right',
-            ],
-            [
-                'label' => 'Total Harga (Bayar)',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'grand_total_actual',
-                'class' => 'max-w-[160px]',
-                'align' => 'right',
-            ],
-            [
-                'label' => 'Status',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'status',
-                'class' => 'max-w-[120px]',
-            ],
-            ['label' => 'Kemajuan Persediaan', 'class' => 'min-w-[100px]'],
-        ]" header-bg="#3f4e4f" header-text="#f8f4e1"
-            body-bg="#fafafa" body-text="#666666"
-            empty-message="Belum Ada Belanja. Tekan tombol 'Rencana Belanja' untuk membuat belanja baru."
-            wrapper-class="overflow-hidden rounded-[15px]">
+        <div class="w-full overflow-x-auto rounded-[15px] shadow-sm">
+            <x-table.paginated :paginator="$expenses" :headers="[
+                [
+                    'label' => 'ID Belanja',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'expense_number',
+                    'class' => 'min-w-[170px]',
+                ],
+                [
+                    'label' => 'Tanggal Belanja',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'expense_date',
+                    'class' => 'max-w-[150px]',
+                ],
+                [
+                    'label' => 'Toko Persediaan',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'supplier_name',
+                    'class' => 'w-[192px]',
+                ],
+                [
+                    'label' => 'Total Harga',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'grand_total_expect',
+                    'class' => 'max-w-[160px]',
+                    'align' => 'right',
+                ],
+                [
+                    'label' => 'Total Harga (Bayar)',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'grand_total_actual',
+                    'class' => 'max-w-[160px]',
+                    'align' => 'right',
+                ],
+                [
+                    'label' => 'Status',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'status',
+                    'class' => 'max-w-[120px]',
+                ],
+                ['label' => 'Kemajuan', 'class' => 'min-w-[100px]'],
+            ]" header-bg="#3f4e4f" header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666"
+                empty-message="Belum Ada Belanja. Tekan tombol 'Rencana Belanja' untuk membuat belanja baru."
+                wrapper-class="mb-0">
             @foreach ($expenses as $expense)
                 <tr class="h-[60px] border-b border-[#d4d4d4]">
                     <td class="px-6 py-0">
@@ -149,7 +150,8 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
+            </x-table.paginated>
+        </div>
     </div>
 
     <!-- Modal Riwayat Pembaruan -->

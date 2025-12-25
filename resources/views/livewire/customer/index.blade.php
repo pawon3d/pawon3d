@@ -1,6 +1,6 @@
 <div>
-    <div class="flex justify-between items-center mb-4">
-        <h1 class="text-xl font-semibold text-gray-600">Daftar Pelanggan</h1>
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 class="text-xl font-semibold text-[#666666]">Daftar Pelanggan</h1>
     </div>
 
     <x-alert.info>
@@ -11,14 +11,14 @@
 
     <div class="mt-4 bg-[#fafafa] shadow-md rounded-[15px] p-6 overflow-hidden">
         {{-- Search and Add Button --}}
-        <div class="flex items-center justify-between gap-4 mb-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <div
-                class="flex-1 bg-white border border-gray-500 rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500">
-                <flux:icon icon="magnifying-glass" class="size-5 text-gray-500" />
+                class="w-full sm:flex-1 bg-white border border-[#666666] rounded-full flex items-center px-4 py-0 focus-within:ring-2 focus-within:ring-blue-500">
+                <flux:icon icon="magnifying-glass" class="size-5 text-[#666666]" />
                 <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Pelanggan"
-                    class="flex-1 px-3 py-2 border-0 focus:outline-none focus:ring-0 bg-transparent text-gray-600 placeholder-gray-400" />
+                    class="flex-1 px-3 py-2.5 border-0 focus:outline-none focus:ring-0 bg-transparent text-[#666666] placeholder-gray-400 font-medium" />
             </div>
-            <flux:button icon="plus" variant="primary" wire:click="showModalTambah" type="button">
+            <flux:button icon="plus" variant="primary" wire:click="showModalTambah" type="button" class="w-full sm:w-auto">
                 Tambah Pelanggan
             </flux:button>
         </div>
@@ -28,21 +28,21 @@
             ['label' => 'No. Telepon'],
             ['label' => 'Nama Pelanggan', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Transaksi Terbaru'],
-            ['label' => 'Total Transaksi', 'sortable' => true, 'sort-by' => 'totalTransaction', 'align' => 'right'],
-            ['label' => 'Saldo Poin', 'sortable' => true, 'sort-by' => 'points', 'align' => 'right'],
+            ['label' => 'Total', 'sortable' => true, 'sort-by' => 'totalTransaction', 'align' => 'right'],
+            ['label' => 'Poin', 'sortable' => true, 'sort-by' => 'points', 'align' => 'right'],
         ]" headerBg="#3F4E4F" headerText="#F8F4E1"
             emptyMessage="Tidak ada pelanggan yang tersedia.">
             @foreach ($customers as $customer)
                 <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
-                    <td class="px-6 py-4 text-sm text-gray-600">
+                    <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                         <a href="{{ route('customer.show', $customer->id) }}" class="hover:underline" wire:navigate>
                             {{ $customer->phone }}
                         </a>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">
+                    <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                         {{ $customer->name }}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600">
+                    <td class="px-6 py-4 text-sm text-[#666666] font-medium">
                         @if ($customer->transactions()->latest()->first())
                             {{ \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->translatedFormat('d F Y') }}
                             {{ \Carbon\Carbon::parse($customer->transactions()->latest()->first()->created_at)->format('H:i') }}
@@ -50,10 +50,10 @@
                             -
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600 text-right">
+                    <td class="px-6 py-4 text-sm text-[#666666] font-medium text-right">
                         {{ $customer->transactions()->count() ?? 0 }}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-600 text-right">
+                    <td class="px-6 py-4 text-sm text-[#666666] font-medium text-right">
                         {{ $customer->points ?? 0 }}
                     </td>
                 </tr>

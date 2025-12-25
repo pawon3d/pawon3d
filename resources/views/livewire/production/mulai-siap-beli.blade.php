@@ -1,18 +1,17 @@
-<div>
-    <div>
+<div class="px-4 sm:px-[30px] py-4 sm:py-[30px]" style="background: #eaeaea; min-height: 100vh;">
         <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-[30px] gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto sm:gap-[15px]">
                 <flux:button variant="secondary" icon="arrow-left"
-                    href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate>
+                    href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate class="w-full sm:w-auto">
                     Kembali
                 </flux:button>
                 <p
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
                     Dapatkan Produk</p>
             </div>
-            <div>
-                <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            <div class="w-full sm:w-auto">
+                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full">
                     Riwayat Pembaruan
                 </flux:button>
             </div>
@@ -31,8 +30,7 @@
         </x-alert.info>
 
         <!-- Table Container -->
-        <div
-            style="background: #fafafa; padding: 25px 30px 30px; border-radius: 15px; box-shadow: 0px 2px 3px rgba(0,0,0,0.1);">
+        <div class="bg-[#fafafa] p-4 sm:p-[30px] rounded-[15px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)]">
             <div style="margin-bottom: 20px;">
                 <p
                     style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; margin: 0;">
@@ -40,8 +38,8 @@
             </div>
 
             <!-- Table -->
-            <div style="overflow: hidden; border-radius: 15px 15px 0 0;">
-                <table style="width: 100%; border-collapse: collapse;">
+            <div class="overflow-x-auto" style="border-radius: 15px 15px 0 0;">
+                <table class="w-full min-w-[1000px]" style="border-collapse: collapse;">
                     <thead>
                         <tr style="background: #3f4e4f; height: 60px;">
                             <th
@@ -117,12 +115,12 @@
         </div>
 
         <!-- Buttons -->
-        <div style="display: flex; justify-content: flex-end; gap: 30px; margin-top: 60px;">
+        <div class="flex flex-col sm:flex-row justify-end gap-4 sm:gap-[30px] mt-[60px]">
             <flux:button icon="x-mark" variant="filled"
-                href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate>
+                href="{{ route('produksi.rincian-siap-beli', $production_id) }}" wire:navigate class="w-full sm:w-auto">
                 Batal
             </flux:button>
-            <flux:button variant="secondary" icon="save" type="button" wire:click="save">
+            <flux:button variant="secondary" icon="save" type="button" wire:click="save" class="w-full sm:w-auto">
                 Simpan
             </flux:button>
         </div>

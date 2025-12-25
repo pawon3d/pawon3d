@@ -1,25 +1,25 @@
 <div>
-    <div class="mb-4 flex justify-between items-center">
-        <div class="flex gap-2 items-center">
+    <div class="mb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
             <a href="{{ route('transaksi') }}" wire:navigate
-                class="mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center text-white">
+                class="w-full sm:w-auto mr-0 sm:mr-2 px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 flex items-center justify-center text-white">
                 <flux:icon.arrow-left variant="mini" class="mr-2" />
                 Kembali
             </a>
-            <h1 class="text-2xl">Rincian Pesanan</h1>
+            <h1 class="text-2xl text-center sm:text-left">Rincian Pesanan</h1>
         </div>
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-2 items-center w-full sm:w-auto mt-4 sm:mt-0">
 
             <!-- Tombol Riwayat Pembaruan -->
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
                 Riwayat Pembaruan
             </flux:button>
         </div>
     </div>
 
-    <div class="w-full flex flex-col gap-4 mt-4 bg-white border-gray-300 rounded-lg p-4">
-        <div class="flex items-center justify-between">
-            <h1 class="text-3xl font-bold"
+    <div class="w-full flex flex-col gap-4 mt-4 bg-white border-gray-300 rounded-lg p-4 sm:p-[30px]">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-center sm:text-left"
                 style="font-family: Montserrat, sans-serif; line-height: 1; font-weight: 500;">
                 {{ $transaction->invoice_number }}</h1>
             @php
@@ -40,34 +40,34 @@
                     default => '#fafafa',
                 };
             @endphp
-            <span class="px-6 py-2 text-[{{ $statusTextColor }}] font-medium rounded-full"
+            <span class="px-6 py-2 text-[{{ $statusTextColor }}] font-medium rounded-full text-center"
                 style="background-color: {{ $statusBgColor }}; font-family: Montserrat, sans-serif; font-size: 18px; line-height: 1; border-radius: 30px; {{ in_array($statusBgColor, ['#fafafa', '#f6f6f6']) ? 'border: 1px solid #666666;' : '' }}">
                 {{ $statusText }}
             </span>
         </div>
         @if ($transaction->method == 'siap-beli')
             <div class="w-full">
-                <div class="flex items-start justify-between gap-14" style="font-family: Montserrat, sans-serif;">
-                    <div class="flex flex-col gap-1" style="min-width: 200px;">
+                <div class="flex flex-col xl:flex-row items-center xl:items-start justify-between gap-6 xl:gap-14" style="font-family: Montserrat, sans-serif;">
+                    <div class="flex flex-col gap-1 items-center xl:items-start text-center xl:text-left" style="min-width: 200px;">
                         <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Tanggal
                             Pembelian Dibuat</p>
                         <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                             {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y H:i') : '-' }}
                         </p>
                     </div>
-                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                    <div class="flex flex-col gap-1 items-center xl:items-start text-center xl:text-left" style="min-width: 150px;">
                         <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Pembeli</p>
                         <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                             {{ $transaction->name ?? '-' }}
                         </p>
                     </div>
-                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                    <div class="flex flex-col gap-1 items-center xl:items-start text-center xl:text-left" style="min-width: 150px;">
                         <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">Kasir</p>
                         <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                             {{ $transaction->user->name ?? '-' }}
                         </p>
                     </div>
-                    <div class="flex flex-col gap-1" style="min-width: 150px;">
+                    <div class="flex flex-col gap-1 items-center xl:items-start text-center xl:text-left" style="min-width: 150px;">
                         @php
                             $paymentStatusColor = match ($transaction->payment_status) {
                                 'Lunas' => '#56c568',
@@ -87,14 +87,13 @@
             </div>
         @else
             <div class="w-full">
-                <div class="flex flex-wrap gap-8" style="font-family: Montserrat, sans-serif;">
+                <div class="flex flex-wrap gap-8 justify-center lg:justify-start" style="font-family: Montserrat, sans-serif;">
                     <!-- Kolom 1 -->
-                    <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
+                    <div class="flex flex-col gap-4 flex-1 min-w-[250px] sm:min-w-[200px] items-center lg:items-start text-center lg:text-left">
                         <div class="flex flex-col gap-1">
                             <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
-                                Tanggal
-                                Pesanan Masuk</p>
-                            <div class="flex flex-row items-center gap-4">
+                                Tanggal Pesanan Masuk</p>
+                            <div class="flex flex-row items-center gap-4 justify-center lg:justify-start">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                     {{ $transaction->start_date ? \Carbon\Carbon::parse($transaction->start_date)->translatedFormat('d F Y') : '-' }}
                                 </p>
@@ -114,12 +113,11 @@
                     </div>
 
                     <!-- Kolom 2 -->
-                    <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
+                    <div class="flex flex-col gap-4 flex-1 min-w-[250px] sm:min-w-[200px] items-center lg:items-start text-center lg:text-left">
                         <div class="flex flex-col gap-1">
                             <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
-                                Tanggal
-                                Ambil Pesanan</p>
-                            <div class="flex flex-row items-center gap-4">
+                                Tanggal Ambil Pesanan</p>
+                            <div class="flex flex-row items-center gap-4 justify-center lg:justify-start">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                     {{ $transaction->date ? \Carbon\Carbon::parse($transaction->date)->translatedFormat('d F Y') : '-' }}
                                 </p>
@@ -138,12 +136,11 @@
                     </div>
 
                     <!-- Kolom 3 -->
-                    <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
+                    <div class="flex flex-col gap-4 flex-1 min-w-[250px] sm:min-w-[200px] items-center lg:items-start text-center lg:text-left">
                         <div class="flex flex-col gap-1">
                             <p class="font-semibold" style="line-height: 1; color: #666666; font-size: 14px;">
-                                Tanggal
-                                Pesanan Selesai</p>
-                            <div class="flex flex-row items-center gap-4">
+                                Tanggal Pesanan Selesai</p>
+                            <div class="flex flex-row items-center gap-4 justify-center lg:justify-start">
                                 <p class="text-sm" style="line-height: 1; color: #666666; font-size: 14px;">
                                     {{ $transaction->end_date ? \Carbon\Carbon::parse($transaction->end_date)->translatedFormat('d F Y') : '-' }}
                                 </p>
@@ -162,7 +159,7 @@
                     </div>
 
                     <!-- Kolom 4 -->
-                    <div class="flex flex-col gap-4 flex-1 min-w-[200px]">
+                    <div class="flex flex-col gap-4 flex-1 min-w-[250px] sm:min-w-[200px] items-center lg:items-start text-center lg:text-left">
                         <div class="flex flex-col gap-1">
                             @php
                                 $paymentStatusColor = match ($transaction->payment_status) {
@@ -209,12 +206,12 @@
                 </div>
 
                 <div class="flex flex-col gap-5 mt-4 w-full" style="margin-top: 30px; gap: 20px;">
-                    <div class="flex items-center justify-between w-full">
-                        <p class="font-medium"
+                    <div class="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                        <p class="font-medium text-center sm:text-left"
                             style="font-family: Montserrat, sans-serif; line-height: 1; color: #666666; font-size: 16px; font-weight: 500;">
                             Catatan Pesanan</p>
                         <button type="button" wire:click="showNoteModal"
-                            class="inline-flex items-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-1 px-6 py-2 rounded-lg font-semibold transition-colors"
                             style="background-color: #666666; color: #f6f6f6; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1); padding: 10px 25px;">
                             <flux:icon.pencil class="size-3" />
                             Ubah Catatan
@@ -230,8 +227,8 @@
             </div>
         @endif
     </div>
-    <div class="w-full mt-8 flex items-center flex-col gap-4 bg-white border-gray-300 rounded-lg p-4"
-        style="background-color: #fafafa; border-radius: 15px; padding: 25px; margin-top: 30px; gap: 15px;">
+    <div class="w-full mt-8 flex items-center flex-col gap-4 bg-white border-gray-300 rounded-lg p-4 sm:p-[25px]"
+        style="background-color: #fafafa; border-radius: 15px; margin-top: 30px; gap: 15px;">
         <div class="w-full flex items-center justify-start gap-4 flex-row">
             <p class="font-semibold"
                 style="font-family: Montserrat, sans-serif; line-height: 1; color: #666666; font-size: 18px; font-weight: 600;">
@@ -366,8 +363,8 @@
 
 
 
-    <div class="w-full flex items-start text-start space-x-2 gap-3 flex-col mt-8 mb-2 bg-white border-gray-300 rounded-lg p-4"
-        style="background-color: #fafafa; border-radius: 15px; padding: 25px; margin-top: 30px; gap: 15px;">
+    <div class="w-full flex items-start text-start space-x-2 gap-3 flex-col mt-8 mb-2 bg-white border-gray-300 rounded-lg p-4 sm:p-[25px]"
+        style="background-color: #fafafa; border-radius: 15px; margin-top: 30px; gap: 15px;">
         <p class="font-semibold"
             style="font-family: Montserrat, sans-serif; line-height: 1; color: #666666; font-size: 18px; font-weight: 600;">
             Pembayaran</p>
@@ -529,25 +526,25 @@
 
         @if ($transaction->payment_status != 'Lunas' && $transactionStatus && $customer)
             {{-- Tukar Poin Section --}}
-            <div class="w-full flex flex-col gap-4 bg-white border-gray-300 rounded-lg p-4"
-                style="background-color: #fafafa; border-radius: 15px; padding: 25px; margin-top: 30px;">
+            <div class="w-full flex flex-col gap-4 bg-white border-gray-300 rounded-lg p-4 sm:p-[25px]"
+                style="background-color: #fafafa; border-radius: 15px; margin-top: 30px;">
                 <div class="flex flex-col gap-[15px]">
                     <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
                         Tukar Poin
                     </p>
-                    <div class="flex items-start justify-between w-full">
+                    <div class="flex flex-col sm:flex-row items-start justify-between w-full gap-4">
                         <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
                             style="line-height: 1;">Tukar poin untuk menerima potongan harga. Poin (1 poin = Rp 100)
                             yang dapat
                             ditukarkan adalah kelipatan 10 poin.</p>
-                        <div class="flex items-center gap-[2px] font-['Montserrat'] font-normal text-[14px] text-[#666666]"
+                        <div class="flex items-center gap-[2px] font-['Montserrat'] font-normal text-[14px] text-[#666666] shrink-0"
                             style="line-height: 1;">
                             <span>{{ number_format($availablePoints, 0, ',', '.') }}</span>
                             <span>Poin</span>
                         </div>
                     </div>
-                    <div class="flex gap-3 items-end">
-                        <div class="flex-1">
+                    <div class="flex flex-col sm:flex-row gap-3 items-end w-full">
+                        <div class="flex-1 w-full">
                             <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
                                 <input type="number" wire:model.live="pointsUsed" placeholder="0" min="0"
                                     step="10" {{ $availablePoints == 0 ? 'disabled' : '' }}
@@ -556,7 +553,7 @@
                             </div>
                         </div>
                         <button type="button" wire:click="applyPoints"
-                            class="bg-[#3f4e4f] hover:bg-[#2d3738] px-6 py-2.5 rounded-[15px] text-white font-semibold"
+                            class="w-full sm:w-auto bg-[#3f4e4f] hover:bg-[#2d3738] px-6 py-2.5 rounded-[15px] text-white font-semibold"
                             style="font-family: Montserrat, sans-serif;">
                             Terapkan
                         </button>
@@ -588,8 +585,8 @@
                 <flux:error name="paymentGroup" />
 
                 @if ($paymentGroup == 'non-tunai')
-                    <div class="mt-2 flex flex-row gap-2 w-full">
-                        <div class="w-1/3">
+                    <div class="mt-2 flex flex-col md:flex-row gap-4 w-full">
+                        <div class="w-full md:w-1/3">
                             <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
                                 @foreach ($paymentMethods as $pmethod)
                                     <flux:select.option value="{{ $pmethod->type }}" class="text-gray-700">
@@ -599,7 +596,7 @@
                             </flux:select>
                             <flux:error name="paymentMethod" />
                         </div>
-                        <div class="w-1/3">
+                        <div class="w-full md:w-1/3">
                             <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
                                 @foreach ($paymentChannels as $channel)
                                     <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
@@ -609,7 +606,7 @@
                             </flux:select>
                             <flux:error name="paymentChannelId" />
                         </div>
-                        <div class="w-1/3">
+                        <div class="w-full md:w-1/3">
                             <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
                             <flux:error name="paymentAccount" />
                         </div>
@@ -628,7 +625,7 @@
                         setengah dari Total Tagihan.
                     </p>
                 @endif
-                <div class="flex flex-row gap-2 w-full">
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
                     <div class="flex flex-col gap-2 w-full">
                         @if ($paymentGroup == 'tunai')
                             <span class="text-xs text-gray-500">
@@ -690,55 +687,55 @@
 
 
 
-    <div class="flex justify-between mt-16 gap-4">
-        @if ($transaction->status == 'Draft')
+    <div class="flex flex-col sm:flex-row justify-between mt-16 gap-4">
+        @if ($transaction->status == 'Draft' || $transaction->status == 'temp')
             <flux:button icon="trash" type="button" variant="danger" loading="false"
-                wire:click.prevent="delete">
+                wire:click.prevent="delete" class="w-full sm:w-auto">
                 Hapus Pesanan
             </flux:button>
         @elseif(in_array($transaction->status, ['Belum Diproses', 'Selesai', 'Dapat Diambil', 'Sedang Diproses']) &&
                 in_array($transaction->payment_status, ['Belum Lunas', '']))
             <flux:button icon="ban" type="button" variant="danger" loading="false"
-                wire:click.prevent="showCancelModal">
+                wire:click.prevent="showCancelModal" class="w-full sm:w-auto">
                 Batalkan Pesanan
             </flux:button>
         @else
             <div></div>
         @endif
-        <div class="flex justify-end flex-row gap-4">
+        <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto">
             @if (
-                ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft') &&
+                ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft' || $transaction->status == 'temp') &&
                     $transaction->payment_status != 'Lunas')
-                <flux:button icon="pencil" type="secondary" class="!bg-[#FEBA17] !text-white"
+                <flux:button icon="pencil" type="secondary" class="!bg-[#FEBA17] !text-white w-full sm:w-auto"
                     href="{{ route('transaksi.edit', $transaction->id) }}" wire:navigate>
                     Ubah Daftar Pesanan
                 </flux:button>
             @elseif ($transaction->status == 'Belum Diproses' && $transaction->payment_status == 'Lunas')
-                <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
+                <flux:button icon="check-circle" type="button" wire:click.prevent='finish' class="w-full sm:w-auto">
                     Selesaikan Pesanan
                 </flux:button>
             @elseif ($transaction->status == 'Sedang Diproses' || $transaction->status == 'Dapat Diambil')
-                <flux:button icon="check-circle" type="button" wire:click.prevent='finish'>
+                <flux:button icon="check-circle" type="button" wire:click.prevent='finish' class="w-full sm:w-auto">
                     Selesaikan Pesanan
                 </flux:button>
             @endif
             @if ($transaction->status == 'Batal' || $transaction->status == 'Selesai')
                 @if ($transaction->status != 'Batal' && $transaction->refund == null)
                     <button type="button" wire:click='showRefundModal'
-                        class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
                         style="background-color: #eb5757; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
                         <flux:icon.receipt-refund variant="solid" class="size-5" />
                         Refund Pesanan
                     </button>
                 @endif
                 <button type="button" wire:click.prevent="$set('showStruk', true)"
-                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium transition-colors"
                     style="background-color: #3f4e4f; color: white; font-family: Montserrat, sans-serif; font-size: 16px; line-height: 1; border-radius: 20px;">
                     <flux:icon.printer class="size-5" />
                     Cetak Struk Pesanan
                 </button>
             @elseif($transaction->payment_status != 'Lunas' && $transaction->status != 'Batal')
-                <flux:button icon="cashier" type="button" variant="secondary" wire:click.prevent="pay">
+                <flux:button icon="cashier" type="button" variant="secondary" wire:click.prevent="pay" class="w-full sm:w-auto">
                     Bayar dan
                     @if ($transaction->status == 'Draft')
                         Buat

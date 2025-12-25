@@ -1,74 +1,71 @@
 <div>
-    <div class="flex gap-8 items-center h-10 mb-[30px]">
-        <div class="flex gap-[15px] items-center">
-            <flux:button type="button" variant="secondary" icon="arrow-left" href="{{ route('belanja') }}" wire:navigate>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-[15px] border-b sm:border-b-0 pb-4 sm:pb-0 mb-[30px]">
+        <div class="flex flex-col sm:flex-row gap-[15px] items-start sm:items-center">
+            <flux:button type="button" variant="secondary" icon="arrow-left" href="{{ route('belanja') }}" wire:navigate class="w-full sm:w-auto">
                 Kembali
             </flux:button>
-            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Riwayat Belanja Persediaan</h1>
+            <h1 class="font-montserrat font-semibold text-[20px] text-[#666666] text-center sm:text-left">Riwayat Belanja Persediaan</h1>
         </div>
     </div>
 
     <div class="bg-[#fafafa] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] rounded-[15px] px-[30px] py-[25px]">
-        <div class="flex items-center mb-5">
-            <div class="flex gap-[15px] items-center flex-1">
-                <div class="flex items-center bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex-1">
-                    <flux:icon.magnifying-glass class="size-[16px] text-[#666666]" />
-                    <input wire:model.live="search" placeholder="Cari Belanja"
-                        class="px-2.5 py-2.5 border-0 focus:outline-none focus:ring-0 text-[16px] font-medium text-[#959595] bg-transparent flex-1" />
-                </div>
+        <div class="flex flex-col sm:flex-row items-center gap-4 mb-5">
+            <div class="flex items-center bg-white border border-[#666666] rounded-full px-4 py-0 flex-1 w-full">
+                <flux:icon.magnifying-glass class="size-[16px] text-[#666666] shrink-0" />
+                <input wire:model.live="search" placeholder="Cari Belanja..."
+                    class="px-2.5 py-2.5 border-0 focus:outline-none focus:ring-0 text-[16px] font-medium text-[#959595] bg-transparent flex-1" />
             </div>
         </div>
 
-        <x-table.paginated :paginator="$expenses" :headers="[
-            [
-                'label' => 'ID Belanja',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'expense_number',
-                'class' => 'min-w-[170px]',
-            ],
-            [
-                'label' => 'Tanggal Selesai',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'expense_date',
-                'class' => 'max-w-[150px]',
-            ],
-            [
-                'label' => 'Toko Persediaan',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'supplier_name',
-                'class' => 'w-[192px]',
-            ],
-            [
-                'label' => 'Total Harga',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'grand_total_expect',
-                'class' => 'max-w-[160px]',
-                'align' => 'right',
-            ],
-            [
-                'label' => 'Total Harga (Bayar)',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'grand_total_actual',
-                'class' => 'max-w-[160px]',
-                'align' => 'right',
-            ],
-            [
-                'label' => 'Status',
-                'sortable' => true,
-                'sort-method' => 'sortByColumn',
-                'sort-by' => 'status',
-                'class' => 'max-w-[120px]',
-            ],
-            ['label' => 'Kemajuan Persediaan', 'class' => 'min-w-[100px]'],
-        ]" header-bg="#3f4e4f" header-text="#f8f4e1"
-            body-bg="#fafafa" body-text="#666666"
-            empty-message="Belum Ada Riwayat Belanja. Tekan tombol 'Tambah belanja' di halaman utama untuk menambahkan belanja."
-            wrapper-class="overflow-hidden rounded-[15px]">
+        <div class="w-full overflow-x-auto rounded-[15px] shadow-sm">
+            <x-table.paginated :paginator="$expenses" :headers="[
+                [
+                    'label' => 'ID Belanja',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'expense_number',
+                    'class' => 'min-w-[170px]',
+                ],
+                [
+                    'label' => 'Tanggal Selesai',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'expense_date',
+                    'class' => 'max-w-[150px]',
+                ],
+                [
+                    'label' => 'Toko Persediaan',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'supplier_name',
+                    'class' => 'w-[192px]',
+                ],
+                [
+                    'label' => 'Total Expect',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'grand_total_expect',
+                    'class' => 'max-w-[160px]',
+                    'align' => 'right',
+                ],
+                [
+                    'label' => 'Total Bayar',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'grand_total_actual',
+                    'class' => 'max-w-[160px]',
+                    'align' => 'right',
+                ],
+                [
+                    'label' => 'Status',
+                    'sortable' => true,
+                    'sort-method' => 'sortByColumn',
+                    'sort-by' => 'status',
+                    'class' => 'max-w-[120px]',
+                ],
+                ['label' => 'Kemajuan', 'class' => 'min-w-[100px]'],
+            ]" header-bg="#3f4e4f" header-text="#f8f4e1" body-bg="#fafafa" body-text="#666666"
+                empty-message="Belum Ada Riwayat Belanja." wrapper-class="mb-0">
             @foreach ($expenses as $expense)
                 @php
                     $total_expect = $expense->expenseDetails->sum('quantity_expect');
@@ -131,7 +128,8 @@
                     </td>
                 </tr>
             @endforeach
-        </x-table.paginated>
+            </x-table.paginated>
+        </div>
     </div>
 
 </div>

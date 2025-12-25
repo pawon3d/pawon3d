@@ -159,8 +159,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <div class="mt-6 flex justify-center">
-        <flux:text>Belum punya akun? <flux:link wire:navigate href="#" class="text-primary-600 font-semibold"
-                variant="ghost"> Hubungi
+        <flux:text>Belum punya akun? <flux:link href="https://wa.me/{{ $storeProfile->contact != '' ? $storeProfile->contact : '6281234567890' }}" class="text-primary-600 font-semibold"
+                variant="ghost" external> Hubungi
                 Pemilik Usaha</flux:link>
         </flux:text>
     </div>

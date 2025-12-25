@@ -1,7 +1,7 @@
 <div>
-    <div class="mb-[30px] flex items-center gap-[15px]">
+    <div class="mb-[30px] flex flex-col sm:flex-row sm:items-center gap-[15px]">
         <a href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja.rencana') }}"
-            class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]"
+            class="px-[25px] py-[10px] rounded-[15px] bg-[#313131] flex items-center justify-center gap-[5px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] w-full sm:w-auto"
             wire:navigate>
             <flux:icon.arrow-left class="size-5 text-[#f6f6f6]" />
             <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]">Kembali</span>
@@ -18,7 +18,7 @@
     </x-alert.info>
 
     <div
-        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] mt-[30px] flex gap-[130px]">
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[20px] sm:px-[30px] py-[25px] mt-[30px] flex flex-col lg:flex-row gap-8 lg:gap-[130px]">
         <div class="flex-1 flex flex-col gap-[30px]">
             <div class="flex flex-col gap-[15px]">
                 <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Pilih Toko Persediaan</h3>
@@ -80,13 +80,13 @@
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] mt-[30px] flex flex-col gap-[15px]">
         <div class="flex flex-col gap-[15px]">
             <h3 class="font-['Montserrat'] font-medium text-[18px] text-[#666666]">Daftar Belanja Persediaan</h3>
-            <div class="flex items-center justify-between gap-[15px]">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[15px]">
                 <p class="flex-1 font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify">
                     Tambahkan barang sesuai dengan kebutuhan operasional. Satuan belanja akan dikonversi menjadi satuan
                     persediaan terkini (satuan utama). Pastikan harga sesuai dengan harga beli. Harga akan manjadi acuan
                     modal dalam produksi.
                 </p>
-                <flux:button type="button" wire:click="addDetail" variant="primary" icon="plus">
+                <flux:button type="button" wire:click="addDetail" variant="primary" icon="plus" class="w-full sm:w-auto">
                     Tambah Belanja
                 </flux:button>
             </div>
@@ -95,15 +95,16 @@
 
         <x-table.form :headers="[
             ['label' => 'Barang Persediaan', 'class' => 'text-left px-[25px] py-[21px] min-w-[255px]'],
-            ['label' => 'Jumlah Diharapkan', 'class' => 'text-right px-[25px] py-[21px] max-w-[120px]'],
-            ['label' => 'Jumlah Belanja', 'class' => 'text-right px-[25px] py-[21px] w-[130px]'],
-            ['label' => 'Satuan Ukur Belanja', 'class' => 'text-left px-[25px] py-[21px] w-[210px]'],
+            ['label' => 'Diharapkan', 'class' => 'text-right px-[25px] py-[21px] max-w-[120px]'],
+            ['label' => 'Jumlah', 'class' => 'text-right px-[25px] py-[21px] w-[130px]'],
+            ['label' => 'Satuan Ukur', 'class' => 'text-left px-[25px] py-[21px] w-[210px]'],
             ['label' => 'Harga Satuan', 'class' => 'text-right px-[25px] py-[21px]'],
             ['label' => 'Total Harga', 'class' => 'text-right px-[25px] py-[21px]'],
             ['label' => '', 'class' => 'text-right px-[25px] py-[21px] w-[72px]'],
         ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
             body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
-            empty-message="Belum ada barang belanja. Klik tombol 'Tambah Belanja' untuk menambahkan.">
+            empty-message="Belum ada barang belanja. Klik tombol 'Tambah Belanja' untuk menambahkan."
+            wrapper-class="mb-0">
             <x-slot:rows>
                 @foreach ($expense_details as $index => $detail)
                     <tr class="bg-[#fafafa] border-b border-[#d4d4d4]">
@@ -177,10 +178,13 @@
 
             <x-slot:footer>
                 <tr class="border-b border-[#d4d4d4]">
-                    <td class="px-[25px] py-0 h-[60px] font-['Montserrat'] font-bold text-[14px] text-[#666666] rounded-bl-[15px]"
-                        colspan="5">
+                    <td class="px-[25px] py-0 h-[60px] font-['Montserrat'] font-bold text-[14px] text-[#666666] rounded-bl-[15px]">
                         Total
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td
                         class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-bold text-[14px] text-[#666666]">
                         Rp{{ number_format($grand_total_expect, 0, ',', '.') }}
@@ -188,22 +192,25 @@
                     <td class="px-[25px] py-0 h-[60px] rounded-br-[15px]"></td>
                 </tr>
             </x-slot:footer>
-        </x-table.form>
+            </x-table.form>
     </div>
 
 
 
-    <div class="flex justify-end items-center gap-[30px] mt-[50px]">
+    <div class="flex flex-col sm:flex-row justify-end items-center gap-[15px] mt-[50px]">
         <flux:button type="button" variant="filled" icon="x-mark"
-            href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja') }}" wire:navigate>
+            href="{{ $expense_id ? route('belanja.rincian', $expense_id) : route('belanja') }}" wire:navigate
+            class="w-full sm:w-auto">
             Batal
         </flux:button>
         @if ($expense_id)
-            <flux:button type="button" wire:click.prevent="update" variant="secondary" icon="save">
+            <flux:button type="button" wire:click.prevent="update" variant="secondary" icon="save"
+                class="w-full sm:w-auto text-nowrap">
                 Simpan Perubahan
             </flux:button>
         @else
-            <flux:button type="button" wire:click.prevent="store" variant="secondary" icon="archive-box">
+            <flux:button type="button" wire:click.prevent="store" variant="secondary" icon="archive-box"
+                class="w-full sm:w-auto text-nowrap">
                 Buat Rencana Belanja
             </flux:button>
         @endif

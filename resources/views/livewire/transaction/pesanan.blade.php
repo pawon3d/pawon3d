@@ -1,26 +1,26 @@
-<div>
+<div class="px-4 sm:px-0 py-4 sm:py-0">
     {{-- Header with Back Button and Title --}}
-    <div class="flex gap-[32px] items-center mb-8">
-        <div class="flex gap-[15px] items-center">
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <a href="{{ route('transaksi') }}"
-                class="bg-[#313131] flex items-center justify-center gap-[5px] px-[25px] py-[10px] rounded-[15px] shadow-sm hover:bg-[#252324] transition-colors"
+                class="w-full sm:w-auto bg-[#313131] flex items-center justify-center gap-[5px] px-[25px] py-[10px] rounded-[15px] shadow-sm hover:bg-[#252324] transition-colors"
                 wire:navigate style="font-family: 'Montserrat', sans-serif;">
                 <flux:icon icon="arrow-left" class="size-5 text-[#f8f4e1]" />
                 <span class="font-semibold text-[16px] text-[#f8f4e1]">Kembali</span>
             </a>
-            <p class="font-semibold text-[20px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
+            <p class="font-semibold text-[20px] text-[#666666] text-center sm:text-left" style="font-family: 'Montserrat', sans-serif;">
                 Daftar {{ $methodName }}
             </p>
         </div>
     </div>
 
     {{-- Content Container --}}
-    <div class="bg-[#fafafa] rounded-[15px] shadow-sm px-[30px] py-[25px]">
+    <div class="bg-[#fafafa] rounded-[15px] shadow-sm p-4 sm:px-[30px] sm:py-[25px]">
         {{-- Search Bar --}}
-        <div class="flex justify-between items-center mb-[20px]">
-            <div class="flex-1 flex gap-[15px] items-center">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-[20px] gap-4">
+            <div class="flex-1 w-full flex flex-col sm:flex-row gap-[15px] items-center">
                 {{-- Search Input --}}
-                <div class="flex-1 bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex items-center">
+                <div class="flex-1 w-full bg-white border border-[#666666] rounded-[20px] px-[15px] py-0 flex items-center">
                     <flux:icon icon="magnifying-glass" class="size-[30px] text-[#666666]" />
                     <input wire:model.live="search" placeholder="Cari Pesanan" type="text"
                         class="flex-1 px-[10px] py-[10px] font-medium text-[16px] text-[#959595] border-0 focus:ring-0 focus:outline-none bg-transparent"
@@ -28,7 +28,7 @@
                 </div>
 
                 {{-- Filter Button --}}
-                <div class="flex items-center gap-[5px] cursor-pointer">
+                <div class="flex items-center gap-[5px] cursor-pointer justify-center">
                     <flux:icon icon="funnel" class="size-[25px] text-[#666666]" />
                     <span class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                         Filter
@@ -92,9 +92,11 @@
             }
         @endphp
 
-        <x-table.paginated :headers="$headers" :paginator="$transactions" emptyMessage="Belum ada pesanan." headerBg="#3f4e4f"
-            headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
-            wrapperClass="rounded-[15px] border border-[#d4d4d4]">
+        <div class="overflow-x-auto">
+            <div class="min-w-[1000px]">
+                <x-table.paginated :headers="$headers" :paginator="$transactions" emptyMessage="Belum ada pesanan." headerBg="#3f4e4f"
+                    headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                    wrapperClass="rounded-[15px] border border-[#d4d4d4]">
             @foreach ($transactions as $transaction)
                 <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
                     {{-- ID Transaksi --}}
@@ -239,6 +241,8 @@
                     @endif
                 </tr>
             @endforeach
-        </x-table.paginated>
+                </x-table.paginated>
+            </div>
+        </div>
     </div>
 </div>

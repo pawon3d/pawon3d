@@ -241,13 +241,18 @@ class Form extends Component
 
     public function confirmDelete(): void
     {
-        $this->alert('warning', 'Apakah Anda yakin ingin menghapus pekerja ini?', [
+        $this->alert('warning', 'Hapus Pekerja?', [
+            'text' => 'Apakah Anda yakin ingin menghapus pekerja ini? Data yang dihapus tidak dapat dikembalikan.',
             'showConfirmButton' => true,
             'showCancelButton' => true,
-            'confirmButtonText' => 'Ya, hapus',
+            'confirmButtonText' => 'Ya, Hapus',
             'cancelButtonText' => 'Batal',
             'onConfirmed' => 'delete',
             'onCancelled' => 'cancelled',
+            'confirmButtonColor' => '#ef4444',
+            'cancelButtonColor' => '#6b7280',
+            'width' => '400',
+            'padding' => '1.5rem',
             'toast' => false,
             'position' => 'center',
             'timer' => null,

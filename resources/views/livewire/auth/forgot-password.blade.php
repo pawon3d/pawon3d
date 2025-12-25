@@ -3,9 +3,11 @@
 use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $email = '';
+    
 
     /**
      * Send a password reset link to the provided email address.
@@ -18,12 +20,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Password::sendResetLink($this->only('email'));
 
-        session()->flash('status', __('A reset link will be sent if the account exists.'));
+        $this->alert('success', 'Link reset password berhasil dikirim');
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Forgot password" description="Enter your email to receive a password reset link" />
+    <x-auth-header title="Forgot password" description="Masukkan email yang terdaftar untuk mengirim link reset password" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -44,7 +46,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <div class="space-x-1 text-center text-sm text-zinc-400">
-        Or, return to
-        <flux:link :href="route('login')" wire:navigate>log in</flux:link>
+        <flux:link :href="route('login')" wire:navigate>Back to login</flux:link>
     </div>
 </div>

@@ -1,31 +1,33 @@
-<div>
+<div class="px-4 sm:px-[30px] py-4 sm:py-[30px]" style="background: #eaeaea; min-height: 100vh;">
     {{-- Header Section --}}
-    <div class="flex items-center justify-between mb-[30px]">
-        <div class="flex items-center gap-[15px]">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-[30px] gap-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto sm:gap-[15px]">
             <flux:button variant="secondary" icon="arrow-left" href="{{ route('produksi') }}" wire:navigate
-                class="bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
+                class="w-full sm:w-auto bg-[#313131] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px] px-[25px] py-[10px] no-underline">
                 <span
                     style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Kembali</span>
             </flux:button>
-            <h1
-                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; white-space: nowrap;">
+            <h1 class="text-[18px] sm:text-[20px] font-semibold text-[#666666] text-center sm:text-left"
+                style="font-family: 'Montserrat', sans-serif;">
                 Rincian Produksi</h1>
         </div>
-        <flux:button variant="secondary" wire:click="riwayatPembaruan">
-            Riwayat Pembaruan
-        </flux:button>
+        <div class="w-full sm:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full">
+                Riwayat Pembaruan
+            </flux:button>
+        </div>
     </div>
 
     {{-- Main Content Container --}}
-    <div class="flex flex-col gap-[50px] items-end">
+    <div class="flex flex-col gap-[30px] sm:gap-[50px] items-end">
         <div class="flex flex-col gap-[30px] w-full">
             {{-- Production Information Card --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col gap-[30px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-4 sm:px-[30px] py-6 sm:py-[25px] flex flex-col gap-[30px]">
                 {{-- Production Number and Status --}}
-                <div class="flex items-center justify-between w-full">
-                    <p
-                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 30px; color: #666666; white-space: nowrap;">
+                <div class="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+                    <p class="text-[24px] sm:text-[30px] font-medium text-[#666666] text-center sm:text-left"
+                        style="font-family: 'Montserrat', sans-serif;">
                         {{ $production->production_number }}</p>
                     @php
                         $statusColors = [
@@ -45,82 +47,72 @@
                 </div>
 
                 {{-- Date and User Information --}}
-                <div class="flex items-center w-full">
-                    <div class="flex items-center gap-[34px]">
+                <div class="flex flex-col xl:flex-row xl:items-center w-full gap-6 sm:gap-[34px]">
+                    <div class="flex flex-col md:flex-row md:items-start gap-6 md:gap-[34px]">
                         @if ($production->method == 'siap-beli')
                             {{-- Tanggal Pembuatan Rencana --}}
                             <div class="flex flex-col gap-[5px]">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; white-space: nowrap;">
+                                <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     Tanggal Pembuatan Rencana</p>
-                                <div class="flex items-start gap-[10px]"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
                                     @if ($date)
-                                        <p>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y') }}</p>
-                                        <p>{{ \Carbon\Carbon::parse($date)->format('H:i') }}</p>
+                                        <span>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y') }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($date)->format('H:i') }}</span>
                                     @else
-                                        <p>-</p>
+                                        <span>-</span>
                                     @endif
                                 </div>
                             </div>
                             {{-- Tanggal Pelaksanaan Produksi --}}
                             <div class="flex flex-col gap-[5px]">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; white-space: nowrap;">
+                                <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     Tanggal Pelaksanaan Produksi</p>
-                                <div class="flex items-start gap-[10px]"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
                                     @if ($production->start_date)
-                                        <p>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}
-                                        </p>
-                                        <p>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '00:00' }}
-                                        </p>
+                                        <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
+                                        <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '00:00' }}</span>
                                     @else
-                                        <p>-</p>
+                                        <span>-</span>
                                     @endif
                                 </div>
                             </div>
                         @else
                             {{-- Tanggal Produksi --}}
                             <div class="flex flex-col gap-[5px]">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; white-space: nowrap;">
+                                <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     Tanggal Produksi</p>
-                                <div class="flex items-start gap-[10px]"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
                                     @if ($production->start_date)
-                                        <p>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}
-                                        </p>
-                                        <p>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '00:00' }}
-                                        </p>
+                                        <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
+                                        <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') : '00:00' }}</span>
                                     @else
-                                        <p>-</p>
+                                        <span>-</span>
                                     @endif
                                 </div>
                             </div>
                             {{-- Tanggal Ambil Pesanan --}}
                             <div class="flex flex-col gap-[5px]">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; white-space: nowrap;">
+                                <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     Tanggal Ambil Pesanan</p>
-                                <div class="flex items-start gap-[10px]"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666;">
+                                <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
                                     @if ($production->transaction && $production->transaction->date)
-                                        <p>{{ \Carbon\Carbon::parse($production->transaction->date)->translatedFormat('d M Y') }}
-                                        </p>
-                                        <p>{{ $production->transaction->time ? \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '00:00' }}
-                                        </p>
+                                        <span>{{ \Carbon\Carbon::parse($production->transaction->date)->translatedFormat('d M Y') }}</span>
+                                        <span>{{ $production->transaction->time ? \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '00:00' }}</span>
                                     @else
-                                        <p>-</p>
+                                        <span>-</span>
                                     @endif
                                 </div>
                             </div>
                         @endif
                         {{-- Tanggal Produksi Selesai --}}
-                        <div class="flex flex-col gap-[5px]"
-                            style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666;">
-                            <p style="font-weight: 500; white-space: nowrap;">Tanggal Produksi Selesai</p>
-                            <p style="font-weight: 400; white-space: nowrap;">
+                        <div class="flex flex-col gap-[5px] text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            <p class="font-medium">Tanggal Produksi Selesai</p>
+                            <p class="font-normal">
                                 @if ($end_date)
                                     {{ \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y H:i') }}
                                 @else
@@ -129,23 +121,21 @@
                             </p>
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-end gap-[34px]">
+                    <div class="flex-1 flex flex-col md:flex-row items-start md:items-center md:justify-end gap-6 md:gap-[34px]">
                         @if ($production->method != 'siap-beli')
                             {{-- ID Pesanan --}}
-                            <div class="flex flex-col gap-[5px] items-end">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666; white-space: nowrap;">
+                            <div class="flex flex-col gap-[5px] md:items-end w-full md:w-auto">
+                                <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     ID Pesanan</p>
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666; white-space: nowrap;">
+                                <p class="font-normal text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                                     {{ $production->transaction->invoice_number ?? '-' }}</p>
                             </div>
                         @endif
                         {{-- Koki --}}
-                        <div class="flex flex-col gap-[5px] items-end"
+                        <div class="flex flex-col gap-[5px] md:items-end w-full md:w-auto"
                             style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666;">
-                            <p style="font-weight: 500; white-space: nowrap;">Koki</p>
-                            <p style="font-weight: 400; white-space: nowrap;">
+                            <p class="font-medium">Koki</p>
+                            <p class="font-normal">
                                 {{ $production->workers->count() > 0 ? $production->workers->map(fn($w) => $w->worker?->name)->filter()->implode(', ') : '-' }}
                             </p>
                         </div>
@@ -153,17 +143,17 @@
                 </div>
 
                 {{-- Progress Bar --}}
-                <div class="flex flex-col gap-[5px] h-[45px] justify-center w-full">
-                    <div class="relative w-full h-full">
+                <div class="flex flex-col gap-[10px] sm:gap-[5px] w-full">
+                    <div class="relative w-full h-[18px] sm:h-[45px]">
                         <div class="absolute inset-0 bg-[#eaeaea] rounded-[5px]"></div>
                         <div class="absolute inset-0 bg-[#49aa59] rounded-[5px]"
                             style="width: {{ number_format($percentage, 0) }}%;"></div>
                     </div>
                     <div class="flex items-center justify-center w-full">
-                        <p
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #525252; white-space: nowrap;">
+                        <p class="font-medium text-[12px] sm:text-[14px] text-[#525252]"
+                            style="font-family: 'Montserrat', sans-serif;">
                             {{ number_format($percentage, 0) }}% ({{ $total_quantity_get }} <span
-                                style="font-weight: 400;">dari</span> {{ $total_quantity_plan }})
+                                class="font-normal">dari</span> {{ $total_quantity_plan }})
                         </p>
                     </div>
                 </div>
@@ -186,13 +176,14 @@
 
             {{-- Product Table Card --}}
             <div
-                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col gap-[30px]">
+                class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-4 sm:px-[30px] py-6 sm:py-[25px] flex flex-col gap-[30px]">
                 <div class="flex flex-col gap-[20px] w-full">
                     <p
                         style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666;">
                         Daftar Produk</p>
 
-                    <div class="flex flex-col w-full">
+                    <div class="overflow-x-auto w-full rounded-t-[15px]">
+                        <div class="flex flex-col min-w-[900px]">
                         {{-- Table Header --}}
                         <div class="flex items-center w-full rounded-t-[15px] overflow-hidden">
                             <div class="flex-1 bg-[#3f4e4f] px-[25px] py-[21px] h-[60px] flex items-center">
@@ -342,27 +333,25 @@
                                 </p>
                             </div>
                         </div>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Catatan Produksi Section --}}
-                <div class="flex flex-col gap-[20px] w-full">
-                    <div class="flex items-center justify-between w-full">
-                        <p
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 16px; color: #666666;">
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
+                        <p class="font-medium text-[16px] text-[#666666]" style="font-family: 'Montserrat', sans-serif;">
                             Catatan Produksi</p>
                         <button wire:click="buatCatatan"
-                            class="bg-[#666666] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px]">
-                            <flux:icon.pencil class="size-6 text-[#f6f6f6]" />
-                            <span
-                                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Buat
-                                Catatan</span>
+                            class="w-full sm:w-auto bg-[#666666] text-[#f6f6f6] px-[25px] py-[10px] rounded-[15px] border-none cursor-pointer shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px]">
+                            <flux:icon icon="pencil-square" class="size-5 text-[#f6f6f6]" />
+                            <span class="font-['Montserrat'] font-semibold text-[16px]">Buat Catatan</span>
                         </button>
                     </div>
                     <div
-                        class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px] h-[120px] w-full">
-                        <p
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 16px; color: #666666; text-align: justify;">
+                        class="bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px] min-h-[120px] w-full">
+                        <p class="font-normal text-[16px] text-[#666666] text-justify"
+                            style="font-family: 'Montserrat', sans-serif;">
                             {{ $production->note ?: 'Tidak ada catatan' }}
                         </p>
                     </div>
@@ -372,56 +361,49 @@
 
         {{-- Action Buttons --}}
         @if ($is_start && !$is_finish)
-            <div class="flex flex-wrap gap-[30px] items-center justify-end w-full">
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-[30px] items-center justify-end w-full">
                 <flux:button variant="outline" icon="check-circle" wire:click="finish"
-                    class="bg-[#fafafa] border border-[#3f4e4f] rounded-[15px] flex items-center gap-[5px] px-[25px] py-[10px]">
-                    <span
-                        style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #3f4e4f; white-space: nowrap;">Selesaikan
-                        Produksi</span>
+                    class="w-full sm:w-auto bg-[#fafafa] border border-[#3f4e4f] rounded-[15px] flex items-center justify-center gap-[5px] px-[25px] py-[10px]">
+                    <span class="font-semibold text-[16px] text-[#3f4e4f]" style="font-family: 'Montserrat', sans-serif;">Selesaikan Produksi</span>
                 </flux:button>
                 @if ($total_quantity_get < $total_quantity_plan)
                     <flux:button href="{{ route('produksi.mulai', $production->id) }}" variant="secondary"
                         icon="clipboard-document-list" wire:navigate
-                        class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
-                        <span
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f8f4e1; white-space: nowrap;">Dapatkan
-                            Produk</span>
+                        class="w-full sm:w-auto bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px] px-[25px] py-[10px] no-underline">
+                        <span class="font-semibold text-[16px] text-[#f8f4e1]" style="font-family: 'Montserrat', sans-serif;">Dapatkan Produk</span>
                     </flux:button>
                 @endif
             </div>
         @elseif (!$is_start && !$is_finish)
-            <div class="flex gap-[30px] items-center justify-end w-full">
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-[30px] items-center justify-end w-full">
                 <button wire:click="confirmDelete"
-                    class="bg-[#ff0000] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px]">
+                    class="w-full sm:w-auto bg-[#ff0000] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px] px-[25px] py-[10px] border-none cursor-pointer">
                     <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M3 5H17M8 9V15M12 9V15M4 5L5 17C5 17.5 5.5 18 6 18H14C14.5 18 15 17.5 15 17L16 5M7 5V3C7 2.5 7.5 2 8 2H12C12.5 2 13 2.5 13 3V5"
                             stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
+                    <span class="sm:hidden font-semibold text-[16px] text-white" style="font-family: 'Montserrat', sans-serif;">Hapus Rencana</span>
                 </button>
                 @if ($production->method != 'siap-beli' && $total_quantity_get <= 0)
                     <a href="{{ route('produksi.edit-produksi-pesanan', $production->id) }}" wire:navigate
-                        class="bg-[#666666] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px] no-underline">
+                        class="w-full sm:w-auto bg-[#666666] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px] px-[25px] py-[10px] no-underline">
                         <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path d="M3 17H17M14 4L16 6L10 12H8V10L14 4Z" stroke="#ffffff" stroke-width="1.5"
                                 stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <span
-                            style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f6f6f6; white-space: nowrap;">Ubah
-                            Rencana Produksi</span>
+                        <span class="font-semibold text-[16px] text-[#f6f6f6]" style="font-family: 'Montserrat', sans-serif;">Ubah Rencana</span>
                     </a>
                 @endif
                 <button wire:click="start"
-                    class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-[5px] px-[25px] py-[10px]">
+                    class="w-full sm:w-auto bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px] px-[25px] py-[10px] border-none cursor-pointer">
                     <svg class="w-[20px] h-[20px]" viewBox="0 0 20 20" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 2C10 2 6 4 6 8V11L4 13V14H16V13L14 11V8C14 4 10 2 10 2Z" fill="#f8f4e1" />
                     </svg>
-                    <span
-                        style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: #f8f4e1; white-space: nowrap;">Mulai
-                        Produksi</span>
+                    <span class="font-semibold text-[16px] text-[#f8f4e1]" style="font-family: 'Montserrat', sans-serif;">Mulai Produksi</span>
                 </button>
             </div>
         @endif

@@ -1,15 +1,15 @@
 <div>
-    <div class="mb-6 flex justify-between items-center">
-        <div class="flex gap-4 items-center">
+    <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
             <a href="{{ route('belanja') }}" wire:navigate
-                class="bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center gap-1 transition-colors">
+                class="w-full sm:w-auto bg-[#313131] hover:bg-[#252324] text-white px-6 py-2.5 rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center gap-1 transition-colors">
                 <flux:icon.arrow-left variant="mini" class="size-4" />
                 <span class="font-montserrat font-semibold text-[16px]">Kembali</span>
             </a>
             <h1 class="font-montserrat font-semibold text-[20px] text-[#666666]">Daftar Toko Persediaan</h1>
         </div>
-        <div class="flex gap-2.5 items-center">
-            <flux:button variant="secondary" wire:click="riwayatPembaruan">
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
                 Riwayat Pembaruan
             </flux:button>
         </div>
@@ -21,21 +21,21 @@
     </x-alert.info>
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-8 py-6 flex flex-col gap-5 mt-6">
-        <div class="flex justify-between items-center">
-            <div class="flex gap-4 items-center w-[545px]">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div class="flex flex-col sm:flex-row gap-4 sm:items-center flex-1 w-full">
                 <div
-                    class="flex-1 bg-white border border-[#666666] rounded-[20px] px-4 py-0 h-[40px] flex items-center">
+                    class="flex-1 bg-white border border-[#666666] rounded-full px-4 py-0 min-h-[46px] flex items-center">
                     <flux:icon.magnifying-glass class="size-[30px] text-[#666666] shrink-0" />
                     <input wire:model.live="search" placeholder="Cari Toko Persediaan"
                         class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
                 </div>
-                <div class="flex items-center gap-1 cursor-pointer">
+                <div class="flex items-center gap-1 cursor-pointer justify-center">
                     <flux:icon.funnel class="size-[25px] text-[#666666]" />
                     <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
                 </div>
             </div>
             <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}"
-                wire:navigate>
+                wire:navigate class="w-full sm:w-auto">
                 Tambah Toko
             </flux:button>
         </div>
@@ -48,7 +48,7 @@
                 'sort-method' => 'sortByColumn',
             ],
             [
-                'label' => 'Nama Kontak',
+                'label' => 'Kontak',
                 'sortable' => true,
                 'sort-by' => 'contact_name',
                 'sort-method' => 'sortByColumn',

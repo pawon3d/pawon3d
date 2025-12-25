@@ -57,7 +57,7 @@ class Pesanan extends Component
         $query = \App\Models\Transaction::with(['details.product', 'user'])
             ->where('transactions.invoice_number', 'like', '%'.$this->search.'%')
             ->where('transactions.method', $this->method)
-            ->whereNotIn('transactions.status', ['Gagal', 'Selesai', 'temp']);
+            ->whereNotIn('transactions.status', ['Batal', 'Selesai']);
 
         if ($this->sortField === 'product_name') {
             $query->join('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')
