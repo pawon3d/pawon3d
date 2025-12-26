@@ -40,7 +40,17 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate([
             'token' => ['required'],
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults(), 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'
+            ],
+        [
+            'token.required' => 'Token reset tidak valid atau sudah kadaluarsa.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Email harus valid.',
+            'password.required' => 'Kata sandi harus diisi.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'password.regex' => 'Kata sandi harus mengandung huruf dan angka.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        ]
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -103,6 +113,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             required
             autocomplete="new-password"
             placeholder="Password"
+            viewable
         />
 
         <!-- Confirm Password -->
@@ -115,6 +126,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             required
             autocomplete="new-password"
             placeholder="Confirm password"
+            viewable
         />
 
         <div class="flex items-center justify-end">
