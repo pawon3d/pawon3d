@@ -55,9 +55,9 @@ class Riwayat extends Component
     public function render()
     {
         $query = \App\Models\Transaction::with(['details.product', 'user'])
-            ->where('transactions.invoice_number', 'like', '%'.$this->search.'%')
-            ->where('transactions.method', $this->method)
-            ->whereIn('transactions.status', ['Gagal', 'Selesai']);
+            ->where('invoice_number', 'like', '%'.$this->search.'%')
+            ->where('method', $this->method)
+            ->whereIn('status', ['Batal', 'Selesai']);
 
         if ($this->sortField === 'product_name') {
             $query->join('transaction_details', 'transactions.id', '=', 'transaction_details.transaction_id')

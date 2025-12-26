@@ -30,6 +30,8 @@
         </div>
     </div>
     @fluxScripts
+    <script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
+    <x-livewire-alert::scripts />
     
     <!-- PWA Install Script -->
     <script src="{{ asset('scripts/pwa-install.js') }}"></script>

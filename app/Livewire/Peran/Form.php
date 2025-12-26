@@ -54,13 +54,20 @@ class Form extends Component
         return $this->roleId !== null;
     }
 
-    public function mount(?int $id = null): void
+    public function mount(?string $id = null)
     {
         View::share('mainTitle', 'Pekerja');
 
         if ($id) {
-            $this->roleId = $id;
-            $role = SpatieRole::findOrFail($id);
+            try {
+                $decryptedId = \Illuminate\Support\Facades\Crypt::decryptString($id);
+                $this->roleId = $decryptedId;
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                session()->flash('error', 'ID Peran tidak valid.');
+                return redirect()->route('role');
+            }
+
+            $role = SpatieRole::findOrFail($decryptedId);
 
             View::share('title', 'Rincian Peran');
 

@@ -9,6 +9,7 @@ use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Volt\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Locked]
@@ -17,14 +18,18 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public string $password = '';
     public string $password_confirmation = '';
 
+    use LivewireAlert;
+
     /**
      * Mount the component.
      */
     public function mount(string $token): void
     {
+        View::share('title', 'Reset Password');
         $this->token = $token;
 
         $this->email = request()->string('email');
+
     }
 
     /**
@@ -62,14 +67,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
             return;
         }
 
-        Session::flash('status', __($status));
+        $this->alert('success', 'Password berhasil direset');
 
+        Session::flash('status', 'Password berhasil direset');
         $this->redirectRoute('login', navigate: true);
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Reset password" description="Please enter your new password below" />
+    <x-auth-header title="Reset password" description="Masukkan password baru" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -84,6 +90,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             name="email"
             required
             autocomplete="email"
+            disabled
         />
 
         <!-- Password -->

@@ -49,7 +49,7 @@
             @foreach ($roles as $role)
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                        <a href="{{ route('role.edit', $role->id) }}" class="hover:underline" wire:navigate>
+                        <a href="{{ route('role.edit', \Illuminate\Support\Facades\Crypt::encryptString($role->id)) }}" class="hover:underline" wire:navigate>
                             {{ $role->name }}
                         </a>
                     </td>

@@ -4,9 +4,16 @@ use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Models\User;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $email = '';
+
+    use LivewireAlert;
+
+    public function mount(){
+         View::share('title', 'Lupa Password');
+    }
     
 
     /**
@@ -18,9 +25,20 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'email' => ['required', 'string', 'email'],
         ]);
 
-        Password::sendResetLink($this->only('email'));
+        $user = User::where('email', $this->email)->first();
 
-        $this->alert('success', 'Link reset password berhasil dikirim');
+        if ($user && !$user->is_active) {
+            $this->alert('error', 'Akun Anda tidak aktif. Silakan hubungi administrator.');
+            return;
+        }
+
+        $status = Password::sendResetLink($this->only('email'));
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $this->alert('success', 'Link reset password berhasil dikirim');
+        } else {
+            $this->alert('error', 'Link reset password gagal dikirim' );
+        }
     }
 }; ?>
 
@@ -42,10 +60,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
             placeholder="email@example.com"
         />
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Email password reset link') }}</flux:button>
+        <flux:button variant="primary" type="submit" class="w-full">{{ __('Kirim link reset password') }}</flux:button>
     </form>
 
     <div class="space-x-1 text-center text-sm text-zinc-400">
-        <flux:link :href="route('login')" wire:navigate>Back to login</flux:link>
+        <flux:link :href="route('login')" wire:navigate>{{ __('Kembali ke login') }}</flux:link>
     </div>
 </div>

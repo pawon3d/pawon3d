@@ -10,6 +10,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Validate('required|string')]
@@ -20,9 +21,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public bool $remember = false;
 
+    use LivewireAlert;
+
     public function mount()
     {
         View::share('title', 'Login');
+        if (session()->has('status')) {
+            $this->alert('success', session('status'));
+        }
     }
 
     /**

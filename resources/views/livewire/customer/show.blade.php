@@ -432,7 +432,7 @@
                     <flux:label class="mb-2">Bukti Story Instagram (5 Poin)</flux:label>
                     <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
                         <label
-                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 text-sm rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
+                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
                             Unggah Bukti
                             <input type="file" wire:model.live="ig_image"
                                 accept="image/jpeg, image/png, image/jpg" class="hidden" />
@@ -461,7 +461,7 @@
                     <flux:label class="mb-2">Bukti Rating Gmaps (10 Poin)</flux:label>
                     <div class="flex flex-col sm:flex-row sm:items-center gap-4 mt-3">
                         <label
-                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 text-sm rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
+                            class="relative flex items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 h-10 rounded-lg px-4 bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 shadow-sm w-full sm:w-1/3 text-xs text-center">
                             Unggah Bukti
                             <input type="file" wire:model.live="gmaps_image"
                                 accept="image/jpeg, image/png, image/jpg" class="hidden" />

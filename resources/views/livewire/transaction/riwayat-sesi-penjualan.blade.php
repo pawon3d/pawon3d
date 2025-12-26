@@ -75,7 +75,7 @@
                         <div class="flex gap-[10px] items-center">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($shift->start_time)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($shift->start_time)->translatedFormat('d F Y') }}
                             </span>
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
@@ -89,7 +89,7 @@
                         <div class="flex gap-[10px] items-center">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->format('d M Y') : '-' }}
+                                {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->translatedFormat('d F Y') : '-' }}
                             </span>
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">

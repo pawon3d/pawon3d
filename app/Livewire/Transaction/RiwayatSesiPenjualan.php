@@ -74,14 +74,12 @@ class RiwayatSesiPenjualan extends Component
         // Calculate received cash and non-cash for each shift
         foreach ($shifts as $shift) {
             $receivedCash = Payment::whereHas('transaction', function ($q) use ($shift) {
-                $q->where('shift_id', $shift->id)
-                    ->where('transaction_type', '!=', 'refund');
-            })->where('payment_method', 'Tunai')->sum('amount');
+                $q->where('created_by_shift', $shift->id);
+            })->where('payment_method', 'tunai')->sum('paid_amount');
 
             $receivedNonCash = Payment::whereHas('transaction', function ($q) use ($shift) {
-                $q->where('shift_id', $shift->id)
-                    ->where('transaction_type', '!=', 'refund');
-            })->where('payment_method', '!=', 'Tunai')->sum('amount');
+                $q->where('created_by_shift', $shift->id);
+            })->where('payment_method', '!=', 'tunai')->sum('paid_amount');
 
             $shift->received_cash = $receivedCash;
             $shift->received_non_cash = $receivedNonCash;
