@@ -1222,95 +1222,9 @@
                 }
             </script>
         @endscript
-    @endif
 
 
-    {{-- <flux:modal class="w-full max-w-xs" wire:model="showPrintModal">
-        @if ($transaction)
-        <style>
-            @media print {
-                body * {
-                    visibility: hidden;
-                }
 
-
-                #printArea,
-                #printArea * {
-                    visibility: visible;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                }
-
-                #printArea {
-                    size: 72mm 100vh;
-                    margin: 0;
-                    padding: 0;
-                    font-size: 10px;
-                }
-            }
-        </style>
-        <div id="printArea" class="p-4">
-
-            <div class="text-center">
-                <h2 class="text-lg font-bold">Struk Transaksi</h2>
-                <p class="text-xs">Tanggal: {{ \Carbon\Carbon::now()->format('d-m-Y H:i') }}</p>
-            </div>
-
-            <div class="mt-4">
-                <p class="text-xs"><strong>Total:</strong> Rp {{ number_format($transaction->total_amount) }}</p>
-                <p class="text-xs"><strong>Status Pembayaran:</strong> {{ $transaction->payment_status }}</p>
-                <p class="text-xs"><strong>Tipe:</strong>
-                    @if ($transaction->method == 'pesanan-reguler')
-                    Pesanan Reguler
-                    @elseif('pesanan-kotak')
-                    Pesanan Kotak
-                    @else
-                    Siap Saji
-                    @endif
-                </p>
-            </div>
-
-            <div class="mt-4 border-t pt-2">
-                <table class="w-full text-xs">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Produk</th>
-                            <th class="text-right">Jumlah</th>
-                            <th class="text-right">Harga</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($transaction->details as $detail)
-                        <tr>
-                            <td>{{ $detail->product->name }}</td>
-                            <td class="text-right">{{ $detail->quantity }}</td>
-                            <td class="text-right">Rp {{ number_format($detail->price) }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-4 text-center">
-                <p class="text-xs">Terima kasih telah berbelanja</p>
-            </div>
-        </div>
-        <div class="flex justify-between gap-2 mt-6">
-            <flux:button type="button" wire:click="$set('showPrintModal', false)" class="btn-secondary">
-                Tutup
-            </flux:button>
-            <flux:button type="button" onclick="return cetakStruk('{{ route('transaksi.cetak', $transaction->id) }}')"
-                class="px-4 py-2 border rounded-md btn-primary">
-                Cetak
-            </flux:button>
-        </div>
-        <div class="flex justify-end mt-4">
-            <flux:button type="button" wire:click="send" class="w-full">
-                Kirim Struk via WhatsApp
-            </flux:button>
-        </div>
-        @endif
-    </flux:modal> --}}
 
     <flux:modal class="w-full max-w-xs" wire:model="showImage">
         @if (!empty($paymentImage) && $showImage)
