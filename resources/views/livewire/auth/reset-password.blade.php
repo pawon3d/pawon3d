@@ -40,8 +40,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate([
             'token' => ['required'],
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults(), 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'
-            ],
+            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults(), 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'],
+        ],
         [
             'token.required' => 'Token reset tidak valid atau sudah kadaluarsa.',
             'email.required' => 'Email harus diisi.',
@@ -50,7 +50,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'password.min' => 'Kata sandi minimal 8 karakter.',
             'password.regex' => 'Kata sandi harus mengandung huruf dan angka.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
-        ]
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
