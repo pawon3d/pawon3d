@@ -662,7 +662,8 @@
                         <div class="flex flex-row items-center gap-4">
                             <label
                                 class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
-                                Pilih Bukti Pembayaran
+                                <span class="hidden sm:inline">Pilih Bukti Pembayaran</span>
+                                <flux:icon icon="camera" class="size-5 sm:hidden" style="color: #f8f4e1;" />
                                 <input type="file" wire:model.live="image"
                                     accept="image/jpeg, image/png, image/jpg" class="hidden" />
                             </label>
