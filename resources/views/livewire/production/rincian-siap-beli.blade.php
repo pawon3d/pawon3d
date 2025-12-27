@@ -43,8 +43,8 @@
                             <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
                                 Rencana Produksi</p>
                             <div class="flex gap-[10px] font-['Montserrat'] text-[16px] text-[#666666]">
-                                <span>{{ \Carbon\Carbon::parse($production->start_date)->format('d M Y') }}</span>
-                                <span>{{ $production->time }}</span>
+                                <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
+                                <span>{{ \Carbon\Carbon::parse($production->time)->format('H:i') }}</span>
                             </div>
                         </div>
 
@@ -67,7 +67,7 @@
                             <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
                                 Tanggal Produksi Selesai</p>
                             <p class="font-['Montserrat'] text-[16px] text-[#666666] m-0">
-                                {{ $production->end_date ? \Carbon\Carbon::parse($production->end_date)->format('d M Y H:i') : '-' }}
+                                {{ $production->end_date ? \Carbon\Carbon::parse($production->end_date)->translatedFormat('d M Y H:i') : '-' }}
                             </p>
                         </div>
                     </div>

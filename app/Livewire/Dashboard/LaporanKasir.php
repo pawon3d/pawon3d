@@ -76,6 +76,7 @@ class LaporanKasir extends Component
     public function loadData(): void
     {
         $this->readyToLoad = true;
+        $this->shouldUpdateChart = true;
     }
 
     public function mount()

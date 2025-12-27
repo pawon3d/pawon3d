@@ -431,12 +431,15 @@
                                 ? 'Tunai'
                                 : 'Transfer' . ($refund->channel ? ' - ' . $refund->channel->bank_name : '');
                     @endphp
-                    <div class="flex flex-row justify-between items-center w-full"
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0"
                         style="padding: 15px 0; border-top: 1px solid #d4d4d4; font-family: Montserrat, sans-serif;">
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                             <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $refundDate }}</p>
+                            <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
                             <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $refundTime }}</p>
+                            <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
                             <p style="font-size: 14px; line-height: 1; color: #eb5757; font-weight: 500;">Refund</p>
+                            <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
                             <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $refundMethodLabel }}</p>
 
                             @if ($refund->refund_method == 'transfer' && $refund->proof_image)
@@ -466,7 +469,8 @@
                             $posisiDariAwal = $jumlahPembayaran - $index; // 1 = pertama, 2 = kedua, dst
 
                             // Pembayaran terakhir = Lunas, sebelumnya = Uang Muka
-                            if ($posisiDariAwal == $jumlahPembayaran) {
+                            // Tapi hanya jika status transaksi sudah Lunas
+                            if ($transaction->payment_status == 'Lunas' && $posisiDariAwal == $jumlahPembayaran) {
                                 $tipe = 'Lunas';
                             } else {
                                 $tipe = 'Uang Muka';
@@ -477,12 +481,17 @@
                             $label = $method . ($bank ? ' ' . ucfirst($bank) : '');
                         @endphp
 
-                        <div class="flex flex-row justify-between items-center w-full"
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0"
                             style="padding: 15px 0; border-top: 1px solid #d4d4d4; font-family: Montserrat, sans-serif;">
-                            <div class="flex items-center gap-3">
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                                 <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $paidAt }}</p>
+                                <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
                                 <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $time }}</p>
-                                <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $tipe }}</p>
+                                <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
+                                <p style="font-size: 14px; line-height: 1; color: #666666; font-weight: 500;">
+                                    {{ $tipe }}
+                                </p>
+                                <p class="hidden sm:block" style="font-size: 14px; line-height: 1; color: #666666;">•</p>
                                 <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $label }}</p>
 
                                 @if ($payment->payment_method && $payment->payment_method !== 'tunai')

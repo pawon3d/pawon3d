@@ -573,29 +573,31 @@
                 </div>
             </div>
 
-            <x-table.paginated :headers="$tableHeaders" :paginator="$paginator" emptyMessage="Tidak ada data persediaan"
-                headerBg="#3f4e4f" headerText="#f8f4e1">
-                @foreach ($paginator as $item)
-                    <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
-                        <td class="py-5 px-6 text-[#333333]">{{ $item->name }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->total }}
-                            {{ $item->total_alias }}
-                        </td>
-                        <td class="py-5 px-6 text-right text-[#333333]">
-                            Rp{{ number_format($item->total_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">-{{ $item->used }}
-                            {{ $item->used_alias }}
-                        </td>
-                        <td class="py-5 px-6 text-right text-[#333333]">
-                            -Rp{{ number_format($item->used_price, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-right text-[#333333]">{{ $item->remain }}
-                            {{ $item->remain_alias }}
-                        </td>
-                        <td class="py-5 px-6 text-right text-[#333333]">
-                            Rp{{ number_format($item->remain_price, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-            </x-table.paginated>
+            <div class="overflow-x-auto">
+                <x-table.paginated :headers="$tableHeaders" :paginator="$paginator" emptyMessage="Tidak ada data persediaan"
+                    headerBg="#3f4e4f" headerText="#f8f4e1">
+                    @foreach ($paginator as $item)
+                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
+                            <td class="py-5 px-6 text-[#333333]">{{ $item->name }}</td>
+                            <td class="py-5 px-6 text-right text-[#333333]">{{ $item->total }}
+                                {{ $item->total_alias }}
+                            </td>
+                            <td class="py-5 px-6 text-right text-[#333333]">
+                                Rp{{ number_format($item->total_price, 0, ',', '.') }}</td>
+                            <td class="py-5 px-6 text-right text-[#333333]">-{{ $item->used }}
+                                {{ $item->used_alias }}
+                            </td>
+                            <td class="py-5 px-6 text-right text-[#333333]">
+                                -Rp{{ number_format($item->used_price, 0, ',', '.') }}</td>
+                            <td class="py-5 px-6 text-right text-[#333333]">{{ $item->remain }}
+                                {{ $item->remain_alias }}
+                            </td>
+                            <td class="py-5 px-6 text-right text-[#333333]">
+                                Rp{{ number_format($item->remain_price, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                </x-table.paginated>
+            </div>
         </div>
 
         {{-- Grid Layout for Low Stock and Expiring Tables --}}

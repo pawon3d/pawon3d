@@ -508,7 +508,7 @@
             <div class="h-0 w-full border-t border-[#d4d4d4]"></div>
 
             {{-- Product Grid --}}
-            <div class="flex gap-[15px] h-[530px] overflow-y-auto w-full">
+            <div class="flex gap-[15px] h-full max-h-[60vh] overflow-y-auto w-full">
                 <div class="flex-1 flex flex-wrap gap-[30px] content-start justify-center sm:justify-start">
                     @forelse ($products as $product)
                         <div class="w-full sm:min-w-[180px] sm:max-w-[210px] flex flex-col gap-[20px] pb-[25px]">

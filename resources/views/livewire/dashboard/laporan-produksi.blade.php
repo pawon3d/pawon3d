@@ -564,22 +564,24 @@
                 </div>
             </div>
 
-            <x-table.paginated :headers="$tableHeaders" :paginator="$paginator" emptyMessage="Tidak ada data produksi"
-                headerBg="#3f4e4f" headerText="#f8f4e1">
-                @foreach ($paginator as $product)
-                    <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
-                        <td class="py-5 px-6 text-[#333333]">{{ $product->name }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333]">
-                            {{ number_format($product->total, 0, ',', '.') }}
-                        </td>
-                        <td class="py-5 px-6 text-left text-[#333333]">
-                            {{ number_format($product->success, 0, ',', '.') }}</td>
-                        <td class="py-5 px-6 text-left text-[#333333]">
-                            {{ number_format($product->fail, 0, ',', '.') }}
-                        </td>
-                    </tr>
-                @endforeach
-            </x-table.paginated>
+            <div class="overflow-x-auto">
+                <x-table.paginated :headers="$tableHeaders" :paginator="$paginator" emptyMessage="Tidak ada data produksi"
+                    headerBg="#3f4e4f" headerText="#f8f4e1">
+                    @foreach ($paginator as $product)
+                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
+                            <td class="py-5 px-6 text-[#333333]">{{ $product->name }}</td>
+                            <td class="py-5 px-6 text-left text-[#333333]">
+                                {{ number_format($product->total, 0, ',', '.') }}
+                            </td>
+                            <td class="py-5 px-6 text-left text-[#333333]">
+                                {{ number_format($product->success, 0, ',', '.') }}</td>
+                            <td class="py-5 px-6 text-left text-[#333333]">
+                                {{ number_format($product->fail, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </x-table.paginated>
+            </div>
         </div>
 
         @assets

@@ -341,10 +341,13 @@
                                         fn($p) => $p->id === $selectedPayment->id,
                                     );
 
-                                    if ($paymentCount == 1) {
+                                    $isLastPayment = $currentPaymentIndex == $paymentCount - 1;
+
+                                    // Logika: Label "Lunas" hanya jika transaksi statusnya Lunas DAN ini adalah pembayaran terakhir
+                                    if ($selectedTransaction->payment_status == 'Lunas' && $isLastPayment) {
                                         $tipe = 'Lunas';
                                     } else {
-                                        $tipe = $currentPaymentIndex == $paymentCount - 1 ? 'Lunas' : 'Uang Muka';
+                                        $tipe = 'Uang Muka';
                                     }
 
                                     $paymentLabel = "($tipe) $method" . ($bank ? " - $bank" : '');

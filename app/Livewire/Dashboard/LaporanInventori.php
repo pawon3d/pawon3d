@@ -146,7 +146,12 @@ class LaporanInventori extends Component
 
         $expenseQuery = \App\Models\Expense::whereBetween('expense_date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $expenseQuery->where('user_id', $this->selectedWorker);
+            $expenseIds = \Spatie\Activitylog\Models\Activity::inLog('expenses')
+                ->where('causer_id', $this->selectedWorker)
+                ->pluck('subject_id')
+                ->unique();
+
+            $expenseQuery->whereIn('id', $expenseIds);
         }
         $expenseCollection = $expenseQuery->get();
         $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
@@ -614,6 +619,7 @@ class LaporanInventori extends Component
     public function loadData(): void
     {
         $this->readyToLoad = true;
+        $this->shouldUpdateChart = true;
     }
 
     /**

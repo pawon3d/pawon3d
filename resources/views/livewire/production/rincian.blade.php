@@ -57,8 +57,7 @@
                                 <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
                                     style="font-family: 'Montserrat', sans-serif;">
                                     @if ($date)
-                                        <span>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y') }}</span>
-                                        <span>{{ \Carbon\Carbon::parse($date)->format('H:i') }}</span>
+                                        <span>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y H:i') }}</span>
                                     @else
                                         <span>-</span>
                                     @endif
