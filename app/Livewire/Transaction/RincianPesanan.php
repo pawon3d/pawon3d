@@ -1222,6 +1222,7 @@ class RincianPesanan extends Component
         return $value;
     }
 
+
     public function render()
     {
         return view('livewire.transaction.rincian-pesanan', [

@@ -482,7 +482,7 @@
                             $label = $method . ($bank ? ' ' . ucfirst($bank) : '');
                         @endphp
 
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0"
+                        <div wire:key="{{ $payment->id }}" class="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0"
                             style="padding: 15px 0; border-top: 1px solid #d4d4d4; font-family: Montserrat, sans-serif;">
                             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                                 <p style="font-size: 14px; line-height: 1; color: #666666;">{{ $paidAt }}</p>
@@ -698,7 +698,7 @@
 
 
 
-    <div class="flex flex-col sm:flex-row justify-between mt-16 gap-4">
+    <div class="flex flex-col sm:flex-row mt-16 gap-4 w-full items-center">
         @if ($transaction->status == 'Draft' || $transaction->status == 'temp')
             <flux:button icon="trash" type="button" variant="danger" loading="false"
                 wire:click.prevent="delete" class="w-full sm:w-auto">
@@ -710,10 +710,9 @@
                 wire:click.prevent="showCancelModal" class="w-full sm:w-auto">
                 Batalkan Pesanan
             </flux:button>
-        @else
-            <div></div>
         @endif
-        <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto">
+        
+        <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto sm:ml-auto">
             @if (
                 ($transaction->status == 'Belum Diproses' || $transaction->status == 'Draft' || $transaction->status == 'temp') &&
                     $transaction->payment_status != 'Lunas')
