@@ -234,8 +234,9 @@
                 style="font-family: Montserrat, sans-serif; line-height: 1; color: #666666; font-size: 18px; font-weight: 600;">
                 Daftar Produk</p>
         </div>
-        <div class="relative overflow-x-auto w-full"
-            style="border-radius: 15px; overflow: hidden; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1);">
+        <div class="w-full overflow-hidden border border-gray-200 rounded-lg shadow-sm"
+            style="border-radius: 15px; box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.1);">
+            <div class="overflow-x-auto w-full">
             <table class="w-full text-sm" style="font-family: Montserrat, sans-serif;">
                 <thead style="background-color: #3f4e4f; color: #f8f4e1;">
                     <tr>
@@ -577,7 +578,7 @@
         @endif
 
         @if (in_array($transaction->payment_status, ['Belum Lunas', 'Refund', '']))
-            <div class="w-full flex flex-col gap-4">
+            <div class="w-full flex flex-col gap-4 relative z-0">
                 <flux:label>Metode Pembayaran</flux:label>
                 <p class="text-sm text-gray-500">
                     Pilih Metode Pembayaran (Tunai atau Non Tunai). Jika Bukan Tunai maka akan diminta bukti
@@ -594,7 +595,7 @@
                 <flux:error name="paymentGroup" />
 
                 @if ($paymentGroup == 'non-tunai')
-                    <div class="mt-2 flex flex-col md:flex-row gap-4 w-full">
+                    <div class="mt-2 flex flex-col md:flex-row gap-4 w-full relative z-10">
                         <div class="w-full md:w-1/3">
                             <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
                                 @foreach ($paymentMethods as $pmethod)
@@ -988,11 +989,12 @@
                                                 $paymentCount = $allPayments->count();
                                                 $paymentIndex = $allPayments->search(fn($p) => $p->id === $payment->id);
 
-                                                if ($paymentCount == 1) {
+                                                $isMostRecentPayment = $paymentIndex == 0;
+
+                                                if ($transaction->payment_status == 'Lunas' && $isMostRecentPayment) {
                                                     $tipe = 'Lunas';
                                                 } else {
-                                                    // latest() = terbaru dulu, jadi index 0 = terakhir (Lunas)
-                                                    $tipe = $paymentIndex == 0 ? 'Lunas' : 'Uang Muka';
+                                                    $tipe = 'Uang Muka';
                                                 }
 
                                                 $label = "($tipe) $method" . ($bank ? " - $bank" : '');

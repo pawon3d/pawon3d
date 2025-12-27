@@ -121,7 +121,7 @@
                 {{-- Product Grid --}}
                 <div class="@if (count($cart) > 0) flex-1 @else w-full @endif">
                     <div @class([
-                        'grid gap-8 max-h-[530px] overflow-y-auto pr-2',
+                        'grid gap-8 min-h-[500px] pr-2',
                         'grid-cols-2 lg:grid-cols-3' => count($cart) > 0,
                         'grid-cols-2 md:grid-cols-3 lg:grid-cols-5' => count($cart) === 0,
                     ])>
@@ -236,32 +236,32 @@
                                 </div>
 
                                 {{-- Cart Items List --}}
-                                <div class="h-[324px] overflow-y-auto px-[21px]">
+                                <div class="max-h-[500px] overflow-y-auto px-[21px]">
                                     <div class="flex flex-col">
                                         @foreach ($cart as $itemId => $item)
                                             <div
-                                                class="flex items-center justify-between py-[10px] border-b border-white">
+                                                class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-[15px] border-b border-[#f0f0f0] gap-4 sm:gap-0">
                                                 {{-- Left: Product Info --}}
-                                                <div class="flex flex-col gap-[10px] h-[73px]">
+                                                <div class="flex flex-col gap-[5px] w-full sm:w-auto">
                                                     {{-- Product Name --}}
-                                                    <div class="h-[24px] flex items-center">
-                                                        <p class="font-medium text-[16px] text-[#666666] truncate max-w-[180px]"
+                                                    <div class="flex items-center">
+                                                        <p class="font-medium text-[16px] text-[#666666] truncate w-full sm:max-w-[180px]"
                                                             style="font-family: 'Montserrat', sans-serif;">
                                                             {{ $item['name'] }}
                                                         </p>
                                                     </div>
 
                                                     {{-- Quantity x Price --}}
-                                                    <div class="h-[40px] flex items-center gap-[5px]">
-                                                        <p class="font-normal text-[16px] text-[#666666]"
+                                                    <div class="flex items-center gap-[5px]">
+                                                        <p class="font-normal text-[14px] text-[#959595]"
                                                             style="font-family: 'Montserrat', sans-serif;">
                                                             {{ $item['quantity'] }}
                                                         </p>
-                                                        <p class="font-normal text-[16px] text-[#666666]"
+                                                        <p class="font-normal text-[14px] text-[#959595]"
                                                             style="font-family: 'Montserrat', sans-serif;">
                                                             x
                                                         </p>
-                                                        <p class="font-normal text-[16px] text-[#666666]"
+                                                        <p class="font-normal text-[14px] text-[#959595]"
                                                             style="font-family: 'Montserrat', sans-serif;">
                                                             Rp{{ number_format($item['price'], 0, ',', '.') }}
                                                         </p>
@@ -269,7 +269,8 @@
                                                 </div>
 
                                                 {{-- Right: Total & Controls --}}
-                                                <div class="flex flex-col gap-[10px] items-end justify-center">
+                                                <div
+                                                    class="flex flex-row sm:flex-col gap-[15px] sm:gap-[10px] items-center sm:items-end justify-between w-full sm:w-auto">
                                                     {{-- Total Price --}}
                                                     <div class="flex items-center gap-[5px]">
                                                         <p class="font-normal text-[16px] text-[#666666]"
@@ -283,15 +284,15 @@
                                                     </div>
 
                                                     {{-- Controls: Delete, -, Quantity, + --}}
-                                                    <div class="flex items-center gap-[25px] h-[40px]">
+                                                    <div class="flex items-center gap-[15px] sm:gap-[25px]">
                                                         {{-- Delete Button --}}
                                                         <button wire:click="removeItem('{{ $itemId }}')"
-                                                            class="bg-[#eb5757] rounded-[15px] p-0 w-[32px] h-[32px] flex items-center justify-center hover:bg-[#d94545] transition-colors">
+                                                            class="bg-[#eb5757] rounded-[15px] p-0 w-[32px] h-[32px] flex items-center justify-center hover:bg-[#d94545] transition-colors order-2 sm:order-1">
                                                             <flux:icon icon="trash" class="size-3 text-[#f8f4e1]" />
                                                         </button>
 
                                                         {{-- Quantity Controls --}}
-                                                        <div class="flex items-center gap-[11px]">
+                                                        <div class="flex items-center gap-[10px] sm:gap-[11px] order-1 sm:order-2">
                                                             {{-- Minus Button --}}
                                                             <button wire:click="decrementItem('{{ $itemId }}')"
                                                                 class="border-[1.5px] border-[#74512d] rounded-[30px] w-[30px] h-[30px] flex items-center justify-center hover:bg-[#74512d] hover:text-white transition-colors">

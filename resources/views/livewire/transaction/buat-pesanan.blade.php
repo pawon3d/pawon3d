@@ -317,7 +317,7 @@
     {{-- Tukar Poin Section --}}
     <div
         class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-4 sm:px-[30px] sm:py-[25px] flex flex-col gap-[30px] mb-[30px]">
-        <div class="flex flex-col gap-[15px] h-[113px]">
+        <div class="flex flex-col gap-[15px]">
             <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Tukar
                 Poin
             </p>
@@ -343,7 +343,7 @@
 
     {{-- Metode Pembayaran Section --}}
     <div
-        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-4 sm:px-[30px] sm:py-[25px] flex flex-col gap-[30px] mb-[30px]">
+        class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] p-4 sm:px-[30px] sm:py-[25px] flex flex-col gap-[30px] mb-[30px] relative z-0">
         <div class="w-full flex flex-col gap-4">
             <flux:label>Metode Pembayaran</flux:label>
             <p class="text-sm text-gray-500">
@@ -361,7 +361,7 @@
             <flux:error name="paymentGroup" />
 
             @if ($paymentGroup == 'non-tunai')
-                <div class="mt-2 flex flex-col sm:flex-row gap-4 w-full">
+                <div class="mt-2 flex flex-col sm:flex-row gap-4 w-full relative z-10">
                     <div class="flex-1">
                         <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
                             @foreach ($paymentMethods as $pmethod)
