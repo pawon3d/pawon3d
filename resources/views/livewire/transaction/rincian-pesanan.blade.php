@@ -1405,7 +1405,8 @@
                 <div class="flex flex-col gap-[15px] px-[30px] py-[25px] border-t"
                     style="background-color: #fafafa; border-color: #d4d4d4;">
                     <div class="flex flex-col gap-[10px]" style="font-size: 16px; line-height: 1; color: #666666;">
-                        <p style="font-weight: 500;">Metode Refund@if (!$isRefundReadOnly)
+                        <p style="font-weight: 500;">Metode Refund
+                            @if (!$isRefundReadOnly)
                                 <span style="color: #eb5757;"> *</span>
                             @endif
                         </p>
