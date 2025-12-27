@@ -18,7 +18,7 @@
                     <p class="hidden sm:block font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1]">:</p>
                 </div>
                 <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
-                    {{ $shift->openedBy->name }}
+                    {{ $shift->openedBy?->name ?? '-' }}
                 </p>
             </div>
         </div>
