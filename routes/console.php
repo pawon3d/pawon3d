@@ -13,3 +13,8 @@ Schedule::command('inventory:check-alerts')->dailyAt('00:00');
 
 // Reset stok produk ke 0 setiap pergantian hari (jam 00:00)
 Schedule::command('product:reset-stock')->dailyAt('00:00');
+
+// Temporary: Cek apakah cron job jalan (Cek storage/logs/laravel.log)
+Schedule::call(function () {
+    \Illuminate\Support\Facades\Log::info('Cron job berhasil berjalan pada: ' . now());
+})->everyMinute();
