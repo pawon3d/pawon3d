@@ -14,11 +14,16 @@ Route::get('/landing-produk/{product}', App\Livewire\Landing\Detail::class)->nam
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
 
 Route::get('/generate-sitemap', function () {
-    Sitemap::create()
-        ->add(Url::create(rtrim(config('app.url'), '/') . '/'))
+    $sitemap = Sitemap::create()
+        ->add(Url::create('/'))
         ->add(Url::create('/landing-produk'))
-        ->add(Url::create('/landing-faq'))
-        ->writeToFile(public_path('sitemap.xml'));
+        ->add(Url::create('/landing-faq'));
+
+    \App\Models\Product::all()->each(function (\App\Models\Product $product) use ($sitemap) {
+        $sitemap->add(Url::create(route('landing-produk-detail', $product)));
+    });
+
+    $sitemap->writeToFile(public_path('sitemap.xml'));
 
     return 'Sitemap generated';
 });

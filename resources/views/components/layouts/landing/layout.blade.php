@@ -22,6 +22,42 @@
             font-style: normal;
         }
     </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Bakery",
+      "name": "{{ $storeProfile->name ?? 'Pawon3D' }}",
+      "image": "{{ !empty($storeProfile->logo) ? asset('storage/' . $storeProfile->logo) : asset('assets/bakery-logo.png') }}",
+      "@id": "{{ url('/') }}",
+      "url": "{{ url('/') }}",
+      "telephone": "{{ $storeProfile->contact ?? '' }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ $storeProfile->address ?? '' }}",
+        "addressLocality": "{{ $storeProfile->city ?? 'Jambi' }}",
+        "addressRegion": "Jambi",
+        "postalCode": "",
+        "addressCountry": "ID"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
+        "opens": "08:00",
+        "closes": "17:00"
+      },
+      "sameAs": [
+        "https://www.instagram.com/{{ $storeProfile->social_instagram ?? 'pawon3d' }}/"
+      ]
+    }
+    </script>
 </head>
 
 <body class="bg-[#FDFDFC] text-[#1b1b18] montserrat-regular">

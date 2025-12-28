@@ -1,3 +1,8 @@
+@push('meta')
+    <meta property="og:image" content="{{ $product->product_image ? asset('storage/' . $product->product_image) : asset('/img/no-img.jpg') }}" />
+    <meta property="twitter:image" content="{{ $product->product_image ? asset('storage/' . $product->product_image) : asset('/img/no-img.jpg') }}" />
+@endpush
+
 <div class="bg-[#EAEAEA] w-full min-h-screen">
     {{-- Back Button & Title --}}
     <div class="flex flex-col sm:flex-row sm:items-center gap-4 px-4 md:px-12 lg:px-16 py-6 md:py-8">

@@ -23,7 +23,8 @@ class Index extends Component
 
     public function mount()
     {
-        View::share('title', 'Pawon3D');
+        View::share('title', 'Pawon3D - Kue Rumahan Lezat & Sehangat Pelukan Ibu');
+        View::share('metaDescription', 'Toko kue Pawon3D menghadirkan cita rasa manis dan kehangatan keluarga sejak 2001. Temukan berbagai pilihan kue tradisional, pesanan kotak, dan siap saji yang halal dan tanpa pengawet.');
     }
 
     public function updatingSearch()
