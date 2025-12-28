@@ -5,11 +5,19 @@ use App\Http\Controllers\PdfController;
 use App\Livewire\ActivateAccount;
 use App\Livewire\User\Index;
 use Illuminate\Support\Facades\Route;
+use Spatie\Sitemap\SitemapGenerator;
 
 Route::get('/', App\Livewire\Landing\Index::class)->name('home');
 Route::get('/landing-produk', App\Livewire\Landing\Produk::class)->name('landing-produk');
 Route::get('/landing-produk/{id}', App\Livewire\Landing\Detail::class)->name('landing-produk-detail');
 Route::get('/landing-faq', App\Livewire\Landing\Faq::class)->name('landing-faq');
+
+Route::get('/generate-sitemap', function () {
+    SitemapGenerator::create(config('app.url'))
+        ->writeToFile(public_path('sitemap.xml'));
+
+    return 'Sitemap generated';
+});
 
 // PWA Offline Route
 Route::get('/offline', function () {
