@@ -25,15 +25,15 @@
 
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
-      "@type": "Bakery",
+      "@@context": "https://schema.org",
+      "@@type": "Bakery",
       "name": "{{ $storeProfile->name ?? 'Pawon3D' }}",
       "image": "{{ !empty($storeProfile->logo) ? asset('storage/' . $storeProfile->logo) : asset('assets/bakery-logo.png') }}",
-      "@id": "{{ url('/') }}",
+      "@@id": "{{ url('/') }}",
       "url": "{{ url('/') }}",
       "telephone": "{{ $storeProfile->contact ?? '' }}",
       "address": {
-        "@type": "PostalAddress",
+        "@@type": "PostalAddress",
         "streetAddress": "{{ $storeProfile->address ?? '' }}",
         "addressLocality": "{{ $storeProfile->city ?? 'Jambi' }}",
         "addressRegion": "Jambi",
@@ -41,7 +41,7 @@
         "addressCountry": "ID"
       },
       "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
+        "@@type": "OpeningHoursSpecification",
         "dayOfWeek": [
           "Monday",
           "Tuesday",
