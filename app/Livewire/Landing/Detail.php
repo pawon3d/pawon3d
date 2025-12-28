@@ -15,15 +15,15 @@ class Detail extends Component
 
     public $relatedProducts;
 
-    public function mount($id)
+    public function mount(Product $product)
     {
-        $this->productId = $id;
-        $this->product = Product::with(['product_categories.category'])->findOrFail($id);
+        $this->product = $product->load(['product_categories.category']);
+        $this->productId = $this->product->id;
 
         View::share('title', 'Pawon3D - '.$this->product->name);
 
         // Get related products (all other products, not filtered by method)
-        $this->relatedProducts = Product::where('id', '!=', $id)
+        $this->relatedProducts = Product::where('id', '!=', $this->productId)
             ->inRandomOrder()
             ->limit(10)
             ->get();

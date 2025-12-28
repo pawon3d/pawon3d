@@ -113,6 +113,47 @@ class Product extends Model
         return (int) floor($totalQuantity);
     }
 
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'id'; // We still want to use ID for some internal routes if needed, 
+                     // but we override getRouteKey for URL generation.
+    }
+
+    /**
+     * Get the value of the model's route key.
+     *
+     * @return mixed
+     */
+    public function getRouteKey()
+    {
+        return Str::slug($this->name) . '-' . $this->id;
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        // Extract ID from the end (UUID is 36 chars)
+        $id = substr($value, -36);
+
+        if (Str::isUuid($id)) {
+            return $this->where('id', $id)->firstOrFail();
+        }
+
+        // Fallback for direct ID access (e.g. from dashboard edit links)
+        return $this->where('id', $value)->firstOrFail();
+    }
+
     public static function boot()
     {
         parent::boot();

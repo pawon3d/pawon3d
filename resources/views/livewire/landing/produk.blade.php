@@ -75,7 +75,7 @@
                 {{-- Products Grid --}}
                 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-6">
                     @forelse ($exploreProducts as $product)
-                        <a href="{{ route('landing-produk-detail', $product->id) }}" wire:navigate
+                        <a href="{{ route('landing-produk-detail', $product) }}" wire:navigate
                             class="flex flex-col gap-4 pb-6 w-full hover:scale-105 transition-transform group">
                             <div class="w-full aspect-video md:aspect-square rounded-[15px] shadow-sm overflow-hidden bg-[#eaeaea]">
                                 @if ($product->product_image)

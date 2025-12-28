@@ -85,7 +85,7 @@
             <div class="overflow-y-auto max-h-[542px] pr-2">
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
                     @foreach ($relatedProducts as $relatedProduct)
-                        <a href="{{ route('landing-produk-detail', $relatedProduct->id) }}" wire:navigate
+                        <a href="{{ route('landing-produk-detail', $relatedProduct) }}" wire:navigate
                             class="flex flex-col gap-3 md:gap-4 pb-4 md:pb-6 hover:scale-105 transition-transform">
                             {{-- Image --}}
                             <div class="rounded-2xl shadow overflow-hidden aspect-video">
