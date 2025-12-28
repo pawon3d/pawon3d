@@ -103,7 +103,7 @@ class BuatPesanan extends Component
             })->toArray();
             $this->totalAmount = $transaction->total_amount;
             $this->method = $transaction->method;
-            $this->paidAmount = 0.5 * $this->totalAmount;
+            $this->paidAmount = $this->method == 'siap-beli' ? $this->totalAmount : 0.5 * $this->totalAmount;
         } else {
             session()->flash('error', 'Transaksi tidak ditemukan.');
 
@@ -504,7 +504,33 @@ class BuatPesanan extends Component
                 if ($product) {
                     // Update stok produk jika metode adalah 'siap-beli'
                     if ($this->method == 'siap-beli') {
-                        $product->decrement('stock', $detail['quantity']);
+                        if ($product->is_recipe) {
+                            // Produk dengan resep: kurangi stok produk
+                            $product->decrement('stock', $detail['quantity']);
+                        } else {
+                            // Produk ready-to-sell: kurangi stok dari material batch
+                            $product->load('product_compositions.material.material_details.unit');
+                            $composition = $product->product_compositions->first();
+                            
+                            if ($composition && $composition->material) {
+                                $material = $composition->material;
+                                $mainDetail = $material->material_details->firstWhere('is_main', true);
+                                
+                                if ($mainDetail && $mainDetail->unit) {
+                                    // Reduce material quantity (FIFO, exclude expired)
+                                    $material->reduceQuantity(
+                                        $detail['quantity'],
+                                        $mainDetail->unit,
+                                        [
+                                            'action' => 'penjualan',
+                                            'reference_type' => 'App\Models\Transaction',
+                                            'reference_id' => $transaction->id,
+                                            'note' => 'Penjualan produk siap beli: ' . $product->name,
+                                        ]
+                                    );
+                                }
+                            }
+                        }
                     }
                 }
             }

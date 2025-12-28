@@ -329,13 +329,14 @@ class Index extends Component
     public function addToCart($productId)
     {
         $product = Product::find($productId);
+        $availableStock = $product->getAvailableStock();
 
         if (isset($this->cart[$productId])) {
             // Jika produk sudah ada di keranjang, tingkatkan kuantitasnya
             $this->cart[$productId]['quantity']++;
         } else {
             if ($this->method == 'siap-beli') {
-                if ($product->stock <= 0) {
+                if ($availableStock <= 0) {
                     $this->alert('warning', 'Stok produk ini sudah habis!');
 
                     return;
@@ -346,7 +347,7 @@ class Index extends Component
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => 1,
-                'stock' => $product->stock,
+                'stock' => $availableStock,
             ];
         }
     }

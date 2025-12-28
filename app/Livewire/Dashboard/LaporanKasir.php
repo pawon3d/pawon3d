@@ -987,20 +987,20 @@ class LaporanKasir extends Component
         ]);
 
         $productSalesHeaders = [
-            ['label' => 'Produk', 'class' => 'text-left text-[#fff]'],
-            ['label' => 'Produksi', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
-            ['label' => 'Terjual', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
+            ['label' => 'Produk', 'class' => 'text-left text-[#fff] whitespace-nowrap'],
+            ['label' => 'Produksi', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Terjual', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Tidak Terjual', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
         ];
 
         $monthlyReportsHeaders = [
-            ['label' => 'Waktu', 'class' => 'text-left text-[#fff]'],
-            ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
-            ['label' => 'Refund', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
-            ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
-            ['label' => 'Pendapatan Bersih', 'class' => 'text-center text-[#fff]'],
-            ['label' => 'Modal', 'class' => 'text-center text-[#fff] hidden md:table-cell'],
-            ['label' => 'Keuntungan', 'class' => 'text-center text-[#fff]'],
+            ['label' => 'Waktu', 'class' => 'text-left text-[#fff] whitespace-nowrap'],
+            ['label' => 'Pendapatan Kotor', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Refund', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Potongan Harga', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Pendapatan Bersih', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Modal', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
+            ['label' => 'Keuntungan', 'class' => 'text-center text-[#fff] whitespace-nowrap'],
         ];
 
         return view('livewire.dashboard.laporan-kasir', [

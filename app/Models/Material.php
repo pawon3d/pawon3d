@@ -203,6 +203,38 @@ class Material extends Model
     }
 
     /**
+     * Get unit price for a specific unit (with auto-conversion if price for unit is 0)
+     *
+     * @param  Unit  $targetUnit
+     * @return float
+     */
+    public function getUnitPriceInUnit(Unit $targetUnit): float
+    {
+        $materialDetail = $this->material_details->where('unit_id', $targetUnit->id)->first();
+        $price = $materialDetail->supply_price ?? 0;
+
+        // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+        if ($price == 0) {
+            $otherDetails = $this->material_details
+                ->where('unit_id', '!=', $targetUnit->id)
+                ->where('supply_price', '>', 0);
+
+            foreach ($otherDetails as $otherDetail) {
+                if ($otherDetail->unit) {
+                    // Konversi harga dari unit lain ke unit target
+                    $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                    if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                        $price = $otherDetail->supply_price / $convertedQuantity;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $price;
+    }
+
+    /**
      * Recalculate and update material status based on batches
      */
     public function recalculateStatus(): void

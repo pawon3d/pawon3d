@@ -575,9 +575,9 @@
 
             <div class="overflow-x-auto">
                 <x-table.paginated :headers="$tableHeaders" :paginator="$paginator" emptyMessage="Tidak ada data persediaan"
-                    headerBg="#3f4e4f" headerText="#f8f4e1">
+                    headerBg="#3f4e4f" headerText="#f8f4e1" class="min-w-max">
                     @foreach ($paginator as $item)
-                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
+                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors whitespace-nowrap">
                             <td class="py-5 px-6 text-[#333333]">{{ $item->name }}</td>
                             <td class="py-5 px-6 text-right text-[#333333]">{{ $item->total }}
                                 {{ $item->total_alias }}
@@ -609,7 +609,7 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="border-b border-[#d4d4d4]">
+                            <tr class="border-b border-[#d4d4d4] whitespace-nowrap">
                                 <th class="py-3 px-4 text-left text-sm font-semibold text-[#f8f4e1] bg-[#3f4e4f]">
                                     Barang
                                     <flux:icon icon="arrows-up-down" class="inline size-4 ml-1" />
@@ -626,7 +626,7 @@
                         </thead>
                         <tbody>
                             @forelse ($lowStockMaterials as $material)
-                                <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
+                                <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors whitespace-nowrap">
                                     <td class="py-4 px-4 text-[#333333]">{{ $material->name }}</td>
                                     <td class="py-4 px-4 text-[#333333]">
                                         <span
@@ -658,7 +658,7 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="border-b border-[#d4d4d4]">
+                            <tr class="border-b border-[#d4d4d4] whitespace-nowrap">
                                 <th class="py-3 px-4 text-left text-sm font-semibold text-[#f8f4e1] bg-[#3f4e4f]">
                                     Barang
                                     <flux:icon icon="arrows-up-down" class="inline size-4 ml-1" />
@@ -683,7 +683,7 @@
                         </thead>
                         <tbody>
                             @forelse ($expiringBatches as $batch)
-                                <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors">
+                                <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 transition-colors whitespace-nowrap">
                                     <td class="py-4 px-4 text-[#333333]">{{ $batch->material_name }}</td>
                                     <td class="py-4 px-4 text-[#333333]">{{ $batch->batch_number }}</td>
                                     <td class="py-4 px-4 text-[#333333]">{{ $batch->expiry_date }}</td>

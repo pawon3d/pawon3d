@@ -4,9 +4,11 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Expense;
 use App\Models\ExpenseDetail;
+use App\Models\InventoryLog;
 use App\Models\Material;
 use App\Models\Product;
 use App\Models\Production;
+use App\Models\Unit;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -805,79 +807,57 @@ class LaporanInventori extends Component
             $grandTotal += $detail->total_actual;
         }
 
-        $products = Product::with(['product_compositions.material'])->get();
-        $groupProductByMaterial = $products->flatMap(function ($product) {
-            return $product->product_compositions->map(function ($composition) use ($product) {
-                return [
-                    'material_id' => $composition->material_id,
-                    'material_quantity' => $composition->material_quantity,
-                    'unit_id' => $composition->unit_id,
-                    'pcs' => $product->pcs,
-                    'product_id' => $product->id,
-                    'material_name' => $composition->material->name ?? 'Unknown',
-                ];
-            });
-        })->groupBy('material_id');
 
-        // Hitung weighted average price untuk setiap material dari pembelian aktual
-        $materialAvgPrices = [];
-        foreach ($cumulativeExpenseDetails as $detail) {
-            $materialId = $detail->material_id;
-            $unitId = $detail->unit_id;
-            $key = $materialId . '_' . $unitId;
-            
-            if (!isset($materialAvgPrices[$key])) {
-                $materialAvgPrices[$key] = [
-                    'total_cost' => 0,
-                    'total_quantity' => 0,
-                ];
-            }
-            
-            $materialAvgPrices[$key]['total_cost'] += $detail->total_actual;
-            $materialAvgPrices[$key]['total_quantity'] += $detail->quantity_get;
-        }
-
-        // Hitung Nilai Terpakai dari SEMUA produksi SAMPAI tanggal akhir (kumulatif)
-        $totalPrice = [];
-        $usedGrandTotal = 0;
-        foreach ($groupProductByMaterial as $materialId => $compositions) {
-            foreach ($compositions as $composition) {
-                $productId = $composition['product_id'];
-
-                // Query ProductionDetail SAMPAI tanggal akhir (kumulatif)
-                $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
-                    ->whereHas('production', function ($query) use ($endDate) {
-                        $query->where('start_date', '<=', $endDate->toDateString());
+        // Hitung Nilai Terpakai dari InventoryLog SAMPAI tanggal akhir (kumulatif)
+        $usedLogs = InventoryLog::with(['material.material_details', 'materialBatch.unit'])
+            ->where(function ($query) {
+                $query->whereIn('action', ['produksi', 'penjualan', 'rusak', 'hilang'])
+                    ->orWhere(function ($q) {
+                        $q->where('action', 'hitung')
+                            ->where('quantity_change', '<', 0);
                     });
+            })
+            ->whereDate('created_at', '<=', $endDate->toDateString())
+            ->get();
 
-                $productionDetails = $productionDetailsQuery->get();
-                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
+        $groupUsedLogs = $usedLogs->groupBy('material_id');
+        $usedDataMap = [];
+        $usedGrandTotal = 0;
+        $totalPriceMapForChart = [];
+
+        foreach ($groupUsedLogs as $materialId => $logs) {
+            $totalQty = 0;
+            $totalCost = 0;
+            $unitAlias = null;
+
+            foreach ($logs as $log) {
+                $qty = abs($log->quantity_change);
+                $totalQty += $qty;
                 
-                // Cek pcs untuk menghindari division by zero
-                if ($composition['pcs'] <= 0) {
-                    continue;
+                $material = $log->material;
+                $unit = $log->materialBatch->unit ?? null;
+                
+                if ($material && $unit) {
+                    $price = $material->getUnitPriceInUnit($unit);
+                    $cost = $qty * $price;
+                    $totalCost += $cost;
+                    
+                    if (!$unitAlias) {
+                        $unitAlias = $unit->alias;
+                    }
                 }
-                
-                $dividedQuantity = $totalProduction / $composition['pcs'];
-                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
-                
-                // Gunakan weighted average price dari pembelian aktual
-                $key = $materialId . '_' . $composition['unit_id'];
-                if (isset($materialAvgPrices[$key]) && $materialAvgPrices[$key]['total_quantity'] > 0) {
-                    $materialPrice = $materialAvgPrices[$key]['total_cost'] / $materialAvgPrices[$key]['total_quantity'];
-                } else {
-                    // Fallback ke supply_price jika tidak ada pembelian
-                    $material = Material::find($materialId);
-                    $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
-                }
-                
-                $priceValue = $totalMaterialQuantity * $materialPrice;
-                $totalPrice[$materialId][] = $priceValue;
-                $usedGrandTotal += $priceValue;
             }
+            
+            $usedDataMap[$materialId] = [
+                'qty' => $totalQty,
+                'cost' => $totalCost,
+                'unit_alias' => $unitAlias
+            ];
+            $usedGrandTotal += $totalCost;
+            $totalPriceMapForChart[$materialId] = $totalCost;
         }
 
-        // Hitung periode sebelumnya dengan logika kumulatif yang sama
+        // Hitung periode sebelumnya dengan logika yang sama
         $prevCumulativeExpenseDetails = ExpenseDetail::with('material')
             ->whereHas('expense', function ($query) use ($prevEnd) {
                 $query->where('expense_date', '<=', $prevEnd->toDateString());
@@ -889,63 +869,29 @@ class LaporanInventori extends Component
             $prevGrandTotal += $detail->total_actual;
         }
 
-        // Hitung weighted average price untuk periode sebelumnya
-        $prevMaterialAvgPrices = [];
-        foreach ($prevCumulativeExpenseDetails as $detail) {
-            $materialId = $detail->material_id;
-            $unitId = $detail->unit_id;
-            $key = $materialId . '_' . $unitId;
-            
-            if (!isset($prevMaterialAvgPrices[$key])) {
-                $prevMaterialAvgPrices[$key] = [
-                    'total_cost' => 0,
-                    'total_quantity' => 0,
-                ];
-            }
-            
-            $prevMaterialAvgPrices[$key]['total_cost'] += $detail->total_actual;
-            $prevMaterialAvgPrices[$key]['total_quantity'] += $detail->quantity_get;
-        }
+        $prevUsedLogs = InventoryLog::with(['material.material_details', 'materialBatch.unit'])
+            ->where(function ($query) {
+                $query->whereIn('action', ['produksi', 'penjualan', 'rusak', 'hilang'])
+                    ->orWhere(function ($q) {
+                        $q->where('action', 'hitung')
+                            ->where('quantity_change', '<', 0);
+                    });
+            })
+            ->whereDate('created_at', '<=', $prevEnd->toDateString())
+            ->get();
 
         $prevUsedGrandTotal = 0;
-        foreach ($groupProductByMaterial as $materialId => $compositions) {
-            foreach ($compositions as $composition) {
-                $productId = $composition['product_id'];
-
-                $prevProductionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
-                    ->whereHas('production', function ($query) use ($prevEnd) {
-                        $query->where('start_date', '<=', $prevEnd->toDateString());
-                    });
-
-                $prevProductionDetails = $prevProductionDetailsQuery->get();
-                $prevTotalProduction = $prevProductionDetails->sum('quantity_get') + $prevProductionDetails->sum('quantity_fail');
-                
-                // Cek pcs untuk menghindari division by zero
-                if ($composition['pcs'] <= 0) {
-                    continue;
-                }
-                
-                $prevDividedQuantity = $prevTotalProduction / $composition['pcs'];
-                $prevTotalMaterialQuantity = $prevDividedQuantity * $composition['material_quantity'];
-                
-                // Gunakan weighted average price dari pembelian aktual
-                $key = $materialId . '_' . $composition['unit_id'];
-                if (isset($prevMaterialAvgPrices[$key]) && $prevMaterialAvgPrices[$key]['total_quantity'] > 0) {
-                    $materialPrice = $prevMaterialAvgPrices[$key]['total_cost'] / $prevMaterialAvgPrices[$key]['total_quantity'];
-                } else {
-                    // Fallback ke supply_price jika tidak ada pembelian
-                    $material = Material::find($materialId);
-                    $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
-                }
-                
-                $prevPriceValue = $prevTotalMaterialQuantity * $materialPrice;
-                $prevUsedGrandTotal += $prevPriceValue;
+        foreach ($prevUsedLogs as $log) {
+            $qty = abs($log->quantity_change);
+            $material = $log->material;
+            $unit = $log->materialBatch->unit ?? null;
+            if ($material && $unit) {
+                $price = $material->getUnitPriceInUnit($unit);
+                $prevUsedGrandTotal += $qty * $price;
             }
         }
 
-        $sumPrices = collect($totalPrice)->mapWithKeys(function ($priceArray, $materialId) {
-            return [$materialId => array_sum($priceArray)];
-        });
+        $sumPrices = collect($totalPriceMapForChart);
 
         // Urutkan dari yang paling tinggi
         $sorted = $sumPrices->sortDesc()->take(10);
@@ -995,7 +941,7 @@ class LaporanInventori extends Component
 
         $materials = Material::with(['material_details', 'batches'])->get();
 
-        $materialTables = $materials->map(function ($material) use ($groupProductByMaterial) {
+        $materialTables = $materials->map(function ($material) use ($usedDataMap) {
             $remainQty = 0;
             $remainValue = 0;
             $remainUnitAlias = null;
@@ -1015,27 +961,11 @@ class LaporanInventori extends Component
             $usedQty = 0;
             $usedUnitAlias = null;
 
-            $compositions = $groupProductByMaterial[$material->id] ?? collect();
-            foreach ($compositions as $composition) {
-                $productId = $composition['product_id'];
-                $pcs = $composition['pcs'];
-                if ($pcs <= 0) {
-                    continue;
-                }
-
-                $productionDetails = \App\Models\ProductionDetail::where('product_id', $productId)->get();
-                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
-                $dividedQuantity = $totalProduction / $pcs;
-                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
-
-                $materialDetail = $material->material_details->where('unit_id', $composition['unit_id'])->first();
-                $materialPrice = $materialDetail->supply_price ?? 0;
-                $usedValue += $totalMaterialQuantity * $materialPrice;
-                $usedQty += $totalMaterialQuantity;
-
-                if (! $usedUnitAlias && $materialDetail && $materialDetail->unit) {
-                    $usedUnitAlias = $materialDetail->unit->alias;
-                }
+            $usedData = $usedDataMap[$material->id] ?? null;
+            if ($usedData) {
+                $usedQty = $usedData['qty'];
+                $usedValue = $usedData['cost'];
+                $usedUnitAlias = $usedData['unit_alias'];
             }
 
             return (object) [
@@ -1150,13 +1080,13 @@ class LaporanInventori extends Component
             ->values();
 
         $tableHeaders = [
-            ['label' => 'Persediaan', 'class' => 'text-left'],
-            ['label' => 'Jumlah Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
-            ['label' => 'Modal Belanja', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
-            ['label' => 'Jumlah Terpakai', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
-            ['label' => 'Modal Terpakai', 'class' => 'text-right', 'align' => 'right'],
-            ['label' => 'Jumlah Tersisa', 'class' => 'text-right hidden md:table-cell', 'align' => 'right'],
-            ['label' => 'Modal Tersisa', 'class' => 'text-right', 'align' => 'right'],
+            ['label' => 'Persediaan', 'class' => 'text-left whitespace-nowrap'],
+            ['label' => 'Jumlah Belanja', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
+            ['label' => 'Modal Belanja', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
+            ['label' => 'Jumlah Terpakai', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
+            ['label' => 'Modal Terpakai', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
+            ['label' => 'Jumlah Tersisa', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
+            ['label' => 'Modal Tersisa', 'class' => 'text-right whitespace-nowrap', 'align' => 'right'],
         ];
 
         return view('livewire.dashboard.laporan-inventori', [

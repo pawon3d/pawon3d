@@ -83,6 +83,7 @@ class Index extends Component
                 'hilang' => 'Hilang',
                 'hitung' => 'Hitung',
                 'produksi' => 'Produksi',
+                'penjualan' => 'Penjualan',
             ],
         ]);
     }

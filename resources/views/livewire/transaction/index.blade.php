@@ -153,7 +153,7 @@
                                         <p class="text-base font-medium text-[#666666] text-center"
                                             style="font-family: 'Montserrat', sans-serif;">
                                             @if ($method == 'siap-beli')
-                                                stok : {{ $product->stock }}
+                                                stok : {{ $product->getAvailableStock() }}
                                             @else
                                                 ({{ $product->pcs }} pcs)
                                             @endif

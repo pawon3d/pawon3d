@@ -554,9 +554,9 @@
 
             <div class="overflow-x-auto">
                 <x-table.paginated :headers="$productSalesHeaders" :paginator="$productSalesPaginator" emptyMessage="Tidak ada data penjualan"
-                    headerBg="#3f4e4f" headerText="white">
+                    headerBg="#3f4e4f" headerText="white" class="min-w-max">
                     @foreach ($productSalesPaginator as $item)
-                        <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
+                        <tr class="border-b border-[#e5e5e5] hover:bg-gray-50 whitespace-nowrap">
                             <td class="py-3 px-4 text-left text-[#333333]">{{ $item->name }}</td>
                             <td class="py-3 px-4 text-center text-[#333333]">
                                 {{ number_format($item->produksi, 0, ',', '.') }}
@@ -795,9 +795,9 @@
 
             <div class="overflow-x-auto">
                 <x-table.paginated :headers="$monthlyReportsHeaders" :paginator="$monthlyReportsPaginator" emptyMessage="Tidak ada data rincian penjualan"
-                    headerBg="#3f4e4f" headerText="white">
+                    headerBg="#3f4e4f" headerText="white" class="min-w-max">
                     @foreach ($monthlyReportsPaginator as $item)
-                        <tr class="border-b border-[#e5e5e5] hover:bg-gray-50">
+                        <tr class="border-b border-[#e5e5e5] hover:bg-gray-50 whitespace-nowrap">
                             <td class="py-3 px-4 text-left text-[#333333]">{{ $item->waktu }}</td>
                             <td class="py-3 px-4 text-center text-[#333333]">Rp
                                 {{ number_format($item->pendapatanKotor, 0, ',', '.') }}</td>

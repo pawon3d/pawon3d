@@ -294,7 +294,9 @@ class TambahSiapBeli extends Component
     public function render()
     {
         return view('livewire.production.tambah-siap-beli', [
-            'products' => Product::whereJsonContains('method', 'siap-beli')->get(),
+            'products' => Product::whereJsonContains('method', 'siap-beli')
+                ->where('is_recipe', true)
+                ->get(),
         ]);
     }
 }

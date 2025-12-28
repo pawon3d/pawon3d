@@ -78,6 +78,41 @@ class Product extends Model
         return $this->hasMany(OtherCost::class);
     }
 
+    /**
+     * Get available stock for this product
+     * For recipe products: return stock field
+     * For non-recipe products: get from material batches (excluding expired)
+     */
+    public function getAvailableStock(): int
+    {
+        // Jika produk memiliki resep, gunakan stok produk
+        if ($this->is_recipe) {
+            return $this->stock ?? 0;
+        }
+
+        // Jika produk tidak memiliki resep (ready-to-sell), ambil dari bahan baku
+        // Load product compositions to get the material
+        $this->load('product_compositions.material.material_details.unit');
+        
+        $composition = $this->product_compositions->first();
+        if (!$composition || !$composition->material) {
+            return 0;
+        }
+
+        $material = $composition->material;
+        
+        // Get main unit for the material
+        $mainDetail = $material->material_details->firstWhere('is_main', true);
+        if (!$mainDetail || !$mainDetail->unit) {
+            return 0;
+        }
+
+        // Get total quantity in main unit (excludes expired batches)
+        $totalQuantity = $material->getTotalQuantityInUnit($mainDetail->unit);
+        
+        return (int) floor($totalQuantity);
+    }
+
     public static function boot()
     {
         parent::boot();

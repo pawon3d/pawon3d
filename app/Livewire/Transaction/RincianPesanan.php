@@ -541,17 +541,45 @@ class RincianPesanan extends Component
         $transaction = \App\Models\Transaction::find($this->transactionId);
         if ($transaction) {
             if ($transaction->method == 'siap-beli' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
-                $transaction->details()->each(function ($detail) {
+                $transaction->details()->each(function ($detail) use ($transaction) {
+                    $product = $detail->product;
+                    $availableStock = $product->getAvailableStock();
+                    
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
-                    if ($detail->product->stock < $detail->quantity) {
+                    if ($availableStock < $detail->quantity) {
                         $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
-
                         return;
                     }
+                    
                     // Kurangi stok produk sesuai quantity yang dibeli
-                    $product = $detail->product;
                     if ($product) {
-                        $product->decrement('stock', $detail->quantity);
+                        if ($product->is_recipe) {
+                            // Produk dengan resep: kurangi stok produk
+                            $product->decrement('stock', $detail->quantity);
+                        } else {
+                            // Produk ready-to-sell: kurangi stok dari material batch
+                            $product->load('product_compositions.material.material_details.unit');
+                            $composition = $product->product_compositions->first();
+                            
+                            if ($composition && $composition->material) {
+                                $material = $composition->material;
+                                $mainDetail = $material->material_details->firstWhere('is_main', true);
+                                
+                                if ($mainDetail && $mainDetail->unit) {
+                                    // Reduce material quantity (FIFO, exclude expired)
+                                    $material->reduceQuantity(
+                                        $detail->quantity,
+                                        $mainDetail->unit,
+                                        [
+                                            'action' => 'penjualan',
+                                            'reference_type' => 'App\Models\Transaction',
+                                            'reference_id' => $transaction->id,
+                                            'note' => 'Penjualan produk siap beli: ' . $product->name,
+                                        ]
+                                    );
+                                }
+                            }
+                        }
                     }
                 });
             }

@@ -51,7 +51,7 @@ class Form extends Component
 
     protected function loadHitung(): void
     {
-        $hitung = Hitung::with(['details.material.batches.unit', 'details.material.material_details'])
+        $hitung = Hitung::with(['details.material.batches.unit', 'details.material.material_details.unit'])
             ->findOrFail($this->hitung_id);
 
         $this->action = $hitung->action;
@@ -61,6 +61,30 @@ class Form extends Component
 
         $this->hitung_details = $hitung->details->map(function ($detail) {
             $batch = $detail->material?->batches->firstWhere('id', $detail->material_batch_id);
+            $price = $detail->material?->material_details->firstWhere('unit_id', $batch?->unit_id)?->supply_price ?? 0;
+
+            // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+            if ($price == 0 && $batch && $detail->material) {
+                $targetUnit = \App\Models\Unit::find($batch->unit_id);
+                $otherDetails = \App\Models\MaterialDetail::where('material_id', $detail->material_id)
+                    ->where('unit_id', '!=', $batch->unit_id)
+                    ->where('supply_price', '>', 0)
+                    ->with('unit')
+                    ->get();
+
+                foreach ($otherDetails as $otherDetail) {
+                    if ($otherDetail->unit && $targetUnit) {
+                        // Konversi harga dari unit lain ke unit target
+                        $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                        if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                            $price = $otherDetail->supply_price / $convertedQuantity;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $totalPrice = ($batch?->batch_quantity ?? 0) * $price;
 
             return [
                 'material_id' => $detail->material_id,
@@ -68,7 +92,7 @@ class Form extends Component
                 'material_quantity' => $batch?->batch_quantity ?? 0,
                 'quantity_actual' => $detail->quantity_actual ?? 0,
                 'unit_name' => ' ('.($batch?->unit?->alias ?? '-').')',
-                'total' => $detail->total ?? 0,
+                'total' => $totalPrice,
             ];
         })->toArray();
 
@@ -132,7 +156,7 @@ class Form extends Component
     public function setBatch(int $index, $batchId): void
     {
         if ($batchId && $this->hitung_details[$index]['material_id']) {
-            $material = Material::with(['batches.unit', 'material_details'])
+            $material = Material::with(['batches.unit', 'material_details.unit'])
                 ->find($this->hitung_details[$index]['material_id']);
             $batch = $material?->batches->firstWhere('id', $batchId);
 
@@ -142,6 +166,29 @@ class Form extends Component
                 $this->hitung_details[$index]['unit_name'] = ' ('.($batch->unit?->alias ?? '-').')';
 
                 $price = $material->material_details->firstWhere('unit_id', $batch->unit_id)?->supply_price ?? 0;
+
+                // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+                if ($price == 0) {
+                    $targetUnit = \App\Models\Unit::find($batch->unit_id);
+                    $otherDetails = \App\Models\MaterialDetail::where('material_id', $material->id)
+                        ->where('unit_id', '!=', $batch->unit_id)
+                        ->where('supply_price', '>', 0)
+                        ->with('unit')
+                        ->get();
+
+                    foreach ($otherDetails as $otherDetail) {
+                        if ($otherDetail->unit && $targetUnit) {
+                            // Konversi harga dari unit lain ke unit target
+                            // Misal: 1kg = 1000gram, harga Rp10.000/kg → Rp10.000/1000 = Rp10/gram
+                            $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                            if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                                $price = $otherDetail->supply_price / $convertedQuantity;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 $this->hitung_details[$index]['total'] = $this->hitung_details[$index]['material_quantity'] * $price;
             }
         } else {
