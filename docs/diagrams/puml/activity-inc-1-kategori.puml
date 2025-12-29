@@ -1,0 +1,28 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengelola Kategori
+
+start
+:Bagian Inventori mengakses halaman kategori;
+:Sistem menampilkan daftar kategori;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form kategori baru;
+    :Menyimpan data kategori;
+    :Sistem menampilkan notifikasi sukses;
+else if (Ubah) then
+    :Memilih kategori;
+    :Mengubah data kategori;
+    :Menyimpan perubahan;
+    :Sistem menampilkan notifikasi sukses;
+else (Hapus)
+    :Memilih kategori;
+    :Konfirmasi penghapusan;
+    :Sistem menghapus kategori;
+    :Sistem menampilkan notifikasi sukses;
+endif
+stop
+
+@enduml

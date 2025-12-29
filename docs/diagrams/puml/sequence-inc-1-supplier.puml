@@ -1,0 +1,28 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengelola Supplier
+
+actor "Bagian Inventori" as Inv
+participant "SupplierPage" as SP
+participant "SupplierController" as SC
+participant "Supplier Model" as SM
+
+Inv -> SP : Membuka halaman supplier
+SP -> SC : mount()
+SC -> SM : all()
+SC --> SP : listSupplier
+
+Inv -> SP : Klik Tambah Supplier(data)
+SP -> SC : store(data)
+SC -> SM : create(data)
+SC --> SP : showSuccess()
+
+Inv -> SP : Klik Edit Supplier(id, data)
+SP -> SC : update(id, data)
+SC -> SM : find(id)
+SC -> SM : update(data)
+SC --> SP : showSuccess()
+
+@enduml

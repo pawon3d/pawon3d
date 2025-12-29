@@ -1,0 +1,51 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nProses Produksi
+
+actor "Bagian Produksi" as Prod
+participant "ProductionPage" as PP
+participant "ProductionController" as PC
+participant "Production" as PR
+participant "ProductionDetail" as PD
+participant "ProductComposition" as PCM
+participant "Material" as MM
+participant "InventoryLog" as IL
+
+Prod -> PP : Mengakses antrian produksi
+PP -> PC : getQueue()
+PC -> PR : getPendingProductions()
+PC --> PP : displayQueue()
+
+Prod -> PP : Memilih pesanan untuk diproduksi
+PP -> PC : getProductionDetail(id)
+PC -> PD : getProducts()
+PC --> PP : displayProductDetail()
+
+Prod -> PP : Memulai produksi
+PP -> PC : startProduction(production_id)
+
+loop Untuk Setiap Produk
+    PC -> PCM : getRecipe(product_id)
+    loop Untuk Setiap Bahan
+        PC -> MM : checkStock(material_id, qty)
+    end
+end
+
+alt Stok Semua Bahan Cukup
+    loop Untuk Setiap Bahan
+        PC -> MM : reduceQuantity(qty)
+        PC -> IL : create(action="produksi")
+    end
+    PC -> PR : updateStatus("Dalam Proses")
+else Stok Tidak Cukup
+    PC --> PP : showError("Bahan tidak cukup")
+end
+
+Prod -> PP : Menyelesaikan produksi
+PP -> PC : finishProduction(results)
+PC -> PR : updateStatus("Selesai")
+PC --> PP : showSuccess()
+
+@enduml

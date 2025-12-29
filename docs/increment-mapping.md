@@ -1,183 +1,216 @@
-# Pemetaan Increment - Sistem Pawon3D
+# Pemetaan Increment Sistem Pawon3D
 
 ## Pendahuluan
 
-Dokumen ini menyajikan pemetaan fitur sistem Pawon3D ke dalam dua increment berdasarkan metode pengembangan perangkat lunak incremental. Pembagian increment dilakukan berdasarkan urgensi fungsionalitas, tingkat ketergantungan antar modul, dan rencana pengembangan awal sistem.
+Dokumen ini menyajikan pemetaan fitur dan modul Sistem Manajemen Toko Kue Pawon3D ke dalam dua tahapan pengembangan berdasarkan metode incremental. Pembagian increment didasarkan pada tingkat kepentingan fungsionalitas, kompleksitas teknis, serta ketergantungan antar modul. Increment 1 mencakup fondasi sistem dan fungsionalitas inti penjualan, sementara Increment 2 meliputi fitur-fitur pendukung operasional yang lebih kompleks.
 
 ---
 
-## Increment 1: Fungsionalitas Inti Operasional
+## Increment 1: Modul Dasar dan Penjualan
 
-Increment pertama mencakup modul-modul inti yang diperlukan untuk menjalankan operasi dasar toko kue. Modul-modul pada increment ini merupakan fondasi yang memungkinkan proses bisnis utama berjalan secara lengkap dari hulu ke hilir.
+Increment 1 mencakup modul-modul fundamental yang menjadi fondasi operasional sistem. Komponen-komponen pada tahap ini memungkinkan pengguna untuk mengakses sistem, mengelola data master, serta melaksanakan transaksi penjualan dasar.
 
-### 1.1 Manajemen Kategori dan Satuan Ukur
+### 1.1 Modul Autentikasi dan Otorisasi
 
-Modul ini menyediakan pengelolaan data master kategori produk serta satuan ukur yang digunakan dalam sistem. Fitur konversi satuan otomatis memungkinkan perhitungan kuantitas bahan baku dengan satuan berbeda dalam satu grup konversi.
+| Komponen | Deskripsi |
+|----------|-----------|
+| Login | Proses autentikasi pengguna ke dalam sistem |
+| Aktivasi Akun | Aktivasi akun baru melalui tautan undangan via email |
+| Manajemen Peran | Pengelolaan role dan permission untuk kontrol akses |
+| Manajemen Pengguna | Pengelolaan data pekerja/karyawan |
 
-**Komponen:**
-- Kategori produk dan kategori bahan baku (ingredient category)
-- Satuan ukur dengan sistem konversi hierarkis
-- Jenis biaya (type cost) untuk kategorisasi biaya tambahan
+### 1.2 Modul Halaman Publik
 
-### 1.2 Manajemen Supplier
+| Komponen | Deskripsi |
+|----------|-----------|
+| Landing Page | Halaman utama yang menampilkan informasi toko |
+| Katalog Produk | Daftar produk yang dapat diakses publik |
+| Detail Produk | Informasi lengkap satu produk |
+| FAQ | Halaman pertanyaan yang sering diajukan |
 
-Modul ini menangani pengelolaan data pemasok bahan baku. Informasi supplier mencakup identitas, kontak, dan lokasi lengkap untuk keperluan operasional pembelanjaan.
+### 1.3 Modul Data Master
 
-**Komponen:**
-- Data identitas dan kontak supplier
-- Informasi alamat dan lokasi
-- Riwayat transaksi pembelanjaan
+| Komponen | Deskripsi |
+|----------|-----------|
+| Kategori Produk | Pengelolaan kategori untuk mengelompokkan produk |
+| Produk | Pengelolaan data produk termasuk harga dan gambar |
+| Satuan Ukur | Pengelolaan satuan dengan sistem konversi otomatis |
+| Jenis Biaya | Pengelolaan jenis-jenis biaya operasional |
 
-### 1.3 Manajemen Bahan Baku
+### 1.4 Modul Transaksi Penjualan (Point of Sale)
 
-Modul ini mengelola data bahan baku yang digunakan dalam produksi. Sistem mengimplementasikan manajemen batch dengan metode FIFO (First In First Out) untuk memastikan rotasi stok yang optimal dan pelacakan tanggal kedaluwarsa.
+| Komponen | Deskripsi |
+|----------|-----------|
+| Pesanan Reguler | Pembuatan pesanan produk reguler |
+| Pesanan Kotak | Pembuatan pesanan dalam bentuk paket/kotak |
+| Siap Beli | Penjualan produk yang sudah tersedia stok |
+| Manajemen Shift | Pembukaan dan penutupan sesi penjualan kasir |
+| Pembayaran | Pemrosesan pembayaran dengan multi-channel |
+| Struk Digital | Pencetakan struk transaksi |
 
-**Komponen:**
-- Data bahan baku (material) dengan status ketersediaan
-- Batch bahan baku dengan quantity dan tanggal kedaluwarsa
-- Sistem konversi satuan otomatis antar batch
-- Pengurangan stok otomatis saat produksi
+### 1.5 Modul Pelanggan
 
-### 1.4 Manajemen Belanja (Expense)
+| Komponen | Deskripsi |
+|----------|-----------|
+| Data Pelanggan | Pengelolaan informasi data pelanggan |
+| Sistem Poin Loyalitas | Akumulasi dan penggunaan poin pelanggan |
+| Riwayat Transaksi | Pencatatan histori transaksi per pelanggan |
 
-Modul ini menangani proses pengadaan bahan baku dari supplier. Sistem mendukung alur perencanaan belanja hingga pencatatan detail pembelian per item.
+### 1.6 Modul Dashboard Dasar
 
-**Komponen:**
-- Rencana belanja dengan daftar item
-- Pencatatan belanja aktual dengan detail harga dan kuantitas
-- Pembaruan batch bahan baku secara otomatis
-- Riwayat belanja untuk pelaporan
-
-### 1.5 Manajemen Produk dan Komposisi
-
-Modul ini mengelola katalog produk beserta komposisi bahan baku yang diperlukan untuk memproduksi setiap produk. Data komposisi menjadi dasar perhitungan kebutuhan bahan dan harga modal.
-
-**Komponen:**
-- Data produk dengan kategori dan harga
-- Komposisi produk (product composition) dengan kuantitas bahan
-- Biaya tambahan per produk (other costs)
-- Perhitungan harga modal otomatis
-
-### 1.6 Sistem Produksi
-
-Modul ini menangani proses produksi dari penerimaan pesanan hingga penyelesaian produksi. Sistem mendukung dua alur produksi: produksi berdasarkan pesanan dan produksi untuk stok siap beli.
-
-**Komponen:**
-- Produksi pesanan (dari transaksi kotak/reguler)
-- Produksi siap beli (untuk stok)
-- Detail produksi per produk
-- Penugasan pekerja produksi
-- Pengurangan bahan baku otomatis
-
-### 1.7 Sistem Transaksi/Kasir (POS)
-
-Modul ini merupakan sistem Point of Sale untuk menangani transaksi penjualan. Terdapat tiga metode transaksi yang didukung sesuai karakteristik pesanan.
-
-**Komponen dan Metode Transaksi:**
-- **Pesanan Kotak (OK)**: Pesanan dalam jumlah besar dengan kemasan kotak
-- **Pesanan Reguler (OR)**: Pesanan satuan dengan waktu pengerjaan
-- **Siap Beli (OS)**: Penjualan produk yang tersedia di stok
-
-**Fitur Transaksi:**
-- Pembuatan pesanan dengan detail produk
-- Sistem pembayaran multi-channel
-- Penomoran invoice otomatis
-- Pencetakan struk dan nota
-
-### 1.8 Landing Page Publik
-
-Modul ini menyediakan antarmuka publik untuk menampilkan katalog produk kepada pelanggan. Halaman ini dapat diakses tanpa autentikasi.
-
-**Komponen:**
-- Halaman utama dengan informasi toko
-- Katalog produk dengan detail
-- Halaman FAQ (Frequently Asked Questions)
+| Komponen | Deskripsi |
+|----------|-----------|
+| Ringkasan Umum | Tampilan ringkasan data operasional harian |
+| Notifikasi | Sistem pemberitahuan untuk pengguna |
 
 ---
 
-## Increment 2: Fungsionalitas Pendukung dan Pengembangan
+## Increment 2: Modul Inventori dan Produksi
 
-Increment kedua mencakup modul-modul pendukung yang meningkatkan kapabilitas sistem serta fitur-fitur yang berkembang setelah perencanaan awal.
+Increment 2 mencakup modul-modul yang mendukung pengelolaan persediaan bahan baku, proses produksi, serta pelaporan. Komponen-komponen pada tahap ini memerlukan fondasi dari Increment 1 dan memiliki kompleksitas teknis yang lebih tinggi.
 
-### 2.1 Manajemen Pengguna dan Peran
+### 2.1 Modul Bahan Baku dan Inventori
 
-Modul ini menangani autentikasi dan otorisasi pengguna dengan sistem peran berbasis permission yang granular.
+| Komponen | Deskripsi |
+|----------|-----------|
+| Bahan Baku | Pengelolaan data bahan baku/material |
+| Batch Material | Pencatatan stok bahan per batch dengan tanggal kedaluwarsa |
+| Kategori Persediaan | Pengelompokan bahan baku berdasarkan kategori |
+| Konversi Satuan | Sistem konversi otomatis antar satuan ukur |
+| Komposisi Produk | Definisi resep/bahan penyusun tiap produk |
+| Status Stok | Pemantauan status ketersediaan bahan (kosong, menipis, tersedia) |
 
-**Komponen:**
-- Manajemen data pengguna dengan status aktif
-- Sistem undangan dan aktivasi akun via email
-- Peran (role) dengan konfigurasi permission
-- Pembatasan jumlah pengguna per peran
+### 2.2 Modul Supplier
 
-### 2.2 Manajemen Pelanggan dan Sistem Poin
+| Komponen | Deskripsi |
+|----------|-----------|
+| Data Supplier | Pengelolaan informasi pemasok bahan baku |
+| Kontak Supplier | Penyimpanan informasi kontak dan lokasi supplier |
 
-Modul ini mengelola data pelanggan beserta sistem loyalitas berbasis poin untuk mendorong pembelian berulang.
+### 2.3 Modul Belanja (Expense)
 
-**Komponen:**
-- Data pelanggan dengan riwayat transaksi
-- Akumulasi poin dari transaksi
-- Penggunaan poin sebagai diskon
-- Riwayat perubahan poin
+| Komponen | Deskripsi |
+|----------|-----------|
+| Perencanaan Belanja | Pembuatan rencana pembelian bahan baku |
+| Pelaksanaan Belanja | Pencatatan realisasi pembelian aktual |
+| Riwayat Belanja | Histori seluruh transaksi pembelian |
+| Perbandingan Harga | Perbandingan harga ekspektasi dengan harga aktual |
 
-### 2.3 Stock Opname/Inventarisasi (Hitung)
+### 2.4 Modul Produksi
 
-Modul ini menyediakan fitur penghitungan stok fisik untuk rekonsiliasi data inventori dengan kondisi aktual.
+| Komponen | Deskripsi |
+|----------|-----------|
+| Rencana Produksi | Pembuatan jadwal dan target produksi |
+| Produksi Pesanan | Eksekusi produksi berdasarkan pesanan pelanggan |
+| Produksi Siap Beli | Produksi produk untuk stok penjualan langsung |
+| Antrian Produksi | Pengelolaan urutan prioritas produksi |
+| Pekerja Produksi | Pencatatan pekerja yang terlibat dalam produksi |
+| Pengurangan Stok Otomatis | Pengurangan bahan baku secara otomatis berdasarkan resep |
 
-**Komponen:**
-- Perencanaan hitung stok
-- Pencatatan hasil penghitungan per item
-- Penyesuaian stok berdasarkan hasil hitung
-- Riwayat stock opname
+### 2.5 Modul Stock Opname (Hitung)
 
-### 2.4 Dashboard dan Pelaporan
+| Komponen | Deskripsi |
+|----------|-----------|
+| Perencanaan Hitung | Pembuatan jadwal penghitungan stok |
+| Pelaksanaan Hitung | Pencatatan hasil penghitungan fisik |
+| Penyesuaian Stok | Koreksi selisih antara stok sistem dan stok fisik |
+| Riwayat Hitung | Histori seluruh aktivitas stock opname |
 
-Modul ini menyediakan ringkasan operasional dan laporan terstruktur untuk keperluan analisis dan dokumentasi.
+### 2.6 Modul Alur Persediaan
 
-**Komponen:**
-- Dashboard ringkasan umum
-- Laporan kasir dengan statistik transaksi
-- Laporan produksi dengan rekap output
-- Laporan inventori dengan status stok
-- Ekspor laporan ke format PDF dan Excel
+| Komponen | Deskripsi |
+|----------|-----------|
+| Log Inventori | Pencatatan seluruh pergerakan stok bahan |
+| Traceback | Penelusuran asal-usul dan penggunaan bahan |
 
-### 2.5 Notifikasi
+### 2.7 Modul Refund
 
-Modul ini menangani pemberitahuan kepada pengguna terkait aktivitas dan kondisi penting dalam sistem.
+| Komponen | Deskripsi |
+|----------|-----------|
+| Pengembalian Dana | Pemrosesan refund transaksi |
+| Bukti Refund | Dokumentasi bukti pengembalian |
 
-**Komponen:**
-- Notifikasi sistem untuk berbagai event
-- Status baca notifikasi
-- Pengelompokan berdasarkan tipe
+### 2.8 Modul Laporan
 
-### 2.6 Log Aktivitas
+| Komponen | Deskripsi |
+|----------|-----------|
+| Laporan Kasir | Laporan penjualan dan shift kasir |
+| Laporan Produksi | Laporan hasil dan efisiensi produksi |
+| Laporan Inventori | Laporan pergerakan dan status stok |
+| Export PDF | Ekspor laporan dalam format PDF |
+| Export Excel | Ekspor laporan dalam format Excel |
 
-Modul ini mencatat seluruh aktivitas perubahan data untuk keperluan audit dan pelacakan.
+### 2.9 Modul Pengaturan Lanjutan
 
-**Komponen:**
-- Pencatatan otomatis create, update, delete
-- Identifikasi pengguna pelaku perubahan
-- Detail perubahan field
-
-### 2.7 Pengaturan Sistem
-
-Modul ini menyediakan konfigurasi profil usaha dan metode pembayaran yang diterima.
-
-**Komponen:**
-- Profil usaha (nama, alamat, kontak)
-- Dokumen usaha
-- Metode pembayaran (payment channel)
-- Manajemen shift kasir
+| Komponen | Deskripsi |
+|----------|-----------|
+| Profil Usaha | Pengelolaan informasi bisnis dan jam operasional |
+| Metode Pembayaran | Konfigurasi channel pembayaran yang tersedia |
+| Dokumen Toko | Pengelolaan dokumen-dokumen usaha |
 
 ---
 
-## Rasionalisasi Pembagian Increment
+## Rasional Pembagian Increment
 
-Pembagian modul ke dalam dua increment didasarkan pada pertimbangan berikut:
+### Kriteria Increment 1
 
-1. **Ketergantungan Fungsional**: Modul Increment 1 membentuk alur operasional lengkap dari pengadaan bahan hingga penjualan. Modul Increment 2 merupakan fitur pendukung yang dapat ditambahkan tanpa mengganggu operasi inti.
+1. **Fondasi Sistem**: Komponen autentikasi dan otorisasi merupakan prasyarat untuk seluruh fungsionalitas lainnya.
+2. **Operasional Inti**: Transaksi penjualan merupakan fungsi utama yang menghasilkan pendapatan usaha.
+3. **Kompleksitas Rendah-Menengah**: Modul-modul pada Increment 1 memiliki alur proses yang relatif sederhana.
+4. **Ketergantungan Minimal**: Dapat berfungsi secara independen tanpa memerlukan modul Increment 2.
 
-2. **Prioritas Bisnis**: Increment 1 memenuhi kebutuhan esensial operasional toko kue. Increment 2 menambahkan fitur manajemen dan analitik yang meningkatkan efisiensi.
+### Kriteria Increment 2
 
-3. **Kompleksitas Teknis**: Sistem peran-permission dan pelaporan pada Increment 2 memerlukan fondasi data yang dihasilkan oleh modul-modul Increment 1.
+1. **Ketergantungan pada Increment 1**: Produksi membutuhkan data produk, belanja membutuhkan supplier, laporan membutuhkan data transaksi.
+2. **Kompleksitas Tinggi**: Sistem batch, konversi satuan, dan pengurangan stok otomatis memerlukan logika bisnis yang kompleks.
+3. **Fungsi Pendukung**: Bersifat mendukung optimalisasi operasional, bukan fungsi inti penghasil pendapatan.
+4. **Integrasi Multi-Modul**: Memerlukan koordinasi antara beberapa entitas data sekaligus.
 
-4. **Rencana Pengembangan Awal**: Pembagian ini konsisten dengan rencana pengembangan awal dalam proposal skripsi, dengan fitur tambahan yang berkembang dikategorikan ke Increment 2.
+---
+
+## Diagram Ketergantungan Modul
+
+```
+Increment 1                          Increment 2
+┌─────────────────┐                 ┌────────────────────┐
+│  Autentikasi    │◄────────────────┤  Semua Modul       │
+│  & Otorisasi    │                 │  Increment 2       │
+└────────┬────────┘                 └────────────────────┘
+         │
+         ▼
+┌─────────────────┐                 ┌────────────────────┐
+│  Data Master    │◄────────────────┤  Bahan Baku        │
+│  (Kategori,     │                 │  (Material, Batch) │
+│   Produk,       │                 └────────┬───────────┘
+│   Satuan)       │                          │
+└────────┬────────┘                          ▼
+         │                          ┌────────────────────┐
+         ▼                          │  Supplier          │
+┌─────────────────┐                 └────────┬───────────┘
+│  Transaksi      │                          │
+│  Penjualan      │◄──────────────────┐      ▼
+└────────┬────────┘                   │ ┌────────────────────┐
+         │                            │ │  Belanja           │
+         ▼                            │ └────────┬───────────┘
+┌─────────────────┐                   │          │
+│  Shift Kasir    │                   │          ▼
+└────────┬────────┘                   │ ┌────────────────────┐
+         │                            │ │  Produksi          │
+         ▼                            │ └────────┬───────────┘
+┌─────────────────┐                   │          │
+│  Pelanggan &    │                   │          ▼
+│  Poin Loyalitas │                   │ ┌────────────────────┐
+└─────────────────┘                   │ │  Stock Opname      │
+                                      │ └────────┬───────────┘
+                                      │          │
+                                      │          ▼
+                                      │ ┌────────────────────┐
+                                      └─┤  Laporan           │
+                                        └────────────────────┘
+```
+
+---
+
+## Kesimpulan
+
+Pemetaan increment pada sistem Pawon3D disusun berdasarkan prinsip ketergantungan modul dan prioritas fungsionalitas bisnis. Increment 1 menyediakan fondasi operasional yang memungkinkan toko beroperasi secara dasar, sedangkan Increment 2 melengkapi sistem dengan kemampuan pengelolaan inventori, produksi, dan pelaporan yang komprehensif. Pembagian ini memastikan bahwa setiap tahapan pengembangan menghasilkan sistem yang dapat dioperasikan dan memberikan nilai tambah bagi pengguna.

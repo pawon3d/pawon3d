@@ -1,0 +1,32 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengelola Produk & Komposisi
+
+actor "Bagian Inventori" as Inv
+participant "ProductPage" as PP
+participant "ProductController" as PC
+participant "Product" as PM
+participant "Composition" as PCM
+participant "Material" as MT
+
+Inv -> PP : Menambah produk baru(data)
+PP -> PC : store(data)
+PC -> PM : create(data)
+PM --> PC : product_id
+
+alt Memiliki Komposisi
+    loop Untuk Setiap Bahan
+        Inv -> PP : Tambah bahan(material_id, qty, unit)
+        PP -> PC : addComposition(product_id, data)
+        PC -> MT : validate(material_id)
+        PC -> PCM : create(product_id, material_id, qty, unit)
+        PC -> PC : calculateEstimateCapital()
+    end
+    PC -> PM : updateCapital(total)
+end
+
+PC --> PP : showSuccess()
+
+@enduml

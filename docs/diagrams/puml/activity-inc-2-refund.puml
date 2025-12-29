@@ -1,0 +1,29 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nProses Refund (Pengembalian Dana)
+
+start
+:Kasir mengakses riwayat transaksi;
+:Memilih transaksi yang sudah lunas;
+:Memilih opsi "Refund/Batalkan";
+
+:Memasukkan alasan pembatalan;
+:Unggah bukti pendukung (jika ada);
+:Memilih metode pengembalian;
+
+if (Metode?) then (Tunai)
+    :Kasir memberikan uang tunai;
+else (Transfer)
+    :Kasir memasukkan nomor rekening;
+    :Melakukan transfer dana;
+endif
+
+:Sistem memvalidasi status refund;
+:Sistem mengembalikan stok produk;
+:Status transaksi = "Dibatalkan";
+:Status pembayaran = "Refund";
+stop
+
+@enduml

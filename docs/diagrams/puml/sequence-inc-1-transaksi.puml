@@ -1,0 +1,64 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nTransaksi Penjualan
+
+actor "Kasir" as Cashier
+participant "TransactionPage" as TP
+participant "TransactionController" as TC
+participant "Transaction" as TM
+participant "TransactionDetail" as TD
+participant "Product" as PM
+participant "Customer" as CM
+participant "Payment" as PY
+
+Cashier -> TP : Mengakses daftar transaksi
+TP -> TC : getTransactions()
+TC -> TM : getAll()
+TC --> TP : displayTransactions()
+
+Cashier -> TP : Membuat pesanan baru(method)
+TP -> TC : createOrder(method)
+TC -> TM : create(method)
+
+alt Pesanan Kotak
+    TM -> TM : generateInvoice("OK")
+else Pesanan Reguler
+    TM -> TM : generateInvoice("OR")
+else Siap Beli
+    TM -> TM : generateInvoice("OS")
+end
+
+TC --> TP : showOrderForm()
+
+loop Menambahkan Produk
+    Cashier -> TP : selectProduct(product_id, qty)
+    TP -> TC : addToCart(product_id, qty)
+    TC -> PM : find(product_id)
+    TC -> TD : create(transaction_id, product_id, qty, price)
+    TC -> TC : calculateTotal()
+    TC --> TP : updateCart()
+end
+
+Cashier -> TP : Memasukkan data pelanggan(phone, name)
+TP -> TC : setCustomer(phone, name)
+TC -> CM : firstOrCreate(phone, name)
+
+Cashier -> TP : Memproses pembayaran(amount, method)
+TP -> TC : processPayment(amount, method)
+
+alt Jumlah Cukup
+    TC -> PY : create(transaction_id, amount, method)
+    PY -> PY : generateReceiptNumber()
+    TC -> TM : updatePaymentStatus("Lunas")
+    TC --> TP : showReceipt()
+else Jumlah Kurang
+    TC --> TP : showError("Pembayaran kurang")
+end
+
+Cashier -> TP : Mencetak struk
+TP -> TC : printReceipt()
+TC --> TP : downloadReceipt()
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nAktivasi Akun Pengguna Baru
+
+start
+:Pengguna baru menerima email undangan;
+:Mengakses link aktivasi valid;
+:Sistem memvalidasi token;
+
+if (Token valid?) then (Ya)
+    :Sistem menampilkan formulir pengaturan password;
+    :Mengatur password dengan kriteria valid;
+    :Sistem mengaktifkan akun;
+    :Redirect ke halaman dashboard;
+    stop
+else (Tidak)
+    :Tampilkan pesan token tidak valid;
+    stop
+endif
+
+@enduml

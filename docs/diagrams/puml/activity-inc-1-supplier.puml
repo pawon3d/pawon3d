@@ -1,0 +1,29 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengelola Supplier
+
+start
+:Bagian Inventori mengakses halaman supplier;
+:Sistem menampilkan daftar supplier;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form supplier baru;
+    :(Nama, Kontak, Alamat, Link Maps);
+    :Menyimpan data supplier;
+    :Sistem menampilkan notifikasi sukses;
+else if (Ubah) then
+    :Memilih supplier;
+    :Mengubah data supplier;
+    :Menyimpan perubahan;
+    :Sistem menampilkan notifikasi sukses;
+else (Hapus)
+    :Memilih supplier;
+    :Konfirmasi penghapusan;
+    :Sistem menghapus supplier;
+    :Sistem menampilkan notifikasi sukses;
+endif
+stop
+
+@enduml

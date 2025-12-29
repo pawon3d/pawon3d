@@ -1,0 +1,31 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nAktivasi Akun Pengguna Baru
+
+actor "Pengguna Baru" as NewUser
+participant "ActivationPage" as AP
+participant "ActivateController" as ATC
+participant "User Model" as UM
+
+NewUser -> AP : Mengakses link aktivasi(token)
+AP -> ATC : mount(token)
+ATC -> UM : findByToken(token)
+
+alt Token Valid
+    ATC -> ATC : checkTokenExpiry()
+    ATC --> AP : showPasswordForm()
+    
+    NewUser -> AP : Mengatur password(password)
+    AP -> ATC : setPassword(password)
+    ATC -> UM : activateWithPassword(password)
+    UM -> UM : hashPassword()
+    UM -> UM : setIsActive(true)
+    UM -> UM : clearToken()
+    ATC --> AP : redirectToDashboard()
+else Token Tidak Valid
+    ATC --> AP : showError("Token tidak valid")
+end
+
+@enduml

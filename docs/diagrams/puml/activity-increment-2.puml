@@ -1,0 +1,166 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram - Increment 2\nModul Pendukung Operasional
+
+|#LightBlue|Pengelolaan Pengguna (Admin)|
+start
+:Admin mengakses halaman pekerja;
+:Sistem menampilkan daftar pengguna;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form pengguna baru;
+    :Memasukkan email valid;
+    :Menyimpan data;
+    :Sistem mengirim email undangan;
+else if (Ubah) then
+    :Memilih pengguna;
+    :Mengubah data pengguna;
+    :Menyimpan perubahan;
+    :Sistem memperbarui data;
+else (Toggle Status)
+    :Memilih pengguna;
+    :Mengubah status aktif;
+    :Sistem toggle status aktif/nonaktif;
+endif
+stop
+
+|#LightGreen|Pengelolaan Peran (Admin)|
+start
+:Admin mengakses halaman peran;
+:Sistem menampilkan daftar peran;
+
+if (Aksi?) then (Tambah)
+    :Mengisi nama peran baru;
+    :Memilih permission;
+    :Menyimpan peran;
+    :Sistem menyimpan peran dengan permission;
+else (Ubah Permission)
+    :Memilih peran;
+    :Mengubah konfigurasi permission;
+    :Menyimpan perubahan;
+    :Sistem memperbarui permission;
+endif
+stop
+
+|#LightYellow|Pengaturan Sistem (Admin)|
+start
+:Admin mengakses halaman pengaturan;
+:Sistem menampilkan halaman pengaturan;
+
+if (Aksi?) then (Profil Usaha)
+    :Mengubah data profil usaha;
+    :Menyimpan perubahan;
+    :Sistem menyimpan data profil;
+else (Metode Pembayaran)
+    :Mengakses halaman metode pembayaran;
+    if (Aksi?) then (Tambah)
+        :Menambah metode pembayaran baru;
+        :Sistem menyimpan data;
+    else (Ubah)
+        :Mengubah data metode pembayaran;
+        :Sistem menyimpan perubahan;
+    endif
+endif
+stop
+
+|#LightPink|Pengelolaan Pelanggan (Admin)|
+start
+:Admin mengakses halaman pelanggan;
+:Sistem menampilkan daftar pelanggan dengan poin;
+:Mencari pelanggan berdasarkan nomor telepon;
+:Sistem menampilkan hasil pencarian;
+:Melihat detail pelanggan;
+:Sistem menampilkan riwayat transaksi dan poin;
+stop
+
+|#LightCoral|Aktivasi Akun (Pengguna Baru)|
+start
+:Pengguna baru menerima email undangan;
+:Mengakses link aktivasi valid;
+:Sistem memvalidasi token;
+
+if (Token valid?) then (Ya)
+    :Sistem menampilkan formulir pengaturan password;
+    :Mengatur password dengan kriteria valid;
+    :Sistem mengaktifkan akun;
+    :Redirect ke halaman dashboard;
+    stop
+else (Tidak)
+    :Tampilkan pesan token tidak valid;
+    stop
+endif
+
+|#Lavender|Stock Opname (Inventori)|
+start
+:Bagian Inventori mengakses halaman hitung;
+:Sistem menampilkan daftar rencana hitung;
+:Membuat rencana hitung;
+:Sistem generate nomor HC-YYMMDD-XXXX;
+
+:Memulai penghitungan stok;
+:Sistem menampilkan kuantitas sistem per item;
+
+repeat
+    :Memasukkan kuantitas aktual;
+    :Sistem menghitung selisih otomatis;
+repeat while (Ada item lain?) is (Ya)
+->Tidak;
+
+:Menyelesaikan perhitungan stok;
+
+fork
+    :Sistem menyesuaikan batch;
+fork again
+    :Sistem mencatat log inventori;
+end fork
+
+:Melihat riwayat hitung;
+:Melihat alur persediaan;
+:Sistem menampilkan log perubahan inventori;
+stop
+
+|#LightGray|Penggunaan Poin (Kasir)|
+start
+:Kasir memproses transaksi;
+:Menggunakan poin pelanggan;
+:Sistem memeriksa saldo poin;
+
+if (Poin mencukupi?) then (Ya)
+    :Sistem menghitung diskon dari poin;
+    :Mengurangi total transaksi;
+else (Tidak)
+    :Tampilkan pesan poin tidak cukup;
+endif
+stop
+
+|#PaleGreen|Fitur Umum (Semua Pengguna)|
+start
+:Pengguna mengakses halaman profil;
+:Sistem menampilkan data profil;
+:Mengubah data profil;
+:Sistem menyimpan perubahan profil;
+
+|Notifikasi|
+:Mengakses halaman notifikasi;
+:Sistem menampilkan daftar notifikasi;
+:Menandai notifikasi sebagai dibaca;
+:Sistem memperbarui status notifikasi;
+
+|Laporan|
+:Mengakses halaman laporan;
+:Sistem menampilkan halaman laporan;
+:Memfilter laporan berdasarkan periode;
+:Sistem menampilkan data sesuai filter;
+
+if (Format ekspor?) then (PDF)
+    :Mengekspor laporan ke PDF;
+    :Sistem menghasilkan file PDF;
+else (Excel)
+    :Mengekspor laporan ke Excel;
+    :Sistem menghasilkan file Excel;
+endif
+stop
+
+@enduml

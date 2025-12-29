@@ -1,0 +1,30 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nManajemen Shift Kasir
+
+start
+:Kasir memulai hari kerja;
+:Mengakses halaman Shift;
+
+if (Status Shift?) then (Belum Dibuka)
+    :Masukkan modal kas awal;
+    :Sistem mencatat waktu buka;
+    :Shift status = "Terbuka";
+    :Mulai melayani transaksi;
+else (Sudah Terbuka)
+    :Melayani transaksi...;
+    if (Ingin Tutup Shift?) then (Ya)
+        :Sistem merekap total penjualan;
+        :Kasir memasukkan jumlah uang fisik;
+        :Sistem menghitung selisih;
+        :Shift status = "Ditutup";
+        :Cetak laporan shift;
+        stop
+    else (Tidak)
+        stop
+    endif
+endif
+
+@enduml

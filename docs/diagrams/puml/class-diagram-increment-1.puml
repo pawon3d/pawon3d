@@ -1,0 +1,268 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+title Class Diagram - Increment 1\nModul Inti Operasional
+
+' ==========================================
+' KELAS INTI (INCREMENT 1)
+' ==========================================
+
+package "Autentikasi & Pengguna" #LightBlue {
+    class User {
+        -id: UUID
+        -name: String
+        -email: String
+        -phone: String
+        -password: String
+        -image: String
+        -gender: String
+        -is_active: Boolean
+        -invitation_token: String
+        -invitation_sent_at: Timestamp
+        -activated_at: Timestamp
+        --
+        +sendInvitation(): void
+        +activateWithPassword(password): void
+        +hasValidInvitationToken(): Boolean
+        +toggleActive(): void
+        +initials(): String
+    }
+
+    class Role {
+        -id: BigInteger
+        -name: String
+        -guard_name: String
+        -max_users: Integer
+        --
+        +permissions(): BelongsToMany
+        +users(): BelongsToMany
+    }
+
+    class Permission {
+        -id: BigInteger
+        -name: String
+        -guard_name: String
+        --
+        +roles(): BelongsToMany
+    }
+
+    class Notification {
+        -id: UUID
+        -user_id: UUID
+        -title: String
+        -message: Text
+        -type: String
+        -is_read: Boolean
+        -data: JSON
+        --
+        +markAsRead(): void
+    }
+}
+
+package "Pelanggan" #LightGreen {
+    class Customer {
+        -id: UUID
+        -phone: String
+        -name: String
+        -points: Decimal
+        --
+        +transactions(): HasMany
+        +pointsHistories(): HasMany
+    }
+
+    class PointsHistory {
+        -id: UUID
+        -phone: String
+        -transaction_id: UUID
+        -action_id: String
+        -action: String
+        -points: Integer
+        -image: String
+        --
+        +customer(): BelongsTo
+        +transaction(): BelongsTo
+    }
+}
+
+package "Produk & Kategori" #LightYellow {
+    class Category {
+        -id: UUID
+        -name: String
+        -is_active: Boolean
+        --
+        +products(): BelongsToMany
+        +productCategories(): HasMany
+    }
+
+    class Product {
+        -id: UUID
+        -name: String
+        -description: String
+        -price: Decimal
+        -stock: Decimal
+        -method: JSON
+        -product_image: String
+        -is_recipe: Boolean
+        -is_active: Boolean
+        -is_recommended: Boolean
+        -capital: Decimal
+        -pcs: Decimal
+        -pcs_capital: Decimal
+        --
+        +getAvailableStock(): Integer
+        +otherCosts(): HasMany
+    }
+
+    class ProductCategory {
+        -id: UUID
+        -product_id: UUID
+        -category_id: UUID
+    }
+
+    class TypeCost {
+        -id: UUID
+        -name: String
+        --
+        +otherCosts(): HasMany
+    }
+
+    class OtherCost {
+        -id: UUID
+        -product_id: UUID
+        -type_cost_id: UUID
+        -price: Decimal
+        --
+        +product(): BelongsTo
+        +typeCost(): BelongsTo
+    }
+
+    class Unit {
+        -id: UUID
+        -name: String
+        -alias: String
+        -group: String
+        -base_unit_id: UUID
+        -conversion_factor: Decimal
+        --
+        +baseUnit(): BelongsTo
+        +children(): HasMany
+        +convertTo(targetUnit, value): Float
+    }
+}
+
+package "Transaksi" #LightPink {
+    class Transaction {
+        -id: UUID
+        -user_id: UUID
+        -customer_id: UUID
+        -invoice_number: String
+        -name: String
+        -phone: String
+        -date: Date
+        -time: Time
+        -start_date: Date
+        -end_date: Date
+        -note: Text
+        -payment_status: String
+        -status: String
+        -method: String
+        -total_amount: Decimal
+        -points_used: Integer
+        -points_discount: Decimal
+        -total_refund: Decimal
+        -created_by_shift: UUID
+        --
+        +generateInvoiceNumber(): String
+        +details(): HasMany
+        +payments(): HasMany
+    }
+
+    class TransactionDetail {
+        -id: UUID
+        -transaction_id: UUID
+        -product_id: UUID
+        -quantity: SmallInteger
+        -price: Decimal
+        -refund_quantity: SmallInteger
+        -pcs_capital_snapshot: Decimal
+        --
+        +transaction(): BelongsTo
+        +product(): BelongsTo
+    }
+
+    class Payment {
+        -id: UUID
+        -receipt_number: String
+        -transaction_id: UUID
+        -payment_channel_id: UUID
+        -payment_method: String
+        -payment_group: String
+        -paid_amount: Decimal
+        -image: String
+        -paid_at: Timestamp
+        --
+        +generateReceiptNumber(): String
+    }
+
+    class PaymentChannel {
+        -id: UUID
+        -type: String
+        -group: String
+        -bank_name: String
+        -account_number: String
+        -account_name: String
+        -qris_image: String
+        -is_active: Boolean
+        --
+        +payments(): HasMany
+    }
+
+    class Shift {
+        -id: UUID
+        -shift_number: String
+        -opened_by: UUID
+        -closed_by: UUID
+        -start_time: DateTime
+        -end_time: DateTime
+        -status: String
+        -initial_cash: Decimal
+        -final_cash: Decimal
+        -total_sales: Decimal
+        -total_refunds: Decimal
+        -total_discounts: Decimal
+        --
+        +openedBy(): BelongsTo
+        +closedBy(): BelongsTo
+        +transactions(): HasMany
+    }
+}
+
+' ==========================================
+' RELASI
+' ==========================================
+
+User "1" -- "*" Role : has
+Role "1" -- "*" Permission : has
+User "1" -- "*" Notification
+
+Customer "1" -- "*" Transaction
+Customer "1" -- "*" PointsHistory
+Transaction "1" -- "*" PointsHistory
+
+Category "1" -- "*" ProductCategory
+Product "1" -- "*" ProductCategory
+Product "1" -- "*" TransactionDetail
+Product "1" -- "*" OtherCost
+TypeCost "1" -- "*" OtherCost
+Unit "0..1" -- "*" Unit : base_unit
+
+User "1" -- "*" Transaction
+Transaction "1" -- "*" TransactionDetail
+Transaction "1" -- "*" Payment
+Shift "1" -- "*" Transaction
+PaymentChannel "1" -- "*" Payment
+
+@enduml

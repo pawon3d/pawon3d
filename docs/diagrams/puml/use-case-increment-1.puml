@@ -1,0 +1,156 @@
+@startuml
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title Use Case Diagram - Increment 1\nSistem Manajemen Toko Kue Pawon3D\nModul Inti Operasional
+
+left to right direction
+
+' == Aktor ==
+actor "Bagian Inventori" as Inventory
+actor "Bagian Produksi" as Production
+actor "Kasir" as Cashier
+
+' == Sistem ==
+rectangle "Sistem Pawon3D - Increment 1" {
+    
+    ' -- Autentikasi --
+    package "Autentikasi" {
+        usecase "Login ke Sistem" as UC001
+        usecase "Logout dari Sistem" as UC002
+    }
+    
+    ' -- Pengelolaan Kategori --
+    package "Pengelolaan Kategori" {
+        usecase "Mengakses Halaman Kategori" as UC003
+        usecase "Menambah Kategori Baru" as UC004
+        usecase "Mengubah Data Kategori" as UC005
+        usecase "Menghapus Kategori" as UC006
+    }
+    
+    ' -- Pengelolaan Satuan --
+    package "Pengelolaan Satuan" {
+        usecase "Mengakses Halaman Satuan" as UC007
+        usecase "Menambah Satuan Dasar" as UC008
+        usecase "Menambah Satuan Turunan" as UC009
+    }
+    
+    ' -- Pengelolaan Supplier --
+    package "Pengelolaan Supplier" {
+        usecase "Mengakses Halaman Supplier" as UC010
+        usecase "Menambah Supplier" as UC011
+        usecase "Mengubah Data Supplier" as UC012
+    }
+    
+    ' -- Pengelolaan Bahan Baku --
+    package "Pengelolaan Bahan Baku" {
+        usecase "Mengakses Halaman Bahan Baku" as UC013
+        usecase "Menambah Bahan Baku" as UC014
+        usecase "Mengubah Data Bahan Baku" as UC015
+    }
+    
+    ' -- Pengelolaan Belanja --
+    package "Pengelolaan Belanja" {
+        usecase "Mengakses Halaman Belanja" as UC016
+        usecase "Membuat Rencana Belanja" as UC017
+        usecase "Memulai Proses Belanja" as UC018
+        usecase "Menyelesaikan Belanja" as UC019
+        usecase "Melihat Riwayat Belanja" as UC020
+    }
+    
+    ' -- Pengelolaan Produk --
+    package "Pengelolaan Produk" {
+        usecase "Mengakses Halaman Produk" as UC021
+        usecase "Menambah Produk dengan Komposisi" as UC022
+        usecase "Menambah Biaya Tambahan" as UC023
+        usecase "Mengubah Komposisi Produk" as UC024
+    }
+    
+    ' -- Pengelolaan Produksi --
+    package "Pengelolaan Produksi" {
+        usecase "Mengakses Halaman Produksi" as UC027
+        usecase "Mengakses Antrian Produksi" as UC028
+        usecase "Memilih Pesanan untuk Produksi" as UC029
+        usecase "Memulai Produksi" as UC030
+        usecase "Menyelesaikan Produksi Pesanan" as UC031
+        usecase "Membuat Produksi Siap Beli" as UC032
+        usecase "Menyelesaikan Produksi Siap Beli" as UC033
+        usecase "Melihat Riwayat Produksi" as UC034
+    }
+    
+    ' -- Transaksi Penjualan --
+    package "Transaksi Penjualan" {
+        usecase "Mengakses Daftar Transaksi" as UC037
+        usecase "Membuat Pesanan Kotak" as UC038
+        usecase "Membuat Pesanan Reguler" as UC039
+        usecase "Membuat Transaksi Siap Beli" as UC040
+        usecase "Menambahkan Produk ke Transaksi" as UC041
+        usecase "Memasukkan Data Pelanggan" as UC042
+        usecase "Memproses Pembayaran" as UC043
+        usecase "Mencetak Struk Pembayaran" as UC044
+        usecase "Melihat Riwayat Transaksi" as UC045
+    }
+}
+
+' == Relasi Bagian Inventori ==
+Inventory --> UC001
+Inventory --> UC002
+Inventory --> UC003
+Inventory --> UC004
+Inventory --> UC005
+Inventory --> UC006
+Inventory --> UC007
+Inventory --> UC008
+Inventory --> UC009
+Inventory --> UC010
+Inventory --> UC011
+Inventory --> UC012
+Inventory --> UC013
+Inventory --> UC014
+Inventory --> UC015
+Inventory --> UC016
+Inventory --> UC017
+Inventory --> UC018
+Inventory --> UC019
+Inventory --> UC020
+Inventory --> UC021
+Inventory --> UC022
+Inventory --> UC023
+Inventory --> UC024
+
+' == Relasi Bagian Produksi ==
+Production --> UC001
+Production --> UC002
+Production --> UC027
+Production --> UC028
+Production --> UC029
+Production --> UC030
+Production --> UC031
+Production --> UC032
+Production --> UC033
+Production --> UC034
+
+' == Relasi Kasir ==
+Cashier --> UC001
+Cashier --> UC002
+Cashier --> UC037
+Cashier --> UC038
+Cashier --> UC039
+Cashier --> UC040
+Cashier --> UC041
+Cashier --> UC042
+Cashier --> UC043
+Cashier --> UC044
+Cashier --> UC045
+
+' == Include/Extend ==
+UC017 ..> UC018 : <<extend>>
+UC018 ..> UC019 : <<extend>>
+UC038 ..> UC041 : <<include>>
+UC039 ..> UC041 : <<include>>
+UC040 ..> UC041 : <<include>>
+UC041 ..> UC043 : <<include>>
+UC043 ..> UC044 : <<extend>>
+
+@enduml

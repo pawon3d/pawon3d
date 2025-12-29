@@ -1,0 +1,36 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nPengelolaan Pengguna
+
+actor "Admin" as Admin
+participant "UserPage" as UP
+participant "UserController" as UC
+participant "User Model" as UM
+participant "MailService" as MS
+
+Admin -> UP : Mengakses halaman pekerja
+UP -> UC : mount()
+UC -> UM : getAll()
+UC --> UP : displayUsers()
+
+Admin -> UP : Menambah pengguna baru(data)
+UP -> UC : createUser(name, email, role)
+UC -> UM : create(name, email)
+UM -> UM : generateInvitationToken()
+UC -> MS : sendInvitationEmail(user)
+MS --> UC : emailSent
+UC --> UP : showSuccess("Email undangan terkirim")
+
+Admin -> UP : Mengubah data pengguna(id, data)
+UP -> UC : updateUser(id, data)
+UC -> UM : update(data)
+UC --> UP : showSuccess()
+
+Admin -> UP : Mengubah status aktif(id)
+UP -> UC : toggleActive(id)
+UC -> UM : toggleActive()
+UC --> UP : showSuccess("Status berubah")
+
+@enduml

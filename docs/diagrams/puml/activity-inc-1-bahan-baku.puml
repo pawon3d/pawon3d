@@ -1,0 +1,24 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengelola Bahan Baku
+
+start
+:Bagian Inventori mengakses halaman bahan baku;
+:Sistem menampilkan daftar bahan dengan status;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form bahan baku baru;
+    :Menentukan satuan dan stok minimum;
+    :Menyimpan data;
+    :Sistem set status awal = "Kosong";
+else (Ubah)
+    :Memilih bahan baku;
+    :Mengubah data bahan baku;
+    :Menyimpan perubahan;
+    :Sistem memperbarui data;
+endif
+stop
+
+@enduml

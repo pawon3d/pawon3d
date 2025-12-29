@@ -1,0 +1,30 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nProses Refund
+
+actor "Kasir" as Cashier
+participant "HistoryPage" as HP
+participant "RefundController" as RC
+participant "Transaction" as TM
+participant "Refund Model" as RM
+participant "Product" as PM
+
+Cashier -> HP : Pilih transaksi lunas
+HP -> RC : cancelRequest(transaction_id)
+RC -> TM : checkStatus()
+
+Cashier -> HP : Masukkan alasan & bukti
+HP -> RC : processRefund(data)
+RC -> RM : create(data)
+
+loop Untuk Setiap Item Detail
+    RC -> PM : addStock(qty)
+end
+
+RC -> TM : updateStatus("Dibatalkan")
+RC -> TM : updatePaymentStatus("Refund")
+RC --> HP : showSuccess()
+
+@enduml

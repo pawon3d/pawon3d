@@ -1,0 +1,177 @@
+@startuml
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title Use Case Diagram - Increment 2\nSistem Manajemen Toko Kue Pawon3D\nModul Pendukung Operasional
+
+left to right direction
+
+' == Aktor ==
+actor "Admin" as Admin
+actor "Pengguna Baru" as NewUser
+actor "Bagian Inventori" as Inventory
+actor "Kasir" as Cashier
+actor "Bagian Produksi" as Production
+
+' == Sistem ==
+rectangle "Sistem Pawon3D - Increment 2" {
+    
+    ' -- Autentikasi --
+    package "Autentikasi" {
+        usecase "Login ke Sistem" as UC046
+        usecase "Logout dari Sistem" as UC047
+    }
+    
+    ' -- Pengelolaan Pengguna --
+    package "Pengelolaan Pengguna" {
+        usecase "Mengakses Halaman Pekerja" as UC048
+        usecase "Menambah Pengguna Baru" as UC049
+        usecase "Mengubah Data Pengguna" as UC050
+        usecase "Mengubah Status Aktif Pengguna" as UC051
+    }
+    
+    ' -- Pengelolaan Peran --
+    package "Pengelolaan Peran" {
+        usecase "Mengakses Halaman Peran" as UC052
+        usecase "Menambah Peran Baru" as UC053
+        usecase "Mengubah Permission Peran" as UC054
+    }
+    
+    ' -- Pengaturan Sistem --
+    package "Pengaturan Sistem" {
+        usecase "Mengakses Halaman Pengaturan" as UC055
+        usecase "Mengubah Profil Usaha" as UC056
+        usecase "Mengakses Halaman Metode Pembayaran" as UC057
+        usecase "Menambah Metode Pembayaran" as UC058
+        usecase "Mengubah Data Metode Pembayaran" as UC059
+    }
+    
+    ' -- Pengelolaan Pelanggan --
+    package "Pengelolaan Pelanggan" {
+        usecase "Mengakses Halaman Pelanggan" as UC060
+        usecase "Mencari Pelanggan" as UC061
+        usecase "Melihat Detail Pelanggan" as UC062
+    }
+    
+    ' -- Fitur Umum Admin --
+    package "Fitur Umum" {
+        usecase "Mengakses Halaman Profil" as UC063
+        usecase "Mengubah Data Profil" as UC064
+        usecase "Mengakses Halaman Notifikasi" as UC065
+        usecase "Menandai Notifikasi Dibaca" as UC066
+        usecase "Mengakses Halaman Laporan" as UC067
+        usecase "Memfilter Laporan" as UC068
+        usecase "Mengekspor Laporan ke PDF" as UC069
+        usecase "Mengekspor Laporan ke Excel" as UC070
+    }
+    
+    ' -- Aktivasi Akun --
+    package "Aktivasi Akun" {
+        usecase "Mengakses Link Aktivasi" as UC071
+        usecase "Mengatur Password Baru" as UC072
+    }
+    
+    ' -- Stock Opname --
+    package "Stock Opname" {
+        usecase "Mengakses Halaman Hitung" as UC073
+        usecase "Membuat Rencana Hitung" as UC074
+        usecase "Memulai Penghitungan Stok" as UC075
+        usecase "Memasukkan Kuantitas Aktual" as UC076
+        usecase "Menyelesaikan Perhitungan Stok" as UC077
+        usecase "Melihat Riwayat Hitung" as UC078
+        usecase "Melihat Alur Persediaan" as UC079
+    }
+    
+    ' -- Poin Pelanggan --
+    package "Poin Pelanggan" {
+        usecase "Menggunakan Poin Pelanggan" as UC088
+    }
+}
+
+' == Relasi Admin ==
+Admin --> UC046
+Admin --> UC047
+Admin --> UC048
+Admin --> UC049
+Admin --> UC050
+Admin --> UC051
+Admin --> UC052
+Admin --> UC053
+Admin --> UC054
+Admin --> UC055
+Admin --> UC056
+Admin --> UC057
+Admin --> UC058
+Admin --> UC059
+Admin --> UC060
+Admin --> UC061
+Admin --> UC062
+Admin --> UC063
+Admin --> UC064
+Admin --> UC065
+Admin --> UC066
+Admin --> UC067
+Admin --> UC068
+Admin --> UC069
+Admin --> UC070
+
+' == Relasi Pengguna Baru ==
+NewUser --> UC071
+NewUser --> UC072
+
+' == Relasi Bagian Inventori ==
+Inventory --> UC046
+Inventory --> UC047
+Inventory --> UC073
+Inventory --> UC074
+Inventory --> UC075
+Inventory --> UC076
+Inventory --> UC077
+Inventory --> UC078
+Inventory --> UC079
+Inventory --> UC063
+Inventory --> UC064
+Inventory --> UC065
+Inventory --> UC066
+Inventory --> UC067
+Inventory --> UC068
+Inventory --> UC069
+Inventory --> UC070
+
+' == Relasi Kasir ==
+Cashier --> UC046
+Cashier --> UC047
+Cashier --> UC088
+Cashier --> UC063
+Cashier --> UC064
+Cashier --> UC065
+Cashier --> UC066
+Cashier --> UC067
+Cashier --> UC068
+Cashier --> UC069
+Cashier --> UC070
+
+' == Relasi Bagian Produksi ==
+Production --> UC046
+Production --> UC047
+Production --> UC063
+Production --> UC064
+Production --> UC065
+Production --> UC066
+Production --> UC067
+Production --> UC068
+Production --> UC069
+Production --> UC070
+
+' == Include/Extend ==
+UC049 ..> UC071 : <<include>>
+UC071 ..> UC072 : <<extend>>
+UC074 ..> UC075 : <<extend>>
+UC075 ..> UC076 : <<include>>
+UC076 ..> UC077 : <<extend>>
+UC067 ..> UC068 : <<include>>
+UC067 ..> UC069 : <<extend>>
+UC067 ..> UC070 : <<extend>>
+
+@enduml

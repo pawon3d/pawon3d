@@ -1,0 +1,37 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengelola Produk & Komposisi
+
+start
+:Bagian Inventori mengakses halaman produk;
+:Sistem menampilkan daftar produk;
+
+if (Aksi?) then (Tambah Produk)
+    :Mengisi form produk baru;
+    :Menentukan harga dan margin;
+    :Sistem menyimpan data awal;
+    
+    if (Ada Resep/Komposisi?) then (Ya)
+        repeat
+            :Memilih bahan baku;
+            :Menentukan satuan penggunaan;
+            :Menentukan jumlah penggunaan;
+            :Sistem menghitung estimasi HPP;
+        repeat while (Tambah bahan lain?) is (Ya)
+        ->Tidak;
+        :Simpan komposisi resep;
+    else (Tidak)
+        :Atur stok manual (untuk siap beli);
+    endif
+    
+    :Status produk = Aktif;
+else (Ubah Produk)
+    :Memilih produk;
+    :Mengubah data atau komposisi;
+    :Sistem memperbarui data;
+endif
+stop
+
+@enduml

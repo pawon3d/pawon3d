@@ -1,0 +1,31 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nProses Login Pengguna
+
+actor "Pengguna" as User
+participant "LoginPage" as LP
+participant "AuthController" as AC
+participant "User Model" as UM
+participant "Session" as SS
+
+User -> LP : Memasukkan email dan password
+LP -> AC : submitLogin(email, password)
+AC -> UM : findByEmail(email)
+UM --> AC : return user
+AC -> AC : validatePassword()
+
+alt Kredensial Valid
+    AC -> AC : checkIsActive()
+    alt Akun Aktif
+        AC -> SS : createSession(user)
+        AC --> LP : redirectToDashboard()
+    else Akun Tidak Aktif
+        AC --> LP : showError("Akun tidak aktif")
+    end
+else Kredensial Tidak Valid
+    AC --> LP : showError("Email atau password salah")
+end
+
+@enduml

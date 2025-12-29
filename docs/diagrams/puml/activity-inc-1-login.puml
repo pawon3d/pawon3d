@@ -1,0 +1,27 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nProses Login Pengguna
+
+start
+:Pengguna mengakses halaman login;
+:Memasukkan email dan password;
+:Sistem memvalidasi kredensial;
+
+if (Kredensial valid?) then (Ya)
+    :Sistem memeriksa status akun;
+    if (Akun aktif?) then (Ya)
+        :Membuat session;
+        :Redirect ke dashboard;
+        stop
+    else (Tidak)
+        :Tampilkan pesan "Akun tidak aktif";
+        stop
+    endif
+else (Tidak)
+    :Tampilkan pesan error;
+    stop
+endif
+
+@enduml

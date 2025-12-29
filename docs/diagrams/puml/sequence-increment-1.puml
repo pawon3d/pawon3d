@@ -1,0 +1,198 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram - Increment 1\nModul Inti Operasional
+
+== Login Pengguna ==
+
+actor "Pengguna" as User
+participant "LoginPage" as LP
+participant "AuthController" as AC
+participant "User Model" as UM
+participant "Session" as SS
+
+User -> LP : Memasukkan email dan password
+LP -> AC : submitLogin(email, password)
+AC -> UM : findByEmail(email)
+UM --> AC : return user
+AC -> AC : validatePassword()
+
+alt Kredensial Valid
+    AC -> AC : checkIsActive()
+    alt Akun Aktif
+        AC -> SS : createSession(user)
+        AC --> LP : redirectToDashboard()
+    else Akun Tidak Aktif
+        AC --> LP : showError("Akun tidak aktif")
+    end
+else Kredensial Tidak Valid
+    AC --> LP : showError("Email atau password salah")
+end
+
+== Mengelola Bahan Baku (Inventori) ==
+
+actor "Bagian Inventori" as Inv
+participant "MaterialPage" as MP
+participant "MaterialController" as MC
+participant "Material Model" as MM
+
+Inv -> MP : Akses halaman bahan baku
+MP -> MC : mount()
+MC -> MM : getAll()
+MM --> MC : return materials with status
+MC --> MP : displayMaterials()
+
+Inv -> MP : Tambah bahan baku baru
+MP -> MC : create(data)
+MC -> MM : create(name, description, minimum)
+MM -> MM : setStatus("kosong")
+MM --> MC : return material
+MC --> MP : showSuccess()
+
+== Proses Belanja (Inventori) ==
+
+participant "ExpensePage" as EP
+participant "ExpenseController" as EC
+participant "Expense Model" as EX
+participant "ExpenseDetail" as ED
+participant "MaterialBatch" as MB
+
+Inv -> EP : Membuat rencana belanja baru
+EP -> EC : createExpense(supplier_id, date)
+EC -> EX : create(supplier_id, date)
+EX -> EX : generateExpenseNumber()
+EC --> EP : showExpenseForm()
+
+loop Untuk Setiap Item
+    Inv -> EP : addItem(material_id, quantity, price)
+    EP -> EC : addDetail(expense_id, data)
+    EC -> ED : create(expense_id, material_id, quantity, price)
+end
+
+Inv -> EP : Memulai proses belanja
+EP -> EC : startExpense(expense_id)
+EC -> EX : updateStatus("Dalam Proses")
+EC --> EP : showInputForm()
+
+loop Untuk Setiap Item
+    Inv -> EP : inputActualData(quantity_get, price_get, expiry)
+    EP -> EC : updateDetail(detail_id, data)
+end
+
+Inv -> EP : Menyelesaikan belanja
+EP -> EC : finishExpense()
+
+loop Untuk Setiap Item
+    EC -> MB : create(material_id, quantity, expiry_date)
+    EC -> MM : recalculateStatus()
+end
+
+EC -> EX : updateStatus("Selesai")
+EC --> EP : showSuccess()
+
+== Proses Produksi (Produksi) ==
+
+actor "Bagian Produksi" as Prod
+participant "ProductionPage" as PP
+participant "ProductionController" as PC
+participant "Production" as PR
+participant "ProductionDetail" as PD
+participant "ProductComposition" as PCM
+participant "InventoryLog" as IL
+
+Prod -> PP : Mengakses antrian produksi
+PP -> PC : getQueue()
+PC -> PR : getPendingProductions()
+PC --> PP : displayQueue()
+
+Prod -> PP : Memilih pesanan untuk diproduksi
+PP -> PC : getProductionDetail(id)
+PC -> PD : getProducts()
+PC --> PP : displayProductDetail()
+
+Prod -> PP : Memulai produksi
+PP -> PC : startProduction(production_id)
+
+loop Untuk Setiap Produk
+    PC -> PCM : getRecipe(product_id)
+    loop Untuk Setiap Bahan
+        PC -> MM : checkStock(material_id, qty)
+    end
+end
+
+alt Stok Semua Bahan Cukup
+    loop Untuk Setiap Bahan
+        PC -> MM : reduceQuantity(qty)
+        PC -> IL : create(action="produksi")
+    end
+    PC -> PR : updateStatus("Dalam Proses")
+else Stok Tidak Cukup
+    PC --> PP : showError("Bahan tidak cukup")
+end
+
+Prod -> PP : Menyelesaikan produksi
+PP -> PC : finishProduction(results)
+PC -> PR : updateStatus("Selesai")
+PC --> PP : showSuccess()
+
+== Transaksi Penjualan (Kasir) ==
+
+actor "Kasir" as Cashier
+participant "TransactionPage" as TP
+participant "TransactionController" as TC
+participant "Transaction" as TM
+participant "TransactionDetail" as TD
+participant "Product" as PM
+participant "Customer" as CM
+participant "Payment" as PY
+
+Cashier -> TP : Mengakses daftar transaksi
+TP -> TC : getTransactions()
+TC -> TM : getAll()
+TC --> TP : displayTransactions()
+
+Cashier -> TP : Membuat pesanan baru(method)
+TP -> TC : createOrder(method)
+TC -> TM : create(method)
+
+alt Pesanan Kotak
+    TM -> TM : generateInvoice("OK")
+else Pesanan Reguler
+    TM -> TM : generateInvoice("OR")
+else Siap Beli
+    TM -> TM : generateInvoice("OS")
+end
+
+TC --> TP : showOrderForm()
+
+loop Menambahkan Produk
+    Cashier -> TP : selectProduct(product_id, qty)
+    TP -> TC : addToCart(product_id, qty)
+    TC -> PM : find(product_id)
+    TC -> TD : create(transaction_id, product_id, qty, price)
+    TC -> TC : calculateTotal()
+    TC --> TP : updateCart()
+end
+
+Cashier -> TP : Memasukkan data pelanggan(phone, name)
+TP -> TC : setCustomer(phone, name)
+TC -> CM : firstOrCreate(phone, name)
+
+Cashier -> TP : Memproses pembayaran(amount, method)
+TP -> TC : processPayment(amount, method)
+
+alt Jumlah Cukup
+    TC -> PY : create(transaction_id, amount, method)
+    PY -> PY : generateReceiptNumber()
+    TC -> TM : updatePaymentStatus("Lunas")
+    TC --> TP : showReceipt()
+else Jumlah Kurang
+    TC --> TP : showError("Pembayaran kurang")
+end
+
+Cashier -> TP : Mencetak struk
+TP -> TC : printReceipt()
+TC --> TP : downloadReceipt()
+
+@enduml

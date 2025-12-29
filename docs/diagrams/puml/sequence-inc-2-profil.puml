@@ -1,0 +1,24 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nPengaturan Profil Usaha
+
+actor "Admin" as Admin
+participant "ProfilePage" as PP
+participant "ProfileController" as PC
+participant "StoreProfile" as SP
+participant "Storage" as ST
+
+Admin -> PP : Mengubah data usaha(data)
+PP -> PC : updateProfile(data)
+
+alt Ubah Logo/Banner
+    PC -> ST : uploadFile(image)
+    ST --> PC : filePath
+end
+
+PC -> SP : update(data)
+PC --> PP : showSuccess()
+
+@enduml

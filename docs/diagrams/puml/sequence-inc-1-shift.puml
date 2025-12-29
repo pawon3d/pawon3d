@@ -1,0 +1,27 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nManajemen Shift
+
+actor "Kasir" as Cashier
+participant "ShiftPage" as SP
+participant "ShiftController" as SC
+participant "Shift Model" as SM
+
+alt Buka Shift
+    Cashier -> SP : Buka shift(modal_awal)
+    SP -> SC : openShift(modal_awal)
+    SC -> SM : create(user_id, start_time, initial_cash)
+    SC --> SP : statusTerbuka()
+else Tutup Shift
+    Cashier -> SP : Tutup shift(uang_fisik)
+    SP -> SC : closeShift(uang_fisik)
+    SC -> SC : calculateTotalSales()
+    SC -> SM : update(end_time, final_cash, status="Closed")
+    SC --> SP : showSummary()
+    Cashier -> SP : Cetak laporan
+    SP -> SC : printReport()
+end
+
+@enduml

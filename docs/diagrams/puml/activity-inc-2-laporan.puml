@@ -1,0 +1,22 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nAkses dan Ekspor Laporan
+
+start
+:Pengguna mengakses halaman laporan;
+:Sistem menampilkan halaman laporan;
+:Memfilter laporan berdasarkan periode;
+:Sistem menampilkan data sesuai filter;
+
+if (Format ekspor?) then (PDF)
+    :Mengekspor laporan ke PDF;
+    :Sistem menghasilkan file PDF;
+else (Excel)
+    :Mengekspor laporan ke Excel;
+    :Sistem menghasilkan file Excel;
+endif
+stop
+
+@enduml

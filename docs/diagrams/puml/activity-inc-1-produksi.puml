@@ -1,0 +1,32 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nProses Produksi
+
+start
+:Bagian Produksi mengakses halaman produksi;
+:Sistem menampilkan daftar produksi;
+:Mengakses antrian pesanan/produksi;
+:Sistem menampilkan pesanan yang perlu diproduksi;
+:Memilih pesanan untuk diproduksi;
+:Sistem menampilkan detail produk pesanan;
+:Memulai produksi;
+
+if (Stok bahan cukup?) then (Ya)
+    fork
+        :Sistem mengurangi stok bahan (FIFO);
+    fork again
+        :Sistem mencatat log inventori;
+    end fork
+    :Status = "Dalam Proses";
+    :Melaksanakan produksi fisik;
+    :Menyelesaikan produksi;
+    :Sistem update status produksi dan transaksi;
+    :Status = "Selesai";
+else (Tidak)
+    :Tampilkan peringatan bahan tidak cukup;
+endif
+stop
+
+@enduml

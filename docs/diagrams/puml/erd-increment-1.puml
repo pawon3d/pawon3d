@@ -1,0 +1,288 @@
+@startuml
+
+skinparam linetype ortho
+hide circle
+
+title ERD - Increment 1\nModul Inti Operasional
+
+' ==========================================
+' ENTITAS INTI (INCREMENT 1)
+' ==========================================
+
+entity "users" as users {
+    *id : UUID <<PK>>
+    --
+    name : VARCHAR(50)
+    email : VARCHAR(100) <<UNIQUE>>
+    phone : VARCHAR(20)
+    password : VARCHAR(255)
+    image : VARCHAR(255)
+    gender : VARCHAR(20)
+    is_active : BOOLEAN
+    invitation_token : VARCHAR(64)
+    invitation_sent_at : TIMESTAMP
+    activated_at : TIMESTAMP
+    remember_token : VARCHAR(100)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "roles" as roles {
+    *id : BIGINT <<PK>>
+    --
+    name : VARCHAR(255)
+    guard_name : VARCHAR(255)
+    max_users : INT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "permissions" as permissions {
+    *id : BIGINT <<PK>>
+    --
+    name : VARCHAR(255)
+    guard_name : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "model_has_roles" as model_has_roles {
+    *role_id : BIGINT <<PK,FK>>
+    *model_id : UUID <<PK>>
+    *model_type : VARCHAR(255) <<PK>>
+}
+
+entity "role_has_permissions" as role_has_permissions {
+    *permission_id : BIGINT <<PK,FK>>
+    *role_id : BIGINT <<PK,FK>>
+}
+
+entity "notifications" as notifications {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    title : VARCHAR(100)
+    message : TEXT
+    type : VARCHAR(50)
+    is_read : BOOLEAN
+    data : JSON
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "customers" as customers {
+    *id : UUID <<PK>>
+    --
+    phone : VARCHAR(20) <<UNIQUE>>
+    name : VARCHAR(50)
+    points : DECIMAL(9,0)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "points_histories" as points_histories {
+    *id : UUID <<PK>>
+    --
+    phone : VARCHAR(20) <<FK>>
+    transaction_id : UUID <<FK>>
+    action_id : VARCHAR(30)
+    action : VARCHAR(50)
+    points : INT
+    image : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "categories" as categories {
+    *id : UUID <<PK>>
+    --
+    name : VARCHAR(50)
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "products" as products {
+    *id : UUID <<PK>>
+    --
+    name : VARCHAR(50)
+    description : VARCHAR(50)
+    price : DECIMAL(10,0)
+    stock : DECIMAL(10,0)
+    method : JSON
+    product_image : VARCHAR(255)
+    is_recipe : BOOLEAN
+    is_active : BOOLEAN
+    is_recommended : BOOLEAN
+    is_other : BOOLEAN
+    pcs : DECIMAL(10,0)
+    pcs_capital : DECIMAL(10,0)
+    capital : DECIMAL(10,0)
+    suhu_ruangan : DECIMAL(3,0)
+    suhu_dingin : DECIMAL(3,0)
+    suhu_beku : DECIMAL(3,0)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "product_categories" as product_categories {
+    *id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    category_id : UUID <<FK>>
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "type_costs" as type_costs {
+    *id : UUID <<PK>>
+    --
+    name : VARCHAR(255)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "other_costs" as other_costs {
+    *id : UUID <<PK>>
+    --
+    product_id : UUID <<FK>>
+    type_cost_id : UUID <<FK>>
+    price : DECIMAL(15,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "units" as units {
+    *id : UUID <<PK>>
+    --
+    name : VARCHAR(30) <<UNIQUE>>
+    alias : VARCHAR(10)
+    group : VARCHAR(30)
+    base_unit_id : UUID <<FK>>
+    conversion_factor : DECIMAL(20,10)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "shifts" as shifts {
+    *id : UUID <<PK>>
+    --
+    shift_number : VARCHAR(255) <<UNIQUE>>
+    opened_by : UUID <<FK>>
+    closed_by : UUID <<FK>>
+    start_time : DATETIME
+    end_time : DATETIME
+    status : VARCHAR(255)
+    initial_cash : DECIMAL(10,0)
+    final_cash : DECIMAL(10,0)
+    total_sales : DECIMAL(10,2)
+    total_refunds : DECIMAL(10,2)
+    total_discounts : DECIMAL(10,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "transactions" as transactions {
+    *id : UUID <<PK>>
+    --
+    user_id : UUID <<FK>>
+    customer_id : UUID <<FK>>
+    invoice_number : VARCHAR(30) <<UNIQUE>>
+    name : VARCHAR(50)
+    phone : VARCHAR(20)
+    date : DATE
+    time : TIME
+    start_date : DATE
+    end_date : DATE
+    note : TEXT
+    payment_status : VARCHAR(20)
+    status : VARCHAR(20)
+    method : VARCHAR(20)
+    total_amount : DECIMAL(15,0)
+    points_used : INT
+    points_discount : DECIMAL(15,2)
+    total_refund : DECIMAL(15,0)
+    cancel_reason : TEXT
+    cancel_proof_image : VARCHAR(255)
+    created_by_shift : UUID <<FK>>
+    refund_by_shift : UUID <<FK>>
+    cancelled_by_shift : UUID <<FK>>
+    cancelled_at : TIMESTAMP
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "transaction_details" as transaction_details {
+    *id : UUID <<PK>>
+    --
+    transaction_id : UUID <<FK>>
+    product_id : UUID <<FK>>
+    quantity : SMALLINT
+    price : DECIMAL(15,0)
+    refund_quantity : SMALLINT
+    pcs_capital_snapshot : DECIMAL(15,2)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "payment_channels" as payment_channels {
+    *id : UUID <<PK>>
+    --
+    type : VARCHAR(10)
+    group : VARCHAR(50)
+    bank_name : VARCHAR(50)
+    account_number : VARCHAR(255)
+    account_name : VARCHAR(50)
+    qris_image : VARCHAR(255)
+    is_active : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "payments" as payments {
+    *id : UUID <<PK>>
+    --
+    receipt_number : VARCHAR(30) <<UNIQUE>>
+    transaction_id : UUID <<FK>>
+    payment_channel_id : UUID <<FK>>
+    payment_method : VARCHAR(20)
+    payment_group : VARCHAR(20)
+    paid_amount : DECIMAL(15,0)
+    image : VARCHAR(255)
+    paid_at : TIMESTAMP
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+' ==========================================
+' RELASI
+' ==========================================
+
+users ||--o{ model_has_roles
+roles ||--o{ model_has_roles
+roles ||--o{ role_has_permissions
+permissions ||--o{ role_has_permissions
+users ||--o{ notifications
+
+users ||--o{ shifts : "opened_by"
+users ||--o{ transactions
+
+customers ||--o{ transactions
+customers ||--o{ points_histories
+transactions ||--o{ points_histories
+
+categories ||--o{ product_categories
+products ||--o{ product_categories
+products ||--o{ transaction_details
+products ||--o{ other_costs
+type_costs ||--o{ other_costs
+
+units ||--o{ units : "base_unit"
+
+transactions ||--o{ transaction_details
+transactions ||--o{ payments
+shifts ||--o{ transactions : "created_by_shift"
+
+payment_channels ||--o{ payments
+
+@enduml

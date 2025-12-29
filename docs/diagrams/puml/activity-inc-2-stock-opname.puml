@@ -1,0 +1,35 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nStock Opname (Hitung)
+
+start
+:Bagian Inventori mengakses halaman hitung;
+:Sistem menampilkan daftar rencana hitung;
+:Membuat rencana hitung;
+:Sistem generate nomor HC-YYMMDD-XXXX;
+
+:Memulai penghitungan stok;
+:Sistem menampilkan kuantitas sistem per item;
+
+repeat
+    :Memasukkan kuantitas aktual;
+    :Sistem menghitung selisih otomatis;
+repeat while (Ada item lain?) is (Ya)
+->Tidak;
+
+:Menyelesaikan perhitungan stok;
+
+fork
+    :Sistem menyesuaikan batch;
+fork again
+    :Sistem mencatat log inventori;
+end fork
+
+:Melihat riwayat hitung;
+:Melihat alur persediaan;
+:Sistem menampilkan log perubahan inventori;
+stop
+
+@enduml

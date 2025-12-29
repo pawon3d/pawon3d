@@ -1,0 +1,48 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nProses Belanja Bahan Baku
+
+actor "Bagian Inventori" as Inv
+participant "ExpensePage" as EP
+participant "ExpenseController" as EC
+participant "Expense" as EX
+participant "ExpenseDetail" as ED
+participant "MaterialBatch" as MB
+participant "Material" as MM
+
+Inv -> EP : Membuat rencana belanja baru
+EP -> EC : createExpense(supplier_id, date)
+EC -> EX : create(supplier_id, date)
+EX -> EX : generateExpenseNumber()
+EC --> EP : showExpenseForm()
+
+loop Untuk Setiap Item
+    Inv -> EP : addItem(material_id, quantity, price)
+    EP -> EC : addDetail(expense_id, data)
+    EC -> ED : create(expense_id, material_id, quantity, price)
+end
+
+Inv -> EP : Memulai proses belanja
+EP -> EC : startExpense(expense_id)
+EC -> EX : updateStatus("Dalam Proses")
+EC --> EP : showInputForm()
+
+loop Untuk Setiap Item
+    Inv -> EP : inputActualData(quantity_get, price_get, expiry)
+    EP -> EC : updateDetail(detail_id, data)
+end
+
+Inv -> EP : Menyelesaikan belanja
+EP -> EC : finishExpense()
+
+loop Untuk Setiap Item
+    EC -> MB : create(material_id, quantity, expiry_date)
+    EC -> MM : recalculateStatus()
+end
+
+EC -> EX : updateStatus("Selesai")
+EC --> EP : showSuccess()
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengelola Peran & Hak Akses
+
+start
+:Admin mengakses halaman peran;
+:Sistem menampilkan daftar peran;
+
+if (Aksi?) then (Tambah Peran)
+    :Mengisi nama peran baru;
+    :Menentukan batas maksimal pengguna;
+    :Menyimpan peran;
+else (Atur Permission)
+    :Memilih peran;
+    :Sistem menampilkan daftar hak akses;
+    repeat
+        :Pilih/Hapus hak akses modul;
+    repeat while (Ada perubahan lain?) is (Ya)
+    ->Tidak;
+    :Simpan konfigurasi hak akses;
+endif
+stop
+
+@enduml

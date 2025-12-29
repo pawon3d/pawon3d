@@ -1,0 +1,183 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram - Increment 1\nModul Inti Operasional
+
+|#LightBlue|Login Pengguna|
+start
+:Pengguna mengakses halaman login;
+:Memasukkan email dan password;
+:Sistem memvalidasi kredensial;
+
+if (Kredensial valid?) then (Ya)
+    :Sistem memeriksa status akun;
+    if (Akun aktif?) then (Ya)
+        :Membuat session;
+        :Redirect ke dashboard;
+        stop
+    else (Tidak)
+        :Tampilkan pesan "Akun tidak aktif";
+        stop
+    endif
+else (Tidak)
+    :Tampilkan pesan error;
+    stop
+endif
+
+|#LightGreen|Mengelola Kategori (Inventori)|
+start
+:Bagian Inventori mengakses halaman kategori;
+:Sistem menampilkan daftar kategori;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form kategori baru;
+    :Menyimpan data kategori;
+    :Sistem menampilkan notifikasi sukses;
+else if (Ubah) then
+    :Memilih kategori;
+    :Mengubah data kategori;
+    :Menyimpan perubahan;
+    :Sistem menampilkan notifikasi sukses;
+else (Hapus)
+    :Memilih kategori;
+    :Konfirmasi penghapusan;
+    :Sistem menghapus kategori;
+    :Sistem menampilkan notifikasi sukses;
+endif
+stop
+
+|#LightYellow|Mengelola Bahan Baku (Inventori)|
+start
+:Bagian Inventori mengakses halaman bahan baku;
+:Sistem menampilkan daftar bahan dengan status;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form bahan baku baru;
+    :Menentukan satuan dan stok minimum;
+    :Menyimpan data;
+    :Sistem set status awal = "Kosong";
+else (Ubah)
+    :Memilih bahan baku;
+    :Mengubah data bahan baku;
+    :Menyimpan perubahan;
+    :Sistem memperbarui data;
+endif
+stop
+
+|#LightPink|Proses Belanja (Inventori)|
+start
+:Bagian Inventori mengakses halaman belanja;
+:Sistem menampilkan daftar rencana belanja;
+:Membuat rencana belanja baru;
+:Memilih supplier;
+:Menentukan tanggal belanja;
+
+repeat
+    :Pilih bahan baku;
+    :Tentukan satuan dan jumlah;
+    :Masukkan estimasi harga;
+repeat while (Tambah item lain?) is (Ya)
+->Tidak;
+
+:Sistem generate nomor belanja;
+:Simpan rencana belanja;
+:Status = "Draft";
+
+|Memulai Belanja|
+:Klik "Mulai Belanja";
+:Sistem menampilkan formulir input hasil;
+
+repeat
+    :Masukkan jumlah yang didapat;
+    :Masukkan harga aktual;
+    :Masukkan tanggal kedaluwarsa;
+repeat while (Ada item lain?) is (Ya)
+->Tidak;
+
+:Klik "Selesaikan Belanja";
+
+fork
+    :Sistem buat batch baru per item;
+fork again
+    :Sistem update stok bahan;
+fork again
+    :Sistem update status bahan;
+end fork
+
+:Status belanja = "Selesai";
+stop
+
+|#LightCoral|Proses Produksi Pesanan (Produksi)|
+start
+:Bagian Produksi mengakses halaman produksi;
+:Sistem menampilkan daftar produksi;
+:Mengakses antrian pesanan/produksi;
+:Sistem menampilkan pesanan yang perlu diproduksi;
+:Memilih pesanan untuk diproduksi;
+:Sistem menampilkan detail produk pesanan;
+:Memulai produksi;
+
+if (Stok bahan cukup?) then (Ya)
+    fork
+        :Sistem mengurangi stok bahan (FIFO);
+    fork again
+        :Sistem mencatat log inventori;
+    end fork
+    :Status = "Dalam Proses";
+    :Melaksanakan produksi fisik;
+    :Menyelesaikan produksi;
+    :Sistem update status produksi dan transaksi;
+    :Status = "Selesai";
+else (Tidak)
+    :Tampilkan peringatan bahan tidak cukup;
+endif
+stop
+
+|#Lavender|Produksi Siap Beli (Produksi)|
+start
+:Bagian Produksi membuat produksi siap beli;
+:Memilih produk dan jumlah;
+:Sistem generate nomor produksi;
+:Simpan data produksi;
+:Memulai produksi;
+:Sistem mengurangi stok bahan;
+:Menyelesaikan produksi;
+:Sistem menambah stok produk;
+:Melihat riwayat produksi;
+stop
+
+|#LightGray|Transaksi Penjualan (Kasir)|
+start
+:Kasir mengakses daftar transaksi;
+:Sistem menampilkan daftar transaksi;
+
+if (Jenis pesanan?) then (Kotak)
+    :Membuat pesanan kotak;
+    :Sistem generate invoice OK-YYMMDD-XXXX;
+else if (Reguler) then
+    :Membuat pesanan reguler;
+    :Sistem generate invoice OR-YYMMDD-XXXX;
+else (Siap Beli)
+    :Membuat transaksi siap beli;
+    :Sistem generate invoice OS-YYMMDD-XXXX;
+endif
+
+:Menambahkan produk ke transaksi;
+:Sistem menghitung subtotal dan total;
+:Memasukkan data pelanggan;
+:Sistem mencari atau membuat data pelanggan;
+:Memproses pembayaran;
+
+if (Jumlah pembayaran cukup?) then (Ya)
+    :Sistem mencatat pembayaran;
+    :Sistem menghasilkan struk;
+    :Mencetak struk pembayaran;
+else (Tidak)
+    :Tampilkan pesan pembayaran kurang;
+endif
+
+:Melihat riwayat transaksi;
+stop
+
+@enduml

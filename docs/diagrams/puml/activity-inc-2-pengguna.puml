@@ -1,0 +1,28 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nPengelolaan Pengguna
+
+start
+:Admin mengakses halaman pekerja;
+:Sistem menampilkan daftar pengguna;
+
+if (Aksi?) then (Tambah)
+    :Mengisi form pengguna baru;
+    :Memasukkan email valid;
+    :Menyimpan data;
+    :Sistem mengirim email undangan;
+else if (Ubah) then
+    :Memilih pengguna;
+    :Mengubah data pengguna;
+    :Menyimpan perubahan;
+    :Sistem memperbarui data;
+else (Toggle Status)
+    :Memilih pengguna;
+    :Mengubah status aktif;
+    :Sistem toggle status aktif/nonaktif;
+endif
+stop
+
+@enduml

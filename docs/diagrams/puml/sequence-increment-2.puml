@@ -1,0 +1,243 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram - Increment 2\nModul Pendukung Operasional
+
+== Pengelolaan Pengguna (Admin) ==
+
+actor "Admin" as Admin
+participant "UserPage" as UP
+participant "UserController" as UC
+participant "User Model" as UM
+participant "MailService" as MS
+
+Admin -> UP : Mengakses halaman pekerja
+UP -> UC : mount()
+UC -> UM : getAll()
+UC --> UP : displayUsers()
+
+Admin -> UP : Menambah pengguna baru(data)
+UP -> UC : createUser(name, email, role)
+UC -> UM : create(name, email)
+UM -> UM : generateInvitationToken()
+UC -> MS : sendInvitationEmail(user)
+MS --> UC : emailSent
+UC --> UP : showSuccess("Email undangan terkirim")
+
+Admin -> UP : Mengubah data pengguna(id, data)
+UP -> UC : updateUser(id, data)
+UC -> UM : update(data)
+UC --> UP : showSuccess()
+
+Admin -> UP : Mengubah status aktif(id)
+UP -> UC : toggleActive(id)
+UC -> UM : toggleActive()
+UC --> UP : showSuccess("Status berubah")
+
+== Pengelolaan Peran (Admin) ==
+
+participant "RolePage" as RP
+participant "RoleController" as RC
+participant "Role Model" as RM
+participant "Permission Model" as PM
+
+Admin -> RP : Mengakses halaman peran
+RP -> RC : mount()
+RC -> RM : getAll()
+RC -> PM : getAll()
+RC --> RP : displayRolesWithPermissions()
+
+Admin -> RP : Menambah peran baru(name, permissions)
+RP -> RC : createRole(name, permissions)
+RC -> RM : create(name)
+RC -> RM : syncPermissions(permissions)
+RC --> RP : showSuccess()
+
+Admin -> RP : Mengubah permission peran(id, permissions)
+RP -> RC : updatePermissions(id, permissions)
+RC -> RM : find(id)
+RC -> RM : syncPermissions(permissions)
+RC --> RP : showSuccess()
+
+== Pengaturan Sistem (Admin) ==
+
+participant "SettingsPage" as SP
+participant "SettingsController" as SC
+participant "StoreProfile" as SPM
+participant "PaymentChannel" as PCM
+
+Admin -> SP : Mengakses halaman pengaturan
+SP -> SC : mount()
+SC -> SPM : first()
+SC --> SP : displaySettings()
+
+Admin -> SP : Mengubah profil usaha(data)
+SP -> SC : updateProfile(data)
+SC -> SPM : update(data)
+SC --> SP : showSuccess()
+
+Admin -> SP : Mengakses halaman metode pembayaran
+SP -> SC : getPaymentChannels()
+SC -> PCM : getAll()
+SC --> SP : displayPaymentChannels()
+
+Admin -> SP : Menambah metode pembayaran(data)
+SP -> SC : createPaymentChannel(data)
+SC -> PCM : create(data)
+SC --> SP : showSuccess()
+
+== Aktivasi Akun (Pengguna Baru) ==
+
+actor "Pengguna Baru" as NewUser
+participant "ActivationPage" as AP
+participant "ActivateController" as ATC
+
+NewUser -> AP : Mengakses link aktivasi(token)
+AP -> ATC : mount(token)
+ATC -> UM : findByToken(token)
+
+alt Token Valid
+    ATC -> ATC : checkTokenExpiry()
+    ATC --> AP : showPasswordForm()
+    
+    NewUser -> AP : Mengatur password(password)
+    AP -> ATC : setPassword(password)
+    ATC -> UM : activateWithPassword(password)
+    UM -> UM : hashPassword()
+    UM -> UM : setIsActive(true)
+    UM -> UM : clearToken()
+    ATC --> AP : redirectToDashboard()
+else Token Tidak Valid
+    ATC --> AP : showError("Token tidak valid")
+end
+
+== Stock Opname (Inventori) ==
+
+actor "Bagian Inventori" as Inv
+participant "HitungPage" as HP
+participant "HitungController" as HC
+participant "Hitung Model" as HM
+participant "HitungDetail" as HD
+participant "Material" as MT
+participant "MaterialBatch" as MB
+participant "InventoryLog" as IL
+
+Inv -> HP : Mengakses halaman hitung
+HP -> HC : mount()
+HC -> HM : getAll()
+HC --> HP : displayHitungList()
+
+Inv -> HP : Membuat rencana hitung
+HP -> HC : createHitung()
+HC -> HM : create(user_id, date)
+HM -> HM : generateHitungNumber("HC")
+HC --> HP : showHitungForm()
+
+loop Menambahkan Item
+    Inv -> HP : addItem(material_id, unit_id)
+    HP -> HC : addDetail(hitung_id, material_id)
+    HC -> HD : create(hitung_id, material_id, unit_id)
+end
+
+Inv -> HP : Memulai penghitungan stok
+HP -> HC : startHitung(hitung_id)
+HC -> HM : updateStatus("Dalam Proses")
+
+loop Untuk Setiap Item
+    HC -> HD : getSystemQuantity()
+    HC --> HP : displaySystemQuantity()
+    Inv -> HP : Memasukkan kuantitas aktual(actual)
+    HP -> HC : updateActual(detail_id, actual)
+    HC -> HD : calculateDifference()
+end
+
+Inv -> HP : Menyelesaikan perhitungan stok
+HP -> HC : finishHitung(hitung_id)
+
+loop Untuk Setiap Item dengan Selisih
+    HC -> MB : adjustQuantity(difference)
+    HC -> IL : create(action="hitung")
+    HC -> MT : recalculateStatus()
+end
+
+HC -> HM : calculateTotals()
+HC -> HM : updateStatus("Selesai")
+HC --> HP : showSummary()
+
+== Penggunaan Poin (Kasir) ==
+
+actor "Kasir" as Cashier
+participant "TransactionPage" as TP
+participant "TransactionController" as TC
+participant "Customer" as CM
+participant "PointsHistory" as PH
+participant "Transaction" as TM
+
+Cashier -> TP : Menggunakan poin pelanggan(points)
+TP -> TC : applyPoints(transaction_id, points)
+TC -> TM : find(transaction_id)
+TC -> CM : findByPhone(phone)
+TC -> CM : checkAvailablePoints()
+
+alt Poin Mencukupi
+    TC -> TC : calculateDiscount(points)
+    TC -> TM : updatePointsDiscount(discount)
+    TC -> CM : deductPoints(points)
+    TC -> PH : create(phone, points, action="used")
+    TC --> TP : showUpdatedTotal()
+else Poin Tidak Mencukupi
+    TC --> TP : showError("Poin tidak cukup")
+end
+
+== Fitur Umum (Semua Pengguna) ==
+
+actor "Pengguna" as User
+participant "ProfilePage" as PP
+participant "ProfileController" as PRC
+participant "NotificationPage" as NP
+participant "NotificationController" as NC
+participant "Notification" as NM
+participant "ReportPage" as RRP
+participant "ReportController" as RRPC
+
+User -> PP : Mengakses halaman profil
+PP -> PRC : mount()
+PRC -> UM : getCurrentUser()
+PRC --> PP : displayProfile()
+
+User -> PP : Mengubah data profil(data)
+PP -> PRC : updateProfile(data)
+PRC -> UM : update(data)
+PRC --> PP : showSuccess()
+
+User -> NP : Mengakses halaman notifikasi
+NP -> NC : mount()
+NC -> NM : getByUser(user_id)
+NC --> NP : displayNotifications()
+
+User -> NP : Menandai notifikasi dibaca(id)
+NP -> NC : markAsRead(id)
+NC -> NM : updateIsRead(true)
+NC --> NP : updateNotificationStatus()
+
+User -> RRP : Mengakses halaman laporan
+RRP -> RRPC : mount()
+RRPC --> RRP : displayReportOptions()
+
+User -> RRP : Memfilter laporan(dateFrom, dateTo)
+RRP -> RRPC : filterReport(dateFrom, dateTo)
+RRPC -> RRPC : fetchData(dateFrom, dateTo)
+RRPC --> RRP : displayFilteredData()
+
+alt Ekspor PDF
+    User -> RRP : Mengekspor laporan ke PDF
+    RRP -> RRPC : exportPDF()
+    RRPC --> RRP : downloadPDF()
+else Ekspor Excel
+    User -> RRP : Mengekspor laporan ke Excel
+    RRP -> RRPC : exportExcel()
+    RRPC --> RRP : downloadExcel()
+end
+
+@enduml

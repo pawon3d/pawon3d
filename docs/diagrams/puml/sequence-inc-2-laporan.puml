@@ -1,0 +1,31 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nEkspor Laporan
+
+actor "Pengguna" as User
+participant "ReportPage" as RP
+participant "ReportController" as RC
+participant "ExportService" as ES
+participant "Database" as DB
+
+User -> RP : Memilih jenis laporan & periode
+RP -> RC : generateReport(type, filter)
+RC -> DB : queryData(filter)
+DB --> RC : data
+
+User -> RP : Klik Ekspor (PDF/Excel)
+RP -> RC : export(format)
+RC -> ES : download(data, format)
+
+alt Format PDF
+    ES -> ES : renderDomPDF()
+else Format Excel
+    ES -> ES : generateMaatwebsiteExcel()
+end
+
+ES --> RC : fileStream
+RC --> RP : downloadPrompt()
+
+@enduml

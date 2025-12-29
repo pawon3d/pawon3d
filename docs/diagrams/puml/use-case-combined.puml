@@ -1,0 +1,205 @@
+@startuml
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title Use Case Diagram\nSistem Manajemen Toko Kue Pawon3D\n(Increment 1 & 2)
+
+left to right direction
+
+' == Aktor ==
+actor "Bagian Inventori" as Inventory
+actor "Bagian Produksi" as Production
+actor "Kasir" as Cashier
+actor "Admin" as Admin
+actor "Pengguna Baru" as NewUser
+
+' == Sistem ==
+rectangle "Sistem Pawon3D" {
+    
+    ' -- Autentikasi --
+    package "Autentikasi" {
+        usecase "Login ke Sistem" as UC_Login
+        usecase "Logout dari Sistem" as UC_Logout
+    }
+    
+    ' -- Pengelolaan Kategori --
+    package "Pengelolaan Kategori" {
+        usecase "Mengakses Halaman Kategori" as UC_ViewKategori
+        usecase "Menambah Kategori" as UC_AddKategori
+        usecase "Mengubah Kategori" as UC_EditKategori
+        usecase "Menghapus Kategori" as UC_DelKategori
+    }
+    
+    ' -- Pengelolaan Satuan --
+    package "Pengelolaan Satuan" {
+        usecase "Mengakses Halaman Satuan" as UC_ViewSatuan
+        usecase "Menambah Satuan" as UC_AddSatuan
+    }
+    
+    ' -- Pengelolaan Supplier --
+    package "Pengelolaan Supplier" {
+        usecase "Mengakses Halaman Supplier" as UC_ViewSupplier
+        usecase "Menambah Supplier" as UC_AddSupplier
+        usecase "Mengubah Supplier" as UC_EditSupplier
+    }
+    
+    ' -- Pengelolaan Bahan Baku --
+    package "Pengelolaan Bahan Baku" {
+        usecase "Mengakses Halaman Bahan" as UC_ViewBahan
+        usecase "Menambah Bahan Baku" as UC_AddBahan
+        usecase "Mengubah Bahan Baku" as UC_EditBahan
+    }
+    
+    ' -- Pengelolaan Belanja --
+    package "Pengelolaan Belanja" {
+        usecase "Mengakses Halaman Belanja" as UC_ViewBelanja
+        usecase "Membuat Rencana Belanja" as UC_AddBelanja
+        usecase "Memulai Belanja" as UC_StartBelanja
+        usecase "Menyelesaikan Belanja" as UC_FinishBelanja
+    }
+    
+    ' -- Pengelolaan Produk --
+    package "Pengelolaan Produk" {
+        usecase "Mengakses Halaman Produk" as UC_ViewProduk
+        usecase "Menambah Produk" as UC_AddProduk
+        usecase "Mengubah Produk" as UC_EditProduk
+    }
+    
+    ' -- Pengelolaan Produksi --
+    package "Pengelolaan Produksi" {
+        usecase "Mengakses Antrian Produksi" as UC_ViewProduksi
+        usecase "Memulai Produksi" as UC_StartProduksi
+        usecase "Menyelesaikan Produksi" as UC_FinishProduksi
+    }
+    
+    ' -- Transaksi Penjualan --
+    package "Transaksi Penjualan" {
+        usecase "Mengakses Daftar Transaksi" as UC_ViewTransaksi
+        usecase "Membuat Pesanan" as UC_AddTransaksi
+        usecase "Memproses Pembayaran" as UC_Payment
+        usecase "Mencetak Struk" as UC_PrintStruk
+    }
+    
+    ' -- Pengelolaan Pengguna --
+    package "Pengelolaan Pengguna" {
+        usecase "Mengakses Halaman Pekerja" as UC_ViewPekerja
+        usecase "Menambah Pengguna" as UC_AddPekerja
+        usecase "Mengubah Pengguna" as UC_EditPekerja
+    }
+    
+    ' -- Pengelolaan Peran --
+    package "Pengelolaan Peran" {
+        usecase "Mengakses Halaman Peran" as UC_ViewPeran
+        usecase "Menambah Peran" as UC_AddPeran
+        usecase "Mengubah Permission" as UC_EditPeran
+    }
+    
+    ' -- Aktivasi Akun --
+    package "Aktivasi Akun" {
+        usecase "Mengakses Link Aktivasi" as UC_Aktivasi
+        usecase "Mengatur Password" as UC_SetPassword
+    }
+    
+    ' -- Stock Opname --
+    package "Stock Opname" {
+        usecase "Mengakses Halaman Hitung" as UC_ViewHitung
+        usecase "Membuat Rencana Hitung" as UC_AddHitung
+        usecase "Menyelesaikan Hitung" as UC_FinishHitung
+    }
+    
+    ' -- Pengaturan --
+    package "Pengaturan Sistem" {
+        usecase "Mengubah Profil Usaha" as UC_EditProfil
+        usecase "Mengelola Metode Pembayaran" as UC_MetodeBayar
+    }
+    
+    ' -- Fitur Umum --
+    package "Fitur Umum" {
+        usecase "Mengakses Laporan" as UC_Laporan
+        usecase "Mengekspor Laporan" as UC_ExportLaporan
+        usecase "Mengelola Notifikasi" as UC_Notifikasi
+        usecase "Mengubah Profil" as UC_Profil
+    }
+}
+
+' == Relasi Bagian Inventori ==
+Inventory --> UC_Login
+Inventory --> UC_Logout
+Inventory --> UC_ViewKategori
+Inventory --> UC_AddKategori
+Inventory --> UC_EditKategori
+Inventory --> UC_DelKategori
+Inventory --> UC_ViewSatuan
+Inventory --> UC_AddSatuan
+Inventory --> UC_ViewSupplier
+Inventory --> UC_AddSupplier
+Inventory --> UC_EditSupplier
+Inventory --> UC_ViewBahan
+Inventory --> UC_AddBahan
+Inventory --> UC_EditBahan
+Inventory --> UC_ViewBelanja
+Inventory --> UC_AddBelanja
+Inventory --> UC_StartBelanja
+Inventory --> UC_FinishBelanja
+Inventory --> UC_ViewProduk
+Inventory --> UC_AddProduk
+Inventory --> UC_EditProduk
+Inventory --> UC_ViewHitung
+Inventory --> UC_AddHitung
+Inventory --> UC_FinishHitung
+Inventory --> UC_Laporan
+Inventory --> UC_Notifikasi
+Inventory --> UC_Profil
+
+' == Relasi Bagian Produksi ==
+Production --> UC_Login
+Production --> UC_Logout
+Production --> UC_ViewProduksi
+Production --> UC_StartProduksi
+Production --> UC_FinishProduksi
+Production --> UC_Laporan
+Production --> UC_Notifikasi
+Production --> UC_Profil
+
+' == Relasi Kasir ==
+Cashier --> UC_Login
+Cashier --> UC_Logout
+Cashier --> UC_ViewTransaksi
+Cashier --> UC_AddTransaksi
+Cashier --> UC_Payment
+Cashier --> UC_PrintStruk
+Cashier --> UC_Laporan
+Cashier --> UC_Notifikasi
+Cashier --> UC_Profil
+
+' == Relasi Admin ==
+Admin --> UC_Login
+Admin --> UC_Logout
+Admin --> UC_ViewPekerja
+Admin --> UC_AddPekerja
+Admin --> UC_EditPekerja
+Admin --> UC_ViewPeran
+Admin --> UC_AddPeran
+Admin --> UC_EditPeran
+Admin --> UC_EditProfil
+Admin --> UC_MetodeBayar
+Admin --> UC_Laporan
+Admin --> UC_ExportLaporan
+Admin --> UC_Notifikasi
+Admin --> UC_Profil
+
+' == Relasi Pengguna Baru ==
+NewUser --> UC_Aktivasi
+NewUser --> UC_SetPassword
+
+' == Include/Extend ==
+UC_AddBelanja ..> UC_StartBelanja : <<extend>>
+UC_StartBelanja ..> UC_FinishBelanja : <<extend>>
+UC_AddTransaksi ..> UC_Payment : <<include>>
+UC_Payment ..> UC_PrintStruk : <<extend>>
+UC_Aktivasi ..> UC_SetPassword : <<extend>>
+UC_AddHitung ..> UC_FinishHitung : <<extend>>
+UC_Laporan ..> UC_ExportLaporan : <<extend>>
+
+@enduml

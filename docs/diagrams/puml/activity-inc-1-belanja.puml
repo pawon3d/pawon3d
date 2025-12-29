@@ -1,0 +1,52 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nProses Belanja Bahan Baku
+
+start
+:Bagian Inventori mengakses halaman belanja;
+:Sistem menampilkan daftar rencana belanja;
+:Membuat rencana belanja baru;
+:Memilih supplier;
+:Menentukan tanggal belanja;
+
+repeat
+    :Pilih bahan baku;
+    :Tentukan satuan dan jumlah;
+    :Masukkan estimasi harga;
+repeat while (Tambah item lain?) is (Ya)
+->Tidak;
+
+:Sistem generate nomor belanja;
+:Simpan rencana belanja;
+:Status = "Draft";
+
+note right
+  === Memulai Belanja ===
+end note
+
+:Klik "Mulai Belanja";
+:Sistem menampilkan formulir input hasil;
+
+repeat
+    :Masukkan jumlah yang didapat;
+    :Masukkan harga aktual;
+    :Masukkan tanggal kedaluwarsa;
+repeat while (Ada item lain?) is (Ya)
+->Tidak;
+
+:Klik "Selesaikan Belanja";
+
+fork
+    :Sistem buat batch baru per item;
+fork again
+    :Sistem update stok bahan;
+fork again
+    :Sistem update status bahan;
+end fork
+
+:Status belanja = "Selesai";
+stop
+
+@enduml

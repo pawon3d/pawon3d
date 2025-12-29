@@ -1,0 +1,58 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nStock Opname (Hitung)
+
+actor "Bagian Inventori" as Inv
+participant "HitungPage" as HP
+participant "HitungController" as HC
+participant "Hitung" as HM
+participant "HitungDetail" as HD
+participant "Material" as MT
+participant "MaterialBatch" as MB
+participant "InventoryLog" as IL
+
+Inv -> HP : Mengakses halaman hitung
+HP -> HC : mount()
+HC -> HM : getAll()
+HC --> HP : displayHitungList()
+
+Inv -> HP : Membuat rencana hitung
+HP -> HC : createHitung()
+HC -> HM : create(user_id, date)
+HM -> HM : generateHitungNumber("HC")
+HC --> HP : showHitungForm()
+
+loop Menambahkan Item
+    Inv -> HP : addItem(material_id, unit_id)
+    HP -> HC : addDetail(hitung_id, material_id)
+    HC -> HD : create(hitung_id, material_id, unit_id)
+end
+
+Inv -> HP : Memulai penghitungan stok
+HP -> HC : startHitung(hitung_id)
+HC -> HM : updateStatus("Dalam Proses")
+
+loop Untuk Setiap Item
+    HC -> HD : getSystemQuantity()
+    HC --> HP : displaySystemQuantity()
+    Inv -> HP : Memasukkan kuantitas aktual(actual)
+    HP -> HC : updateActual(detail_id, actual)
+    HC -> HD : calculateDifference()
+end
+
+Inv -> HP : Menyelesaikan perhitungan stok
+HP -> HC : finishHitung(hitung_id)
+
+loop Untuk Setiap Item dengan Selisih
+    HC -> MB : adjustQuantity(difference)
+    HC -> IL : create(action="hitung")
+    HC -> MT : recalculateStatus()
+end
+
+HC -> HM : calculateTotals()
+HC -> HM : updateStatus("Selesai")
+HC --> HP : showSummary()
+
+@enduml
