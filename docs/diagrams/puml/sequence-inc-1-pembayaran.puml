@@ -1,0 +1,41 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMelihat Riwayat Pembayaran
+
+actor "Kasir" as Cashier
+participant "PaymentPage" as PP
+participant "PaymentController" as PC
+participant "Payment" as PM
+participant "Transaction" as TM
+participant "PaymentChannel" as PCH
+
+Cashier -> PP : Mengakses riwayat pembayaran
+PP -> PC : mount()
+PC -> PM : getAllWithRelations()
+PM -> TM : with('transaction')
+PM -> PCH : with('paymentChannel')
+PC --> PP : displayPayments()
+
+Cashier -> PP : Filter berdasarkan tanggal(start, end)
+PP -> PC : filter(start, end)
+PC -> PM : whereBetween('paid_at', dates)
+PC --> PP : displayFilteredPayments()
+
+Cashier -> PP : Filter berdasarkan metode(method)
+PP -> PC : filterByMethod(method)
+PC -> PM : where('payment_method', method)
+PC --> PP : displayFilteredPayments()
+
+Cashier -> PP : Cari berdasarkan receipt number
+PP -> PC : search(receipt_number)
+PC -> PM : where('receipt_number', 'like', search)
+PC --> PP : displaySearchResults()
+
+Cashier -> PP : Lihat detail pembayaran(id)
+PP -> PC : show(id)
+PC -> PM : findWithTransaction(id)
+PC --> PP : showPaymentDetail()
+
+@enduml

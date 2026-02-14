@@ -1,0 +1,77 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMelihat dan Mengelola Notifikasi
+
+actor "User" as User
+participant "NotificationPage" as NP
+participant "NotificationController" as NC
+participant "Notification" as NT
+
+User -> NP : Mengakses notifikasi
+NP -> NC : mount()
+NC -> NC : auth()->user()
+NC -> NT : where('user_id', user_id)->latest()
+NC --> NP : displayNotifications()
+
+User -> NP : Filter notifikasi belum dibaca
+NP -> NC : filterUnread()
+NC -> NT : where('user_id', user_id)->where('read_at', null)->latest()
+NC --> NP : displayUnreadNotifications()
+
+User -> NP : Filter notifikasi sudah dibaca
+NP -> NC : filterRead()
+NC -> NT : where('user_id', user_id)->whereNotNull('read_at')->latest()
+NC --> NP : displayReadNotifications()
+
+User -> NP : Filter berdasarkan tipe(type)
+NP -> NC : filterByType(type)
+NC -> NT : where('user_id', user_id)->where('type', type)->latest()
+NC --> NP : displayFilteredNotifications()
+
+User -> NP : Lihat detail notifikasi(id)
+NP -> NC : show(id)
+NC -> NT : find(id)
+
+alt Notifikasi Belum Dibaca
+    NC -> NT : update(read_at=now())
+end
+
+NC --> NP : showNotificationDetail()
+
+User -> NP : Tandai sebagai sudah dibaca(id)
+NP -> NC : markAsRead(id)
+NC -> NT : find(id)
+NC -> NT : update(read_at=now())
+NC --> NP : showSuccess("Notifikasi ditandai sudah dibaca")
+
+User -> NP : Tandai semua sebagai sudah dibaca
+NP -> NC : markAllAsRead()
+NC -> NT : where('user_id', user_id)->where('read_at', null)
+NC -> NT : update(read_at=now())
+NC --> NP : showSuccess("Semua notifikasi ditandai sudah dibaca")
+
+User -> NP : Hapus notifikasi(id)
+NP -> NC : destroy(id)
+NC -> NT : find(id)
+
+alt User adalah pemilik notifikasi
+    NC -> NT : delete()
+    NC --> NP : showSuccess("Notifikasi berhasil dihapus")
+else User bukan pemilik
+    NC --> NP : showError("Tidak ada akses")
+end
+
+User -> NP : Hapus semua notifikasi yang sudah dibaca
+NP -> NC : deleteAllRead()
+NC -> NT : where('user_id', user_id)->whereNotNull('read_at')
+NC -> NT : delete()
+NC --> NP : showSuccess("Notifikasi yang sudah dibaca berhasil dihapus")
+
+User -> NP : Lihat jumlah notifikasi belum dibaca
+NP -> NC : getUnreadCount()
+NC -> NT : where('user_id', user_id)->where('read_at', null)->count()
+NC --> NP : displayUnreadCount()
+
+@enduml

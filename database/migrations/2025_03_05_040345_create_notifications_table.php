@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('user_id');
             $table->string('title', 100);
             $table->text('body');
-            $table->string('type', 20)->default('kasir');
+            $table->string('type', 100)->default('kasir');
             $table->boolean('is_read')->default(false);
             $table->tinyInteger('status')->default(1)->comment('0: canceled, 1: processing, 2: success');
             $table->timestamps();

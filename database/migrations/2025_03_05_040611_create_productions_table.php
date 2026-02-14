@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('productions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('production_number')->nullable();
+            $table->string('production_number', 50)->nullable();
             $table->uuid('transaction_id')->nullable();
-            $table->string('method')->nullable();
+            $table->string('method', 50)->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('note')->nullable();
-            $table->string('status', 20)->default('Draft');
+            $table->text('note')->nullable();
+            $table->string('status', 50)->default('Draft');
             $table->boolean('is_start')->default(false);
             $table->boolean('is_finish')->default(false);
             $table->timestamps();

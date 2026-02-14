@@ -1,0 +1,47 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMelihat Katalog Produk
+
+start
+:Pengunjung mengakses halaman katalog;
+:Sistem load halaman katalog produk;
+
+:Sistem set default filter "Pesanan Reguler";
+:Sistem tampilkan filter kategori + kolom pencarian;
+:Sistem tampilkan 5 produk pertama dalam grid;
+:Sistem tampilkan info total produk tersedia;
+
+repeat
+    if (Pengunjung melakukan aksi?) then (Pilih filter metode)
+        :Sistem filter produk sesuai metode;
+        :Reset ke 5 produk pertama;
+    else if (Pilih kategori)
+        :Sistem filter produk sesuai kategori;
+        :Reset ke 5 produk pertama;
+    else if (Ketik pencarian)
+        :Sistem cari produk by nama (real-time);
+        :Reset ke 5 produk pertama;
+    else if (Klik "Muat Lebih Banyak")
+        if (Masih ada produk?) then (Ya)
+            :Sistem tambah 5 produk berikutnya;
+        else (Tidak)
+            :Sembunyikan tombol "Muat Lebih Banyak";
+        endif
+    else if (Klik produk)
+        :Arahkan ke halaman detail produk;
+        stop
+    endif
+    
+    if (Hasil filter/pencarian kosong?) then (Ya)
+        :Tampilkan pesan "Tidak ada produk tersedia";
+    else (Tidak)
+        :Tampilkan grid produk;
+    endif
+repeat while (Pengunjung masih di halaman?) is (Ya)
+->Tidak;
+
+stop
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nPenggunaan Poin Loyalitas
+
+start
+:Kasir memproses transaksi pelanggan;
+:Sistem cek apakah pelanggan terdaftar;
+
+if (Pelanggan terdaftar?) then (Ya)
+    :Sistem tampilkan saldo poin pelanggan;
+    :Kasir input jumlah poin yang digunakan;
+    :Sistem validasi input poin;
+    
+    if (Poin melebihi saldo tersedia?) then (Ya)
+        :Tampilkan error "Poin tidak cukup";
+        stop
+    elseif (Poin bukan kelipatan 10?) then (Ya)
+        :Sistem otomatis bulatkan ke kelipatan 10;
+        :Tampilkan warning "Poin harus kelipatan 10";
+    elseif (Poin melebihi maksimal (sisa tagihan ÷ 100)?) then (Ya)
+        :Sistem batasi poin sesuai sisa tagihan;
+        :Tampilkan warning "Poin tidak boleh melebihi sisa tagihan";
+    else (Valid)
+        :Sistem hitung diskon (poin × Rp 100);
+        :Tampilkan potongan harga;
+    endif
+    
+    if (Kasir konfirmasi pembayaran dengan poin?) then (Ya)
+        :Sistem kurangi saldo poin pelanggan;
+        :Sistem catat ke PointsHistory (action: "Tukar Poin");
+        :Sistem update total transaksi dengan diskon;
+        :Total bayar berkurang sesuai diskon;
+        :Tampilkan struk dengan detail poin digunakan;
+    else (Batal)
+        :Kasir batalkan penggunaan poin;
+        :Sistem reset diskon ke 0;
+        :Lanjutkan transaksi tanpa diskon poin;
+    endif
+    
+else (Tidak)
+    :Lanjutkan transaksi tanpa diskon poin;
+endif
+
+note right
+  **Aturan Penggunaan Poin:**
+  • 1 poin = Rp 100 diskon
+  • Harus kelipatan 10 poin
+  • Maksimal = sisa tagihan ÷ 100
+  • Tidak boleh > saldo poin tersedia
+end note
+
+stop
+
+@enduml

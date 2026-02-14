@@ -1,0 +1,84 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nKelola Pelanggan & Poin Loyalitas
+
+start
+:Kasir/Admin mengakses halaman pelanggan;
+:Sistem menampilkan daftar pelanggan;
+
+if (Aksi yang dipilih?) then (Tambah Pelanggan)
+    :Admin klik tambah pelanggan;
+    :Input nama dan nomor telepon;
+    :Sistem validasi input;
+    if (Nomor telepon sudah terdaftar?) then (Ya)
+        :Tampilkan error "Nomor sudah terdaftar";
+        stop
+    else (Tidak)
+        :Sistem simpan data pelanggan;
+        :Tampilkan notifikasi sukses;
+    endif
+    
+elseif (Edit Pelanggan) then (Ya)
+    :Admin pilih pelanggan;
+    :Edit nama atau nomor telepon;
+    :Sistem validasi input;
+    :Sistem update data pelanggan;
+    :Tampilkan notifikasi sukses;
+    
+elseif (Lihat Detail) then (Ya)
+    :Admin pilih pelanggan;
+    :Sistem tampilkan detail pelanggan;
+    :Sistem tampilkan saldo poin;
+    :Sistem tampilkan total transaksi;
+    :Sistem tampilkan riwayat poin;
+    
+    if (Tambah poin dari aktivitas marketing?) then (Ya)
+        :Admin klik tambah poin;
+        
+        fork
+            if (Upload bukti Story Instagram?) then (Ya)
+                :Upload foto story IG;
+                :Sistem validasi format gambar;
+                :Sistem simpan gambar;
+                :Sistem tambah 5 poin;
+                :Sistem catat ke riwayat poin;
+            endif
+        fork again
+            if (Upload bukti Rating Google Maps?) then (Ya)
+                :Upload foto rating Gmaps;
+                :Sistem validasi format gambar;
+                :Sistem simpan gambar;
+                :Sistem tambah 10 poin;
+                :Sistem catat ke riwayat poin;
+            endif
+        end fork
+        
+        :Sistem update saldo poin pelanggan;
+        :Tampilkan notifikasi sukses;
+    endif
+    
+elseif (Hapus Pelanggan) then (Ya)
+    :Admin pilih pelanggan;
+    :Konfirmasi hapus;
+    :Sistem hapus data pelanggan;
+    :Tampilkan notifikasi sukses;
+    
+else (Cari Pelanggan)
+    :Admin input keyword pencarian;
+    :Sistem filter berdasarkan nama/telepon;
+    :Tampilkan hasil pencarian;
+endif
+
+note right
+  **Sumber Poin:**
+  • Story Instagram: +5 poin
+  • Rating Gmaps: +10 poin
+  • Transaksi selesai: +1 poin per Rp 10.000
+  (poin dari transaksi otomatis dari sistem)
+end note
+
+stop
+
+@enduml

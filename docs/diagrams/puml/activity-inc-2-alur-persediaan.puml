@@ -1,0 +1,33 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nKelola Alur Persediaan
+
+start
+:Inventori mengakses halaman log persediaan;
+:Sistem menampilkan daftar log mutasi stok;
+
+:Filter data per bahan/produk;
+if (Data ditemukan?) then (Ya)
+    :Sistem menampilkan log masuk/keluar;
+    :Sistem menampilkan saldo berjalan;
+    
+    if (Lihat detail referensi?) then (Ya)
+        :Sistem menampilkan ID Belanja/Produksi terkait;
+        :Tampilkan informasi transaksi lengkap;
+    endif
+else (Tidak)
+    :Sistem tampilkan daftar kosong;
+    :Tampilkan pesan "Tidak ada mutasi stok";
+endif
+
+note right
+  Transparansi mutasi barang
+  untuk audit dan tracking
+  perubahan stok
+end note
+
+stop
+
+@enduml

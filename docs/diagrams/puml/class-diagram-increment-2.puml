@@ -7,10 +7,252 @@ hide empty members
 title Class Diagram - Increment 2\nModul Pendukung Operasional
 
 ' ==========================================
-' KELAS INVENTORI (INCREMENT 2)
+' EXTENSION KELAS INCREMENT 1
 ' ==========================================
 
-package "Bahan Baku" #LightCoral {
+package "Extension: Autentikasi" #LightBlue {
+    class User <<Extension>> {
+        -invitation_token: String
+        -invitation_sent_at: Timestamp
+        -activated_at: Timestamp
+        --
+        +sendInvitation(): void
+        +activateWithPassword(password): void
+        +hasValidInvitationToken(): Boolean
+    }
+    
+    note right of User
+        Extension dari User Increment 1
+        Menambahkan field & method
+        untuk aktivasi akun (UC-17)
+    end note
+}
+
+package "Extension: Pelanggan & Poin" #LightGreen {
+    class Customer <<Extension>> {
+        -points: Decimal
+        --
+        +pointsHistories(): HasMany
+        +addPoints(amount): void
+        +usePoints(amount): Boolean
+    }
+    
+    note right of Customer
+        Extension dari Customer Increment 1
+        Menambahkan field points
+        dan manajemen poin (UC-15, UC-20)
+    end note
+
+    class PointsHistory {
+        -id: UUID
+        -phone: String
+        -transaction_id: UUID
+        -action_id: String
+        -action: String
+        -points: Integer
+        -image: String
+        --
+        +customer(): BelongsTo
+        +transaction(): BelongsTo
+    }
+    
+    class Notification {
+        -id: UUID
+        -user_id: UUID
+        -title: String
+        -body: Text
+        -type: String
+        -is_read: Boolean
+        -status: TinyInteger
+        --
+        +markAsRead(): void
+        +user(): BelongsTo
+    }
+}
+
+package "Extension: Transaksi" #LightPink {
+    class Transaction <<Extension>> {
+        -points_used: Integer
+        -points_discount: Decimal
+        -total_refund: Decimal
+        --
+        +refund(): HasOne
+        +pointsHistories(): HasMany
+    }
+    
+    note right of Transaction
+        Extension dari Transaction Increment 1
+        Menambahkan field untuk poin (UC-20)
+        dan refund (UC-21)
+    end note
+
+    class TransactionDetail <<Extension>> {
+        -refund_quantity: SmallInteger
+        --
+        +getRemainingQuantity(): Integer
+    }
+    
+    note right of TransactionDetail
+        Extension dari TransactionDetail Increment 1
+        Menambahkan field refund_quantity (UC-21)
+    end note
+
+    class Shift <<Extension>> {
+        -total_refunds: Decimal
+        -total_discounts: Decimal
+        --
+        +calculateTotals(): void
+    }
+    
+    note right of Shift
+        Extension dari Shift Increment 1
+        Menambahkan field refund & discount
+        dari fitur UC-20 dan UC-21
+    end note
+}
+
+' ==========================================
+' KELAS BARU INCREMENT 2
+' ==========================================
+
+package "Inventori: Stock Opname & Tracking" #Wheat {
+    class Hitung {
+        -id: UUID
+        -user_id: UUID
+        -hitung_number: String
+        -action: String
+        -note: String
+        -status: String
+        -hitung_date: Date
+        -hitung_date_finish: Date
+        -is_start: Boolean
+        -is_finish: Boolean
+        -grand_total: Decimal
+        -loss_grand_total: Decimal
+        --
+        +user(): BelongsTo
+        +details(): HasMany
+        +generateHitungNumber(): String
+    }
+
+    class HitungDetail {
+        -id: UUID
+        -hitung_id: UUID
+        -material_id: UUID
+        -unit_id: UUID
+        -quantity_system: Decimal
+        -quantity_actual: Decimal
+        -quantity_difference: Decimal
+        -price: Decimal
+        -total_loss: Decimal
+        --
+        +hitung(): BelongsTo
+        +material(): BelongsTo
+        +unit(): BelongsTo
+    }
+    
+    class InventoryLog {
+        -id: UUID
+        -material_id: UUID
+        -material_batch_id: UUID
+        -user_id: UUID
+        -action: String
+        -quantity_change: Decimal
+        -quantity_after: Decimal
+        -reference_type: String
+        -reference_id: String
+        -note: Text
+        --
+        +material(): BelongsTo
+        +batch(): BelongsTo
+        +user(): BelongsTo
+    }
+}
+
+package "Refund" #MistyRose {
+    class Refund {
+        -id: UUID
+        -transaction_id: UUID
+        -reason: String
+        -proof_image: String
+        -refund_method: String
+        -payment_channel_id: UUID
+        -account_number: String
+        -total_amount: Decimal
+        -refund_by_shift: UUID
+        -refunded_at: DateTime
+        --
+        +transaction(): BelongsTo
+        +paymentChannel(): BelongsTo
+        +shift(): BelongsTo
+    }
+}
+
+package "Pengaturan" #LightGray {
+    class StoreProfile {
+        -id: UUID
+        -logo: String
+        -name: String
+        -tagline: String
+        -type: String
+        -banner: String
+        -product: String
+        -description: Text
+        -building: String
+        -location: String
+        -address: String
+        -contact: String
+        -email: String
+        -website: String
+        -social_instagram: String
+        -social_facebook: String
+        -social_whatsapp: String
+    }
+
+    class StoreDocument {
+        -id: UUID
+        -document_name: String
+        -document_number: String
+        -document_file: String
+        -valid_from: Date
+        -valid_until: Date
+    }
+
+    class ActivityLog {
+        -id: BigInteger
+        -log_name: String
+        -description: Text
+        -subject_type: String
+        -subject_id: UUID
+        -causer_type: String
+        -causer_id: UUID
+        -properties: JSON
+        -event: String
+        -batch_uuid: UUID
+    }
+}
+
+' ==========================================
+' RELASI
+' ==========================================
+
+Customer "1" -- "*" PointsHistory
+Transaction "1" -- "*" PointsHistory
+Transaction "1" -- "0..1" Refund
+
+User "1" -- "*" Notification
+User "1" -- "*" Hitung
+User "1" -- "*" InventoryLog
+
+Hitung "1" -- "*" HitungDetail
+
+@enduml
+
+' ==========================================
+' KELAS BARU INCREMENT 2
+' ==========================================
+
+package "Inventori: Stock Opname" #Wheat {
     class Material {
         -id: UUID
         -name: String

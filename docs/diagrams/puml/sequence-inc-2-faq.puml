@@ -1,0 +1,35 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengakses FAQ
+
+actor "Pengunjung" as Visitor
+participant "FAQPage" as FP
+participant "FAQController" as FC
+participant "FAQ" as FAQ
+
+Visitor -> FP : Mengakses halaman FAQ
+FP -> FC : mount()
+FC -> FAQ : orderBy('order')->get()
+
+alt Ada Data FAQ
+    FC --> FP : displayFAQs(faqs)
+else Tidak Ada FAQ
+    FC --> FP : showEmptyMessage("Belum ada FAQ yang tersedia")
+end
+
+Visitor -> FP : Klik pertanyaan tertentu(id)
+FP --> FP : expandAccordion(id)
+FP --> Visitor : Tampil jawaban pertanyaan
+
+Visitor -> FP : Klik pertanyaan lain(new_id)
+FP --> FP : collapseAccordion(previous_id)
+FP --> FP : expandAccordion(new_id)
+FP --> Visitor : Tampil jawaban pertanyaan baru
+
+Visitor -> FP : Klik pertanyaan yang sudah terbuka(id)
+FP --> FP : collapseAccordion(id)
+FP --> Visitor : Sembunyikan jawaban
+
+@enduml

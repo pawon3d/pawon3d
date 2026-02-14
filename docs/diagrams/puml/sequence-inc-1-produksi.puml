@@ -11,7 +11,6 @@ participant "Production" as PR
 participant "ProductionDetail" as PD
 participant "ProductComposition" as PCM
 participant "Material" as MM
-participant "InventoryLog" as IL
 
 Prod -> PP : Mengakses antrian produksi
 PP -> PC : getQueue()
@@ -36,7 +35,6 @@ end
 alt Stok Semua Bahan Cukup
     loop Untuk Setiap Bahan
         PC -> MM : reduceQuantity(qty)
-        PC -> IL : create(action="produksi")
     end
     PC -> PR : updateStatus("Dalam Proses")
 else Stok Tidak Cukup

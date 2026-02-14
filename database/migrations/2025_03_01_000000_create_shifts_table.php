@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('shift_number')->unique();
+            $table->string('shift_number', 50)->unique();
             $table->uuid('opened_by')->nullable();
             $table->uuid('closed_by')->nullable();
 
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('closed_by')->references('id')->on('users')->nullOnDelete();
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
-            $table->string('status')->default('closed');
+            $table->string('status', 50)->default('closed');
             $table->decimal('initial_cash', 10, 0)->default(0);
             $table->decimal('final_cash', 10, 0)->default(0);
             $table->decimal('total_sales', 10, 2)->default(0);

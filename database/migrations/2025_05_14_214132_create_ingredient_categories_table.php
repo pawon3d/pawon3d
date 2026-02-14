@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ingredient_categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 50);
+            $table->string('name', 100);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
         });

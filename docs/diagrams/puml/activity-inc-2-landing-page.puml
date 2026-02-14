@@ -1,0 +1,41 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengakses Halaman Utama (Landing Page)
+
+start
+:Pengunjung mengakses URL landing page;
+:Sistem load halaman utama;
+
+:Sistem menampilkan bagian Hero\n(banner, nama toko, tagline, tombol WA);
+
+:Sistem query 4 produk terlaris\n(is_recommended=true);
+if (Ada produk unggulan?) then (Ya)
+    :Tampilkan bagian Produk Unggulan;
+else (Tidak)
+    :Tampilkan pesan "Tidak ada produk unggulan saat ini";
+endif
+
+:Sistem menampilkan Info Poin Loyalitas;
+
+:Sistem load max 10 produk dengan filter;
+:Tampilkan bagian Daftar Menu\n(kolom pencarian + filter metode);
+
+:Sistem menampilkan bagian Lokasi Toko\n(alamat, foto, jam operasional);
+
+:Sistem menampilkan bagian Cara Pesan;
+
+if (Pengunjung klik aksi?) then (Tombol WA)
+    :Arahkan ke WhatsApp toko;
+else if (Klik produk)
+    :Arahkan ke halaman detail produk;
+else if (Pencarian/Filter)
+    :Update tampilan produk sesuai filter;
+else if (Tombol Selengkapnya)
+    :Arahkan ke halaman katalog lengkap;
+endif
+
+stop
+
+@enduml

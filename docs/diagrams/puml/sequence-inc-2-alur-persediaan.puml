@@ -1,0 +1,51 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nKelola Alur Persediaan
+
+actor "Bagian Inventori" as User
+participant "InventoryLogPage" as ILP
+participant "InventoryLogController" as ILC
+participant "InventoryLog" as IL
+participant "Material" as MT
+participant "Unit" as UN
+
+User -> ILP : Mengakses log persediaan
+ILP -> ILC : mount()
+ILC -> IL : with('material.unit', 'user')->latest()
+ILC --> ILP : displayLogs()
+
+User -> ILP : Filter berdasarkan bahan(material_id)
+ILP -> ILC : filterByMaterial(material_id)
+ILC -> IL : where('material_id', material_id)->with('material.unit', 'user')
+ILC --> ILP : displayFilteredLogs()
+
+User -> ILP : Filter berdasarkan tipe(type)
+ILP -> ILC : filterByType(type)
+ILC -> IL : where('type', type)->with('material.unit', 'user')
+ILC --> ILP : displayFilteredLogs()
+
+User -> ILP : Filter berdasarkan tanggal(start_date, end_date)
+ILP -> ILC : filterByDate(start_date, end_date)
+ILC -> IL : whereBetween('created_at', [start_date, end_date])->with('material.unit', 'user')
+ILC --> ILP : displayFilteredLogs()
+
+User -> ILP : Cari berdasarkan deskripsi(search)
+ILP -> ILC : search(search)
+ILC -> IL : where('description', 'like', '%search%')->with('material.unit', 'user')
+ILC --> ILP : displaySearchResults()
+
+User -> ILP : Lihat detail log(id)
+ILP -> ILC : show(id)
+ILC -> IL : with('material.unit', 'user')->find(id)
+ILC -> MT : find(material_id)
+ILC -> UN : find(unit_id)
+ILC --> ILP : showLogDetail()
+
+User -> ILP : Reset filter
+ILP -> ILC : resetFilters()
+ILC -> IL : with('material.unit', 'user')->latest()
+ILC --> ILP : displayAllLogs()
+
+@enduml

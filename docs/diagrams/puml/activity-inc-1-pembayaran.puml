@@ -1,0 +1,43 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nProses Pembayaran & Riwayat
+
+start
+:Kasir mengakses formulir pembayaran;
+:Sistem menampilkan detail transaksi;
+
+:Memilih metode pembayaran;
+:Sistem menampilkan portal sesuai channel\n(Cash, Transfer, E-Wallet, QRIS);
+
+:Kasir memasukkan jumlah bayar;
+:Sistem menghitung kembalian otomatis;
+
+if (Jumlah pembayaran cukup?) then (Tidak)
+    :Sistem menampilkan sisa tagihan;
+    :Tampilkan pesan "Pembayaran kurang";
+    stop
+else (Ya)
+    :Kasir mengonfirmasi pembayaran;
+    :Sistem update status transaksi "Lunas";
+    :Sistem generate struk digital;
+    
+    if (Cetak struk?) then (Ya)
+        :Mencetak struk pembayaran;
+    endif
+    
+    :Sistem kurangi stok produk;
+    :Sistem catat data keuangan;
+    :Tampilkan notifikasi sukses;
+endif
+
+if (Lihat riwayat transaksi?) then (Ya)
+    :Kasir mengakses halaman riwayat;
+    :Sistem menampilkan daftar transaksi;
+    :Filter berdasarkan periode/status;
+endif
+
+stop
+
+@enduml

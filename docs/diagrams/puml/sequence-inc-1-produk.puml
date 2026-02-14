@@ -8,25 +8,42 @@ actor "Bagian Inventori" as Inv
 participant "ProductPage" as PP
 participant "ProductController" as PC
 participant "Product" as PM
-participant "Composition" as PCM
+participant "ProductComposition" as PCM
+participant "OtherCost" as OC
 participant "Material" as MT
 
-Inv -> PP : Menambah produk baru(data)
+Inv -> PP : Menambah produk baru
+PP --> Inv : Tampilkan form input
+
+Inv -> PP : Input data produk(nama, deskripsi, kategori, harga_jual, metode)
 PP -> PC : store(data)
 PC -> PM : create(data)
 PM --> PC : product_id
 
-alt Memiliki Komposisi
-    loop Untuk Setiap Bahan
+alt Semua Produk Memiliki Komposisi
+    loop Untuk Setiap Bahan Baku
         Inv -> PP : Tambah bahan(material_id, qty, unit)
         PP -> PC : addComposition(product_id, data)
         PC -> MT : validate(material_id)
         PC -> PCM : create(product_id, material_id, qty, unit)
-        PC -> PC : calculateEstimateCapital()
     end
-    PC -> PM : updateCapital(total)
+    
+    loop Untuk Setiap Biaya Lain
+        Inv -> PP : Tambah biaya(type_cost_id, nama, harga)
+        PP -> PC : addOtherCost(product_id, data)
+        PC -> OC : create(product_id, type_cost_id, nama, harga)
+    end
+    
+    PC -> PC : calculateCapitalAutomatically()
+    note right: Sistem otomatis menghitung\nmodal dari komposisi + biaya lain
+    PC -> PM : updateCapital(total_modal)
 end
 
+Inv -> PP : Input harga jual
+PP -> PC : updatePrice(product_id, price)
+PC -> PM : update(price)
+
 PC --> PP : showSuccess()
+PP --> Inv : Produk berhasil ditambahkan
 
 @enduml

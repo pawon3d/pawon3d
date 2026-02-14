@@ -1,0 +1,43 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nPenggunaan Poin
+
+actor "Kasir" as Kasir
+participant "TransactionPage" as TP
+participant "TransactionController" as TC
+participant "Customer" as CM
+participant "Transaction" as TR
+participant "PointsHistory" as PH
+
+Kasir -> TP : Memproses transaksi dengan pelanggan
+TP -> TC : selectCustomer(customer_id)
+TC -> CM : find(customer_id)
+TC --> TP : showCustomerInfo(name, phone, points)
+
+Kasir -> TP : Input jumlah poin yang digunakan(points_to_use)
+TP -> TC : applyPoints(customer_id, points_to_use)
+TC -> CM : find(customer_id)
+
+alt Poin Melebihi Saldo
+    TC --> TP : showError("Poin tidak cukup. Saldo: {customer.points}")
+else Poin Valid
+    TC -> TC : calculatePointsValue(points_to_use)
+    TC --> TP : showDiscount(points_value)
+    TP --> Kasir : Tampil potongan harga
+end
+
+Kasir -> TP : Konfirmasi pembayaran dengan poin
+TP -> TC : processPaymentWithPoints(customer_id, points_to_use, total)
+TC -> CM : find(customer_id)
+TC -> CM : decrement('points', points_to_use)
+TC -> TR : create(customer_id, total, discount=points_value)
+TC -> PH : create(customer_id, points_used=points_to_use, description="Digunakan pada transaksi #{transaction.id}")
+TC --> TP : showSuccess("Pembayaran berhasil")
+
+Kasir -> TP : Batalkan penggunaan poin
+TP -> TC : removePoints()
+TC --> TP : resetDiscount()
+
+@enduml

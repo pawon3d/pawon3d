@@ -1,0 +1,40 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengelola Kategori Produk
+
+actor "Bagian Inventori" as Inv
+participant "CategoryPage" as CP
+participant "CategoryController" as CC
+participant "Category Model" as CM
+
+Inv -> CP : Mengakses halaman kategori
+CP -> CC : mount()
+CC -> CM : all()
+CC --> CP : displayCategories()
+
+Inv -> CP : Klik Tambah Kategori
+CP --> Inv : Tampil form input
+
+Inv -> CP : Input nama kategori
+CP -> CC : store(name)
+CC -> CM : create(name)
+CC --> CP : showSuccess("Kategori berhasil ditambahkan")
+
+Inv -> CP : Klik Edit Kategori(id)
+CP -> CC : edit(id)
+CC -> CM : find(id)
+CC --> CP : showEditForm(data)
+
+Inv -> CP : Update nama kategori
+CP -> CC : update(id, name)
+CC -> CM : update(id, name)
+CC --> CP : showSuccess("Kategori berhasil diubah")
+
+Inv -> CP : Ubah status aktif(id)
+CP -> CC : toggleActive(id)
+CC -> CM : toggleIsActive(id)
+CC --> CP : showSuccess("Status kategori berubah")
+
+@enduml

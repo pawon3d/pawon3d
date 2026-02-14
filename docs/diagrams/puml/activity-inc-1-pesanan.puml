@@ -1,0 +1,50 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMembuat Pesanan (POS)
+
+start
+:Kasir mengakses daftar transaksi;
+
+if (Shift sudah dibuka?) then (Tidak)
+    :Sistem tampilkan pesan\n"Silakan buka shift terlebih dahulu";
+    :Arahkan ke menu shift;
+    stop
+else (Ya)
+    :Sistem menampilkan daftar transaksi;
+endif
+
+if (Jenis pesanan?) then (Kotak)
+    :Membuat pesanan kotak;
+    :Sistem generate invoice OK-YYMMDD-XXXX;
+else if (Reguler) then
+    :Membuat pesanan reguler;
+    :Sistem generate invoice OR-YYMMDD-XXXX;
+else (Siap Beli)
+    :Membuat transaksi siap beli;
+    :Sistem generate invoice OS-YYMMDD-XXXX;
+endif
+
+:Menambahkan produk ke transaksi;
+
+if (Stok produk cukup?) then (Tidak)
+    :Sistem beri peringatan\n"Stok tidak cukup";
+    stop
+else (Ya)
+    :Sistem menghitung subtotal dan total;
+endif
+
+:Memasukkan data pelanggan;
+:Sistem mencari atau membuat data pelanggan;
+:Sistem menyimpan draf transaksi;
+
+note right
+  Status transaksi:
+  "Menunggu Pembayaran"
+end note
+
+:Lanjut ke proses pembayaran;
+stop
+
+@enduml

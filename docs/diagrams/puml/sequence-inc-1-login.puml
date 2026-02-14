@@ -17,13 +17,8 @@ UM --> AC : return user
 AC -> AC : validatePassword()
 
 alt Kredensial Valid
-    AC -> AC : checkIsActive()
-    alt Akun Aktif
-        AC -> SS : createSession(user)
-        AC --> LP : redirectToDashboard()
-    else Akun Tidak Aktif
-        AC --> LP : showError("Akun tidak aktif")
-    end
+    AC -> SS : createSession(user)
+    AC --> LP : redirectToDashboard()
 else Kredensial Tidak Valid
     AC --> LP : showError("Email atau password salah")
 end

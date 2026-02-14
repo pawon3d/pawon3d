@@ -1,0 +1,52 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMelihat Katalog Produk
+
+actor "Pengunjung" as Visitor
+participant "CatalogPage" as CP
+participant "CatalogController" as CC
+participant "Product" as PR
+participant "Category" as CT
+
+Visitor -> CP : Mengakses halaman katalog
+CP -> CC : mount(method='Pesanan Reguler', category='Semua')
+CC -> PR : where('order_method', 'Pesanan Reguler')->take(5)
+CC -> CT : all()
+CC --> CP : displayProducts(products, categories, total_count)
+
+Visitor -> CP : Pilih filter metode(method)
+CP -> CC : filterByMethod(method)
+CC -> PR : where('order_method', method)->take(5)
+CC --> CP : updateProducts(products, total_count)
+
+Visitor -> CP : Pilih filter kategori(category_id)
+CP -> CC : filterByCategory(category_id)
+
+alt Category = Semua
+    CC -> PR : where('order_method', current_method)->take(5)
+else Category Spesifik
+    CC -> PR : where('order_method', current_method)->where('category_id', category_id)->take(5)
+end
+
+CC --> CP : updateProducts(products, total_count)
+
+Visitor -> CP : Ketik di kolom pencarian(search)
+CP -> CC : searchProducts(search)
+CC -> PR : where('name', 'like', '%search%')->where('order_method', current_method)->take(5)
+CC --> CP : updateProducts(products, total_count)
+
+Visitor -> CP : Klik "Muat Lebih Banyak"
+CP -> CC : loadMore(offset, limit=5)
+CC -> PR : applyCurrentFilters()->skip(offset)->take(5)
+CC --> CP : appendProducts(additional_products)
+
+alt Semua Produk Sudah Ditampilkan
+    CP --> Visitor : Sembunyikan tombol "Muat Lebih Banyak"
+end
+
+Visitor -> CP : Klik produk
+CP --> Visitor : Redirect ke halaman detail produk(id)
+
+@enduml

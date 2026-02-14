@@ -3,168 +3,120 @@
 skinparam linetype ortho
 hide circle
 
-title ERD - Increment 2\nModul Pendukung Operasional
+title ERD - Increment 2\nExtension & Modul Pendukung Operasional
 
 ' ==========================================
-' ENTITAS INVENTORI (INCREMENT 2)
+' EXTENSION DARI INCREMENT 1
 ' ==========================================
 
-entity "materials" as materials {
+entity "users" as users {
     *id : UUID <<PK>>
     --
-    name : VARCHAR(50)
-    description : VARCHAR(255)
-    image : VARCHAR(255)
-    expiry_date : DATE
-    status : VARCHAR(20)
-    is_active : BOOLEAN
-    is_recipe : BOOLEAN
-    minimum : DECIMAL(15,5)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
+    .. Extension fields ..
+    invitation_token : VARCHAR(64)
+    invitation_sent_at : TIMESTAMP
+    activated_at : TIMESTAMP
 }
 
-entity "material_details" as material_details {
+note right of users
+  Extension untuk UC-17
+  Aktivasi akun pengguna
+end note
+
+entity "customers" as customers {
     *id : UUID <<PK>>
     --
-    material_id : UUID <<FK>>
-    unit_id : UUID <<FK>>
-    price : DECIMAL(15,2)
-    is_main : BOOLEAN
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
+    .. Extension fields ..
+    points : DECIMAL(9,0)
 }
 
-entity "material_batches" as material_batches {
+note right of customers
+  Extension untuk UC-15, UC-20
+  Sistem poin pelanggan
+end note
+
+entity "shifts" as shifts {
     *id : UUID <<PK>>
     --
-    material_id : UUID <<FK>>
-    unit_id : UUID <<FK>>
-    batch_number : VARCHAR(255)
-    date : DATE
-    batch_quantity : DECIMAL(15,2)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
+    .. Extension fields ..
+    total_refunds : DECIMAL(10,2)
+    total_discounts : DECIMAL(10,2)
 }
 
-entity "product_compositions" as product_compositions {
+note right of shifts
+  Extension untuk UC-21
+  Tracking refund & discount
+end note
+
+entity "transactions" as transactions {
     *id : UUID <<PK>>
     --
-    product_id : UUID <<FK>>
-    material_id : UUID <<FK>>
-    unit_id : UUID <<FK>>
-    material_quantity : DECIMAL(8,2)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
+    .. Extension fields ..
+    points_used : INT
+    points_discount : DECIMAL(15,2)
+    total_refund : DECIMAL(15,0)
+    cancel_reason : TEXT
+    cancel_proof_image : VARCHAR(255)
+    refund_by_shift : UUID <<FK>>
+    cancelled_by_shift : UUID <<FK>>
+    cancelled_at : TIMESTAMP
 }
 
-entity "ingredient_categories" as ingredient_categories {
+note right of transactions
+  Extension untuk UC-15, UC-20, UC-21
+  Poin, refund, & pembatalan
+end note
+
+entity "transaction_details" as transaction_details {
     *id : UUID <<PK>>
     --
-    name : VARCHAR(50)
-    description : VARCHAR(255)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
+    .. Extension fields ..
+    refund_quantity : SMALLINT
 }
 
-entity "ingredient_category_details" as ingredient_category_details {
-    *id : UUID <<PK>>
-    --
-    ingredient_category_id : UUID <<FK>>
-    material_id : UUID <<FK>>
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
+note right of transaction_details
+  Extension untuk UC-21
+  Quantity refund per item
+end note
 
-entity "suppliers" as suppliers {
-    *id : UUID <<PK>>
-    --
-    name : VARCHAR(50)
-    description : VARCHAR(255)
-    contact_name : VARCHAR(50)
-    phone : VARCHAR(20)
-    street : VARCHAR(255)
-    landmark : VARCHAR(255)
-    maps_link : VARCHAR(500)
-    image : VARCHAR(255)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
+' ==========================================
+' ENTITAS NOTIFIKASI
+' ==========================================
 
-entity "expenses" as expenses {
+entity "notifications" as notifications {
     *id : UUID <<PK>>
     --
-    expense_number : VARCHAR(255) <<UNIQUE>>
-    expense_date : DATE
-    end_date : DATE
-    supplier_id : UUID <<FK>>
-    note : VARCHAR(255)
-    status : VARCHAR(255)
-    grand_total_expect : DECIMAL(10,2)
-    grand_total_actual : DECIMAL(10,2)
-    is_start : BOOLEAN
-    is_finish : BOOLEAN
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
-
-entity "expense_details" as expense_details {
-    *id : UUID <<PK>>
-    --
-    expense_id : UUID <<FK>>
-    material_id : UUID <<FK>>
-    unit_id : UUID <<FK>>
-    quantity_expect : DECIMAL(15,5)
-    quantity_get : DECIMAL(15,5)
-    is_quantity_get : BOOLEAN
-    price_expect : DECIMAL(10,2)
-    price_get : DECIMAL(10,2)
-    total_expect : DECIMAL(10,2)
-    total_actual : DECIMAL(10,2)
-    expiry_date : DATE
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
-
-entity "productions" as productions {
-    *id : UUID <<PK>>
-    --
-    production_number : VARCHAR(255)
-    transaction_id : UUID <<FK>>
-    method : VARCHAR(255)
-    date : DATE
-    time : TIME
-    start_date : DATE
-    end_date : DATE
-    note : VARCHAR(255)
-    status : VARCHAR(20)
-    is_start : BOOLEAN
-    is_finish : BOOLEAN
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
-
-entity "production_details" as production_details {
-    *id : UUID <<PK>>
-    --
-    production_id : UUID <<FK>>
-    product_id : UUID <<FK>>
-    quantity_plan : DECIMAL(8,0)
-    quantity_get : DECIMAL(8,0)
-    quantity_fail : DECIMAL(8,0)
-    cycle : DECIMAL(2,0)
-    created_at : TIMESTAMP
-    updated_at : TIMESTAMP
-}
-
-entity "production_workers" as production_workers {
-    *id : UUID <<PK>>
-    --
-    production_id : UUID <<FK>>
     user_id : UUID <<FK>>
+    title : VARCHAR(100)
+    body : TEXT
+    type : VARCHAR(100)
+    is_read : BOOLEAN
+    status : TINYINT
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
 }
+
+' ==========================================
+' ENTITAS POIN PELANGGAN
+' ==========================================
+
+entity "points_histories" as points_histories {
+    *id : UUID <<PK>>
+    --
+    customer_id : UUID <<FK>>
+    transaction_id : UUID <<FK>>
+    points_earned : INTEGER
+    points_used : INTEGER
+    balance_after : INTEGER
+    description :TEXT
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+' ==========================================
+' ENTITAS STOCK OPNAME
+' ==========================================
+
 
 entity "hitungs" as hitungs {
     *id : UUID <<PK>>
@@ -172,8 +124,8 @@ entity "hitungs" as hitungs {
     user_id : UUID <<FK>>
     hitung_number : VARCHAR(30) <<UNIQUE>>
     action : VARCHAR(50)
-    note : VARCHAR(255)
-    status : VARCHAR(20)
+    note : TEXT
+    status : VARCHAR(50)
     hitung_date : DATE
     hitung_date_finish : DATE
     is_start : BOOLEAN
@@ -199,31 +151,41 @@ entity "hitung_details" as hitung_details {
     updated_at : TIMESTAMP
 }
 
+' ==========================================
+' ENTITAS INVENTORY LOG
+' ==========================================
+
+
 entity "inventory_logs" as inventory_logs {
     *id : UUID <<PK>>
     --
     material_id : UUID <<FK>>
     material_batch_id : UUID <<FK>>
     user_id : UUID <<FK>>
-    action : VARCHAR(255)
+    action : VARCHAR(100)
     quantity_change : DECIMAL(15,4)
     quantity_after : DECIMAL(15,4)
-    reference_type : VARCHAR(255)
+    reference_type : VARCHAR(100)
     reference_id : VARCHAR(255)
     note : TEXT
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
 }
 
+' ==========================================
+' ENTITAS REFUND
+' ==========================================
+
+
 entity "refunds" as refunds {
     *id : UUID <<PK>>
     --
     transaction_id : UUID <<FK>>
-    reason : VARCHAR(255)
+    reason : TEXT
     proof_image : VARCHAR(255)
-    refund_method : VARCHAR(255)
+    refund_method : VARCHAR(50)
     payment_channel_id : UUID <<FK>>
-    account_number : VARCHAR(255)
+    account_number : VARCHAR(100)
     total_amount : DECIMAL(10,0)
     refund_by_shift : UUID <<FK>>
     refunded_at : DATETIME
@@ -231,25 +193,30 @@ entity "refunds" as refunds {
     updated_at : TIMESTAMP
 }
 
+' ==========================================
+' ENTITAS PROFIL TOKO
+' ==========================================
+
+
 entity "store_profiles" as store_profiles {
     *id : UUID <<PK>>
     --
     logo : VARCHAR(255)
-    name : VARCHAR(255)
-    tagline : VARCHAR(255)
-    type : VARCHAR(255)
+    name : VARCHAR(100)
+    tagline : VARCHAR(200)  
+    type : VARCHAR(50)
     banner : VARCHAR(255)
-    product : VARCHAR(255)
+    product : VARCHAR(100)
     description : TEXT
-    building : VARCHAR(255)
-    location : VARCHAR(255)
+    building : VARCHAR(100)
+    location : VARCHAR(100)
     address : VARCHAR(255)
-    contact : VARCHAR(255)
+    contact : VARCHAR(20)
     email : VARCHAR(255)
     website : VARCHAR(255)
-    social_instagram : VARCHAR(255)
-    social_facebook : VARCHAR(255)
-    social_whatsapp : VARCHAR(255)
+    social_instagram : VARCHAR(100)
+    social_facebook : VARCHAR(100)
+    social_whatsapp : VARCHAR(20)
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
 }
@@ -257,8 +224,8 @@ entity "store_profiles" as store_profiles {
 entity "store_documents" as store_documents {
     *id : UUID <<PK>>
     --
-    document_name : VARCHAR(255)
-    document_number : VARCHAR(255)
+    document_name : VARCHAR(100)
+    document_number : VARCHAR(100)
     document_file : VARCHAR(255)
     valid_from : DATE
     valid_until : DATE
@@ -266,44 +233,46 @@ entity "store_documents" as store_documents {
     updated_at : TIMESTAMP
 }
 
+' ==========================================
+' ENTITAS ACTIVITY LOG
+' ==========================================
+
 entity "activity_log" as activity_log {
     *id : BIGINT <<PK>>
     --
     log_name : VARCHAR(255)
     description : TEXT
-    subject_type : VARCHAR(255)
+    subject_type : VARCHAR(100)
     subject_id : UUID
-    causer_type : VARCHAR(255)
+    causer_type : VARCHAR(100)
     causer_id : UUID
     properties : JSON
-    event : VARCHAR(255)
+    event : VARCHAR(100)
     batch_uuid : UUID
     created_at : TIMESTAMP
     updated_at : TIMESTAMP
 }
 
 ' ==========================================
-' RELASI
+' RELASI INCREMENT 2
 ' ==========================================
 
-materials ||--o{ material_details
-materials ||--o{ material_batches
-materials ||--o{ product_compositions
-materials ||--o{ expense_details
-materials ||--o{ ingredient_category_details
-materials ||--o{ hitung_details
-materials ||--o{ inventory_logs
+' Relasi Extension Users
+users ||--o{ hitungs : "creates"
+users ||--o{ inventory_logs : "performs action"
+users ||--o{ notifications : "receives"
 
-material_batches ||--o{ inventory_logs
+' Relasi Extension Customers  
+customers ||--o{ points_histories : "earns/uses points"
 
-ingredient_categories ||--o{ ingredient_category_details
+' Relasi Extension Shifts
+shifts ||--o{ refunds : "processes refund"
 
-suppliers ||--o{ expenses
-expenses ||--o{ expense_details
+' Relasi Extension Transactions
+transactions ||--o{ points_histories : "generates points"
+transactions ||--o{ refunds : "may have"
 
-productions ||--o{ production_details
-productions ||--o{ production_workers
-
-hitungs ||--o{ hitung_details
+' Relasi Entity Baru
+hitungs ||--o{ hitung_details : "has"
 
 @enduml

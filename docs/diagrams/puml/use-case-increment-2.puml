@@ -13,6 +13,7 @@ actor "Pengguna Baru" as NewUser
 actor "Bagian Inventori" as Inventory
 actor "Kasir" as Cashier
 actor "Bagian Produksi" as Production
+actor "Pengunjung" as Visitor
 
 ' == Sistem ==
 rectangle "Sistem Pawon3D - Increment 2" {
@@ -86,6 +87,14 @@ rectangle "Sistem Pawon3D - Increment 2" {
     ' -- Poin Pelanggan --
     package "Poin Pelanggan" {
         usecase "Menggunakan Poin Pelanggan" as UC088
+    }
+    
+    ' -- Landing Page --
+    package "Landing Page" {
+        usecase "Mengakses Halaman Utama" as UC089
+        usecase "Melihat Katalog Produk" as UC090
+        usecase "Melihat Detail Produk" as UC091
+        usecase "Mengakses FAQ" as UC092
     }
 }
 
@@ -164,6 +173,12 @@ Production --> UC068
 Production --> UC069
 Production --> UC070
 
+' == Relasi Pengunjung ==
+Visitor --> UC089
+Visitor --> UC090
+Visitor --> UC091
+Visitor --> UC092
+
 ' == Include/Extend ==
 UC049 ..> UC071 : <<include>>
 UC071 ..> UC072 : <<extend>>
@@ -173,5 +188,7 @@ UC076 ..> UC077 : <<extend>>
 UC067 ..> UC068 : <<include>>
 UC067 ..> UC069 : <<extend>>
 UC067 ..> UC070 : <<extend>>
+UC089 ..> UC090 : <<extend>>
+UC090 ..> UC091 : <<extend>>
 
 @enduml

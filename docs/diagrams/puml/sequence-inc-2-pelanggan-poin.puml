@@ -1,0 +1,86 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nKelola Pelanggan & Poin
+
+actor "Kasir/Admin" as User
+participant "CustomerPage" as CP
+participant "CustomerController" as CC
+participant "Customer" as CM
+participant "PointsHistory" as PH
+participant "Storage" as ST
+
+User -> CP : Mengakses daftar pelanggan
+CP -> CC : mount()
+CC -> CM : orderBy('created_at', 'desc')->get()
+CC --> CP : displayCustomers()
+
+User -> CP : Tambah pelanggan baru(name, phone)
+CP -> CC : store(name, phone)
+CC -> CC : validate(name, phone)
+
+alt Phone Sudah Terdaftar
+    CC --> CP : showError("Nomor telepon sudah terdaftar")
+else Validasi Berhasil
+    CC -> CM : create(name, phone, points=0)
+    CC --> CP : showSuccess("Pelanggan berhasil ditambahkan")
+end
+
+User -> CP : Edit pelanggan(id, name, phone)
+CP -> CC : update(id, name, phone)
+CC -> CM : find(id)
+CC -> CC : validate(name, phone)
+
+alt Validasi Berhasil
+    CC -> CM : update(name, phone)
+    CC --> CP : showSuccess("Data pelanggan berhasil diperbarui")
+else Validasi Gagal
+    CC --> CP : showError("Data tidak valid")
+end
+
+User -> CP : Lihat detail pelanggan(id)
+CP -> CC : show(id)
+CC -> CM : find(id)
+CC -> CM : transactions()->count()
+CC -> CM : transactions()->latest()->first()
+CC -> PH : where('phone', customer.phone)->latest()->get()
+CC --> CP : showCustomerDetail(customer, total_transactions, last_transaction, points_histories)
+
+User -> CP : Tambah poin dari aktivitas marketing(customer_id, ig_image, gmaps_image)
+CP -> CC : addPoints(customer_id, ig_image, gmaps_image)
+CC -> CM : find(customer_id)
+CC -> CC : validate(ig_image, gmaps_image)
+
+alt Upload Story Instagram
+    CC -> ST : store(ig_image, 'points/ig')
+    CC -> PH : create(phone, action='Story Instagram', points=5, image=path)
+    CC -> CM : increment('points', 5)
+end
+
+alt Upload Rating Google Maps
+    CC -> ST : store(gmaps_image, 'points/gmaps')
+    CC -> PH : create(phone, action='Rating Gmaps', points=10, image=path)
+    CC -> CM : increment('points', 10)
+end
+
+CC --> CP : showSuccess("Poin berhasil ditambahkan: {total_points} poin")
+
+User -> CP : Lihat riwayat poin(customer_id)
+CP -> CC : getPointsHistory(customer_id)
+CC -> CM : find(customer_id)
+CC -> PH : where('phone', customer.phone)->latest()->get()
+CC --> CP : displayHistory()
+
+User -> CP : Hapus pelanggan(id)
+CP -> CC : destroy(id)
+CC -> CM : find(id)
+CC -> CM : delete()
+CC --> CP : showSuccess("Pelanggan berhasil dihapus")
+
+User -> CP : Cari pelanggan(search)
+CP -> CC : search(search)
+CC -> CM : where('name', 'like', '%search%')->orWhere('phone', 'like', '%search%')
+CC --> CP : displaySearchResults()
+
+@enduml

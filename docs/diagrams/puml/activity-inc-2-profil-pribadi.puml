@@ -1,0 +1,46 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nKelola Profil Pribadi
+
+start
+:Pengguna mengakses halaman profil pribadi;
+:Sistem menampilkan data profil\n(nama, email, role, foto profil);
+
+if (Aksi yang dipilih?) then (Edit Profil)
+    :Sistem menampilkan form edit profil;
+    :Pengguna ubah nama, email, atau upload foto;
+    
+    if (Email sudah digunakan?) then (Ya)
+        :Sistem tampilkan error\n"Email sudah terdaftar";
+        stop
+    else if (Format foto tidak valid\natau > 2MB?) then (Ya)
+        :Sistem tolak upload;
+        :Tampilkan error validasi;
+        stop
+    else (Validasi OK)
+        :Sistem update data profil;
+        :Sistem tampilkan notifikasi sukses;
+        :Sistem refresh halaman dengan data terbaru;
+    endif
+    
+else if (Ubah Password) then
+    :Sistem tampilkan form password\n(lama, baru, konfirmasi);
+    :Pengguna input password;
+    
+    if (Password lama salah?) then (Ya)
+        :Tampilkan error validasi;
+        stop
+    else if (Password baru < 8 karakter\natau tidak ada kombinasi?) then (Ya)
+        :Tampilkan error validasi format;
+        stop
+    else (Valid)
+        :Sistem update password;
+        :Tampilkan notifikasi sukses;
+    endif
+endif
+
+stop
+
+@enduml

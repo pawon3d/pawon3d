@@ -1,0 +1,44 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengakses Halaman Utama
+
+actor "Pengunjung" as Visitor
+participant "LandingPage" as LP
+participant "LandingController" as LC
+participant "Product" as PR
+participant "BusinessProfile" as BP
+participant "Category" as CT
+
+Visitor -> LP : Mengakses landing page
+LP -> LC : mount()
+LC -> BP : first()
+LC -> PR : where('is_recommended', true)->orderBy('total_sold', 'desc')->take(4)
+LC -> PR : latest()->take(10)
+LC -> CT : all()
+LC --> LP : displayLandingPage(profile, recommended_products, latest_products, categories)
+
+Visitor -> LP : Klik tombol WhatsApp
+LP --> Visitor : Redirect ke WhatsApp dengan nomor toko
+
+Visitor -> LP : Klik produk unggulan/terbaru
+LP --> Visitor : Redirect ke halaman detail produk
+
+Visitor -> LP : Klik tombol "Selengkapnya"
+LP --> Visitor : Redirect ke halaman katalog produk
+
+Visitor -> LP : Gunakan kolom pencarian(search)
+LP -> LC : searchProducts(search)
+LC -> PR : where('name', 'like', '%search%')->take(10)
+LC --> LP : displaySearchResults()
+
+Visitor -> LP : Pilih filter metode pemesanan(method)
+LP -> LC : filterByMethod(method)
+LC -> PR : where('order_method', method)->take(10)
+LC --> LP : displayFilteredProducts()
+
+Visitor -> LP : Scroll ke bagian tertentu
+LP --> LP : smoothScrollTo(section_id)
+
+@enduml

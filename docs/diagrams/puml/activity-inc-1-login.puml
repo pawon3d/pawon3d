@@ -10,15 +10,9 @@ start
 :Sistem memvalidasi kredensial;
 
 if (Kredensial valid?) then (Ya)
-    :Sistem memeriksa status akun;
-    if (Akun aktif?) then (Ya)
-        :Membuat session;
-        :Redirect ke dashboard;
-        stop
-    else (Tidak)
-        :Tampilkan pesan "Akun tidak aktif";
-        stop
-    endif
+    :Membuat session;
+    :Redirect ke dashboard;
+    stop
 else (Tidak)
     :Tampilkan pesan error;
     stop

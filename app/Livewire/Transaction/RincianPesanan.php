@@ -249,7 +249,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
             }
         }
     }
@@ -286,7 +286,7 @@ class RincianPesanan extends Component
     {
         // Cek apakah metode pembayaran adalah tunai
         $isTunai = false;
-        
+
         if ($this->paymentGroup === 'tunai') {
             $isTunai = true;
         } elseif (empty($this->paymentGroup) && $this->payments && $this->payments->count() > 0) {
@@ -294,7 +294,7 @@ class RincianPesanan extends Component
             $lastPayment = $this->payments->first();
             $isTunai = ($lastPayment->payment_group === 'tunai');
         }
-        
+
         if (!$isTunai) {
             return 0;
         }
@@ -409,7 +409,7 @@ class RincianPesanan extends Component
                 ->get()
                 ->unique('type')
                 ->values();
-        } elseif($value == 'tunai') {
+        } elseif ($value == 'tunai') {
             $this->paymentMethod = 'tunai';
         } else {
             // Reset semua field payment ketika kembali ke tunai
@@ -445,7 +445,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_number.' - '.$channel->account_name;
+            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -471,7 +471,7 @@ class RincianPesanan extends Component
             $this->alert('warning', 'Metode pembayaran harus diisi.');
             return;
         }
-        
+
         // Validasi untuk metode non-tunai
         if ($this->paymentGroup === 'non-tunai') {
             if (empty($this->paymentMethod)) {
@@ -483,7 +483,7 @@ class RincianPesanan extends Component
                 return;
             }
         }
-        
+
 
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             $totalAfterPoints = $this->transaction->total_amount - ($this->transaction->points_discount ?? 0);
@@ -514,14 +514,18 @@ class RincianPesanan extends Component
             }
         } else {
             // Untuk pembayaran kedua/pelunasan
-            $sisaTagihan = $this->totalAmount - $this->totalPayment;
-            
+            // Hitung total setelah diskon poin
+            $totalAfterPoints = $this->totalAmount - ($this->transaction->points_discount ?? 0);
+
+            // Hitung sisa tagihan setelah dikurangi pembayaran sebelumnya dan diskon poin
+            $sisaTagihan = $totalAfterPoints - $this->totalPayment;
+
             // Cek apakah sudah lunas
             if ($sisaTagihan <= 0) {
                 $this->alert('warning', 'Transaksi sudah lunas. Tidak perlu pembayaran lagi.');
                 return;
             }
-            
+
             // Validasi jumlah pembayaran harus melunasi sisa tagihan
             if (!empty($this->payments) && ($this->paidAmount < $sisaTagihan)) {
                 $this->alert('warning', 'Jumlah pembayaran harus lunas (minimal Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').');
@@ -544,13 +548,13 @@ class RincianPesanan extends Component
                 $transaction->details()->each(function ($detail) use ($transaction) {
                     $product = $detail->product;
                     $availableStock = $product->getAvailableStock();
-                    
+
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($availableStock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
                         return;
                     }
-                    
+
                     // Kurangi stok produk sesuai quantity yang dibeli
                     if ($product) {
                         if ($product->is_recipe) {
@@ -560,11 +564,11 @@ class RincianPesanan extends Component
                             // Produk ready-to-sell: kurangi stok dari material batch
                             $product->load('product_compositions.material.material_details.unit');
                             $composition = $product->product_compositions->first();
-                            
+
                             if ($composition && $composition->material) {
                                 $material = $composition->material;
                                 $mainDetail = $material->material_details->firstWhere('is_main', true);
-                                
+
                                 if ($mainDetail && $mainDetail->unit) {
                                     // Reduce material quantity (FIFO, exclude expired)
                                     $material->reduceQuantity(
@@ -674,20 +678,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-'.$this->transaction->id.'.pdf';
-        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/'.$fileName);
+        $fileName = 'struk-' . $this->transaction->id . '.pdf';
+        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/' . $fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -703,11 +707,11 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62'.substr($phone, 1);
+            $phone = '62' . substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -724,9 +728,9 @@ class RincianPesanan extends Component
         // Return stream untuk dibuka di tab baru
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'struk-'.$this->transaction->invoice_number.'.pdf', [
+        }, 'struk-' . $this->transaction->invoice_number . '.pdf', [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="struk-'.$this->transaction->invoice_number.'.pdf"',
+            'Content-Disposition' => 'inline; filename="struk-' . $this->transaction->invoice_number . '.pdf"',
         ]);
     }
 
@@ -974,13 +978,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/'.$payment->image);
+        $path = storage_path('app/public/' . $payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }
@@ -1232,11 +1236,11 @@ class RincianPesanan extends Component
 
         // Format based on field type
         if (in_array($key, ['total_amount', 'points_discount'])) {
-            return 'Rp'.number_format($value, 0, ',', '.');
+            return 'Rp' . number_format($value, 0, ',', '.');
         }
 
         if (in_array($key, ['points_used'])) {
-            return number_format($value, 0, ',', '.').' poin';
+            return number_format($value, 0, ',', '.') . ' poin';
         }
 
         if (in_array($key, ['cancelled_at', 'end_date', 'created_at', 'updated_at'])) {

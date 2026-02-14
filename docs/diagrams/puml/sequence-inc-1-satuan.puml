@@ -1,0 +1,66 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nKelola Satuan & Konversi
+
+actor "Bagian Inventori" as Inv
+participant "UnitPage" as UP
+participant "UnitController" as UC
+participant "Unit" as UM
+
+Inv -> UP : Mengakses halaman satuan
+UP -> UC : mount()
+UC -> UM : all()
+UC --> UP : displayUnits()
+
+Inv -> UP : Tambah satuan dasar(nama, alias, group)
+UP -> UC : store(nama, alias, group, base_unit=null, factor=1)
+UC -> UC : validate(nama, alias)
+
+alt Validasi Berhasil
+    UC -> UM : create(nama, alias, group, base_unit=null, factor=1)
+    UC --> UP : showSuccess("Satuan dasar berhasil ditambahkan")
+else Validasi Gagal
+    UC --> UP : showError("Data tidak valid")
+end
+
+Inv -> UP : Tambah satuan turunan(nama, alias, group, base_unit_id, factor)
+UP -> UC : store(nama, alias, group, base_unit_id, factor)
+UC -> UC : validate(nama, alias, base_unit_id, factor)
+
+alt Validasi Berhasil & Factor > 0
+    UC -> UM : find(base_unit_id)
+    UC -> UM : create(nama, alias, group, base_unit_id, factor)
+    UC --> UP : showSuccess("Satuan konversi berhasil ditambahkan")
+else Factor Nol atau Negatif
+    UC --> UP : showError("Rasio konversi harus lebih dari 0")
+else Validasi Gagal
+    UC --> UP : showError("Data tidak valid")
+end
+
+Inv -> UP : Edit satuan(id, nama, alias, group, factor)
+UP -> UC : update(id, nama, alias, group, factor)
+UC -> UM : find(id)
+UC -> UC : validate(nama, alias, factor)
+
+alt Validasi Berhasil
+    UC -> UM : update(nama, alias, group, factor)
+    UC --> UP : showSuccess("Satuan berhasil diperbarui")
+else Validasi Gagal
+    UC --> UP : showError("Data tidak valid")
+end
+
+Inv -> UP : Hapus satuan(id)
+UP -> UC : destroy(id)
+UC -> UM : find(id)
+UC -> UM : checkUsage(id)
+
+alt Satuan Sedang Digunakan
+    UC --> UP : showError("Satuan sedang digunakan pada bahan baku")
+else Satuan Tidak Digunakan
+    UC -> UM : delete()
+    UC --> UP : showSuccess("Satuan berhasil dihapus")
+end
+
+@enduml

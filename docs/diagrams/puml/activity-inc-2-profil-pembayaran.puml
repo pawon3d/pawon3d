@@ -1,0 +1,30 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nPengaturan Profil & Metode Pembayaran
+
+start
+:Admin mengakses halaman pengaturan;
+:Sistem menampilkan form pengaturan;
+
+if (Update profil toko?) then (Ya)
+    :Mengubah logo dan nama toko;
+    if (Format logo valid?) then (Ya)
+        :Sistem update metadata toko;
+        :Tampilkan notifikasi sukses;
+    else (Tidak)
+        :Sistem tolak upload;
+        :Tampilkan pesan error format;
+    endif
+endif
+
+if (Kelola metode pembayaran?) then (Ya)
+    :Aktifkan/Matikan channel pembayaran;
+    :Sistem simpan pengaturan pembayaran;
+    :Perubahan muncul di struk dan POS;
+endif
+
+stop
+
+@enduml

@@ -20,14 +20,7 @@ package "Autentikasi & Pengguna" #LightBlue {
         -image: String
         -gender: String
         -is_active: Boolean
-        -invitation_token: String
-        -invitation_sent_at: Timestamp
-        -activated_at: Timestamp
         --
-        +sendInvitation(): void
-        +activateWithPassword(password): void
-        +hasValidInvitationToken(): Boolean
-        +toggleActive(): void
         +initials(): String
     }
 
@@ -48,18 +41,6 @@ package "Autentikasi & Pengguna" #LightBlue {
         --
         +roles(): BelongsToMany
     }
-
-    class Notification {
-        -id: UUID
-        -user_id: UUID
-        -title: String
-        -message: Text
-        -type: String
-        -is_read: Boolean
-        -data: JSON
-        --
-        +markAsRead(): void
-    }
 }
 
 package "Pelanggan" #LightGreen {
@@ -67,23 +48,8 @@ package "Pelanggan" #LightGreen {
         -id: UUID
         -phone: String
         -name: String
-        -points: Decimal
         --
         +transactions(): HasMany
-        +pointsHistories(): HasMany
-    }
-
-    class PointsHistory {
-        -id: UUID
-        -phone: String
-        -transaction_id: UUID
-        -action_id: String
-        -action: String
-        -points: Integer
-        -image: String
-        --
-        +customer(): BelongsTo
-        +transaction(): BelongsTo
     }
 }
 
@@ -153,6 +119,177 @@ package "Produk & Kategori" #LightYellow {
     }
 }
 
+package "Bahan Baku" #LightCoral {
+    class Material {
+        -id: UUID
+        -name: String
+        -description: String
+        -image: String
+        -expiry_date: Date
+        -status: String
+        -is_active: Boolean
+        -is_recipe: Boolean
+        -minimum: Decimal
+        --
+        +getTotalQuantityInUnit(unit): Float
+        +reduceQuantity(qty, unit): Boolean
+        +getUnitPriceInUnit(unit): Float
+        +recalculateStatus(): void
+        +batches(): HasMany
+        +materialDetails(): HasMany
+    }
+
+    class MaterialDetail {
+        -id: UUID
+        -material_id: UUID
+        -unit_id: UUID
+        -supply_price: Decimal
+        -is_main: Boolean
+        --
+        +material(): BelongsTo
+        +unit(): BelongsTo
+    }
+
+    class MaterialBatch {
+        -id: UUID
+        -material_id: UUID
+        -unit_id: UUID
+        -batch_number: String
+        -date: Date
+        -batch_quantity: Decimal
+        --
+        +material(): BelongsTo
+        +unit(): BelongsTo
+    }
+
+    class ProductComposition {
+        -id: UUID
+        -product_id: UUID
+        -material_id: UUID
+        -unit_id: UUID
+        -material_quantity: Decimal
+        --
+        +product(): BelongsTo
+        +material(): BelongsTo
+        +unit(): BelongsTo
+    }
+
+    class IngredientCategory {
+        -id: UUID
+        -name: String
+        -description: String
+        --
+        +details(): HasMany
+        +materials(): BelongsToMany
+    }
+
+    class IngredientCategoryDetail {
+        -id: UUID
+        -ingredient_category_id: UUID
+        -material_id: UUID
+        --
+        +ingredientCategory(): BelongsTo
+        +material(): BelongsTo
+    }
+}
+
+package "Supplier & Belanja" #Lavender {
+    class Supplier {
+        -id: UUID
+        -name: String
+        -description: String
+        -contact_name: String
+        -phone: String
+        -street: String
+        -landmark: String
+        -maps_link: String
+        -image: String
+        --
+        +expenses(): HasMany
+    }
+
+    class Expense {
+        -id: UUID
+        -expense_number: String
+        -expense_date: Date
+        -end_date: Date
+        -supplier_id: UUID
+        -note: String
+        -status: String
+        -grand_total_expect: Decimal
+        -grand_total_actual: Decimal
+        -is_start: Boolean
+        -is_finish: Boolean
+        --
+        +supplier(): BelongsTo
+        +expenseDetails(): HasMany
+        +generateExpenseNumber(): String
+    }
+
+    class ExpenseDetail {
+        -id: UUID
+        -expense_id: UUID
+        -material_id: UUID
+        -unit_id: UUID
+        -quantity_expect: Decimal
+        -quantity_get: Decimal
+        -is_quantity_get: Boolean
+        -price_expect: Decimal
+        -price_get: Decimal
+        -total_expect: Decimal
+        -total_actual: Decimal
+        -expiry_date: Date
+        --
+        +expense(): BelongsTo
+        +material(): BelongsTo
+        +unit(): BelongsTo
+    }
+}
+
+package "Produksi" #PaleGreen {
+    class Production {
+        -id: UUID
+        -production_number: String
+        -transaction_id: UUID
+        -method: String
+        -date: Date
+        -time: Time
+        -start_date: Date
+        -end_date: Date
+        -note: String
+        -status: String
+        -is_start: Boolean
+        -is_finish: Boolean
+        --
+        +transaction(): BelongsTo
+        +details(): HasMany
+        +workers(): HasMany
+        +generateProductionNumber(): String
+    }
+
+    class ProductionDetail {
+        -id: UUID
+        -production_id: UUID
+        -product_id: UUID
+        -quantity_plan: Decimal
+        -quantity_get: Decimal
+        -quantity_fail: Decimal
+        -cycle: Decimal
+        --
+        +production(): BelongsTo
+        +product(): BelongsTo
+    }
+
+    class ProductionWorker {
+        -id: UUID
+        -production_id: UUID
+        -user_id: UUID
+        --
+        +production(): BelongsTo
+        +user(): BelongsTo
+    }
+}
+
 package "Transaksi" #LightPink {
     class Transaction {
         -id: UUID
@@ -170,9 +307,6 @@ package "Transaksi" #LightPink {
         -status: String
         -method: String
         -total_amount: Decimal
-        -points_used: Integer
-        -points_discount: Decimal
-        -total_refund: Decimal
         -created_by_shift: UUID
         --
         +generateInvoiceNumber(): String
@@ -186,7 +320,6 @@ package "Transaksi" #LightPink {
         -product_id: UUID
         -quantity: SmallInteger
         -price: Decimal
-        -refund_quantity: SmallInteger
         -pcs_capital_snapshot: Decimal
         --
         +transaction(): BelongsTo
@@ -231,8 +364,6 @@ package "Transaksi" #LightPink {
         -initial_cash: Decimal
         -final_cash: Decimal
         -total_sales: Decimal
-        -total_refunds: Decimal
-        -total_discounts: Decimal
         --
         +openedBy(): BelongsTo
         +closedBy(): BelongsTo
@@ -246,20 +377,40 @@ package "Transaksi" #LightPink {
 
 User "1" -- "*" Role : has
 Role "1" -- "*" Permission : has
-User "1" -- "*" Notification
 
 Customer "1" -- "*" Transaction
-Customer "1" -- "*" PointsHistory
-Transaction "1" -- "*" PointsHistory
 
 Category "1" -- "*" ProductCategory
 Product "1" -- "*" ProductCategory
+Product "1" -- "*" ProductComposition
 Product "1" -- "*" TransactionDetail
+Product "1" -- "*" ProductionDetail
 Product "1" -- "*" OtherCost
 TypeCost "1" -- "*" OtherCost
 Unit "0..1" -- "*" Unit : base_unit
 
+Material "1" -- "*" MaterialDetail
+Material "1" -- "*" MaterialBatch
+Material "1" -- "*" ProductComposition
+Material "1" -- "*" ExpenseDetail
+Material "1" -- "*" IngredientCategoryDetail
+MaterialDetail "*" -- "1" Unit
+MaterialBatch "*" -- "1" Unit
+ProductComposition "*" -- "1" Unit
+
+IngredientCategory "1" -- "*" IngredientCategoryDetail
+
+Supplier "1" -- "*" Expense
+Expense "1" -- "*" ExpenseDetail
+
+Production "1" -- "*" ProductionDetail
+Production "1" -- "*" ProductionWorker
+Production "0..1" -- "1" Transaction
+ProductionWorker "*" -- "1" User
+
 User "1" -- "*" Transaction
+User "1" -- "*" Shift : opened_by
+User "1" -- "*" Shift : closed_by
 Transaction "1" -- "*" TransactionDetail
 Transaction "1" -- "*" Payment
 Shift "1" -- "*" Transaction

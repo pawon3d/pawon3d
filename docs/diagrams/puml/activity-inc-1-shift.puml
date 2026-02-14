@@ -13,6 +13,7 @@ if (Status Shift?) then (Belum Dibuka)
     :Sistem mencatat waktu buka;
     :Shift status = "Terbuka";
     :Mulai melayani transaksi;
+    stop
 else (Sudah Terbuka)
     :Melayani transaksi...;
     if (Ingin Tutup Shift?) then (Ya)

@@ -1,0 +1,44 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMengelola Bahan Baku
+
+actor "Bagian Inventori" as Inv
+participant "MaterialPage" as MP
+participant "MaterialController" as MC
+participant "Material" as MM
+participant "MaterialDetail" as MD
+participant "Unit" as UM
+
+Inv -> MP : Mengakses halaman bahan baku
+MP -> MC : mount()
+MC -> MM : all()
+MC --> MP : displayMaterials()
+
+Inv -> MP : Klik Tambah Bahan Baku
+MP --> Inv : Tampil form input
+
+Inv -> MP : Input data bahan(nama, desc, unit_utama, harga)
+MP -> MC : store(data)
+MC -> MM : create(nama, desc)
+MC -> UM : validate(unit_id)
+MC -> MD : create(material_id, unit_id, price, is_main=true)
+MC --> MP : showSuccess("Bahan baku berhasil ditambahkan")
+
+Inv -> MP : Tambah unit konversi(material_id, unit_id, price)
+MP -> MC : addUnit(material_id, unit_id, price)
+MC -> MD : create(material_id, unit_id, price, is_main=false)
+MC --> MP : showSuccess("Unit konversi ditambahkan")
+
+Inv -> MP : Edit bahan baku(id, data)
+MP -> MC : update(id, data)
+MC -> MM : update(id, data)
+MC --> MP : showSuccess("Bahan baku berhasil diubah")
+
+Inv -> MP : Ubah status aktif(id)
+MP -> MC : toggleActive(id)
+MC -> MM : toggleIsActive(id)
+MC --> MP : showSuccess("Status bahan baku berubah")
+
+@enduml

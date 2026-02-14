@@ -2,35 +2,73 @@
 
 skinparam sequenceMessageAlign center
 
-title Sequence Diagram\nPengelolaan Pengguna
+title Sequence Diagram\nKelola Pengguna & Undangan
 
 actor "Admin" as Admin
 participant "UserPage" as UP
 participant "UserController" as UC
-participant "User Model" as UM
+participant "User" as UM
+participant "Role" as RL
 participant "MailService" as MS
 
-Admin -> UP : Mengakses halaman pekerja
+Admin -> UP : Mengakses halaman pengguna
 UP -> UC : mount()
-UC -> UM : getAll()
+UC -> UM : with('role')->get()
 UC --> UP : displayUsers()
 
-Admin -> UP : Menambah pengguna baru(data)
-UP -> UC : createUser(name, email, role)
-UC -> UM : create(name, email)
-UM -> UM : generateInvitationToken()
-UC -> MS : sendInvitationEmail(user)
-MS --> UC : emailSent
-UC --> UP : showSuccess("Email undangan terkirim")
+Admin -> UP : Undang pengguna baru(email, role_id)
+UP -> UC : invite(email, role_id)
+UC -> UC : validate(email, role_id)
 
-Admin -> UP : Mengubah data pengguna(id, data)
-UP -> UC : updateUser(id, data)
-UC -> UM : update(data)
-UC --> UP : showSuccess()
+alt Email Sudah Terdaftar
+    UC --> UP : showError("Email sudah terdaftar")
+else Email Valid
+    UC -> UM : create(email, role_id, status='Pending')
+    UC -> UM : generateActivationToken()
+    UC -> MS : sendInvitationEmail(user, token)
+    UC --> UP : showSuccess("Undangan berhasil dikirim")
+end
 
-Admin -> UP : Mengubah status aktif(id)
-UP -> UC : toggleActive(id)
-UC -> UM : toggleActive()
-UC --> UP : showSuccess("Status berubah")
+Admin -> UP : Kirim ulang undangan(id)
+UP -> UC : resendInvitation(id)
+UC -> UM : find(id)
+
+alt Status Bukan Pending
+    UC --> UP : showError("User sudah aktif")
+else Status Pending
+    UC -> UM : generateActivationToken()
+    UC -> MS : sendInvitationEmail(user, token)
+    UC --> UP : showSuccess("Email undangan dikirim ulang")
+end
+
+Admin -> UP : Edit role pengguna(id, role_id)
+UP -> UC : updateRole(id, role_id)
+UC -> UM : find(id)
+UC -> RL : find(role_id)
+UC -> UM : update(role_id)
+UC --> UP : showSuccess("Role berhasil diperbarui")
+
+Admin -> UP : Nonaktifkan pengguna(id)
+UP -> UC : deactivate(id)
+UC -> UM : find(id)
+UC -> UM : update(is_active=false)
+UC --> UP : showSuccess("Pengguna berhasil dinonaktifkan")
+
+Admin -> UP : Aktifkan pengguna(id)
+UP -> UC : activate(id)
+UC -> UM : find(id)
+UC -> UM : update(is_active=true)
+UC --> UP : showSuccess("Pengguna berhasil diaktifkan")
+
+Admin -> UP : Hapus pengguna(id)
+UP -> UC : destroy(id)
+UC -> UM : find(id)
+
+alt User Masih Memiliki Data Transaksi
+    UC --> UP : showError("Tidak dapat menghapus user dengan riwayat transaksi")
+else User Tidak Memiliki Data
+    UC -> UM : delete()
+    UC --> UP : showSuccess("Pengguna berhasil dihapus")
+end
 
 @enduml

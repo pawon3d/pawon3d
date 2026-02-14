@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('material_id')->nullable();
             $table->uuid('unit_id')->nullable();
-            $table->string('batch_number');
+            $table->string('batch_number', 50);
             $table->date('date')->nullable();
             $table->decimal('batch_quantity', 15, 2)->default(0);
             $table->timestamps();

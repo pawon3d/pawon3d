@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('type_costs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->nullable();
+            $table->string('name', 100)->nullable();
             $table->timestamps();
         });
     }

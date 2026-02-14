@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 50);
+            $table->string('name', 100);
             $table->string('description', 255)->nullable();
             $table->string('contact_name', 50)->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('street', 255)->nullable();
-            $table->string('landmark', 255)->nullable();
+            $table->string('landmark', 200)->nullable();
             $table->string('maps_link', 500)->nullable();
             $table->string('image')->nullable();
             $table->timestamps();

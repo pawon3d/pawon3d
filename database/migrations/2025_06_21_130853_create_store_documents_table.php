@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('store_documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('document_name')->nullable();
-            $table->string('document_number')->nullable();
+            $table->string('document_name', 100)->nullable();
+            $table->string('document_number', 100)->nullable();
             $table->string('document_file')->nullable();
             $table->date('valid_from')->nullable();
             $table->date('valid_until')->nullable();

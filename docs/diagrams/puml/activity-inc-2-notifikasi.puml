@@ -1,0 +1,41 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nKelola Notifikasi
+
+start
+:Sistem menampilkan badge counter\nnotifikasi belum dibaca di navbar;
+
+if (Ada notifikasi?) then (Ya)
+    :Pengguna klik icon notifikasi di navbar;
+    :Sistem tampilkan dropdown\nmax 5 notifikasi terbaru;
+    :Sistem tampilkan judul, pesan,\nwaktu, dan status baca;
+    
+    if (Pengguna klik aksi?) then (Klik notifikasi tertentu)
+        :Sistem tandai sebagai dibaca\n(set read_at timestamp);
+        :Sistem update badge counter (kurang 1);
+        
+        if (Notifikasi punya link?) then (Ya)
+            :Sistem redirect ke halaman terkait;
+        endif
+        
+    else if (Klik "Lihat Semua")
+        :Arahkan ke halaman daftar notifikasi;
+        :Sistem tampilkan semua notifikasi\ndengan pagination;
+        
+    else if (Klik "Tandai Semua Sudah Dibaca")
+        :Sistem update semua notifikasi\nbelum dibaca menjadi dibaca;
+        :Sistem reset badge counter menjadi 0;
+        :Tampilkan notifikasi sukses;
+    endif
+    
+    :Status notifikasi diperbarui;
+    :Badge counter notifikasi diupdate;
+else (Tidak)
+    :Tampilkan pesan "Belum ada notifikasi";
+endif
+
+stop
+
+@enduml

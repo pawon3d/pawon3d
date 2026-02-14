@@ -81,6 +81,15 @@ rectangle "Sistem Pawon3D" {
         usecase "Mencetak Struk" as UC_PrintStruk
     }
     
+    ' -- Pengelolaan Shift Kasir --
+    package "Pengelolaan Shift Kasir" {
+        usecase "Mengakses Menu Shift" as UC_ViewShift
+        usecase "Membuka Shift Baru" as UC_OpenShift
+        usecase "Menutup Shift Aktif" as UC_CloseShift
+        usecase "Melihat Ringkasan Shift" as UC_SummaryShift
+        usecase "Melihat Riwayat Shift" as UC_HistoryShift
+    }
+    
     ' -- Pengelolaan Pengguna --
     package "Pengelolaan Pengguna" {
         usecase "Mengakses Halaman Pekerja" as UC_ViewPekerja
@@ -169,6 +178,11 @@ Cashier --> UC_ViewTransaksi
 Cashier --> UC_AddTransaksi
 Cashier --> UC_Payment
 Cashier --> UC_PrintStruk
+Cashier --> UC_ViewShift
+Cashier --> UC_OpenShift
+Cashier --> UC_CloseShift
+Cashier --> UC_SummaryShift
+Cashier --> UC_HistoryShift
 Cashier --> UC_Laporan
 Cashier --> UC_Notifikasi
 Cashier --> UC_Profil
@@ -198,8 +212,21 @@ UC_AddBelanja ..> UC_StartBelanja : <<extend>>
 UC_StartBelanja ..> UC_FinishBelanja : <<extend>>
 UC_AddTransaksi ..> UC_Payment : <<include>>
 UC_Payment ..> UC_PrintStruk : <<extend>>
+UC_ViewShift ..> UC_OpenShift : <<extend>>
+UC_ViewShift ..> UC_CloseShift : <<extend>>
+UC_CloseShift ..> UC_SummaryShift : <<include>>
 UC_Aktivasi ..> UC_SetPassword : <<extend>>
 UC_AddHitung ..> UC_FinishHitung : <<extend>>
 UC_Laporan ..> UC_ExportLaporan : <<extend>>
+
+' == Preconditions (Shift harus dibuka sebelum transaksi) ==
+UC_ViewTransaksi ..> UC_OpenShift : <<precondition>>
+UC_AddTransaksi ..> UC_OpenShift : <<precondition>>
+
+note right of UC_OpenShift
+  Shift harus dibuka
+  sebelum kasir dapat
+  melakukan transaksi
+end note
 
 @enduml

@@ -1,0 +1,34 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMengakses FAQ
+
+start
+:Pengunjung mengakses halaman FAQ\ndari menu navigasi;
+
+:Sistem load halaman FAQ;
+
+if (Ada FAQ tersedia?) then (Ya)
+    :Sistem menampilkan daftar pertanyaan\ndalam format accordion (collapsed);
+    
+    repeat
+        :Pengunjung mengklik pertanyaan tertentu;
+        :Sistem expand accordion;
+        :Sistem menampilkan jawaban;
+        
+        if (Klik pertanyaan lain?) then (Ya)
+            :Sistem collapse pertanyaan sebelumnya;
+            :Sistem expand pertanyaan baru;
+        endif
+    repeat while (Baca FAQ lainnya?) is (Ya)
+    ->Tidak;
+else (Tidak)
+    :Tampilkan pesan\n"Belum ada FAQ yang tersedia";
+endif
+
+:Pengunjung mendapatkan informasi\nyang dibutuhkan;
+
+stop
+
+@enduml

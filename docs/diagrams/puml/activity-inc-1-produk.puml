@@ -9,23 +9,34 @@ start
 :Sistem menampilkan daftar produk;
 
 if (Aksi?) then (Tambah Produk)
-    :Mengisi form produk baru;
-    :Menentukan harga dan margin;
-    :Sistem menyimpan data awal;
+    :Mengisi form produk baru\n(nama, deskripsi, kategori, gambar);
+    :Menentukan jumlah PCS;
     
-    if (Ada Resep/Komposisi?) then (Ya)
+    :Menambahkan komposisi bahan baku;
+    repeat
+        :Memilih bahan baku;
+        :Menentukan satuan penggunaan;
+        :Menentukan jumlah penggunaan;
+        :Sistem menghitung harga per bahan;
+    repeat while (Tambah bahan lain?) is (Ya)
+    ->Tidak;
+    
+    if (Ada biaya lain?) then (Ya)
         repeat
-            :Memilih bahan baku;
-            :Menentukan satuan penggunaan;
-            :Menentukan jumlah penggunaan;
-            :Sistem menghitung estimasi HPP;
-        repeat while (Tambah bahan lain?) is (Ya)
+            :Input nama dan jumlah biaya;
+        repeat while (Tambah biaya lain?) is (Ya)
         ->Tidak;
-        :Simpan komposisi resep;
     else (Tidak)
-        :Atur stok manual (untuk siap beli);
     endif
     
+    :Sistem menghitung total modal;
+    note right
+        Modal = Total komposisi + Biaya lain
+        Modal per PCS = Modal / Jumlah PCS
+    end note
+    
+    :Input harga jual;
+    :Pilih metode penjualan;
     :Status produk = Aktif;
 else (Ubah Produk)
     :Memilih produk;

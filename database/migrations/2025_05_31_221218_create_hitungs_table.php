@@ -16,8 +16,8 @@ return new class extends Migration
             $table->uuid('user_id')->nullable();
             $table->string('hitung_number', 30)->unique();
             $table->string('action', 50)->nullable();
-            $table->string('note', 255)->nullable();
-            $table->string('status', 20)->default('Draft');
+            $table->text('note')->nullable();
+            $table->string('status', 50)->default('Draft');
             $table->date('hitung_date')->nullable();
             $table->date('hitung_date_finish')->nullable();
             $table->boolean('is_start')->default(false);

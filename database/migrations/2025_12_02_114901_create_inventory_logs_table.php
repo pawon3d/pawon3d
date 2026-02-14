@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignUuid('material_id')->constrained('materials')->cascadeOnDelete();
             $table->foreignUuid('material_batch_id')->nullable()->constrained('material_batches')->nullOnDelete();
             $table->foreignUuid('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('action'); // belanja, terpakai, rusak, hilang, hitung, produksi
+            $table->string('action', 100); // belanja, terpakai, rusak, hilang, hitung, produksi
             $table->decimal('quantity_change', 15, 4)->default(0); // perubahan (+/-)
             $table->decimal('quantity_after', 15, 4)->default(0); // stok akhir batch
-            $table->string('reference_type')->nullable(); // Expense, Production, Hitung, dll
+            $table->string('reference_type', 100)->nullable(); // Expense, Production, Hitung, dll
             $table->string('reference_id')->nullable(); // ID referensi
             $table->text('note')->nullable();
             $table->timestamps();

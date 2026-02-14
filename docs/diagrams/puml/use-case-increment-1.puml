@@ -91,6 +91,15 @@ rectangle "Sistem Pawon3D - Increment 1" {
         usecase "Mencetak Struk Pembayaran" as UC044
         usecase "Melihat Riwayat Transaksi" as UC045
     }
+    
+    ' -- Pengelolaan Shift Kasir --
+    package "Pengelolaan Shift Kasir" {
+        usecase "Mengakses Menu Shift" as UC046
+        usecase "Membuka Shift Baru" as UC047
+        usecase "Menutup Shift Aktif" as UC048
+        usecase "Melihat Ringkasan Shift" as UC049
+        usecase "Melihat Riwayat Shift" as UC050
+    }
 }
 
 ' == Relasi Bagian Inventori ==
@@ -143,6 +152,11 @@ Cashier --> UC042
 Cashier --> UC043
 Cashier --> UC044
 Cashier --> UC045
+Cashier --> UC046
+Cashier --> UC047
+Cashier --> UC048
+Cashier --> UC049
+Cashier --> UC050
 
 ' == Include/Extend ==
 UC017 ..> UC018 : <<extend>>
@@ -152,5 +166,20 @@ UC039 ..> UC041 : <<include>>
 UC040 ..> UC041 : <<include>>
 UC041 ..> UC043 : <<include>>
 UC043 ..> UC044 : <<extend>>
+UC046 ..> UC047 : <<extend>>
+UC046 ..> UC048 : <<extend>>
+UC048 ..> UC049 : <<include>>
+
+' == Preconditions (Shift harus dibuka sebelum transaksi) ==
+UC037 ..> UC047 : <<precondition>>
+UC038 ..> UC047 : <<precondition>>
+UC039 ..> UC047 : <<precondition>>
+UC040 ..> UC047 : <<precondition>>
+
+note right of UC047
+  Shift harus dibuka
+  sebelum kasir dapat
+  melakukan transaksi
+end note
 
 @enduml

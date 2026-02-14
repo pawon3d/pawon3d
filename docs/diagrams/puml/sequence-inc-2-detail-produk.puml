@@ -1,0 +1,54 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nMelihat Detail Produk
+
+actor "Pengunjung" as Visitor
+participant "ProductDetailPage" as PDP
+participant "ProductDetailController" as PDC
+participant "Product" as PR
+participant "Category" as CT
+
+Visitor -> PDP : Mengakses detail produk(id)
+PDP -> PDC : show(id)
+PDC -> PR : with('category')->find(id)
+
+alt Produk Ditemukan
+    PDC -> PR : inRandomOrder()->where('id', '!=', id)->take(10)
+    PDC --> PDP : displayProductDetail(product, related_products)
+else Produk Tidak Ditemukan
+    PDC --> PDP : showError404("Produk tidak ditemukan")
+end
+
+Visitor -> PDP : Lihat informasi produk
+PDP --> Visitor : Tampil nama, harga, kategori, deskripsi, foto
+
+alt Foto Produk Ada
+    PDP --> Visitor : Tampil foto produk
+else Foto Tidak Ada
+    PDP --> Visitor : Tampil gambar default (no-img.jpg)
+end
+
+alt Kategori Ada
+    PDP --> Visitor : Tampil nama kategori
+else Kategori Tidak Ada
+    PDP --> Visitor : Sembunyikan bagian kategori
+end
+
+alt Deskripsi Ada
+    PDP --> Visitor : Tampil deskripsi produk
+else Deskripsi Tidak Ada
+    PDP --> Visitor : Sembunyikan bagian deskripsi
+end
+
+Visitor -> PDP : Klik tombol "Kembali"
+PDP --> Visitor : Kembali ke halaman sebelumnya (browser history)
+
+Visitor -> PDP : Klik produk terkait
+PDP -> PDC : show(related_product_id)
+PDC -> PR : with('category')->find(related_product_id)
+PDC -> PR : inRandomOrder()->where('id', '!=', related_product_id)->take(10)
+PDC --> PDP : displayProductDetail(new_product, new_related_products)
+
+@enduml

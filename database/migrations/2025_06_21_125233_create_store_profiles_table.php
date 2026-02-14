@@ -14,18 +14,18 @@ return new class extends Migration
         Schema::create('store_profiles', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('logo')->nullable();
-            $table->string('name')->nullable();
-            $table->string('tagline')->nullable();
-            $table->string('type')->nullable();
+            $table->string('name', 100)->nullable();
+            $table->string('tagline', 200)->nullable();
+            $table->string('type', 50)->nullable();
 
             $table->string('banner')->nullable();
-            $table->string('product')->nullable();
+            $table->string('product', 100)->nullable();
             $table->text('description')->nullable();
 
-            $table->string('building')->nullable();
-            $table->string('location')->nullable();
+            $table->string('building', 100)->nullable();
+            $table->string('location', 100)->nullable();
             $table->string('address')->nullable();
-            $table->string('contact')->nullable();
+            $table->string('contact', 20)->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
 
@@ -57,9 +57,9 @@ return new class extends Migration
             $table->time('open_minggu')->nullable();
             $table->time('close_minggu')->nullable();
 
-            $table->string('social_instagram')->nullable();
-            $table->string('social_facebook')->nullable();
-            $table->string('social_whatsapp')->nullable();
+            $table->string('social_instagram', 100)->nullable();
+            $table->string('social_facebook', 100)->nullable();
+            $table->string('social_whatsapp', 20)->nullable();
             $table->timestamps();
         });
     }

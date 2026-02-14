@@ -1,0 +1,47 @@
+@startuml
+
+skinparam activityShape octagon
+
+title Activity Diagram\nMelihat Detail Produk
+
+start
+:Pengunjung klik produk dari halaman\nutama atau katalog;
+
+:Sistem load data produk dengan kategori;
+
+if (Produk ditemukan?) then (Ya)
+    :Sistem set meta description untuk SEO;
+    :Sistem tampilkan tombol "Kembali";
+    
+    if (Foto produk ada?) then (Ya)
+        :Tampilkan foto produk di sisi kanan;
+    else (Tidak)
+        :Tampilkan gambar default (no-img.jpg);
+    endif
+    
+    :Tampilkan nama produk dan jumlah pcs;
+    :Tampilkan harga produk;
+    
+    if (Kategori ada?) then (Ya)
+        :Tampilkan kategori produk;
+    endif
+    
+    if (Deskripsi ada?) then (Ya)
+        :Tampilkan deskripsi produk;
+    endif
+    
+    :Sistem load max 10 produk terkait\n(random dari kategori yang sama);
+    :Tampilkan bagian "Produk Terkait";
+    
+    if (Pengunjung klik aksi?) then (Tombol Kembali)
+        :Arahkan ke halaman sebelumnya\nmenggunakan browser history;
+    else if (Klik produk terkait)
+        :Arahkan ke detail produk terkait;
+    endif
+else (Tidak)
+    :Tampilkan halaman error 404;
+endif
+
+stop
+
+@enduml

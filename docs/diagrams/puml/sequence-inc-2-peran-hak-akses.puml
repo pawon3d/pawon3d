@@ -1,0 +1,103 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nKelola Peran & Hak Akses
+
+actor "Admin" as Admin
+participant "RolePage" as RP
+participant "RoleController" as RC
+participant "Role" as RL
+participant "Permission" as PM
+
+Admin -> RP : Mengakses halaman peran
+RP -> RC : mount()
+RC -> RL : withCount('users', 'permissions')->get()
+RC -> PM : all()->groupBy('category')
+RC --> RP : displayRolesAndPermissions()
+
+Admin -> RP : Tambah peran baru(name, max_users)
+RP -> RC : store(name, max_users)
+RC -> RC : validate(name, max_users)
+
+alt Validasi Berhasil
+    RC -> RL : create(name, max_users)
+    RC --> RP : showSuccess("Peran berhasil ditambahkan")
+else Nama Peran Sudah Ada
+    RC --> RP : showError("Nama peran sudah digunakan")
+else Max Users < 1
+    RC --> RP : showError("Batas pekerja minimal 1")
+end
+
+Admin -> RP : Edit peran(id, name, max_users)
+RP -> RC : update(id, name, max_users)
+RC -> RL : find(id)
+RC -> RC : validate(name, max_users)
+
+alt Validasi Berhasil
+    RC -> RL : update(name, max_users)
+    RC --> RP : showSuccess("Peran berhasil diperbarui")
+else Validasi Gagal
+    RC --> RP : showError("Data tidak valid")
+end
+
+Admin -> RP : Buka konfigurasi permission(role_id)
+RP -> RC : getPermissionConfig(role_id)
+RC -> RL : with('permissions')->find(role_id)
+RC -> PM : all()->groupBy('category')
+RC --> RP : showPermissionForm(role, grouped_permissions)
+
+Admin -> RP : Toggle kategori permission(role_id, category)
+RP -> RC : toggleCategoryPermissions(role_id, category)
+RC -> RL : find(role_id)
+RC -> PM : where('category', category)->get()
+
+alt Kategori Belum Dipilih Semua
+    loop Untuk setiap permission di kategori
+        RC -> RL : givePermissionTo(permission)
+    end
+    RC --> RP : showSuccess("Semua permission kategori diaktifkan")
+else Kategori Sudah Dipilih Semua
+    loop Untuk setiap permission di kategori
+        RC -> RL : revokePermissionTo(permission)
+    end
+    RC --> RP : showSuccess("Semua permission kategori dinonaktifkan")
+end
+
+Admin -> RP : Toggle individual permission(role_id, permission_id)
+RP -> RC : togglePermission(role_id, permission_id)
+RC -> RL : find(role_id)
+RC -> PM : find(permission_id)
+
+alt Permission Belum Dimiliki
+    RC -> RL : givePermissionTo(permission)
+    RC --> RP : showSuccess("Permission ditambahkan")
+else Permission Sudah Dimiliki
+    RC -> RL : revokePermissionTo(permission)
+    RC --> RP : showSuccess("Permission dicabut")
+end
+
+Admin -> RP : Simpan konfigurasi permission(role_id, permission_ids[])
+RP -> RC : syncPermissions(role_id, permission_ids[])
+RC -> RL : find(role_id)
+RC -> RL : syncPermissions(permission_ids[])
+RC --> RP : showSuccess("Hak akses berhasil disinkronkan")
+
+Admin -> RP : Hapus peran(id)
+RP -> RC : destroy(id)
+RC -> RL : find(id)
+RC -> RL : users()->count()
+
+alt Peran Sedang Digunakan
+    RC --> RP : showError("Peran sedang digunakan oleh user")
+else Peran Tidak Digunakan
+    RC -> RL : delete()
+    RC --> RP : showSuccess("Peran berhasil dihapus")
+end
+
+Admin -> RP : Lihat detail peran(id)
+RP -> RC : show(id)
+RC -> RL : with('permissions', 'users')->find(id)
+RC --> RP : showRoleDetail()
+
+@enduml

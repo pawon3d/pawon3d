@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('expense_number')->unique();
+            $table->string('expense_number', 50)->unique();
             $table->date('expense_date')->nullable();
             $table->date('end_date')->nullable();
             $table->uuid('supplier_id')->nullable();
-            $table->string('note')->nullable();
-            $table->string('status')->default('Draft');
+            $table->text('note')->nullable();
+            $table->string('status', 50)->default('Draft');
             $table->decimal('grand_total_expect', 10, 2)->default(0);
             $table->decimal('grand_total_actual', 10, 2)->default(0);
             $table->boolean('is_start')->default(false);

@@ -1,0 +1,90 @@
+@startuml
+
+skinparam sequenceMessageAlign center
+
+title Sequence Diagram\nProfil & Pembayaran
+
+actor "Admin" as Admin
+participant "SettingsPage" as SP
+participant "SettingsController" as SC
+participant "BusinessProfile" as BP
+participant "PaymentChannel" as PC
+participant "Storage" as ST
+
+Admin -> SP : Mengakses halaman pengaturan
+SP -> SC : mount()
+SC -> BP : first()
+SC -> PC : all()
+SC --> SP : displaySettings()
+
+Admin -> SP : Update profil usaha(name, address, phone, logo)
+SP -> SC : updateProfile(name, address, phone, logo)
+SC -> SC : validate(name, phone, logo)
+
+alt Logo Baru Diunggah & Valid
+    SC -> ST : store(logo, 'business')
+    SC -> BP : updateOrCreate(name, address, phone, logo_path)
+    SC --> SP : showSuccess("Profil usaha berhasil diperbarui")
+else Format Logo Tidak Didukung
+    SC --> SP : showError("Format logo harus jpg, jpeg, atau png")
+else Ukuran Logo Melebihi Batas
+    SC --> SP : showError("Ukuran logo maksimal 2MB")
+else Logo Tidak Diubah
+    SC -> BP : updateOrCreate(name, address, phone)
+    SC --> SP : showSuccess("Profil usaha berhasil diperbarui")
+end
+
+Admin -> SP : Lihat daftar channel pembayaran
+SP -> SC : getPaymentChannels()
+SC -> PC : all()
+SC --> SP : displayPaymentChannels()
+
+Admin -> SP : Tambah channel pembayaran(name, type, account_number, qris_image)
+SP -> SC : storePaymentChannel(name, type, account_number, qris_image)
+SC -> SC : validate(name, type, account_number, qris_image)
+
+alt Type = QRIS & Image Valid
+    SC -> ST : store(qris_image, 'qris')
+    SC -> PC : create(name, type, account_number, qris_path, is_active=true)
+    SC --> SP : showSuccess("Channel pembayaran berhasil ditambahkan")
+else Type != QRIS
+    SC -> PC : create(name, type, account_number, is_active=true)
+    SC --> SP : showSuccess("Channel pembayaran berhasil ditambahkan")
+else Validasi Gagal
+    SC --> SP : showError("Data tidak valid")
+end
+
+Admin -> SP : Edit channel pembayaran(id, name, type, account_number, qris_image)
+SP -> SC : updatePaymentChannel(id, name, type, account_number, qris_image)
+SC -> PC : find(id)
+SC -> SC : validate(name, type, account_number, qris_image)
+
+alt QRIS Baru Diunggah
+    SC -> ST : delete(old_qris_path)
+    SC -> ST : store(qris_image, 'qris')
+    SC -> PC : update(name, type, account_number, qris_path)
+    SC --> SP : showSuccess("Channel pembayaran berhasil diperbarui")
+else QRIS Tidak Diubah
+    SC -> PC : update(name, type, account_number)
+    SC --> SP : showSuccess("Channel pembayaran berhasil diperbarui")
+end
+
+Admin -> SP : Toggle status channel(id)
+SP -> SC : toggleChannelStatus(id)
+SC -> PC : find(id)
+SC -> PC : update(is_active=!is_active)
+SC --> SP : showSuccess("Status channel berhasil diubah")
+
+Admin -> SP : Hapus channel pembayaran(id)
+SP -> SC : destroyPaymentChannel(id)
+SC -> PC : find(id)
+
+alt Channel Sedang Digunakan di Transaksi
+    SC --> SP : showError("Channel sedang digunakan pada transaksi")
+else Channel Tidak Digunakan
+    SC -> ST : delete(qris_path)
+    SC -> PC : delete()
+    SC --> SP : showSuccess("Channel pembayaran berhasil dihapus")
+end
+
+@enduml
