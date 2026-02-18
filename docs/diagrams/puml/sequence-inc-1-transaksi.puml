@@ -2,63 +2,157 @@
 
 skinparam sequenceMessageAlign center
 
-title Sequence Diagram\nTransaksi Penjualan
+title Sequence Diagram\nMembuat Pesanan & Pembayaran (UC-09)
 
 actor "Kasir" as Cashier
-participant "TransactionPage" as TP
-participant "TransactionController" as TC
+participant "IndexPage" as IP
+participant "IndexController" as IC
+participant "BuatPesananPage" as BP
+participant "BuatPesananController" as BC
 participant "Transaction" as TM
 participant "TransactionDetail" as TD
 participant "Product" as PM
 participant "Customer" as CM
 participant "Payment" as PY
+participant "PaymentChannel" as PCH
+participant "Notification" as NT
 
-Cashier -> TP : Mengakses daftar transaksi
-TP -> TC : getTransactions()
-TC -> TM : getAll()
-TC --> TP : displayTransactions()
+== Fase 1: Membuat Transaksi Awal ==
 
-Cashier -> TP : Membuat pesanan baru(method)
-TP -> TC : createOrder(method)
-TC -> TM : create(method)
-
-alt Pesanan Kotak
-    TM -> TM : generateInvoice("OK")
-else Pesanan Reguler
-    TM -> TM : generateInvoice("OR")
-else Siap Beli
-    TM -> TM : generateInvoice("OS")
+Cashier -> IP : Mengakses halaman transaksi
+IP -> IC : checkActiveShift()
+alt Shift Tidak Aktif
+    IC --> IP : showError("Tidak ada sesi aktif")
+else Shift Aktif
+    IP -> IC : getProducts(method)
+    IC --> IP : displayProducts()
 end
 
-TC --> TP : showOrderForm()
+Cashier -> IP : Pilih metode pesanan
+note right
+  - Pesanan Reguler (OR)
+  - Pesanan Kotak (OK)
+  - Siap Beli (OS)
+end note
 
 loop Menambahkan Produk
-    Cashier -> TP : selectProduct(product_id, qty)
-    TP -> TC : addToCart(product_id, qty)
-    TC -> PM : find(product_id)
-    TC -> TD : create(transaction_id, product_id, qty, price)
-    TC -> TC : calculateTotal()
-    TC --> TP : updateCart()
+    Cashier -> IP : selectProduct(product_id)
+    IP -> IC : addToCart(product_id)
+    
+    alt Method = Siap Beli
+        IC -> PM : getAvailableStock()
+        alt Stok Habis
+            IC --> IP : showWarning("Stok habis")
+        else Stok Tersedia
+            IC -> IC : addToCartArray()
+            IC --> IP : updateCart()
+        end
+    else Method Lainnya
+        IC -> IC : addToCartArray()
+        IC --> IP : updateCart()
+    end
 end
 
-Cashier -> TP : Memasukkan data pelanggan(phone, name)
-TP -> TC : setCustomer(phone, name)
-TC -> CM : firstOrCreate(phone, name)
+Cashier -> IP : Klik Checkout
+IP -> IC : checkout()
 
-Cashier -> TP : Memproses pembayaran(amount, method)
-TP -> TC : processPayment(amount, method)
-
-alt Jumlah Cukup
-    TC -> PY : create(transaction_id, amount, method)
-    PY -> PY : generateReceiptNumber()
-    TC -> TM : updatePaymentStatus("Lunas")
-    TC --> TP : showReceipt()
-else Jumlah Kurang
-    TC --> TP : showError("Pembayaran kurang")
+alt Keranjang Kosong
+    IC --> IP : showWarning("Keranjang kosong")
+else Keranjang Ada Isi
+    IC -> TM : create(status='temp')
+    
+    loop Setiap Item di Cart
+        IC -> TD : create(transaction_id, product_id, qty, price)
+    end
+    
+    IC --> BP : redirect(transaction_id)
 end
 
-Cashier -> TP : Mencetak struk
-TP -> TC : printReceipt()
-TC --> TP : downloadReceipt()
+== Fase 2: Input Data Pelanggan ==
+
+Cashier -> BP : Input data pelanggan
+note right
+  - Nama
+  - Nomor HP
+end note
+
+BP -> BC : storeCustomer(data)
+BC -> CM : create(name, phone, address)
+BC --> BP : customerCreated()
+
+== Fase 3: Pilih Aksi ==
+
+alt Simpan Draft
+    Cashier -> BP : Klik "Simpan Draft"
+    BP -> BC : save()
+    BC -> TM : update(status='Draft')
+    BC --> BP : showSuccess("Draft tersimpan")
+    
+else Proses Pembayaran
+    Cashier -> BP : Klik "Bayar"
+    
+    Cashier -> BP : Pilih grup pembayaran
+    BP -> BC : updatedPaymentGroup(group)
+    
+    alt Non-Tunai
+        BC -> BC : loadPaymentTypes()
+        BC --> BP : displayPaymentTypes()
+        
+        Cashier -> BP : Pilih tipe pembayaran
+        BP -> BC : updatedPaymentMethod(type)
+        BC -> BC : loadPaymentChannels()
+        BC --> BP : displayPaymentChannels()
+        
+        Cashier -> BP : Pilih channel
+        BP -> BC : updatedPaymentChannelId(channel_id)
+        BC -> PCH : find(channel_id)
+        BC --> BP : displayBankDetails()
+    end
+    
+    Cashier -> BP : Input jumlah & upload bukti
+    BP -> BC : pay(amount, image)
+    BC -> BC : validate()
+    
+    alt Method = Siap Beli
+        alt Pembayaran < Total
+            BC --> BP : showError("Harus lunas 100%")
+        end
+    else Method = Reguler/Kotak
+        alt Pembayaran < 50% Total
+            BC --> BP : showError("Minimum DP 50%")
+        end
+    end
+    
+    BC -> PY : create(transaction_id, amount, method, image)
+    
+    alt Method = Siap Beli
+        BC -> PM : reduceStock()
+        note right
+          Reduce stock untuk:
+          - Recipe products
+          - Ready-to-sell via batches
+        end note
+        
+        alt Pembayaran = Total (Lunas)
+            BC -> TM : update(status='Selesai')
+        else Pembayaran < Total
+            BC -> TM : update(status='Belum Diproses')
+        end
+    else Method Lainnya
+        BC -> TM : update(status='Belum Diproses')
+    end
+    
+    BC -> NT : send("Order Queued")
+    
+    alt Pembayaran >= Total
+        BC -> NT : send("Payment Completed")
+    else Pembayaran < Total
+        BC -> NT : send("Payment Down Payment")
+    end
+    
+    BC --> BP : showSuccess()
+    BC --> BP : redirect(detail_pesanan)
+end
 
 @enduml
+

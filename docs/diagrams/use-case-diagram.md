@@ -48,12 +48,11 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 ### Kasir
 
-| ID UC | Kelompok Fitur  | Use Case Fungsional         | Deskripsi Singkat                                      |
-| ----- | --------------- | --------------------------- | ------------------------------------------------------ |
-| UC-01 | **Autentikasi** | Login & Logout              | Autentikasi untuk mengakses modul kasir/POS            |
-| UC-09 | **Transaksi**   | Membuat Pesanan             | Memproses penjualan produk (Kotak, Reguler, Siap Beli) |
-| UC-10 |                 | Proses Pembayaran & Riwayat | Mencatat pembayaran dan memantau riwayat transaksi     |
-| UC-11 | **Shift**       | Kelola Shift Kasir          | Membuka dan menutup shift kasir harian                 |
+| ID UC | Kelompok Fitur  | Use Case Fungsional          | Deskripsi Singkat                                                     |
+| ----- | --------------- | ---------------------------- | --------------------------------------------------------------------- |
+| UC-01 | **Autentikasi** | Login & Logout               | Autentikasi untuk mengakses modul kasir/POS                           |
+| UC-09 | **Transaksi**   | Membuat Pesanan & Pembayaran | Memproses penjualan produk (Kotak, Reguler, Siap Beli) dan pembayaran |
+| UC-10 | **Shift**       | Kelola Shift Kasir           | Membuka dan menutup shift kasir harian                                |
 
 ---
 
@@ -63,11 +62,11 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur     | Use Case Fungsional     | Deskripsi Singkat                                      |
 | ----- | ------------------ | ----------------------- | ------------------------------------------------------ |
-| UC-12 | **Manajemen User** | Kelola Pengguna         | Mengundang pekerja baru dan mengelola status akun      |
-| UC-13 |                    | Kelola Peran            | Mengatur hak akses pengguna berdasarkan tugasnya       |
-| UC-14 | **Pengaturan**     | Profil & Pembayaran     | Mengatur identitas toko dan metode pembayaran          |
-| UC-15 | **CRM**            | Kelola Pelanggan & Poin | Mengelola database pelanggan dan sistem loyalitas poin |
-| UC-16 | **Laporan**        | Akses & Ekspor Laporan  | Melihat dan mengunduh laporan (PDF & Excel)            |
+| UC-11 | **Manajemen User** | Kelola Pengguna         | Mengundang pekerja baru dan mengelola status akun      |
+| UC-12 |                    | Kelola Peran            | Mengatur hak akses pengguna berdasarkan tugasnya       |
+| UC-13 | **Pengaturan**     | Profil & Pembayaran     | Mengatur identitas toko dan metode pembayaran          |
+| UC-14 | **CRM**            | Kelola Pelanggan & Poin | Mengelola database pelanggan dan sistem loyalitas poin |
+| UC-15 | **Laporan**        | Akses & Ekspor Laporan  | Melihat dan mengunduh laporan (PDF & Excel)            |
 
 ---
 
@@ -75,7 +74,7 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur | Use Case Fungsional | Deskripsi Singkat                                    |
 | ----- | -------------- | ------------------- | ---------------------------------------------------- |
-| UC-17 | **Aktivasi**   | Aktivasi Akun       | Mengatur password awal melalui tautan undangan email |
+| UC-16 | **Aktivasi**   | Aktivasi Akun       | Mengatur password awal melalui tautan undangan email |
 
 ---
 
@@ -83,8 +82,8 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur   | Use Case Fungsional    | Deskripsi Singkat                                 |
 | ----- | ---------------- | ---------------------- | ------------------------------------------------- |
-| UC-18 | **Stock Opname** | Kelola Stock Opname    | Melakukan penghitungan stok fisik secara periodik |
-| UC-19 |                  | Kelola Alur Persediaan | Memantau log perubahan stok secara rinci          |
+| UC-17 | **Stock Opname** | Kelola Stock Opname    | Melakukan penghitungan stok fisik secara periodik |
+| UC-18 |                  | Kelola Alur Persediaan | Memantau log perubahan stok secara rinci          |
 
 ---
 
@@ -92,8 +91,8 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur | Use Case Fungsional | Deskripsi Singkat                                       |
 | ----- | -------------- | ------------------- | ------------------------------------------------------- |
-| UC-20 | **Loyalty**    | Penggunaan Poin     | Menggunakan saldo poin pelanggan sebagai potongan harga |
-| UC-21 | **Refund**     | Proses Refund       | Membatalkan transaksi dan mengembalikan dana            |
+| UC-19 | **Loyalty**    | Penggunaan Poin     | Menggunakan saldo poin pelanggan sebagai potongan harga |
+| UC-20 | **Refund**     | Proses Refund       | Membatalkan transaksi dan mengembalikan dana            |
 
 ---
 
@@ -101,10 +100,10 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur   | Use Case Fungsional     | Deskripsi Singkat                         |
 | ----- | ---------------- | ----------------------- | ----------------------------------------- |
-| UC-22 | **Landing Page** | Mengakses Halaman Utama | Melihat informasi umum tentang Pawon3D    |
-| UC-23 |                  | Melihat Katalog Produk  | Menelusuri daftar produk yang tersedia    |
-| UC-24 |                  | Melihat Detail Produk   | Melihat informasi lengkap produk tertentu |
-| UC-25 |                  | Mengakses FAQ           | Melihat pertanyaan yang sering diajukan   |
+| UC-21 | **Landing Page** | Mengakses Halaman Utama | Melihat informasi umum tentang Pawon3D    |
+| UC-22 |                  | Melihat Katalog Produk  | Menelusuri daftar produk yang tersedia    |
+| UC-23 |                  | Melihat Detail Produk   | Melihat informasi lengkap produk tertentu |
+| UC-24 |                  | Mengakses FAQ           | Melihat pertanyaan yang sering diajukan   |
 
 ---
 
@@ -112,8 +111,8 @@ Sistem Pawon3D melibatkan beberapa aktor dengan hak akses berbeda:
 
 | ID UC | Kelompok Fitur     | Use Case Fungsional   | Deskripsi Singkat                                           |
 | ----- | ------------------ | --------------------- | ----------------------------------------------------------- |
-| UC-26 | **Profil Pribadi** | Kelola Profil Pribadi | Melihat dan mengubah data profil pengguna yang sedang login |
-| UC-27 | **Notifikasi**     | Kelola Notifikasi     | Melihat dan menandai notifikasi sistem sebagai sudah dibaca |
+| UC-25 | **Profil Pribadi** | Kelola Profil Pribadi | Melihat dan mengubah data profil pengguna yang sedang login |
+| UC-26 | **Notifikasi**     | Kelola Notifikasi     | Melihat dan menandai notifikasi sistem sebagai sudah dibaca |
 
 ---
 
@@ -265,48 +264,28 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Stok produk jadi bertambah dalam sistem                                               |
 | **Kondisi Akhir**       | Status produksi menjadi "Selesai"                                                     |
 
-#### UC-09: Membuat Pesanan (POS)
+#### UC-09: Membuat Pesanan & Pembayaran (POS)
 
-| Elemen                  | Deskripsi                                                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| **Nama Use Case**       | Membuat Pesanan                                                                                                    |
-| **ID Use Case**         | UC-09                                                                                                              |
-| **Aktor**               | Kasir                                                                                                              |
-| **Deskripsi**           | Proses pencatatan transaksi penjualan produk                                                                       |
-| **Kondisi Awal**        | Shift kasir sudah dibuka (status active) dan aktor berada di halaman Transaksi (POS)                               |
-| **Skenario Utama**      | **Aksi Aktor**                                                                                                     | **Respon Sistem**                  |
-|                         | 1. Memilih produk pesanan                                                                                          | 2. Menghitung total harga otomatis |
-|                         | 3. Memasukkan data pelanggan                                                                                       | 4. Menyimpan draf transaksi        |
-|                         | 5. Menekan tombol Bayar                                                                                            | 6. Menampilkan form pembayaran     |
-| **Skenario Alternatif** | Alt. 1: Shift belum dibuka. Sistem tampilkan pesan "Silakan buka shift terlebih dahulu" dan arahkan ke menu shift. |
-|                         | Alt. 2: Stok produk tidak cukup. Sistem beri peringatan.                                                           |
-| **Kesimpulan**          | Transaksi tercatat di sistem                                                                                       |
-| **Kondisi Akhir**       | Status transaksi menjadi "Menunggu Pembayaran"                                                                     |
+#### UC-09: Membuat Pesanan & Pembayaran (POS)
 
-#### UC-10: Proses Pembayaran & Riwayat
+| Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Nama Use Case**       | Membuat Pesanan & Pembayaran                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **ID Use Case**         | UC-09                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Aktor**               | Kasir                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Deskripsi**           | Proses pencatatan transaksi penjualan produk dan pembayaran dalam satu alur terintegrasi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Kondisi Awal**        | Shift kasir sudah dibuka (status active) dan aktor berada di halaman Transaksi (POS)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Skenario Utama**      | 1. Kasir memilih metode pesanan (Reguler/Kotak/Siap Beli)<br>2. Kasir memilih produk yang dipesan<br>3. Sistem menghitung total harga otomatis<br>4. Kasir klik checkout<br>5. Sistem membuat transaksi dengan status 'temp' dan redirect ke halaman buat pesanan<br>6. Kasir memasukkan data pelanggan (nama, nomor HP, alamat)<br>7. Kasir memilih: Simpan Draft atau Proses Pembayaran<br>8a. Jika Simpan Draft: Sistem simpan status 'Draft' dan selesai<br>8b. Jika Proses Pembayaran: Kasir memilih metode pembayaran (Tunai/Transfer/E-Wallet/QRIS)<br>9. Kasir memasukkan jumlah pembayaran dan upload bukti<br>10. Sistem validasi pembayaran (Siap Beli=100%, Reguler/Kotak=min 50%)<br>11. Sistem simpan data pembayaran<br>12. Sistem kurangi stok produk (khusus untuk Siap Beli)<br>13. Sistem update status transaksi (Belum Diproses atau Selesai)<br>14. Sistem kirim notifikasi dan generate struk |
+| **Skenario Alternatif** | Alt. 1: Shift belum dibuka. Sistem tampilkan pesan "Silakan buka shift terlebih dahulu" dan arahkan ke menu shift.<br>Alt. 2: Stok produk tidak cukup (Siap Beli). Sistem beri peringatan.<br>Alt. 3: Pembayaran kurang dari minimum. Sistem tampilkan error sesuai aturan metode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Kesimpulan**          | Transaksi berhasil dibuat dan dibayar (atau disimpan sebagai draft)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Kondisi Akhir**       | Status transaksi menjadi 'Draft' (jika simpan) atau 'Belum Diproses'/'Selesai' (jika bayar)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
-| Elemen                  | Deskripsi                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------- | ------------------------------------ |
-| **Nama Use Case**       | Proses Pembayaran                                                                |
-| **ID Use Case**         | UC-10                                                                            |
-| **Aktor**               | Kasir                                                                            |
-| **Deskripsi**           | Mencatat realisasi pembayaran transaksi penjualan                                |
-| **Kondisi Awal**        | Shift kasir sudah dibuka (status active) dan aktor berada di formulir Pembayaran |
-| **Skenario Utama**      | **Aksi Aktor**                                                                   | **Respon Sistem**                    |
-|                         | 1. Memilih metode pembayaran                                                     | 2. Menampilkan portal sesuai channel |
-|                         | 3. Memasukkan jumlah bayar                                                       | 4. Menghitung kembalian otomatis     |
-|                         | 5. Mengonfirmasi pembayaran                                                      | 6. Update status transaksi "Lunas"   |
-|                         |                                                                                  | 7. Generate struk digital            |
-| **Skenario Alternatif** | Alt. 1: Pembayaran kurang. Sistem menampilkan sisa tagihan.                      |
-| **Kesimpulan**          | Transaksi berhasil dilunasi                                                      |
-| **Kondisi Akhir**       | Struk siap dicetak dan data keuangan tercatat                                    |
-
-#### UC-11: Kelola Shift Kasir
+#### UC-10: Kelola Shift Kasir
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Kelola Shift Kasir                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **ID Use Case**         | UC-11                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **ID Use Case**         | UC-10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **Aktor**               | Kasir                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **Deskripsi**           | Membuka dan menutup shift kasir harian untuk mencatat aktivitas transaksi dan kas per shift                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | **Kondisi Awal**        | Kasir sudah login ke sistem                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -316,12 +295,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 
 ### 2. Modul Increment 2 (Pendukung Operasional)
 
-#### UC-12: Kelola Pengguna & Undangan
+#### UC-11: Kelola Pengguna & Undangan
 
 | Elemen                  | Deskripsi                                                    |
 | ----------------------- | ------------------------------------------------------------ | ---------------------------------------- |
 | **Nama Use Case**       | Kelola Pengguna & Undangan                                   |
-| **ID Use Case**         | UC-12                                                        |
+| **ID Use Case**         | UC-11                                                        |
 | **Aktor**               | Admin                                                        |
 | **Deskripsi**           | Mengelola akses pekerja melalui sistem undangan email        |
 | **Kondisi Awal**        | Aktor berada di halaman Manajemen Pekerja                    |
@@ -333,12 +312,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Pekerja baru menerima akses ke sistem                        |
 | **Kondisi Akhir**       | Undangan terkirim dan menunggu aktivasi                      |
 
-#### UC-13: Kelola Peran & Hak Akses
+#### UC-12: Kelola Peran & Hak Akses
 
 | Elemen                  | Deskripsi                                                                                                                                |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | **Nama Use Case**       | Kelola Peran & Hak Akses                                                                                                                 |
-| **ID Use Case**         | UC-13                                                                                                                                    |
+| **ID Use Case**         | UC-12                                                                                                                                    |
 | **Aktor**               | Admin                                                                                                                                    |
 | **Deskripsi**           | Mengelola peran pengguna, konfigurasi hak akses (permission) per peran, dan batasan jumlah pekerja per peran                             |
 | **Kondisi Awal**        | Admin login dan memiliki akses manajemen peran                                                                                           |
@@ -359,12 +338,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Peran berhasil dibuat/diperbarui dengan konfigurasi hak akses yang sesuai                                                                |
 | **Kondisi Akhir**       | Data peran tersimpan, permission tersinkron, dan perubahan berlaku langsung untuk semua pengguna dengan peran tersebut                   |
 
-#### UC-14: Profil & Pembayaran
+#### UC-13: Profil & Pembayaran
 
 | Elemen                  | Deskripsi                                                    |
 | ----------------------- | ------------------------------------------------------------ | ------------------------------- |
 | **Nama Use Case**       | Profil & Pembayaran                                          |
-| **ID Use Case**         | UC-14                                                        |
+| **ID Use Case**         | UC-13                                                        |
 | **Aktor**               | Admin                                                        |
 | **Deskripsi**           | Mengatur identitas toko dan channel pembayaran yang tersedia |
 | **Kondisi Awal**        | Aktor berada di halaman Pengaturan                           |
@@ -375,12 +354,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Identitas toko dan metode bayar terupdate                    |
 | **Kondisi Akhir**       | Perubahan muncul di struk dan halaman POS                    |
 
-#### UC-15: Kelola Pelanggan & Poin
+#### UC-14: Kelola Pelanggan & Poin
 
 | Elemen                  | Deskripsi                                                          |
 | ----------------------- | ------------------------------------------------------------------ | ------------------------------------- |
 | **Nama Use Case**       | Kelola Pelanggan & Poin                                            |
-| **ID Use Case**         | UC-15                                                              |
+| **ID Use Case**         | UC-14                                                              |
 | **Aktor**               | Admin                                                              |
 | **Deskripsi**           | Mengelola database pelanggan dan histori perolehan poin            |
 | **Kondisi Awal**        | Aktor berada di halaman Manajemen Pelanggan                        |
@@ -392,12 +371,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Data loyalitas pelanggan tersimpan                                 |
 | **Kondisi Akhir**       | Saldo poin pelanggan diperbarui                                    |
 
-#### UC-16: Akses & Ekspor Laporan
+#### UC-15: Akses & Ekspor Laporan
 
 | Elemen                  | Deskripsi                                                                |
 | ----------------------- | ------------------------------------------------------------------------ | -------------------------------------- |
 | **Nama Use Case**       | Akses & Ekspor Laporan                                                   |
-| **ID Use Case**         | UC-16                                                                    |
+| **ID Use Case**         | UC-15                                                                    |
 | **Aktor**               | Semua Pengguna Berizin                                                   |
 | **Deskripsi**           | Melihat dan mengunduh data operasional dalam format fisik                |
 | **Kondisi Awal**        | Aktor berada di halaman Laporan                                          |
@@ -410,12 +389,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Laporan fisik berhasil dihasilkan                                        |
 | **Kondisi Akhir**       | File laporan tersimpan di perangkat aktor                                |
 
-#### UC-17: Aktivasi Akun
+#### UC-16: Aktivasi Akun
 
 | Elemen                  | Deskripsi                                                       |
 | ----------------------- | --------------------------------------------------------------- | ----------------------------------------- |
 | **Nama Use Case**       | Aktivasi Akun                                                   |
-| **ID Use Case**         | UC-17                                                           |
+| **ID Use Case**         | UC-16                                                           |
 | **Aktor**               | Pengguna Baru                                                   |
 | **Deskripsi**           | Proses aktivasi akun bagi pengguna baru melalui email           |
 | **Kondisi Awal**        | Pengguna membuka tautan aktivasi dari email                     |
@@ -427,12 +406,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Pengguna memiliki akun aktif                                    |
 | **Kondisi Akhir**       | Pengguna dapat menggunakan sistem sesuai perannya               |
 
-#### UC-18: Stock Opname (Hitung Stok)
+#### UC-17: Stock Opname (Hitung Stok)
 
 | Elemen                  | Deskripsi                                                       |
 | ----------------------- | --------------------------------------------------------------- | ------------------------------------------- |
 | **Nama Use Case**       | Stock Opname (Hitung Stok)                                      |
-| **ID Use Case**         | UC-18                                                           |
+| **ID Use Case**         | UC-17                                                           |
 | **Aktor**               | Bagian Inventori                                                |
 | **Deskripsi**           | Melakukan penyesuaian stok sistem dengan stok fisik             |
 | **Kondisi Awal**        | Aktor berada di halaman Hitung Stok                             |
@@ -445,12 +424,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Stok sistem kembali akurat                                      |
 | **Kondisi Akhir**       | Status stock opname menjadi "Selesai"                           |
 
-#### UC-19: Kelola Alur Persediaan
+#### UC-18: Kelola Alur Persediaan
 
 | Elemen                  | Deskripsi                                                       |
 | ----------------------- | --------------------------------------------------------------- | ------------------------------- |
 | **Nama Use Case**       | Kelola Alur Persediaan                                          |
-| **ID Use Case**         | UC-19                                                           |
+| **ID Use Case**         | UC-18                                                           |
 | **Aktor**               | Bagian Inventori                                                |
 | **Deskripsi**           | Memantau mutasi dan riwayat pergerakan stok secara detail       |
 | **Kondisi Awal**        | Aktor berada di halaman Log Persediaan                          |
@@ -461,12 +440,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Transparansi mutasi barang terjamin                             |
 | **Kondisi Akhir**       | Aktor memahami penyebab perubahan angka stok                    |
 
-#### UC-20: Penggunaan Poin
+#### UC-19: Penggunaan Poin
 
 | Elemen                  | Deskripsi                                                 |
 | ----------------------- | --------------------------------------------------------- | ---------------------------------- |
 | **Nama Use Case**       | Penggunaan Poin                                           |
-| **ID Use Case**         | UC-20                                                     |
+| **ID Use Case**         | UC-19                                                     |
 | **Aktor**               | Kasir                                                     |
 | **Deskripsi**           | Penukaran poin loyalitas pelanggan menjadi diskon belanja |
 | **Kondisi Awal**        | Aktor memproses transaksi pelanggan yang punya poin       |
@@ -477,12 +456,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Pelanggan mendapatkan reward potongan harga               |
 | **Kondisi Akhir**       | Total bayar transaksi berkurang                           |
 
-#### UC-21: Refund (Pengembalian Dana)
+#### UC-20: Refund (Pengembalian Dana)
 
 | Elemen                  | Deskripsi                                                    |
 | ----------------------- | ------------------------------------------------------------ | ----------------------------------------- |
 | **Nama Use Case**       | Refund (Pengembalian Dana)                                   |
-| **ID Use Case**         | UC-21                                                        |
+| **ID Use Case**         | UC-20                                                        |
 | **Aktor**               | Kasir                                                        |
 | **Deskripsi**           | Membatalkan transaksi lunas dan mengembalikan dana pelanggan |
 | **Kondisi Awal**        | Aktor berada di riwayat transaksi lunas                      |
@@ -495,12 +474,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Kesimpulan**          | Dana dikembalikan dan transaksi dibatalkan                   |
 | **Kondisi Akhir**       | Data keuangan dan stok produk disesuaikan kembali            |
 
-#### UC-22: Mengakses Halaman Utama
+#### UC-21: Mengakses Halaman Utama
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Mengakses Halaman Utama                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **ID Use Case**         | UC-22                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **ID Use Case**         | UC-21                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Aktor**               | Pengunjung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **Deskripsi**           | Pengunjung mengakses halaman utama (landing page) untuk melihat informasi toko, produk unggulan, dan informasi umum lainnya                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **Kondisi Awal**        | Pengunjung membuka website landing page Pawon3D                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -508,7 +487,7 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Skenario Alternatif** | Alt. 1: Tidak ada produk unggulan. Sistem tampilkan pesan "Tidak ada produk unggulan saat ini". Alt. 2: Hasil pencarian atau filter kosong. Sistem tampilkan pesan "Tidak ada produk tersedia". Alt. 3: Gambar produk tidak tersedia. Sistem tampilkan gambar default. Alt. 4: Banner atau foto gedung tidak tersedia. Sistem tampilkan gambar default. Alt. 5: Data kontak/alamat toko belum diatur. Sistem tampilkan nilai default.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Kondisi Akhir**       | Halaman utama ditampilkan lengkap dengan semua informasi toko dan pengunjung dapat berinteraksi dengan elemen-elemen di halaman                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
-#### UC-23: Melihat Katalog Produk
+#### UC-22: Melihat Katalog Produk
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -534,7 +513,7 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Skenario Alternatif** | Alt. 1: Produk tidak ditemukan. Sistem tampilkan halaman error 404. Alt. 2: Gambar produk tidak tersedia. Sistem tampilkan gambar default no-img.jpg. Alt. 3: Produk tidak memiliki kategori. Sistem sembunyikan bagian kategori. Alt. 4: Produk tidak memiliki deskripsi. Sistem sembunyikan bagian deskripsi. Alt. 5: Tidak ada produk terkait (hanya 1 produk di database). Sistem tetap tampilkan bagian kosong atau pesan.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **Kondisi Akhir**       | Detail produk lengkap ditampilkan kepada pengunjung beserta rekomendasi produk terkait                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
-#### UC-25: Mengakses FAQ
+#### UC-24: Mengakses FAQ
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -547,12 +526,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Skenario Alternatif** | Alt. 1: Tidak ada FAQ yang tersedia. Sistem tampilkan pesan "Belum ada FAQ yang tersedia".                                                                                                                                                                                                                                                                                                                                               |
 | **Kondisi Akhir**       | Pengunjung mendapatkan informasi yang dibutuhkan dari FAQ                                                                                                                                                                                                                                                                                                                                                                                |
 
-#### UC-26: Kelola Profil Pribadi
+#### UC-25: Kelola Profil Pribadi
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Kelola Profil Pribadi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **ID Use Case**         | UC-26                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **ID Use Case**         | UC-25                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | **Aktor**               | Semua Pengguna Terdaftar (Admin, Inventori, Kasir, Produksi)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **Deskripsi**           | Melihat dan mengubah data profil pengguna yang sedang login                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **Kondisi Awal**        | Pengguna sudah login ke sistem                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -560,12 +539,12 @@ Diagram use case lengkap tersedia dalam format PlantUML pada berkas berikut:
 | **Skenario Alternatif** | Alt. 1: Email sudah digunakan pengguna lain. Sistem tampilkan error "Email sudah terdaftar". Alt. 2 (Ubah Password): Pengguna klik "Ubah Password". Sistem tampilkan form password lama, password baru, konfirmasi password. Sistem validasi password lama cocok dengan database. Sistem validasi password baru minimal 8 karakter dengan kombinasi huruf dan angka. Sistem update password dan tampilkan notifikasi sukses. Alt. 3: Format foto tidak didukung atau melebihi 2MB. Sistem tolak upload dan tampilkan error validasi.                            |
 | **Kondisi Akhir**       | Data profil pengguna berhasil diperbarui dan tersimpan di database                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
-#### UC-27: Kelola Notifikasi
+#### UC-26: Kelola Notifikasi
 
 | Elemen                  | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Nama Use Case**       | Kelola Notifikasi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **ID Use Case**         | UC-27                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **ID Use Case**         | UC-26                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Aktor**               | Semua Pengguna Terdaftar (Admin, Inventori, Kasir, Produksi)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **Deskripsi**           | Melihat dan menandai notifikasi sistem sebagai sudah dibaca                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **Kondisi Awal**        | Pengguna sudah login ke sistem                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |

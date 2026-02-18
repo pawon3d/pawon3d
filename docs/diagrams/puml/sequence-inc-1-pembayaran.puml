@@ -2,40 +2,108 @@
 
 skinparam sequenceMessageAlign center
 
-title Sequence Diagram\nMelihat Riwayat Pembayaran
+title Sequence Diagram\nProses Pembayaran (UC-10)
 
 actor "Kasir" as Cashier
-participant "PaymentPage" as PP
-participant "PaymentController" as PC
-participant "Payment" as PM
+participant "BuatPesananPage" as BP
+participant "BuatPesananController" as BC
 participant "Transaction" as TM
+participant "Payment" as PY
+participant "Product" as PM
 participant "PaymentChannel" as PCH
+participant "Notification" as NT
 
-Cashier -> PP : Mengakses riwayat pembayaran
-PP -> PC : mount()
-PC -> PM : getAllWithRelations()
-PM -> TM : with('transaction')
-PM -> PCH : with('paymentChannel')
-PC --> PP : displayPayments()
+== Fase 1: Load Transaksi ==
 
-Cashier -> PP : Filter berdasarkan tanggal(start, end)
-PP -> PC : filter(start, end)
-PC -> PM : whereBetween('paid_at', dates)
-PC --> PP : displayFilteredPayments()
+Cashier -> BP : Akses halaman pembayaran
+BP -> BC : mount(transaction_id)
+BC -> TM : find(transaction_id)
+BC --> BP : displayTransactionDetails()
 
-Cashier -> PP : Filter berdasarkan metode(method)
-PP -> PC : filterByMethod(method)
-PC -> PM : where('payment_method', method)
-PC --> PP : displayFilteredPayments()
+note right
+  Transaction harus memiliki
+  status 'Menunggu Pembayaran'
+  (dibuat dari UC-09)
+end note
 
-Cashier -> PP : Cari berdasarkan receipt number
-PP -> PC : search(receipt_number)
-PC -> PM : where('receipt_number', 'like', search)
-PC --> PP : displaySearchResults()
+== Fase 2: Pilih Metode Pembayaran ==
 
-Cashier -> PP : Lihat detail pembayaran(id)
-PP -> PC : show(id)
-PC -> PM : findWithTransaction(id)
-PC --> PP : showPaymentDetail()
+Cashier -> BP : Pilih grup pembayaran
+BP -> BC : updatedPaymentGroup(group)
+
+alt Non-Tunai
+    BC -> BC : loadPaymentTypes()
+    BC --> BP : displayPaymentTypes()
+    
+    Cashier -> BP : Pilih tipe pembayaran
+    BP -> BC : updatedPaymentMethod(type)
+    BC -> BC : loadPaymentChannels()
+    BC --> BP : displayPaymentChannels()
+    
+    Cashier -> BP : Pilih channel
+    BP -> BC : updatedPaymentChannelId(channel_id)
+    BC -> PCH : find(channel_id)
+    BC --> BP : displayBankDetails()
+end
+
+== Fase 3: Proses Pembayaran ==
+
+Cashier -> BP : Input jumlah & upload bukti
+BP -> BC : pay(amount, image)
+BC -> BC : validate()
+
+alt Method = Siap Beli
+    alt Pembayaran < Total
+        BC --> BP : showError("Harus lunas 100%")
+    end
+else Method = Reguler/Kotak
+    alt Pembayaran < 50% Total
+        BC --> BP : showError("Minimum DP 50%")
+    end
+end
+
+BC -> PY : create(transaction_id, amount, method, image)
+
+alt Method = Siap Beli
+    BC -> PM : reduceStock()
+    note right
+      Reduce stock untuk:
+      - Recipe products
+      - Ready-to-sell via batches
+    end note
+    
+    alt Pembayaran = Total (Lunas)
+        BC -> TM : update(status='Selesai')
+    else Pembayaran < Total
+        BC -> TM : update(status='Belum Diproses')
+    end
+else Method Lainnya
+    BC -> TM : update(status='Belum Diproses')
+end
+
+BC -> NT : send("Order Queued")
+
+alt Pembayaran >= Total
+    BC -> NT : send("Payment Completed")
+else Pembayaran < Total
+    BC -> NT : send("Payment Down Payment")
+end
+
+BC --> BP : showSuccess()
+BC --> BP : redirect(detail_pesanan)
+
+== Fase 4: Lihat Riwayat (Optional) ==
+
+opt Kasir Akses Riwayat
+    Cashier -> BP : Akses riwayat pembayaran
+    BP -> BC : getPaymentHistory()
+    BC -> PY : getAllWithRelations()
+    BC --> BP : displayPayments()
+    
+    Cashier -> BP : Filter/Search
+    BP -> BC : filter(params)
+    BC -> PY : filterPayments(params)
+    BC --> BP : displayFilteredPayments()
+end
 
 @enduml

@@ -2,40 +2,99 @@
 
 skinparam activityShape octagon
 
-title Activity Diagram\nProses Pembayaran & Riwayat
+title Activity Diagram\nProses Pembayaran (UC-10)
 
+|Kasir|
 start
-:Kasir mengakses formulir pembayaran;
-:Sistem menampilkan detail transaksi;
+:Akses halaman\nProses Pembayaran;
 
-:Memilih metode pembayaran;
-:Sistem menampilkan portal sesuai channel\n(Cash, Transfer, E-Wallet, QRIS);
+|System|
+:Load data transaksi\n(Status: Menunggu Pembayaran);
+:Tampilkan detail transaksi;
 
-:Kasir memasukkan jumlah bayar;
-:Sistem menghitung kembalian otomatis;
+|Kasir|
+:Pilih Grup Pembayaran;
+note right
+  - Tunai
+  - Non-Tunai
+end note
 
-if (Jumlah pembayaran cukup?) then (Tidak)
-    :Sistem menampilkan sisa tagihan;
-    :Tampilkan pesan "Pembayaran kurang";
-    stop
-else (Ya)
-    :Kasir mengonfirmasi pembayaran;
-    :Sistem update status transaksi "Lunas";
-    :Sistem generate struk digital;
-    
-    if (Cetak struk?) then (Ya)
-        :Mencetak struk pembayaran;
-    endif
-    
-    :Sistem kurangi stok produk;
-    :Sistem catat data keuangan;
-    :Tampilkan notifikasi sukses;
+if (Non-Tunai?) then (Ya)
+  :Pilih Tipe Pembayaran;
+  note right
+    - Transfer
+    - E-Wallet
+    - QRIS
+  end note
+  
+  :Pilih Channel Pembayaran;
+  |System|
+  :Tampilkan Detail\nRekening/Nomor;
 endif
 
+|Kasir|
+:Input Jumlah Pembayaran;
+:Upload Bukti Pembayaran;
+
+|System|
+:Validasi Input;
+
+if (Metode = Siap Beli?) then (Ya)
+  if (Pembayaran < Total?) then (Ya)
+    :Tampilkan Error\n"Harus lunas 100%";
+    stop
+  endif
+else (Pesanan Reguler/Kotak)
+  if (Pembayaran < 50% Total?) then (Ya)
+    :Tampilkan Error\n"Minimum DP 50%";
+    stop
+  endif
+endif
+
+-> Pembayaran Valid;
+:Simpan data Pembayaran;
+:Upload Gambar Bukti;
+:Hitung Kembalian;
+
+if (Metode = Siap Beli?) then (Ya)
+  :Kurangi Stok Produk;
+  note right
+    Reduce stock untuk:
+    - Produk resep (recipe products)
+    - Produk siap jual (ready-to-sell)
+    via material batches
+  end note
+  
+  if (Pembayaran = Total?) then (Ya - Lunas)
+    :Set Status = 'Selesai';
+  else (Tidak - Belum Lunas)
+    :Set Status = 'Belum Diproses';
+  endif
+else (Pesanan Reguler/Kotak)
+  :Set Status = 'Belum Diproses';
+endif
+
+:Kirim Notifikasi\n"Order Queued";
+
+if (Pembayaran >= Total?) then (Ya)
+  :Kirim Notifikasi\n"Payment Completed";
+else (Tidak)
+  :Kirim Notifikasi\n"Payment Down Payment";
+endif
+
+:Generate Struk Digital;
+
+|Kasir|
+if (Cetak struk?) then (Ya)
+  :Cetak struk pembayaran;
+endif
+
+:Tampilkan notifikasi sukses;
+
 if (Lihat riwayat transaksi?) then (Ya)
-    :Kasir mengakses halaman riwayat;
-    :Sistem menampilkan daftar transaksi;
-    :Filter berdasarkan periode/status;
+  |System|
+  :Tampilkan daftar transaksi;
+  :Filter berdasarkan\nperiode/status;
 endif
 
 stop

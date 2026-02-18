@@ -2,49 +2,145 @@
 
 skinparam activityShape octagon
 
-title Activity Diagram\nMembuat Pesanan (POS)
+title Activity Diagram\nMembuat Pesanan & Pembayaran (UC-09)
 
 start
-:Kasir mengakses daftar transaksi;
+:Kasir mengakses halaman transaksi;
 
 if (Shift sudah dibuka?) then (Tidak)
     :Sistem tampilkan pesan\n"Silakan buka shift terlebih dahulu";
     :Arahkan ke menu shift;
     stop
 else (Ya)
-    :Sistem menampilkan daftar transaksi;
+    :Sistem menampilkan daftar produk;
 endif
 
-if (Jenis pesanan?) then (Kotak)
-    :Membuat pesanan kotak;
-    :Sistem generate invoice OK-YYMMDD-XXXX;
-else if (Reguler) then
-    :Membuat pesanan reguler;
-    :Sistem generate invoice OR-YYMMDD-XXXX;
-else (Siap Beli)
-    :Membuat transaksi siap beli;
-    :Sistem generate invoice OS-YYMMDD-XXXX;
-endif
-
-:Menambahkan produk ke transaksi;
-
-if (Stok produk cukup?) then (Tidak)
-    :Sistem beri peringatan\n"Stok tidak cukup";
-    stop
-else (Ya)
-    :Sistem menghitung subtotal dan total;
-endif
-
-:Memasukkan data pelanggan;
-:Sistem mencari atau membuat data pelanggan;
-:Sistem menyimpan draf transaksi;
-
+:Pilih metode pesanan;
 note right
-  Status transaksi:
-  "Menunggu Pembayaran"
+  - Pesanan Reguler (OR)
+  - Pesanan Kotak (OK)
+  - Siap Beli (OS)
 end note
 
-:Lanjut ke proses pembayaran;
+repeat
+    :Pilih produk;
+    
+    if (Metode = Siap Beli?) then (Ya)
+        if (Stok tersedia?) then (Tidak)
+            :Sistem tampilkan pesan "Stok habis";
+            stop
+        endif
+    endif
+    
+    :Tambah ke keranjang;
+    :Sistem hitung total harga;
+    
+    backward:Pilih produk lain;
+repeat while (Tambah produk lain?) is (Ya)
+->Tidak;
+
+if (Keranjang kosong?) then (Ya)
+    :Sistem tampilkan pesan "Keranjang kosong";
+    stop
+endif
+
+:Klik checkout;
+:Sistem buat transaksi (Status: temp);
+:Sistem simpan detail produk;
+:Sistem redirect ke halaman buat pesanan;
+
+:Memasukkan data pelanggan;
+note right
+  - Nama
+  - Nomor HP
+end note
+
+:Sistem simpan data pelanggan;
+
+if (Simpan atau Bayar?) then (Simpan Draft)
+    :Klik "Simpan Draft";
+    :Sistem update status = 'Draft';
+    :Tampilkan pesan "Draft tersimpan";
+    stop
+
+else (Proses Pembayaran)
+    :Klik "Bayar";
+    
+    :Pilih grup pembayaran;
+    note right
+      - Tunai
+      - Non-Tunai
+    end note
+    
+    if (Non-Tunai?) then (Ya)
+        :Pilih tipe pembayaran;
+        note right
+          - Transfer
+          - E-Wallet
+          - QRIS
+        end note
+        
+        :Pilih channel pembayaran;
+        :Sistem tampilkan detail rekening/nomor;
+    endif
+    
+    :Masukkan jumlah pembayaran;
+    :Upload bukti pembayaran;
+    :Sistem validasi input;
+    
+    if (Metode = Siap Beli?) then (Ya)
+        if (Pembayaran < Total?) then (Ya)
+            :Sistem tampilkan error\n"Harus lunas 100%";
+            stop
+        endif
+    else (Pesanan Reguler/Kotak)
+        if (Pembayaran < 50% Total?) then (Ya)
+            :Sistem tampilkan error\n"Minimum DP 50%";
+            stop
+        endif
+    endif
+    
+    :Sistem simpan data pembayaran;
+    :Sistem upload gambar bukti;
+    
+    if (Metode = Siap Beli?) then (Ya)
+        fork
+            :Sistem kurangi stok produk;
+            note right
+              Reduce stock untuk:
+              - Produk resep (recipe products)
+              - Produk siap jual (ready-to-sell)
+              via material batches
+            end note
+        fork again
+            :Sistem catat log inventori;
+        end fork
+        
+        if (Pembayaran = Total?) then (Ya - Lunas)
+            :Sistem update status = 'Selesai';
+        else (Tidak - Belum Lunas)
+            :Sistem update status = 'Belum Diproses';
+        endif
+    else (Pesanan Reguler/Kotak)
+        :Sistem update status = 'Belum Diproses';
+    endif
+    
+    fork
+        :Sistem kirim notifikasi "Order Queued";
+    fork again
+        if (Pembayaran >= Total?) then (Ya)
+            :Sistem kirim notifikasi\n"Payment Completed";
+        else (Tidak)
+            :Sistem kirim notifikasi\n"Payment Down Payment";
+        endif
+    end fork
+    
+    :Sistem generate struk digital;
+    :Tampilkan notifikasi sukses;
+    :Redirect ke detail pesanan;
+endif
+
 stop
 
 @enduml
+
