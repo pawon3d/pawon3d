@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 
 <head>
+    <meta name="color-scheme" content="light">
     @include('partials.head')
     {{-- Preload LCP hero image --}}
     @if (!empty($storeProfile->banner))

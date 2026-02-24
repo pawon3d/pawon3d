@@ -4,6 +4,7 @@ namespace App\Livewire\Setting;
 
 use App\Models\StoreDocument;
 use App\Models\StoreProfile as StoreProfileModel;
+use App\Traits\CompressesImages;
 use Flux\Flux;
 use Illuminate\Support\Facades\View;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -13,7 +14,7 @@ use Livewire\WithPagination;
 
 class StoreProfile extends Component
 {
-    use LivewireAlert, WithFileUploads, WithPagination;
+    use CompressesImages, LivewireAlert, WithFileUploads, WithPagination;
 
     // Sort
     public string $sortField = 'created_at';
@@ -295,7 +296,7 @@ class StoreProfile extends Component
                         unlink($oldPath);
                     }
                 }
-                $storeProfile->logo = $this->logo->store('store_profiles', 'public');
+                $storeProfile->logo = $this->storeAsWebP($this->logo, 'store_profiles');
             }
 
             // Banner
@@ -306,7 +307,7 @@ class StoreProfile extends Component
                         unlink($oldPath);
                     }
                 }
-                $storeProfile->banner = $this->banner->store('store_profiles', 'public');
+                $storeProfile->banner = $this->storeAsWebP($this->banner, 'store_profiles');
             }
 
             // Product Image
@@ -317,7 +318,7 @@ class StoreProfile extends Component
                         unlink($oldPath);
                     }
                 }
-                $storeProfile->product_image = $this->productImage->store('store_profiles', 'public');
+                $storeProfile->product_image = $this->storeAsWebP($this->productImage, 'store_profiles');
             }
 
             // Building
@@ -328,7 +329,7 @@ class StoreProfile extends Component
                         unlink($oldPath);
                     }
                 }
-                $storeProfile->building = $this->building->store('store_profiles', 'public');
+                $storeProfile->building = $this->storeAsWebP($this->building, 'store_profiles');
             }
 
             $storeProfile->save();

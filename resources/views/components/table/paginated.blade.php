@@ -3,10 +3,10 @@
     'rows' => [],
     'paginator' => null,
     'emptyMessage' => 'Tidak ada data.',
-    'headerBg' => 'bg-gray-50 dark:bg-gray-800',
-    'headerText' => 'text-gray-500 dark:text-gray-400',
-    'bodyBg' => 'bg-white dark:bg-gray-900',
-    'bodyText' => 'text-gray-900 dark:text-gray-100',
+    'headerBg' => 'bg-gray-50',
+    'headerText' => 'text-gray-500',
+    'bodyBg' => 'bg-white',
+    'bodyText' => 'text-gray-900',
     'wrapperClass' => '',
     'pageName' => 'page',
 ])
@@ -26,7 +26,7 @@
 @endphp
 
 <div
-    {{ $attributes->merge(['class' => $wrapperClass ?: 'w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900']) }}>
+    {{ $attributes->merge(['class' => $wrapperClass ?: 'w-full rounded-lg overflow-hidden border border-gray-200 bg-white']) }}>
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="{{ $headerBgClass }}" style="{{ $headerBgStyle }}">

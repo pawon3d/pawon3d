@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 
 <head>
+    <meta name="color-scheme" content="light">
     @include('partials.head')
     {{-- Dashboard-only assets: not loaded on landing/auth pages --}}
     <link rel="preconnect" href="https://fonts.bunny.net">

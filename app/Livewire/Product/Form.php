@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\MaterialDetail;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Traits\CompressesImages;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ use Spatie\Activitylog\Models\Activity;
 
 class Form extends Component
 {
-    use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
+    use CompressesImages, \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
     // Product ID (null for create, has value for edit)
     public ?string $product_id = null;
@@ -505,7 +506,7 @@ class Form extends Component
             'suhu_ruangan' => $this->suhu_ruangan,
             'suhu_dingin' => $this->suhu_dingin,
             'suhu_beku' => $this->suhu_beku,
-            'product_image' => $this->product_image ? $this->product_image->store('product_images', 'public') : null,
+            'product_image' => $this->product_image ? $this->storeAsWebP($this->product_image, 'product_images', 82, 800) : null,
         ]);
 
         $this->syncCategories($product);
@@ -524,7 +525,7 @@ class Form extends Component
             if ($product->product_image && Storage::disk('public')->exists($product->product_image)) {
                 Storage::disk('public')->delete($product->product_image);
             }
-            $imageData['product_image'] = $this->product_image->store('product_images', 'public');
+            $imageData['product_image'] = $this->storeAsWebP($this->product_image, 'product_images', 82, 800);
         }
 
         // Update product
