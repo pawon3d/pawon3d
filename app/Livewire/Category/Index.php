@@ -319,12 +319,27 @@ class Index extends Component
         ];
     }
 
+    public function updatedShowModal(bool $value): void
+    {
+        if (! $value) {
+            $this->resetForm();
+        }
+    }
+
+    public function updatedShowEditModal(bool $value): void
+    {
+        if (! $value) {
+            $this->resetForm();
+        }
+    }
+
     public function resetForm()
     {
         $this->name = '';
         $this->is_active = true;
         $this->category_id = null;
         $this->products = null;
+        $this->resetValidation();
     }
 
     public function cetakInformasi()

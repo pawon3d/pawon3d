@@ -4,27 +4,20 @@
 ])
 
 @php
-$classes = Flux::classes()
-    ->add('group h-5 w-8 min-w-8 relative inline-flex items-center outline-offset-2')
-    ->add('rounded-full')
-    ->add('transition')
-    ->add('bg-zinc-800/15 [&[disabled]]:opacity-50 dark:bg-transparent dark:border dark:border-white/20 dark:[&[disabled]]:border-white/10')
-    ->add('[print-color-adjust:exact]')
-    ->add([
-        'data-checked:bg-(--color-accent)',
-        'data-checked:border-0',
-    ])
-    ;
+    $classes = Flux::classes()
+        ->add('group h-5 w-8 min-w-8 relative inline-flex items-center outline-offset-2')
+        ->add('rounded-full')
+        ->add('transition')
+        ->add('bg-zinc-800/15 [&[disabled]]:opacity-50    ')
+        ->add('[print-color-adjust:exact]')
+        ->add(['data-checked:bg-(--color-accent)', 'data-checked:border-0']);
 
-$indicatorClasses = Flux::classes()
-    ->add('size-3.5')
-    ->add('rounded-full')
-    ->add('transition translate-x-[3px] dark:translate-x-[2px]')
-    ->add('bg-white')
-    ->add([
-        'group-data-checked:translate-x-[15px]',
-        'group-data-checked:bg-(--color-accent-foreground)',
-    ]);
+    $indicatorClasses = Flux::classes()
+        ->add('size-3.5')
+        ->add('rounded-full')
+        ->add('transition translate-x-[3px] ')
+        ->add('bg-white')
+        ->add(['group-data-checked:translate-x-[15px]', 'group-data-checked:bg-(--color-accent-foreground)']);
 @endphp
 
 @if ($align === 'left')

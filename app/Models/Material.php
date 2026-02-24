@@ -204,9 +204,6 @@ class Material extends Model
 
     /**
      * Get unit price for a specific unit (with auto-conversion if price for unit is 0)
-     *
-     * @param  Unit  $targetUnit
-     * @return float
      */
     public function getUnitPriceInUnit(Unit $targetUnit): float
     {
@@ -241,19 +238,30 @@ class Material extends Model
     {
         $this->load('batches');
 
-        $hasExpiredBatch = $this->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
-        $totalQuantity = $this->batches->sum('batch_quantity');
+        $today = now()->format('Y-m-d');
 
-        if ($hasExpiredBatch) {
-            $status = 'Expired';
-        } elseif ($totalQuantity <= 0) {
+        // Hanya pertimbangkan batch yang masih memiliki stok
+        $activeBatches = $this->batches->where('batch_quantity', '>', 0);
+
+        if ($activeBatches->isEmpty()) {
+            // Tidak ada batch dengan stok — kosong
             $status = 'Kosong';
-        } elseif ($totalQuantity <= $this->minimum) {
-            $status = 'Habis';
-        } elseif ($totalQuantity > $this->minimum * 2) {
-            $status = 'Tersedia';
+        } elseif ($activeBatches->every(fn ($batch) => $batch->date < $today)) {
+            // Semua batch berisi stok sudah expired
+            $status = 'Expired';
         } else {
-            $status = 'Hampir Habis';
+            // Masih ada batch valid (belum expired) — hitung stok valid
+            $validQuantity = $activeBatches
+                ->filter(fn ($batch) => $batch->date >= $today)
+                ->sum('batch_quantity');
+
+            if ($validQuantity <= 0) {
+                $status = 'Kosong';
+            } elseif ($this->minimum && $validQuantity <= $this->minimum) {
+                $status = 'Hampir Habis';
+            } else {
+                $status = 'Tersedia';
+            }
         }
 
         if ($this->status !== $status) {

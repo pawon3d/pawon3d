@@ -48,7 +48,7 @@
 
     $classes = Flux::classes()
         ->add('relative items-center font-medium justify-center gap-2 whitespace-nowrap cursor-pointer')
-        ->add('disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none')
+        ->add('disabled:opacity-75  disabled:cursor-default disabled:pointer-events-none')
         ->add(
             match (
                 $size // Size...
@@ -82,11 +82,10 @@
             ) {
                 'primary' => 'bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)]',
                 'secondary' => 'bg-[#3F4E4F] hover:bg-[color-mix(in_oklab,_#3F4E4F,_transparent_10%)]',
-                'filled'
-                    => 'bg-[#C4C4C4] hover:bg-[color-mix(in_oklab,_#C4C4C4,_transparent_10%)] dark:bg-white/10 dark:hover:bg-white/20',
-                'outline' => 'bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75',
-                'danger' => 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500',
-                'ghost' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
+                'filled' => 'bg-[#C4C4C4] hover:bg-[color-mix(in_oklab,_#C4C4C4,_transparent_10%)]  ',
+                'outline' => 'bg-white hover:bg-zinc-50  ',
+                'danger' => 'bg-red-500 hover:bg-red-600  ',
+                'ghost' => 'bg-transparent hover:bg-zinc-800/5 ',
                 'subtle' => 'bg-white hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)]',
             },
         )
@@ -96,21 +95,20 @@
             ) {
                 'primary' => 'text-[var(--color-accent-foreground)]',
                 'secondary' => 'text-[#F8F4E1]',
-                'filled' => 'text-[#333333] dark:text-white',
-                'outline' => 'text-zinc-800 dark:text-white',
+                'filled' => 'text-[#333333] ',
+                'outline' => 'text-zinc-800 ',
                 'danger' => 'text-white',
-                'ghost' => 'text-zinc-800 dark:text-white',
-                'subtle' => 'text-[#74512D] hover:text-white dark:text-[#74512D] dark:hover:text-white',
+                'ghost' => 'text-zinc-800 ',
+                'subtle' => 'text-[#74512D] hover:text-white  ',
             },
         )
         ->add(
             match (
                 $variant // Border color...
             ) {
-                'primary' => 'border border-black/10 dark:border-0',
-                'secondary' => 'border border-black/10 dark:border-0',
-                'outline'
-                    => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600',
+                'primary' => 'border border-black/10 ',
+                'secondary' => 'border border-black/10 ',
+                'outline' => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80  ',
                 'subtle' => 'border border-[#74512D] hover:border-[#74512D] border-2 rounded-xl',
                 default => '',
             },
@@ -121,8 +119,7 @@
             ) {
                 'primary' => 'shadow-[inset_0px_1px_--theme(--color-white/.2)]',
                 'secondary' => 'shadow-[inset_0px_1px_--theme(--color-white/.2)]',
-                'danger'
-                    => 'shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none',
+                'danger' => 'shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] ',
                 'outline' => match ($size) {
                     'base' => 'shadow-xs',
                     'sm' => 'shadow-xs',
@@ -140,13 +137,13 @@
                 'outline'
                     => '[[data-flux-button-group]_&]:border-l-0 [:is([data-flux-button-group]>&:first-child,_[data-flux-button-group]_:first-child>&)]:border-l-[1px]',
                 'filled'
-                    => '[[data-flux-button-group]_&]:border-r [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 [[data-flux-button-group]_&]:border-zinc-200/80 dark:[[data-flux-button-group]_&]:border-zinc-900/50',
+                    => '[[data-flux-button-group]_&]:border-r [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 [[data-flux-button-group]_&]:border-zinc-200/80 ',
                 'danger'
-                    => '[[data-flux-button-group]_&]:border-r [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 [[data-flux-button-group]_&]:border-red-600 dark:[[data-flux-button-group]_&]:border-red-900/25',
+                    => '[[data-flux-button-group]_&]:border-r [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 [[data-flux-button-group]_&]:border-red-600 ',
                 'primary'
-                    => '[[data-flux-button-group]_&]:border-r-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-[1px] dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-l-[1px] [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-l-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]',
+                    => '[[data-flux-button-group]_&]:border-r-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-[1px]   [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-l-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]',
                 'secondary'
-                    => '[[data-flux-button-group]_&]:border-r-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-[1px] dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-0 dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-l-[1px] [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-l-[color-mix(in_srgb,#F8F4E1,transparent_85%)]',
+                    => '[[data-flux-button-group]_&]:border-r-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-r-[1px]   [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-l-[color-mix(in_srgb,#F8F4E1,transparent_85%)]',
             },
         )
         ->add(
@@ -193,7 +190,7 @@
         <?php endif; ?>
 
         <?php if ($kbd): ?>
-        <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $kbd }}</div>
+        <div class="text-xs text-zinc-500 ">{{ $kbd }}</div>
         <?php endif; ?>
 
         <?php if (is_string($iconTrailing) && $iconTrailing !== ''): ?>

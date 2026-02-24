@@ -66,9 +66,9 @@ class RincianPesanan extends Component
 
     public string $phoneNumber = '';
 
-    public int|float|null $pembayaranPertama = null;
+    public mixed $pembayaranPertama = null;
 
-    public int|float|null $pembayaranKedua = null;
+    public mixed $pembayaranKedua = null;
 
     public int|float|null $sisaPembayaranPertama = null;
 

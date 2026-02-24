@@ -319,10 +319,13 @@ class Form extends Component
 
     public function updatedProductCompositions(): void
     {
+        // Only cast material_price to float (set programmatically) — do NOT cast
+        // material_quantity to avoid overwriting the user's typed value mid-input.
+        // Float conversion for material_quantity is applied in syncCompositions() on save.
         $this->product_compositions = array_map(function ($composition) {
             return [
                 'material_id' => $composition['material_id'] ?? '',
-                'material_quantity' => (float) ($composition['material_quantity'] ?? 0),
+                'material_quantity' => $composition['material_quantity'] ?? 0,
                 'unit_id' => $composition['unit_id'] ?? '',
                 'material_price' => (float) ($composition['material_price'] ?? 0),
             ];
@@ -583,7 +586,7 @@ class Form extends Component
 
             $product->product_compositions()->create([
                 'material_id' => $composition['material_id'],
-                'material_quantity' => $composition['material_quantity'],
+                'material_quantity' => (float) ($composition['material_quantity'] ?? 0),
                 'unit_id' => $composition['unit_id'] ?: null,
             ]);
         }

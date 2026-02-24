@@ -69,32 +69,40 @@ class CheckInventoryAlerts extends Command
      */
     protected function determineStatus(Material $material, Carbon $today): string
     {
-        // Hitung total stok dari semua batch
-        $totalStock = $material->batches->sum('batch_quantity');
+        // Hanya pertimbangkan batch yang masih memiliki stok
+        $activeBatches = $material->batches->where('batch_quantity', '>', 0);
 
-        // 1. Cek apakah ada batch yang sudah expired
-        $hasExpiredBatch = $material->batches
-            ->where('batch_quantity', '>', 0)
-            ->filter(function ($batch) use ($today) {
-                return $batch->date && Carbon::parse($batch->date)->lt($today);
-            })
-            ->isNotEmpty();
-
-        if ($hasExpiredBatch) {
-            return 'Expired';
-        }
-
-        // 2. Cek apakah stok kosong
-        if ($totalStock <= 0) {
+        // 1. Tidak ada batch berisi stok — kosong
+        if ($activeBatches->isEmpty()) {
             return 'Kosong';
         }
 
-        // 3. Cek apakah stok di bawah minimum (hampir habis)
-        if ($material->minimum && $totalStock < $material->minimum) {
+        // 2. Semua batch berisi stok sudah expired
+        $allExpired = $activeBatches->every(function ($batch) use ($today) {
+            return $batch->date && Carbon::parse($batch->date)->lt($today);
+        });
+
+        if ($allExpired) {
+            return 'Expired';
+        }
+
+        // 3. Hitung stok dari batch yang valid (belum expired)
+        $validQuantity = $activeBatches
+            ->filter(function ($batch) use ($today) {
+                return $batch->date && ! Carbon::parse($batch->date)->lt($today);
+            })
+            ->sum('batch_quantity');
+
+        if ($validQuantity <= 0) {
+            return 'Kosong';
+        }
+
+        // 4. Cek apakah stok di bawah minimum (hampir habis)
+        if ($material->minimum && $validQuantity < $material->minimum) {
             return 'Hampir Habis';
         }
 
-        // 4. Stok cukup
+        // 5. Stok cukup
         return 'Tersedia';
     }
 
@@ -132,6 +140,7 @@ class CheckInventoryAlerts extends Command
 
     /**
      * Cek bahan yang akan kadaluarsa dalam 7 hari ke depan.
+     * Notifikasi dikirim sekali per material (deduplikasi per bahan, bukan per batch).
      */
     protected function checkExpiringMaterials(): int
     {
@@ -145,7 +154,12 @@ class CheckInventoryAlerts extends Command
             ->whereBetween('date', [$today, $warningDate])
             ->get();
 
-        foreach ($expiringBatches as $batch) {
+        // Deduplikasi: ambil satu batch per material (yang paling dekat kadaluarsanya)
+        $materialsToNotify = $expiringBatches
+            ->groupBy('material_id')
+            ->map(fn ($batches) => $batches->sortBy('date')->first());
+
+        foreach ($materialsToNotify as $batch) {
             $expiryDate = Carbon::parse($batch->date);
             $daysUntilExpiry = $today->diffInDays($expiryDate);
 

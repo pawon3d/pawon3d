@@ -22,7 +22,7 @@
 
 @endphp
 
-<body class="min-h-screen bg-white dark:bg-zinc-800">
+<body class="min-h-screen bg-white ">
     <div id="sidebar"
         class="fixed inset-y-0 left-0 z-40 w-12 mt-12 bg-[#252324] border-r shadow-lg overflow-hidden transition-all duration-300 flex flex-col">
 
@@ -179,7 +179,7 @@
                                     alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-full">
                             @else
                                 <span
-                                    class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                    class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black  ">
                                     {{ auth()->user()->initials() }}
                                 </span>
                             @endif

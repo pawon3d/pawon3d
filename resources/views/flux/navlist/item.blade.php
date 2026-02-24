@@ -24,7 +24,7 @@
         ->add('relative flex items-center gap-3 overflow-hidden')
         ->add($square ? 'px-2.5!' : '')
         ->add('py-3 text-left w-full ps-[calc(0.75rem-1px)] pe-3')
-        ->add('text-[#666666] dark:text-white/80')
+        ->add('text-[#666666] ')
         ->add([
             'data-current:bg-[#74512d20]',
             'data-current:border-zinc-800',
@@ -45,7 +45,7 @@
 
         <?php if ($iconDot): ?>
         <div class="absolute top-[-2px] right-[-2px]">
-            <div class="size-[6px] rounded-full bg-zinc-500 dark:bg-zinc-400"></div>
+            <div class="size-[6px] rounded-full bg-zinc-500 "></div>
         </div>
         <?php endif; ?>
     </div>

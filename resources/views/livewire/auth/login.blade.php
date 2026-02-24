@@ -165,13 +165,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <div class="mt-6 flex justify-center">
-        <flux:text>Belum punya akun? <flux:link href="https://wa.me/{{ $storeProfile->contact != '' ? $storeProfile->contact : '6281234567890' }}" class="text-primary-600 font-semibold"
-                variant="ghost" external> Hubungi
+        <flux:text>Belum punya akun? <flux:link
+                href="https://wa.me/{{ $storeProfile->contact != '' ? $storeProfile->contact : '6281234567890' }}"
+                class="text-primary-600 font-semibold" variant="ghost" external> Hubungi
                 Pemilik Usaha</flux:link>
         </flux:text>
     </div>
     {{-- @if (Route::has('register'))
-    <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
+    <div class="space-x-1 text-center text-sm text-zinc-600 ">
         Don't have an account?
         <flux:link :href="route('register')" wire:navigate>Sign up</flux:link>
     </div>

@@ -7,7 +7,8 @@
             <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f6f6f6]"
                 style="line-height: 1;">Kembali</span>
         </button>
-        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666] text-center sm:text-left" style="line-height: 1;">Buat Pesanan
+        <h1 class="font-['Montserrat'] font-semibold text-[20px] text-[#666666] text-center sm:text-left"
+            style="line-height: 1;">Buat Pesanan
         </h1>
     </div>
 
@@ -164,7 +165,8 @@
                     style="line-height: 1;">
                     Masukkan catatan pesanan apabila diperlukan.</p>
 
-                <div class="flex-1 bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] min-h-[150px]">
+                <div
+                    class="flex-1 bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] min-h-[150px]">
                     <textarea wire:model.defer="note" placeholder="Ini adalah catatan pesanan"
                         class="w-full h-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0 resize-none"
                         style="line-height: 1;"></textarea>
@@ -189,7 +191,8 @@
             {{-- Product List --}}
             <div class="flex flex-col gap-[10px] pb-[15px]">
                 @forelse ($details as $id => $item)
-                    <div class="border-b border-[#ffffff] py-[20px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div
+                        class="border-b border-[#ffffff] py-[20px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         {{-- Left Side --}}
                         <div class="flex flex-col gap-[10px]">
                             <div class="flex items-center gap-[5px]">
@@ -425,7 +428,7 @@
                 <div class="mb-5 w-full">
                     <div class="flex flex-row items-center gap-4">
                         <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)">
+                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75  disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10  shadow-[inset_0px_1px_--theme(--color-white/.2)">
                             <span class="hidden sm:inline">Pilih Bukti Pembayaran</span>
                             <flux:icon icon="camera" class="size-5 sm:hidden" style="color: #f8f4e1;" />
                             <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"

@@ -138,6 +138,7 @@ class Form extends Component
             'name.required' => 'Nama harus diisi.',
             'email.required' => 'Email harus diisi.',
             'email.unique' => 'Email sudah digunakan.',
+            'email.email' => 'Format email tidak valid.',
             'gender.required' => 'Jenis kelamin harus dipilih.',
             'role.required' => 'Peran harus dipilih.',
             'is_active.required' => 'Status pekerja harus dipilih.',
