@@ -155,6 +155,9 @@
                     placeholder="Contoh : https://maps.app.goo.gl/jpbice8S3E5G88pW6"
                     class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 font-montserrat font-normal text-[16px] text-[#666666] placeholder-[#959595] p-0" />
             </div>
+            @error('maps_link')
+                <span class="text-sm text-red-500 font-montserrat">{{ $message }}</span>
+            @enderror
         </div>
     </div>
 
@@ -191,9 +194,11 @@
         </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
+    <div
+        class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
         @if ($this->isEditMode())
-            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
+            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()"
+                class="w-full sm:w-auto">
                 {{ __('Hapus Toko') }}
             </flux:button>
         @endif
@@ -202,7 +207,8 @@
                 wire:navigate class="w-full sm:w-auto">
                 Batal
             </flux:button>
-            <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save" class="w-full sm:w-auto">
+            <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save"
+                class="w-full sm:w-auto">
                 {{ $this->isEditMode() ? 'Simpan Perubahan' : 'Simpan' }}
             </flux:button>
         </div>

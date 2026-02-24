@@ -50,7 +50,7 @@ class Rincian extends Component
         return $this->hitung->details;
     }
 
-    public function mount($id)
+    public function mount(string $id): void
     {
         $this->hitung_id = $id;
         $hitung = $this->hitung;
@@ -58,7 +58,7 @@ class Rincian extends Component
         $this->is_finish = (bool) $hitung->is_finish;
         $this->status = $hitung->status ?? 'Belum Diproses';
         $this->finish_date = $hitung->hitung_date_finish;
-        View::share('title', 'Rincian ' . $hitung->action);
+        View::share('title', 'Rincian '.$hitung->action);
         View::share('mainTitle', 'Inventori');
 
         if (session()->has('success')) {
@@ -66,7 +66,7 @@ class Rincian extends Component
         }
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $logs = Activity::inLog('hitungs')
             ->where('subject_id', $this->hitung_id)
@@ -75,7 +75,7 @@ class Rincian extends Component
             ->limit(50)
             ->get();
 
-        $this->activityLogs = $logs->map(fn($log) => [
+        $this->activityLogs = $logs->map(fn ($log) => [
             'description' => $log->description,
             'causer_name' => $log->causer->name ?? 'System',
             'created_at' => $log->created_at->format('d M Y H:i'),
@@ -84,13 +84,13 @@ class Rincian extends Component
         $this->showHistoryModal = true;
     }
 
-    public function openNoteModal()
+    public function openNoteModal(): void
     {
         $this->editNote = $this->hitung->note ?? '';
         $this->showNoteModal = true;
     }
 
-    public function saveNote()
+    public function saveNote(): void
     {
         $hitung = Hitung::findOrFail($this->hitung_id);
         $hitung->update(['note' => $this->editNote]);
@@ -162,7 +162,7 @@ class Rincian extends Component
         }
     }
 
-    public function start()
+    public function start(): void
     {
         $this->is_start = true;
         $this->status = 'Sedang Diproses';
@@ -173,10 +173,10 @@ class Rincian extends Component
         NotificationService::stockCountStarted($hitung->hitung_number);
 
         unset($this->hitung); // Clear computed property cache
-        $this->alert('success', $hitung->action . ' berhasil dimulai.');
+        $this->alert('success', $hitung->action.' berhasil dimulai.');
     }
 
-    public function finish()
+    public function finish(): void
     {
         $this->is_finish = true;
         $this->status = 'Selesai';
@@ -283,10 +283,10 @@ class Rincian extends Component
         // Kirim notifikasi penghitungan selesai
         NotificationService::stockCountCompleted($hitung->hitung_number);
 
-        $this->alert('success', $hitung->action . ' berhasil diselesaikan.');
+        $this->alert('success', $hitung->action.' berhasil diselesaikan.');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.rincian', [
             'logName' => Activity::inLog('hitungs')->where('subject_id', $this->hitung_id)->latest()->first()?->causer->name ?? '-',

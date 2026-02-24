@@ -14,31 +14,31 @@ class RincianSiapBeli extends Component
 {
     use LivewireAlert;
 
-    public $production_id;
+    public ?string $production_id = null;
 
-    public $production;
+    public mixed $production = null;
 
-    public $production_details;
+    public mixed $production_details = null;
 
-    public $showNoteModal = false;
+    public bool $showNoteModal = false;
 
-    public $total_quantity_plan;
+    public int|float $total_quantity_plan = 0;
 
-    public $total_quantity_get;
+    public int|float $total_quantity_get = 0;
 
-    public $total_selisih;
+    public int|float $total_selisih = 0;
 
-    public $total_pcs_lebih_rusak;
+    public int|float $total_pcs_lebih_rusak = 0;
 
-    public $total_pcs_gagal;
+    public int|float $total_pcs_gagal = 0;
 
-    public $total_pcs_lebih;
+    public int|float $total_pcs_lebih = 0;
 
-    public $percentage;
+    public int|float $percentage = 0;
 
-    public $status;
+    public ?string $status = null;
 
-    public $noteInput = '';
+    public string $noteInput = '';
 
     protected $listeners = [
         'confirmDelete' => 'confirmDelete',
@@ -120,8 +120,10 @@ class RincianSiapBeli extends Component
         $this->alert('info', 'Fitur riwayat pembaruan akan segera tersedia');
     }
 
-    public function selesaikanProduksi()
+    public function selesaikanProduksi(): mixed
     {
+        abort_unless(auth()->user()->can('produksi.mulai'), 403);
+
         $production = Production::findOrFail($this->production_id);
         $production->update([
             'status' => 'Selesai',
@@ -157,8 +159,10 @@ class RincianSiapBeli extends Component
         ]);
     }
 
-    public function delete()
+    public function delete(): mixed
     {
+        abort_unless(auth()->user()->can('produksi.rencana.kelola'), 403);
+
         $production = Production::findOrFail($this->production_id);
         if ($production) {
             $productionNumber = $production->production_number;
@@ -173,8 +177,10 @@ class RincianSiapBeli extends Component
         }
     }
 
-    public function start()
+    public function start(): void
     {
+        abort_unless(auth()->user()->can('produksi.mulai'), 403);
+
         // Cek kecukupan bahan baku sebelum memulai produksi
         // $produkGagal = [];
         // $bahanKurang = [];

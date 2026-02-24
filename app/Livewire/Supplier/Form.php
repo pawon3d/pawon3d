@@ -15,29 +15,29 @@ class Form extends Component
     use LivewireAlert;
     use WithFileUploads;
 
-    public $supplierId;
+    public ?string $supplierId = null;
 
-    public $name;
+    public ?string $name = null;
 
-    public $description;
+    public ?string $description = null;
 
-    public $contact_name;
+    public ?string $contact_name = null;
 
-    public $phone;
+    public ?string $phone = null;
 
     public $image;
 
-    public $previewImage;
+    public ?string $previewImage = null;
 
-    public $street;
+    public ?string $street = null;
 
-    public $landmark;
+    public ?string $landmark = null;
 
-    public $maps_link;
+    public ?string $maps_link = null;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
     protected $listeners = [
         'updatedImage' => 'updatedImage',
@@ -91,6 +91,10 @@ class Form extends Component
     {
         $this->validate([
             'image' => 'image|max:2048|mimes:jpg,jpeg,png',
+        ], [
+            'image.image' => 'File harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
+            'image.mimes' => 'Format gambar yang diizinkan adalah jpg, jpeg, png.',
         ]);
 
         $this->previewImage = $this->image?->temporaryUrl();
@@ -112,6 +116,8 @@ class Form extends Component
 
     public function createSupplier()
     {
+        abort_unless(auth()->user()->can('inventori.toko.kelola'), 403);
+
         $this->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
@@ -152,6 +158,8 @@ class Form extends Component
 
     public function updateSupplier()
     {
+        abort_unless(auth()->user()->can('inventori.toko.kelola'), 403);
+
         $this->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
@@ -218,6 +226,8 @@ class Form extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.toko.kelola'), 403);
+
         $supplier = Supplier::findOrFail($this->supplierId);
 
         if ($supplier->image) {

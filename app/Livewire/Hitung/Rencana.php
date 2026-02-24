@@ -10,17 +10,17 @@ use Livewire\WithPagination;
 
 class Rencana extends Component
 {
-    use WithPagination, LivewireAlert;
+    use LivewireAlert, WithPagination;
 
-    public $search = '';
+    public string $search = '';
 
-    public $sortField = 'hitung_date';
+    public string $sortField = 'hitung_date';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Rencana Hitung dan Catat Persediaan');
         View::share('mainTitle', 'Inventori');
@@ -29,7 +29,7 @@ class Rencana extends Component
         }
     }
 
-    public function sortBy($field)
+    public function sortBy(string $field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -39,18 +39,18 @@ class Rencana extends Component
         $this->sortField = $field;
     }
 
-    public function updatedSearch()
+    public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.rencana', [
             'hitungs' => Hitung::with(['details.material', 'user'])
                 ->when($this->search, function ($query) {
-                    $query->where('hitung_number', 'like', '%' . $this->search . '%')
-                        ->orWhere('action', 'like', '%' . $this->search . '%');
+                    $query->where('hitung_number', 'like', '%'.$this->search.'%')
+                        ->orWhere('action', 'like', '%'.$this->search.'%');
                 })->whereIn('status', ['Draft', 'Belum Diproses'])
                 ->where('is_start', false)
                 ->where('is_finish', false)

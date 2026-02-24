@@ -84,7 +84,6 @@ class Index extends Component
         })->when($this->filterStatus, function ($query) {
             return $query->where('is_active', $this->filterStatus === 'aktif');
         })
-            ->with('material_details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 

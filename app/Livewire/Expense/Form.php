@@ -8,21 +8,32 @@ use Livewire\Component;
 
 class Form extends Component
 {
-    public $expense_id;
+    public ?string $expense_id = null;
 
-    public $supplier_id = '';
+    public string $supplier_id = '';
 
-    public $expense_date = 'dd/mm/yyyy';
+    public string $expense_date = 'dd/mm/yyyy';
 
-    public $note;
+    public ?string $note = null;
 
-    public $grand_total_expect;
+    public int|float|null $grand_total_expect = null;
 
-    public $expense_details = [];
+    public array $expense_details = [];
 
-    public $prevInputs = [];
+    public array $prevInputs = [];
 
-    public $prevPrice = [];
+    public array $prevPrice = [];
+
+    protected array $messages = [
+        'supplier_id.required' => 'Supplier wajib dipilih.',
+        'supplier_id.exists' => 'Supplier tidak ditemukan.',
+        'grand_total_expect.required' => 'Total belanja harus diisi.',
+        'expense_details.*.material_id.required' => 'Bahan baku harus dipilih.',
+        'expense_details.*.material_id.exists' => 'Bahan baku tidak ditemukan.',
+        'expense_details.*.unit_id.required' => 'Satuan harus dipilih.',
+        'expense_details.*.quantity_expect.required' => 'Jumlah ekspektasi harus diisi.',
+        'expense_details.*.price_expect.required' => 'Harga ekspektasi harus diisi.',
+    ];
 
     public function mount($id = null): void
     {
@@ -106,7 +117,7 @@ class Form extends Component
 
             return [
                 'material_id' => $detail->material_id,
-                'material_quantity' => $batchQty . ' (' . $alias . ')',
+                'material_quantity' => $batchQty.' ('.$alias.')',
                 'quantity_expect' => $detail->quantity_expect,
                 'unit_id' => $detail->unit_id,
                 'price_expect' => $detail->price_expect,
@@ -167,7 +178,7 @@ class Form extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $satuan?->unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -178,7 +189,7 @@ class Form extends Component
                 $batchItem = $persediaan->sortBy('date')->where('date', '>=', now()->format('Y-m-d'))->first();
                 $batchQty = $batchItem?->batch_quantity ?? 0;
                 $alias = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
                 $this->expense_details[$index]['unit_id'] = '';
             }
             $this->expense_details[$index]['price_expect'] = 0;
@@ -213,7 +224,7 @@ class Form extends Component
                 $aliasFallback = $material->material_details->where('is_main', true)->first()?->unit?->alias ?? '-';
                 $alias = $unit?->alias ?? $aliasFallback;
 
-                $this->expense_details[$index]['material_quantity'] = $batchQty . ' (' . $alias . ')';
+                $this->expense_details[$index]['material_quantity'] = $batchQty.' ('.$alias.')';
 
                 $price = $material->material_details->where('unit_id', $unit->id)->first()?->supply_price ?? 0;
                 if ($price > 0) {
@@ -247,6 +258,8 @@ class Form extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.rencana.kelola'), 403);
+
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d M Y' : 'nullable',
@@ -283,6 +296,8 @@ class Form extends Component
 
     public function start()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.rencana.kelola'), 403);
+
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'expense_date' => $this->expense_date != 'dd/mm/yyyy' ? 'nullable|date_format:d M Y' : 'nullable',
@@ -386,6 +401,8 @@ class Form extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.rencana.kelola'), 403);
+
         $this->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'expense_date' => 'nullable|date_format:d M Y',

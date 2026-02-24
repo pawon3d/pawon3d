@@ -29,7 +29,7 @@ class Form extends Component
         'hitung_details.*.material_batch_id.required' => 'Batch harus dipilih.',
     ];
 
-    public function mount(?string $id = null)
+    public function mount(?string $id = null): void
     {
         $this->hitung_id = $id;
 
@@ -275,7 +275,7 @@ class Form extends Component
     /**
      * Simpan rencana aksi (buat baru atau update)
      */
-    public function save()
+    public function save(): mixed
     {
         $this->validate($this->getValidationRules(), $this->getValidationMessages());
 
@@ -345,7 +345,7 @@ class Form extends Component
         return redirect()->route('hitung.rincian', ['id' => $hitung->id])->with('success', 'Aksi berhasil diperbarui.');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.form', [
             'materials' => Material::with(['batches.unit', 'material_details'])->orderBy('name')->get(),

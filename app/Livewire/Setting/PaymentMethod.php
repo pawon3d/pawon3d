@@ -12,43 +12,43 @@ class PaymentMethod extends Component
 {
     use \Livewire\WithFileUploads, \Livewire\WithPagination, LivewireAlert;
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $sortField = 'created_at';
+    public string $sortField = 'created_at';
 
-    public $bankName;
+    public ?string $bankName = null;
 
-    public $type;
+    public ?string $type = null;
 
-    public $group;
+    public ?string $group = null;
 
-    public $accountNumber;
+    public ?string $accountNumber = null;
 
-    public $accountName;
+    public ?string $accountName = null;
 
-    public $isActive = true;
+    public bool $isActive = true;
 
-    public $qrisImage;
+    public mixed $qrisImage = null;
 
-    public $showModal = false;
+    public bool $showModal = false;
 
-    public $showDeleteModal = false;
+    public bool $showDeleteModal = false;
 
-    public $showPreviewModal = false;
+    public bool $showPreviewModal = false;
 
-    public $previewImageUrl = '';
+    public string $previewImageUrl = '';
 
-    public $edit = false;
+    public bool $edit = false;
 
-    public $paymentChannelId;
+    public ?string $paymentChannelId = null;
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Metode Pembayaran');
         View::share('mainTitle', 'Pengaturan');
     }
 
-    public function resetFields()
+    public function resetFields(): void
     {
         $this->bankName = '';
         $this->type = '';
@@ -63,29 +63,29 @@ class PaymentMethod extends Component
         $this->paymentChannelId = null;
     }
 
-    public function confirmDelete()
+    public function confirmDelete(): void
     {
         $this->showDeleteModal = true;
     }
 
-    public function previewImage()
+    public function previewImage(): void
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
-            $this->previewImageUrl = asset('storage/' . $this->qrisImage);
+            $this->previewImageUrl = asset('storage/'.$this->qrisImage);
             $this->showPreviewModal = true;
         }
     }
 
-    public function downloadImage()
+    public function downloadImage(): mixed
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
-            $path = storage_path('app/public/' . $this->qrisImage);
+            $path = storage_path('app/public/'.$this->qrisImage);
 
             return response()->download($path);
         }
     }
 
-    public function deleteImage()
+    public function deleteImage(): void
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
             Storage::disk('public')->delete($this->qrisImage);
@@ -99,7 +99,7 @@ class PaymentMethod extends Component
         }
     }
 
-    public function openModal($edit = false, $paymentChannelId = null)
+    public function openModal(bool $edit = false, ?string $paymentChannelId = null): void
     {
         $this->resetFields();
         $this->edit = $edit;
@@ -122,7 +122,7 @@ class PaymentMethod extends Component
         $this->showModal = true;
     }
 
-    public function save()
+    public function save(): void
     {
         $this->validate([
             'bankName' => 'required|string|max:255',
@@ -178,7 +178,7 @@ class PaymentMethod extends Component
         $this->resetFields();
     }
 
-    public function delete()
+    public function delete(): void
     {
         $channel = \App\Models\PaymentChannel::find($this->paymentChannelId);
         if ($channel) {
@@ -194,7 +194,7 @@ class PaymentMethod extends Component
         $this->resetFields();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.setting.payment-method', [
             'paymentChannels' => \App\Models\PaymentChannel::orderBy($this->sortField, $this->sortDirection)->paginate(10),

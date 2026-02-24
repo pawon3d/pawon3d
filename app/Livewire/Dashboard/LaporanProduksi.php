@@ -72,7 +72,7 @@ class LaporanProduksi extends Component
         View::share('mainTitle', 'Dashboard');
 
         if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
-            $this->selectedWorker = Auth::user()->id;
+            $this->selectedWorker = (string) Auth::user()->id;
         }
     }
 
@@ -151,13 +151,13 @@ class LaporanProduksi extends Component
         $productionQuery = Production::whereBetween('start_date', [$calendarStart, $calendarEnd])
             ->where('is_finish', true);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
         if ($this->selectedMethod !== 'semua') {
             $productionQuery->where('method', $this->selectedMethod);
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->start_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->start_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -321,7 +321,7 @@ class LaporanProduksi extends Component
             $lengthDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
             $prevStart = Carbon::parse($startDate)->subDays($lengthDays)->toDateString();
             $prevEnd = Carbon::parse($startDate)->subDay()->toDateString();
-            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($this->customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($this->customEndDate ?? $this->customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDate = Carbon::parse($this->selectedDate);
 
@@ -338,7 +338,7 @@ class LaporanProduksi extends Component
                     $endDate = $selectedDate->copy()->endOfWeek()->toDateString();
                     $prevStart = $selectedDate->copy()->subWeek()->startOfWeek()->toDateString();
                     $prevEnd = $selectedDate->copy()->subWeek()->endOfWeek()->toDateString();
-                    $dateRange = Carbon::parse($startDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($endDate)->translatedFormat('d F Y');
+                    $dateRange = Carbon::parse($startDate)->translatedFormat('d F Y').' - '.Carbon::parse($endDate)->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDate->copy()->startOfMonth()->toDateString();
@@ -352,7 +352,7 @@ class LaporanProduksi extends Component
                     $endDate = $selectedDate->copy()->endOfYear()->toDateString();
                     $prevStart = $selectedDate->copy()->subYear()->startOfYear()->toDateString();
                     $prevEnd = $selectedDate->copy()->subYear()->endOfYear()->toDateString();
-                    $dateRange = 'Tahun ' . $selectedDate->year;
+                    $dateRange = 'Tahun '.$selectedDate->year;
                     break;
                 default:
                     $startDate = $selectedDate->toDateString();
@@ -368,7 +368,7 @@ class LaporanProduksi extends Component
             ->where('is_finish', true);
 
         if ($this->selectedWorker !== 'semua') {
-            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
 
         if ($this->selectedMethod !== 'semua') {
@@ -382,7 +382,7 @@ class LaporanProduksi extends Component
             ->where('is_finish', true);
 
         if ($this->selectedWorker !== 'semua') {
-            $prevProductionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $prevProductionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
 
         if ($this->selectedMethod !== 'semua') {
@@ -424,7 +424,7 @@ class LaporanProduksi extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -433,7 +433,7 @@ class LaporanProduksi extends Component
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $successProduction = $details
             ->where('quantity_get', '>', 0)
@@ -464,7 +464,7 @@ class LaporanProduksi extends Component
                 'success' => $berhasil,
                 'fail' => $gagal,
             ];
-        })->filter(fn($item) => $item->total > 0)->sortByDesc('total')->values();
+        })->filter(fn ($item) => $item->total > 0)->sortByDesc('total')->values();
 
         $diffStats = [
             'successProduction' => $this->calculateDiff($successProduction, $prevSuccessProduction),
@@ -499,7 +499,7 @@ class LaporanProduksi extends Component
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'laporan-produksi-' . now()->format('Y-m-d') . '.pdf');
+        }, 'laporan-produksi-'.now()->format('Y-m-d').'.pdf');
     }
 
     protected function updateChartData($productions, $details)
@@ -644,7 +644,7 @@ class LaporanProduksi extends Component
             ->where('is_finish', true);
 
         if ($this->selectedWorker !== 'semua') {
-            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
 
         if ($this->selectedMethod !== 'semua') {
@@ -659,7 +659,7 @@ class LaporanProduksi extends Component
             ->where('is_finish', true);
 
         if ($this->selectedWorker !== 'semua') {
-            $prevProductionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $prevProductionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
 
         if ($this->selectedMethod !== 'semua') {
@@ -706,7 +706,7 @@ class LaporanProduksi extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -715,7 +715,7 @@ class LaporanProduksi extends Component
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $successProduction = $details
             ->where('quantity_get', '>', 0)
@@ -750,7 +750,7 @@ class LaporanProduksi extends Component
 
         // Filter production products by search term
         if ($this->search) {
-            $productionProducts = $productionProducts->filter(fn($item) => stripos($item->name, $this->search) !== false)->values();
+            $productionProducts = $productionProducts->filter(fn ($item) => stripos($item->name, $this->search) !== false)->values();
         }
 
         $this->diffStats = [

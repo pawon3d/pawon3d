@@ -12,23 +12,23 @@ class TambahSiapBeli extends Component
 {
     use LivewireAlert;
 
-    public $production_id = null;
+    public ?string $production_id = null;
 
-    public $isEditMode = false;
+    public bool $isEditMode = false;
 
-    public $production_details = [];
+    public array $production_details = [];
 
-    public $start_date = '';
+    public string $start_date = '';
 
-    public $time = '';
+    public string $time = '';
 
-    public $note;
+    public ?string $note = null;
 
-    public $current_stock_total = 0;
+    public int|float $current_stock_total = 0;
 
-    public $suggested_amount_total = 0;
+    public int|float $suggested_amount_total = 0;
 
-    public $quantity_plan_total = 0;
+    public int|float $quantity_plan_total = 0;
 
     public function mount($id = null)
     {
@@ -159,8 +159,10 @@ class TambahSiapBeli extends Component
         }
     }
 
-    public function store()
+    public function store(): mixed
     {
+        abort_unless(auth()->user()->can('produksi.rencana.kelola'), 403);
+
         $this->validate([
             'start_date' => 'required|date_format:d/m/Y',
             'time' => 'required',
@@ -178,7 +180,7 @@ class TambahSiapBeli extends Component
         if (empty($this->production_details) || $this->production_details[0]['product_id'] == '') {
             $this->alert('error', 'Belum ada produk yang ditambahkan.');
 
-            return;
+            return null;
         }
 
         // Cek kecukupan bahan baku sebelum menyimpan produksi
@@ -243,7 +245,7 @@ class TambahSiapBeli extends Component
             }
             $this->alert('error', $errorMessage, ['html' => true]);
 
-            return;
+            return null;
         }
 
         if ($this->isEditMode) {

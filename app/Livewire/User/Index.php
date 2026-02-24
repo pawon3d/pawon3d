@@ -15,17 +15,17 @@ class Index extends Component
     use LivewireAlert;
     use WithPagination;
 
-    public $search = '';
+    public string $search = '';
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $filterStatus = '';
+    public string $filterStatus = '';
 
-    public $sortField = 'name';
+    public string $sortField = 'name';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection', 'filterStatus'];
 
@@ -41,7 +41,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function sortBy($field)
+    public function sortBy(string $field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -91,7 +91,7 @@ class Index extends Component
         $this->alert('success', "Email undangan berhasil dikirim ulang ke {$user->email}.");
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('users')
             ->latest()
@@ -101,14 +101,14 @@ class Index extends Component
         $this->showHistoryModal = true;
     }
 
-    public function cetakInformasi()
+    public function cetakInformasi(): mixed
     {
         return redirect()->route('user.pdf', [
             'search' => $this->search,
         ]);
     }
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Pekerja');
         View::share('mainTitle', 'Pekerja');
@@ -128,10 +128,10 @@ class Index extends Component
             ->select('users.*', 'roles.name as role_name')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('users.name', 'like', '%' . $this->search . '%')
-                        ->orWhere('users.email', 'like', '%' . $this->search . '%')
-                        ->orWhere('users.phone', 'like', '%' . $this->search . '%')
-                        ->orWhere('roles.name', 'like', '%' . $this->search . '%');
+                    $q->where('users.name', 'like', '%'.$this->search.'%')
+                        ->orWhere('users.email', 'like', '%'.$this->search.'%')
+                        ->orWhere('users.phone', 'like', '%'.$this->search.'%')
+                        ->orWhere('roles.name', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->filterStatus !== '', function ($query) {
@@ -144,7 +144,7 @@ class Index extends Component
                 }
             })
             ->orderBy(
-                $this->sortField === 'role_name' ? 'roles.name' : 'users.' . $this->sortField,
+                $this->sortField === 'role_name' ? 'roles.name' : 'users.'.$this->sortField,
                 $this->sortDirection
             )->distinct()
             ->paginate(10);

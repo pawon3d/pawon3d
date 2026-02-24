@@ -13,58 +13,58 @@ class RincianSesi extends Component
 {
     use WithPagination;
 
-    public $shiftId;
+    public ?string $shiftId = null;
 
-    public $shift;
+    public mixed $shift = null;
 
-    public $search = '';
+    public string $search = '';
 
-    public $sortField = 'created_at';
+    public string $sortField = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $showStruk = false;
+    public bool $showStruk = false;
 
-    public $selectedPayment = null;
+    public mixed $selectedPayment = null;
 
-    public $selectedTransaction = null;
+    public mixed $selectedTransaction = null;
 
-    public $showRefundStruk = false;
+    public bool $showRefundStruk = false;
 
-    public $selectedRefundTransaction = null;
+    public mixed $selectedRefundTransaction = null;
 
     // Modal detail shift properties
-    public $showDetailShiftModal = false;
+    public bool $showDetailShiftModal = false;
 
-    public $detailInitialCash = 0;
+    public int|float $detailInitialCash = 0;
 
-    public $detailFinalCash = 0;
+    public int|float $detailFinalCash = 0;
 
-    public $detailReceivedCash = 0;
+    public int|float $detailReceivedCash = 0;
 
-    public $detailReceivedNonCash = 0;
+    public int|float $detailReceivedNonCash = 0;
 
-    public $detailRefundCash = 0;
+    public int|float $detailRefundCash = 0;
 
-    public $detailRefundNonCash = 0;
+    public int|float $detailRefundNonCash = 0;
 
-    public $detailRefundTotal = 0;
+    public int|float $detailRefundTotal = 0;
 
-    public $detailExpectedCash = 0;
+    public int|float $detailExpectedCash = 0;
 
-    public $detailDiscountToday = 0;
+    public int|float $detailDiscountToday = 0;
 
-    public $detailShiftNumber = '';
+    public string $detailShiftNumber = '';
 
-    public $detailShiftStartTime = null;
+    public mixed $detailShiftStartTime = null;
 
-    public $detailShiftEndTime = null;
+    public mixed $detailShiftEndTime = null;
 
-    public $detailShiftOpenedBy = '';
+    public string $detailShiftOpenedBy = '';
 
-    public $nonCashDetails = [];
+    public array $nonCashDetails = [];
 
-    public $showNonCashDetailsModal = false;
+    public bool $showNonCashDetailsModal = false;
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
@@ -142,17 +142,17 @@ class RincianSesi extends Component
 
         // Calculate received cash
         $receivedCash = Transaction::where('created_by_shift', $shift->id)
-            ->whereHas('payments', fn($q) => $q->where('payment_method', 'tunai'))
-            ->with(['payments' => fn($q) => $q->where('payment_method', 'tunai')])
+            ->whereHas('payments', fn ($q) => $q->where('payment_method', 'tunai'))
+            ->with(['payments' => fn ($q) => $q->where('payment_method', 'tunai')])
             ->get()
-            ->sum(fn($t) => $t->payments->sum('paid_amount'));
+            ->sum(fn ($t) => $t->payments->sum('paid_amount'));
 
         // Calculate received non-cash
         $receivedNonCash = Transaction::where('created_by_shift', $shift->id)
-            ->whereHas('payments', fn($q) => $q->where('payment_method', '!=', 'tunai'))
-            ->with(['payments' => fn($q) => $q->where('payment_method', '!=', 'tunai')])
+            ->whereHas('payments', fn ($q) => $q->where('payment_method', '!=', 'tunai'))
+            ->with(['payments' => fn ($q) => $q->where('payment_method', '!=', 'tunai')])
             ->get()
-            ->sum(fn($t) => $t->payments->sum('paid_amount'));
+            ->sum(fn ($t) => $t->payments->sum('paid_amount'));
 
         // Calculate total points discount for this shift
         $pointsDiscount = Transaction::where('created_by_shift', $shift->id)
@@ -195,11 +195,11 @@ class RincianSesi extends Component
 
     public function showNonCashDetails($shiftId)
     {
-        $this->nonCashDetails = \App\Models\Payment::whereHas('transaction', fn($q) => $q->where('created_by_shift', $shiftId))
+        $this->nonCashDetails = \App\Models\Payment::whereHas('transaction', fn ($q) => $q->where('created_by_shift', $shiftId))
             ->where('payment_method', '!=', 'tunai')
             ->with(['transaction', 'channel'])
             ->get()
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'receipt_number' => $p->receipt_number,
                 'invoice_number' => $p->transaction->invoice_number,
                 'bank_name' => $p->channel->bank_name ?? '-',
@@ -227,11 +227,11 @@ class RincianSesi extends Component
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('id', 'like', '%' . $this->search . '%')
-                    ->orWhere('invoice_number', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                $q->where('id', 'like', '%'.$this->search.'%')
+                    ->orWhere('invoice_number', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%')
                     ->orWhereHas('payments', function ($query) {
-                        $query->where('receipt_number', 'like', '%' . $this->search . '%');
+                        $query->where('receipt_number', 'like', '%'.$this->search.'%');
                     });
             });
         }

@@ -12,13 +12,13 @@ class RiwayatSesiPenjualan extends Component
 {
     use WithPagination;
 
-    public $search = '';
+    public string $search = '';
 
-    public $searchDate = '';
+    public string $searchDate = '';
 
-    public $sortField = 'created_at';
+    public string $sortField = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
     protected $queryString = ['search', 'searchDate', 'sortField', 'sortDirection'];
 

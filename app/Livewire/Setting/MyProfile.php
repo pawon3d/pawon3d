@@ -9,29 +9,29 @@ class MyProfile extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
-    public $name;
+    public ?string $name = null;
 
-    public $email;
+    public ?string $email = null;
 
-    public $password;
+    public ?string $password = null;
 
-    public $image;
+    public mixed $image = null;
 
-    public $role;
+    public ?string $role = null;
 
-    public $phone;
+    public ?string $phone = null;
 
-    public $gender;
+    public ?string $gender = null;
 
-    public $previewImage;
+    public ?string $previewImage = null;
 
-    public $roles;
+    public mixed $roles = null;
 
-    public $userId;
+    public ?string $userId = null;
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
     public array $pin = ['', '', '', '', '', ''];
 
@@ -42,7 +42,7 @@ class MyProfile extends Component
         'cancelled' => 'cancelled',
     ];
 
-    public function mount($id)
+    public function mount(string $id): void
     {
         View::share('title', 'Rincian Pekerja');
         View::share('mainTitle', 'Pengaturan');
@@ -63,7 +63,7 @@ class MyProfile extends Component
         }
     }
 
-    public function updatedImage()
+    public function updatedImage(): void
     {
         $this->validate([
             'image' => 'image|max:2048|mimes:jpg,jpeg,png',
@@ -73,7 +73,7 @@ class MyProfile extends Component
         $this->previewImage = $this->image->temporaryUrl();
     }
 
-    public function updatedPassword()
+    public function updatedPassword(): void
     {
         $this->validate(
             [
@@ -87,7 +87,7 @@ class MyProfile extends Component
         );
     }
 
-    public function updateUser()
+    public function updateUser(): mixed
     {
         $this->validate([
             'name' => 'required|string|max:255',
@@ -141,7 +141,7 @@ class MyProfile extends Component
         return redirect()->route('pengaturan');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.setting.my-profile');
     }

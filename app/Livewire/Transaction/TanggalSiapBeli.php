@@ -12,13 +12,13 @@ class TanggalSiapBeli extends Component
 {
     use WithPagination;
 
-    public $date;
+    public ?string $date = null;
 
-    public $search = '';
+    public string $search = '';
 
-    public $sortField = 'product_name';
+    public string $sortField = 'product_name';
 
-    public $sortDirection = 'asc';
+    public string $sortDirection = 'asc';
 
     protected $queryString = ['search'];
 
@@ -26,7 +26,7 @@ class TanggalSiapBeli extends Component
     {
         $this->date = $date;
         $formattedDate = \Carbon\Carbon::parse($date)->translatedFormat('d F Y');
-        View::share('title', 'Siap Beli - ' . $formattedDate);
+        View::share('title', 'Siap Beli - '.$formattedDate);
         View::share('mainTitle', 'Kasir');
     }
 
@@ -62,7 +62,7 @@ class TanggalSiapBeli extends Component
                 $product = $detail->product;
 
                 // Calculate total production for this product on this date
-                $totalProduction = $productions->flatMap(fn($p) => $p->details)
+                $totalProduction = $productions->flatMap(fn ($p) => $p->details)
                     ->where('product_id', $product->id)
                     ->sum('quantity_get');
 
@@ -73,7 +73,7 @@ class TanggalSiapBeli extends Component
                     ->where('method', 'siap-beli')
                     ->whereRaw('DATE(COALESCE(date, created_at)) = ?', [$this->date])
                     ->get()
-                    ->flatMap(fn($t) => $t->details)
+                    ->flatMap(fn ($t) => $t->details)
                     ->where('product_id', $product->id)
                     ->sum('quantity');
 
@@ -115,7 +115,7 @@ class TanggalSiapBeli extends Component
             $perPage,
             $page,
             [
-                'path' => url('/transaksi/siap-beli/' . $this->date),
+                'path' => url('/transaksi/siap-beli/'.$this->date),
                 'query' => request()->query(),
             ]
         );

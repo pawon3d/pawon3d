@@ -2,8 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Models\StoreProfile;
 use App\Models\User;
+use Illuminate\Support\Facades\View;
+
 use function Pest\Laravel\actingAs;
+
+beforeEach(function () {
+    $profile = StoreProfile::firstOrCreate(
+        ['id' => 1],
+        ['name' => 'Test Store', 'address' => 'Test Address', 'phone' => '08123456789']
+    );
+    View::share('storeProfile', $profile);
+});
 
 it('renders export pages and includes pdf and excel buttons', function () {
     $user = User::factory()->create();

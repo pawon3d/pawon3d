@@ -3,8 +3,12 @@
 
 <head>
     @include('partials.head')
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    {{-- Preload LCP hero image --}}
+    @if (!empty($storeProfile->banner))
+        <link rel="preload" as="image" href="{{ asset('storage/' . $storeProfile->banner) }}">
+    @else
+        <link rel="preload" as="image" href="{{ asset('img/apem.webp') }}" type="image/webp">
+    @endif
     <style>
         html {
             scroll-behavior: smooth;
@@ -63,7 +67,8 @@
 <body class="bg-[#FDFDFC] text-[#1b1b18] montserrat-regular">
     <!-- Header -->
     <header class="sticky top-0 bg-[#74512d] z-50 shadow-sm">
-        <nav class="max-w-[1280px] mx-auto px-4 md:px-12 lg:px-[50px] py-0 h-16 md:h-20 lg:h-[100px] flex items-center justify-between">
+        <nav
+            class="max-w-[1280px] mx-auto px-4 md:px-12 lg:px-[50px] py-0 h-16 md:h-20 lg:h-[100px] flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center gap-4 md:gap-[40px]">
                 <a class="w-12 h-12 md:w-14 md:h-14 lg:w-[64px] lg:h-[64px]" href="/" wire:navigate>
@@ -71,8 +76,11 @@
                         <img src="{{ asset('storage/' . $storeProfile->logo) }}"
                             alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
                     @else
-                        <img src="{{ asset('assets/bakery-logo.png') }}" alt="{{ $storeProfile->name ?? 'Pawon3D' }}"
-                            class="w-full h-full object-contain">
+                        <picture>
+                            <source srcset="{{ asset('assets/bakery-logo.webp') }}" type="image/webp">
+                            <img src="{{ asset('assets/bakery-logo.png') }}"
+                                alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
+                        </picture>
                     @endif
                 </a>
 
@@ -164,15 +172,19 @@
     <footer class="bg-[#252324] text-white">
         <div class="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-20 py-10 md:py-[44px]">
             <!-- Top Section: Logo, Ikuti Kami, Halal -->
-            <div class="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 md:pb-[40px] mb-8 md:mb-[40px] border-b border-white/20">
+            <div
+                class="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 md:pb-[40px] mb-8 md:mb-[40px] border-b border-white/20">
                 <!-- Logo -->
                 <div class="w-20 h-20 md:w-[100px] md:h-[100px]">
                     @if (!empty($storeProfile->logo))
                         <img src="{{ asset('storage/' . $storeProfile->logo) }}"
                             alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
                     @else
-                        <img src="{{ asset('assets/bakery-logo.png') }}" alt="{{ $storeProfile->name ?? 'Pawon3D' }}"
-                            class="w-full h-full object-contain">
+                        <picture>
+                            <source srcset="{{ asset('assets/bakery-logo.webp') }}" type="image/webp">
+                            <img src="{{ asset('assets/bakery-logo.png') }}"
+                                alt="{{ $storeProfile->name ?? 'Pawon3D' }}" class="w-full h-full object-contain">
+                        </picture>
                     @endif
                 </div>
 
@@ -180,7 +192,8 @@
                 <div class="flex items-center gap-4">
                     <a href="https://www.instagram.com/{{ $storeProfile->social_instagram ? $storeProfile->social_instagram : 'pawon3d' }}/"
                         target="_blank" class="flex items-center justify-center gap-4 hover:opacity-80 transition-all">
-                        <span class="text-lg md:text-[20px] montserrat-bold text-white whitespace-nowrap">Ikuti Kami</span>
+                        <span class="text-lg md:text-[20px] montserrat-bold text-white whitespace-nowrap">Ikuti
+                            Kami</span>
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path
                                 d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
@@ -190,7 +203,10 @@
 
                 <!-- Halal Logo -->
                 <div class="w-[38px] h-[68px]">
-                    <img src="{{ asset('img/halal.png') }}" alt="Halal" class="w-full h-full object-contain">
+                    <picture>
+                        <source srcset="{{ asset('img/halal.webp') }}" type="image/webp">
+                        <img src="{{ asset('img/halal.png') }}" alt="Halal" class="w-full h-full object-contain">
+                    </picture>
                 </div>
             </div>
 
@@ -289,42 +305,19 @@
     </footer>
 
 
-    <!-- Animations -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
-        integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        gsap.from(".animate-slideInLeft", {
-            duration: 5,
-            x: -100,
-            opacity: 0,
-            ease: "power4.out"
-        });
-
-        gsap.utils.toArray(".menu-item").forEach(item => {
-            gsap.from(item, {
-                scrollTrigger: {
-                    trigger: item,
-                    start: "top center+=100"
-                },
-                opacity: 0,
-                y: 50,
-                duration: 0.8
-            });
-        });
-
         // Mobile Menu Toggle Function
-        let mobileMenuOpen = false;
+        // Use window scope to prevent redeclaration errors on wire:navigate
+        window.mobileMenuOpen = false;
 
         function toggleMobileMenu() {
             const menu = document.getElementById('nav-menu');
             const iconOpen = document.getElementById('menu-icon-open');
             const iconClose = document.getElementById('menu-icon-close');
 
-            mobileMenuOpen = !mobileMenuOpen;
+            window.mobileMenuOpen = !window.mobileMenuOpen;
 
-            if (mobileMenuOpen) {
+            if (window.mobileMenuOpen) {
                 menu.style.maxHeight = '400px';
                 menu.style.opacity = '1';
                 iconOpen.classList.add('hidden');
@@ -342,7 +335,7 @@
         // Close menu when clicking on a link
         document.querySelectorAll('#nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
-                if (mobileMenuOpen) {
+                if (window.mobileMenuOpen) {
                     toggleMobileMenu();
                 }
             });

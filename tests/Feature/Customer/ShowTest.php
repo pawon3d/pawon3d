@@ -1,9 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Customer;
+use App\Models\StoreProfile;
 use App\Models\User;
+use Illuminate\Support\Facades\View;
+use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
+    $profile = StoreProfile::firstOrCreate(
+        ['id' => 1],
+        ['name' => 'Test Store', 'address' => 'Test Address', 'phone' => '08123456789']
+    );
+    View::share('storeProfile', $profile);
+
+    Permission::firstOrCreate(['name' => 'manajemen.pelanggan.kelola', 'guard_name' => 'web']);
+
     $this->user = User::factory()->create();
     $this->user->givePermissionTo('manajemen.pelanggan.kelola');
     $this->actingAs($this->user);

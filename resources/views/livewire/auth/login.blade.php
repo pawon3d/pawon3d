@@ -104,7 +104,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => __('auth.throttle', [
+            'email' => __('Terlalu banyak percobaan login. Silakan coba lagi dalam :minutes menit.', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),

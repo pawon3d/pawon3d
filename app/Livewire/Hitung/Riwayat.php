@@ -7,17 +7,17 @@ use Livewire\Component;
 
 class Riwayat extends Component
 {
-    public $search = '';
+    public string $search = '';
 
-    public $filterStatus = '';
+    public string $filterStatus = '';
 
-    public $sortField = 'hitung_number';
+    public string $sortField = 'hitung_number';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
-    public function sortBy($field)
+    public function sortBy(string $field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -27,13 +27,13 @@ class Riwayat extends Component
         $this->sortField = $field;
     }
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Riwayat Hitung dan Catat Persediaan');
         View::share('mainTitle', 'Inventori');
     }
 
-    public function cetakInformasi()
+    public function cetakInformasi(): mixed
     {
         return redirect()->route('hitung.pdf', [
             'search' => $this->search,
@@ -41,7 +41,7 @@ class Riwayat extends Component
         ]);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.riwayat', [
             'hitungs' => \App\Models\Hitung::with(['details.material', 'user'])

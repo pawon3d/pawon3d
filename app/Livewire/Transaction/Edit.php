@@ -15,55 +15,55 @@ class Edit extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
-    public $transactionId;
+    public ?string $transactionId = null;
 
-    public $transaction;
+    public mixed $transaction = null;
 
-    public $search = '';
+    public string $search = '';
 
-    public $details = [];
+    public array $details = [];
 
-    public $paymentChannels = [];
+    public array $paymentChannels = [];
 
-    public $paymentChannelId = '';
+    public string $paymentChannelId = '';
 
-    public $paymentMethod = '';
+    public string $paymentMethod = '';
 
-    public $paymentBank = '';
+    public string $paymentBank = '';
 
-    public $paymentAccount = '';
+    public string $paymentAccount = '';
 
-    public $paymentAccountNumber;
+    public ?string $paymentAccountNumber = null;
 
-    public $paymentAccountName;
+    public ?string $paymentAccountName = null;
 
-    public $image;
+    public mixed $image = null;
 
-    public $totalAmount = 0;
+    public int|float $totalAmount = 0;
 
-    public $paidAmount = 0;
+    public int|float $paidAmount = 0;
 
-    public $showItemModal = false;
+    public bool $showItemModal = false;
 
-    public $customer;
+    public mixed $customer = null;
 
-    public $phoneCustomer;
+    public ?string $phoneCustomer = null;
 
-    public $nameCustomer;
+    public ?string $nameCustomer = null;
 
-    public $customerModal = false;
+    public bool $customerModal = false;
 
-    public $name;
+    public string $name = '';
 
-    public $phone;
+    public string $phone = '';
 
-    public $date;
+    public string $date = '';
 
-    public $time;
+    public string $time = '';
 
-    public $note;
+    public ?string $note = null;
 
-    public $method;
+    public string $method = '';
 
     public function mount($id)
     {
@@ -71,7 +71,7 @@ class Edit extends Component
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);
-        if (!in_array($transaction->status, ['Draft', 'temp'])) {
+        if (! in_array($transaction->status, ['Draft', 'temp'])) {
             return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
         }
         $this->transaction = $transaction;
@@ -103,7 +103,7 @@ class Edit extends Component
             $this->paymentBank = $transaction->payment ? $transaction->payment->channel->bank_name : '';
             $this->paymentAccountNumber = $transaction->payment ? $transaction->payment->channel->account_number : '';
             $this->paymentAccountName = $transaction->payment ? $transaction->payment->channel->account_name : '';
-            $this->paymentAccount = $this->paymentAccountName . ' - ' . $this->paymentAccountNumber;
+            $this->paymentAccount = $this->paymentAccountName.' - '.$this->paymentAccountNumber;
             $customer = Customer::where('phone', $this->phone)->first();
             if ($customer) {
                 $this->customer = $customer;
@@ -156,7 +156,7 @@ class Edit extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->details[$itemId]['quantity'] >= $this->details[$itemId]['stock']) {
                     $this->details[$itemId]['quantity'] = $this->details[$itemId]['stock'];
-                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: ' . $this->details[$itemId]['stock']);
+                    $this->alert('warning', 'Kuantitas tidak dapat melebihi stok yang tersedia: '.$this->details[$itemId]['stock']);
                 }
             }
         }
@@ -230,7 +230,7 @@ class Edit extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_name . ' - ' . $channel->account_number;
+            $this->paymentAccount = $channel->account_name.' - '.$channel->account_number;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -310,7 +310,7 @@ class Edit extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%');
                 })
                 ->get(),
             'total' => $this->getTotalProperty(),

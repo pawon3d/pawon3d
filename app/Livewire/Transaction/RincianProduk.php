@@ -8,11 +8,11 @@ use Livewire\Component;
 
 class RincianProduk extends Component
 {
-    public $productId;
+    public ?string $productId = null;
 
-    public $product;
+    public mixed $product = null;
 
-    public $relatedProducts;
+    public mixed $relatedProducts = null;
 
     public function mount($id)
     {

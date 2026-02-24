@@ -12,21 +12,21 @@ class Index extends Component
 {
     use LivewireAlert, WithPagination;
 
-    public $search = '';
+    public string $search = '';
 
-    public $filterStatus = '';
+    public string $filterStatus = '';
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $sortField = 'hitung_number';
+    public string $sortField = 'hitung_number';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 
-    public function sortBy($field)
+    public function sortBy(string $field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -36,7 +36,7 @@ class Index extends Component
         $this->sortField = $field;
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('hitungs')
             ->latest()
@@ -46,7 +46,7 @@ class Index extends Component
         $this->showHistoryModal = true;
     }
 
-    public function mount()
+    public function mount(): void
     {
         View::share('mainTitle', 'Inventori');
         View::share('title', 'Hitung dan Catat Persediaan');
@@ -55,7 +55,7 @@ class Index extends Component
         }
     }
 
-    public function cetakInformasi()
+    public function cetakInformasi(): mixed
     {
         return redirect()->route('hitung.pdf', [
             'search' => $this->search,
@@ -63,7 +63,7 @@ class Index extends Component
         ]);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.index', [
             'hitungs' => \App\Models\Hitung::with(['details.material', 'user'])

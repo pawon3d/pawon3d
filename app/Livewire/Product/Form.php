@@ -20,56 +20,56 @@ class Form extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
     // Product ID (null for create, has value for edit)
-    public $product_id;
+    public ?string $product_id = null;
 
     // Form fields
-    public $name = '';
+    public string $name = '';
 
-    public $description = null;
+    public ?string $description = null;
 
-    public $category_ids = [];
+    public array $category_ids = [];
 
-    public $selectedMethods = ['pesanan-reguler'];
+    public array $selectedMethods = ['pesanan-reguler'];
 
-    public $is_recipe = false;
+    public bool $is_recipe = false;
 
-    public $is_active = false;
+    public bool $is_active = false;
 
-    public $is_recommended = false;
+    public bool $is_recommended = false;
 
-    public $is_other = false;
+    public bool $is_other = false;
 
-    public $pcs = 1;
+    public int $pcs = 1;
 
-    public $price = 0;
+    public int|float $price = 0;
 
-    public $stock = 0;
+    public int|float $stock = 0;
 
-    public $suhu_ruangan = 0;
+    public int|float $suhu_ruangan = 0;
 
-    public $suhu_dingin = 0;
+    public int|float $suhu_dingin = 0;
 
-    public $suhu_beku = 0;
+    public int|float $suhu_beku = 0;
 
     // Image
     public $product_image;
 
-    public $previewImage = null;
+    public ?string $previewImage = null;
 
     // Compositions & Costs
-    public $product_compositions = [];
+    public array $product_compositions = [];
 
-    public $other_costs = [];
+    public array $other_costs = [];
 
     // Calculations
-    public $capital = 0;
+    public int|float $capital = 0;
 
-    public $pcs_capital = 0;
+    public int|float $pcs_capital = 0;
 
     // UI State
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
     public $product;
 
@@ -182,7 +182,7 @@ class Form extends Component
         }
 
         // Set preview image
-        $this->previewImage = $product->product_image ? env('APP_URL') . '/storage/' . $product->product_image : null;
+        $this->previewImage = $product->product_image ? env('APP_URL').'/storage/'.$product->product_image : null;
     }
 
     public function riwayatPembaruan(): void
@@ -369,7 +369,7 @@ class Form extends Component
     protected function recalculateCapital(): void
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');
@@ -437,6 +437,8 @@ class Form extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.produk.kelola'), 403);
+
         $product = Product::find($this->product_id);
 
         if (! $product) {
@@ -457,6 +459,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('inventori.produk.kelola'), 403);
+
         $this->validate([
             'name' => 'required|string|min:3|max:255',
             'description' => 'nullable|string|max:500',
@@ -480,7 +484,7 @@ class Form extends Component
         });
 
         return redirect()->intended(route('produk'))
-            ->with('success', 'Produk berhasil ' . ($this->product_id ? 'diperbarui' : 'ditambahkan') . '.');
+            ->with('success', 'Produk berhasil '.($this->product_id ? 'diperbarui' : 'ditambahkan').'.');
     }
 
     protected function createProduct(): void
@@ -605,12 +609,12 @@ class Form extends Component
 
     protected function categoryOptions(): Collection
     {
-        return once(fn() => Category::orderBy('name')->get(['id', 'name']));
+        return once(fn () => Category::orderBy('name')->get(['id', 'name']));
     }
 
     protected function recipeMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', false)
+        return once(fn () => Material::where('is_recipe', false)
             ->with(['material_details.unit'])
             ->orderBy('name')
             ->get());
@@ -618,7 +622,7 @@ class Form extends Component
 
     protected function readyMaterials(): Collection
     {
-        return once(fn() => Material::where('is_recipe', true)
+        return once(fn () => Material::where('is_recipe', true)
             ->with(['material_details.unit', 'batches.unit'])
             ->orderBy('name')
             ->get());
@@ -626,7 +630,7 @@ class Form extends Component
 
     protected function typeCostOptions(): Collection
     {
-        return once(fn() => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
+        return once(fn () => \App\Models\TypeCost::orderBy('name')->get(['id', 'name']));
     }
 
     protected function resolveSoloInventory(): ?array

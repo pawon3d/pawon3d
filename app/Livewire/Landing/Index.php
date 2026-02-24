@@ -37,11 +37,10 @@ class Index extends Component
     {
         $categories = \App\Models\Category::all();
         $products = \App\Models\Product::with('category')
+            ->withCount('transactions')
             ->where('is_recommended', true)
             ->get()
-            ->sortByDesc(function ($product) {
-                return $product->transactions->count();
-            })
+            ->sortByDesc('transactions_count')
             ->take(4);
         $exploreProducts = \App\Models\Product::with('product_categories')->when($this->method, function ($query) {
             $query->whereJsonContains('method', $this->method);

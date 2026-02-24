@@ -117,7 +117,6 @@ class DatabaseSeeder extends Seeder
             'social_whatsapp' => '',
         ]);
 
-
         // Category::create([
         //     'name' => 'Makanan',
         //     'is_active' => true,
@@ -330,6 +329,10 @@ class DatabaseSeeder extends Seeder
             'type' => 'qris',
             'qris_image' => 'https://example.com/qris-image.png',
             'is_active' => false,
+        ]);
+
+        $this->call([
+            TestSeeder::class,
         ]);
     }
 }

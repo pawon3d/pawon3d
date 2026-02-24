@@ -27,46 +27,46 @@ class Index extends Component
 
     public $sortDirection = 'asc';
 
-    public $name;
+    public ?string $name = null;
 
-    public $alias;
+    public ?string $alias = null;
 
-    public $unit_id;
+    public ?string $unit_id = null;
 
-    public $materials;
+    public ?int $materials = null;
 
-    public $group;
+    public ?string $group = null;
 
-    public $showModal = false;
+    public bool $showModal = false;
 
-    public $showEditModal = false;
+    public bool $showEditModal = false;
 
-    public $sortByCategory = false;
+    public bool $sortByCategory = false;
 
-    public $showUsageModal = false;
+    public bool $showUsageModal = false;
 
-    public $usageSearch = '';
+    public string $usageSearch = '';
 
-    public $usageMaterials = [];
+    public array $usageMaterials = [];
 
-    public $usageSummary = [
+    public array $usageSummary = [
         'from' => 0,
         'to' => 0,
         'total' => 0,
         'pages' => 1,
     ];
 
-    public $usagePage = 1;
+    public int $usagePage = 1;
 
-    public $usagePerPage = 2;
+    public int $usagePerPage = 2;
 
-    public $usageSortDirection = 'asc';
+    public string $usageSortDirection = 'asc';
 
-    public $base_unit_id = null;
+    public ?string $base_unit_id = null;
 
-    public $conversion_factor = 1;
+    public ?float $conversion_factor = null;
 
-    public $baseUnits = [];
+    public array $baseUnits = [];
 
     protected $listeners = [
         'delete',
@@ -134,8 +134,8 @@ class Index extends Component
     public function render()
     {
         $units = \App\Models\Unit::when($this->search, function ($query) {
-            $query->where('name', 'like', '%' . $this->search . '%');
-        })->with('material_details')->withCount('material_details')
+            $query->where('name', 'like', '%'.$this->search.'%');
+        })->withCount('material_details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
@@ -150,6 +150,9 @@ class Index extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola') ||
+            auth()->user()->can('inventori.produk.kelola'), 403);
+
         $this->validate([
             'name' => 'required|min:3|unique:units,name',
             'alias' => 'required|min:1',
@@ -215,7 +218,7 @@ class Index extends Component
     {
         if ($this->unit_id) {
             $this->usageMaterials = \App\Models\Material::when($this->usageSearch, function ($query) {
-                $query->where('name', 'like', '%' . $this->usageSearch . '%');
+                $query->where('name', 'like', '%'.$this->usageSearch.'%');
             })->whereHas('material_details', function ($query) {
                 $query->where('unit_id', $this->unit_id);
             })->with(['material_details' => function ($query) {
@@ -289,7 +292,7 @@ class Index extends Component
         $materials = \App\Models\Material::when($this->usageSearch, function ($query) {
             $term = trim($this->usageSearch);
 
-            return $query->where('name', 'like', '%' . $term . '%');
+            return $query->where('name', 'like', '%'.$term.'%');
         })->whereHas('material_details', function ($query) {
             $query->where('unit_id', $this->unit_id);
         })->with(['material_details' => function ($query) {
@@ -306,7 +309,7 @@ class Index extends Component
         $current = $materials
             ->slice($offset, $this->usagePerPage)
             ->values()
-            ->map(fn($material) => [
+            ->map(fn ($material) => [
                 'id' => $material->id,
                 'name' => $material->name,
                 'unit_alias' => $material->material_details->where('unit_id', $this->unit_id)->first() ? $material->material_details->where('unit_id', $this->unit_id)->first()->unit->alias : '-',
@@ -326,15 +329,20 @@ class Index extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola') ||
+            auth()->user()->can('inventori.produk.kelola'), 403);
+
         $this->validate([
             'name' => [
                 'required',
                 'min:3',
                 Rule::unique('units')->ignore($this->unit_id),
             ],
+            'alias' => 'required|min:1',
+            'group' => 'required',
             'base_unit_id' => 'nullable|exists:units,id',
             'conversion_factor' => 'nullable|numeric|min:0.001',
-        ]);
+        ], $this->messages);
 
         // Validasi: jika ada base_unit_id, conversion_factor harus diisi
         if ($this->base_unit_id && ! $this->conversion_factor) {
@@ -381,6 +389,9 @@ class Index extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola') ||
+            auth()->user()->can('inventori.produk.kelola'), 403);
+
         $unit = Unit::find($this->unit_id);
 
         if ($unit) {

@@ -40,7 +40,7 @@ class Form extends Component
     /**
      * Users yang memiliki role ini (untuk edit mode).
      */
-    public $users;
+    public mixed $users = null;
 
     protected $listeners = [
         'delete',
@@ -64,6 +64,7 @@ class Form extends Component
                 $this->roleId = $decryptedId;
             } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
                 session()->flash('error', 'ID Peran tidak valid.');
+
                 return redirect()->route('role');
             }
 

@@ -3,6 +3,16 @@
 
 <head>
     @include('partials.head')
+    {{-- Dashboard-only assets: not loaded on landing/auth pages --}}
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/pikaday.css') }}" />
+    <link href="{{ asset('flowbite/flowbite.min.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('flowbite/flatpickr.min.css') }}">
+    <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('flowbite/flatpickr.js') }}" defer></script>
+    <script src="{{ asset('scripts/jquery.min.js') }}" defer></script>
+    <script src="{{ asset('scripts/select2.min.js') }}" defer></script>
 </head>
 
 @php
@@ -148,12 +158,14 @@
                 @endif
             </div>
             <div class="flex items-center gap-4 flex-row">
-                
+
                 <!-- PWA Install Button -->
-                <button id="pwa-install-btn" onclick="installPWA()" 
+                <button id="pwa-install-btn" onclick="installPWA()"
                     class="hidden items-center gap-2 px-4 py-2 bg-white text-[#74512D] rounded-lg hover:bg-gray-100 transition-colors font-semibold text-sm shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span class="hidden sm:inline">Install App</span>
                 </button>
@@ -172,7 +184,8 @@
                             @endif
                         </div>
                         <span class="font-semibold text-gray-100">{{ auth()->user()->name }}</span>
-                        <span class="font-semibold text-gray-100 hidden lg:inline">({{ auth()->user()->getRoleNames()->first() }})</span>
+                        <span
+                            class="font-semibold text-gray-100 hidden lg:inline">({{ auth()->user()->getRoleNames()->first() }})</span>
                         <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
                     </flux:button>
 
@@ -229,7 +242,8 @@
                 </flux:modal.close>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <flux:button type="submit" variant="secondary" icon="check" wire:loading.attr="disabled">Yakin
+                    <flux:button type="submit" variant="secondary" icon="check" wire:loading.attr="disabled">
+                        Yakin
                     </flux:button>
                 </form>
             </div>
@@ -299,10 +313,10 @@
             content.classList.remove('lg:ml-12');
         }
     </script>
-    
+
     <!-- PWA Install Script -->
     <script src="{{ asset('scripts/pwa-install.js') }}"></script>
-    
+
     @yield('scripts')
 </body>
 

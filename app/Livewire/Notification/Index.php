@@ -12,7 +12,7 @@ class Index extends Component
 
     public string $filter = '';
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Notifikasi');
         View::share('mainTitle', 'Notifikasi');
@@ -26,7 +26,7 @@ class Index extends Component
             'inventori.toko.kelola',
             'inventori.belanja.mulai',
             'inventori.hitung.kelola',
-            'inventori.alur.lihat'
+            'inventori.alur.lihat',
         ])) {
             $this->filter = 'inventori';
         } elseif ($user->hasAnyPermission(['produksi.rencana.kelola', 'produksi.laporan.kelola', 'produksi.mulai'])) {
@@ -38,7 +38,7 @@ class Index extends Component
         }
     }
 
-    public function markAsRead($notificationId)
+    public function markAsRead(string $notificationId): mixed
     {
         $notification = \App\Models\Notification::find($notificationId);
         if ($notification && ! $notification->is_read) {
@@ -48,7 +48,7 @@ class Index extends Component
         }
     }
 
-    public function markAllAsRead()
+    public function markAllAsRead(): mixed
     {
         $user = Auth::user();
         \App\Models\Notification::where('user_id', $user->id)->where('is_read', false)->update(['is_read' => true]);
@@ -56,7 +56,7 @@ class Index extends Component
         return redirect()->intended(route('notifikasi'))->with('notification', 'Semua notifikasi telah dibaca');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.notification.index');
     }

@@ -15,27 +15,27 @@ class Form extends Component
     use LivewireAlert;
     use WithFileUploads;
 
-    public $userId;
+    public ?string $userId = null;
 
-    public $name;
+    public string $name = '';
 
-    public $email;
+    public string $email = '';
 
-    public $password;
+    public string $password = '';
 
-    public $image;
+    public mixed $image = null;
 
-    public $role;
+    public string $role = '';
 
-    public $phone;
+    public ?string $phone = null;
 
-    public $gender;
+    public string $gender = '';
 
-    public $is_active;
+    public string $is_active = '';
 
-    public $previewImage;
+    public ?string $previewImage = null;
 
-    public $roles;
+    public mixed $roles = null;
 
     public $showHistoryModal = false;
 
@@ -46,7 +46,7 @@ class Form extends Component
         'cancelled' => 'cancelled',
     ];
 
-    public function mount($id = null): void
+    public function mount(?string $id = null): void
     {
         $this->roles = SpatieRole::all();
 
@@ -60,7 +60,7 @@ class Form extends Component
             $this->role = $user->getRoleNames()->first();
             $this->is_active = $user->is_active ? '1' : '0';
             if ($user->image) {
-                $this->previewImage = env('APP_URL') . '/storage/' . $user->image;
+                $this->previewImage = env('APP_URL').'/storage/'.$user->image;
             }
             View::share('title', 'Rincian Pekerja');
         } else {
@@ -110,7 +110,7 @@ class Form extends Component
         $this->showHistoryModal = true;
     }
 
-    public function save()
+    public function save(): mixed
     {
         if ($this->isEditMode()) {
             return $this->updateUser();
@@ -119,7 +119,7 @@ class Form extends Component
         return $this->createUser();
     }
 
-    public function createUser()
+    public function createUser(): mixed
     {
         $this->validate([
             'name' => 'required|string|max:255',
@@ -146,9 +146,9 @@ class Form extends Component
         // Check if the role has reached its maximum number of users
         $selectedRole = SpatieRole::where('name', $this->role)->first();
         if ($selectedRole && $selectedRole->hasReachedMaxUsers()) {
-            $this->addError('role', 'Peran "' . $selectedRole->name . '" sudah mencapai batas maksimum ' . $selectedRole->max_users . ' pekerja.');
+            $this->addError('role', 'Peran "'.$selectedRole->name.'" sudah mencapai batas maksimum '.$selectedRole->max_users.' pekerja.');
 
-            return;
+            return null;
         }
 
         $user = new User;
@@ -171,11 +171,11 @@ class Form extends Component
         return redirect()->route('user');
     }
 
-    public function updateUser()
+    public function updateUser(): mixed
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->userId,
+            'email' => 'required|email|unique:users,email,'.$this->userId,
             'image' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'phone' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8|alpha_num|regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/',
@@ -205,9 +205,9 @@ class Form extends Component
         if ($currentRole !== $this->role) {
             $selectedRole = SpatieRole::where('name', $this->role)->first();
             if ($selectedRole && $selectedRole->hasReachedMaxUsers()) {
-                $this->addError('role', 'Peran "' . $selectedRole->name . '" sudah mencapai batas maksimum ' . $selectedRole->max_users . ' pekerja.');
+                $this->addError('role', 'Peran "'.$selectedRole->name.'" sudah mencapai batas maksimum '.$selectedRole->max_users.' pekerja.');
 
-                return;
+                return null;
             }
         }
 
@@ -222,7 +222,7 @@ class Form extends Component
         $user->is_active = $this->is_active;
         if ($this->image) {
             if ($user->image) {
-                $oldImagePath = public_path('storage/' . $user->image);
+                $oldImagePath = public_path('storage/'.$user->image);
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
@@ -232,7 +232,6 @@ class Form extends Component
         $user->save();
 
         $user->syncRoles([$this->role]);
-
 
         session()->flash('success', 'Pekerja berhasil diperbarui.');
 
@@ -259,11 +258,11 @@ class Form extends Component
         ]);
     }
 
-    public function delete()
+    public function delete(): mixed
     {
         $user = User::findOrFail($this->userId);
         if ($user->image) {
-            $oldImagePath = public_path('storage/' . $user->image);
+            $oldImagePath = public_path('storage/'.$user->image);
             if (file_exists($oldImagePath)) {
                 unlink($oldImagePath);
             }

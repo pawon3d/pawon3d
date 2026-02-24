@@ -4,6 +4,7 @@ use App\Livewire\Peran\Form;
 use App\Models\SpatieRole;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
+use Illuminate\Support\Facades\Crypt;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 
@@ -37,7 +38,7 @@ test('tambah peran page shows correct title', function () {
 test('rincian peran page can be rendered', function () {
     $role = SpatieRole::create(['name' => 'Test Role']);
 
-    $response = $this->actingAs($this->user)->get(route('role.edit', $role->id));
+    $response = $this->actingAs($this->user)->get(route('role.edit', Crypt::encryptString((string) $role->id)));
 
     $response->assertStatus(200);
     $response->assertSeeLivewire(Form::class);
@@ -47,7 +48,7 @@ test('rincian peran page shows correct title', function () {
     $role = SpatieRole::create(['name' => 'Test Role']);
 
     Livewire::actingAs($this->user)
-        ->test(Form::class, ['id' => $role->id])
+        ->test(Form::class, ['id' => Crypt::encryptString((string) $role->id)])
         ->assertSee('Rincian Peran');
 });
 
@@ -81,7 +82,7 @@ test('can update existing role', function () {
     $role->syncPermissions(['kasir.pesanan.kelola']);
 
     Livewire::actingAs($this->user)
-        ->test(Form::class, ['id' => $role->id])
+        ->test(Form::class, ['id' => Crypt::encryptString((string) $role->id)])
         ->set('roleName', 'New Name')
         ->set('selectedPermissions', ['produksi.mulai', 'produksi.laporan.kelola'])
         ->call('save')
@@ -97,7 +98,7 @@ test('can delete role without users', function () {
     $role = SpatieRole::create(['name' => 'Role To Delete']);
 
     Livewire::actingAs($this->user)
-        ->test(Form::class, ['id' => $role->id])
+        ->test(Form::class, ['id' => Crypt::encryptString((string) $role->id)])
         ->call('delete')
         ->assertRedirect(route('role'));
 
@@ -110,7 +111,7 @@ test('cannot delete role with users', function () {
     $user->assignRole($role);
 
     Livewire::actingAs($this->user)
-        ->test(Form::class, ['id' => $role->id])
+        ->test(Form::class, ['id' => Crypt::encryptString((string) $role->id)])
         ->call('delete');
 
     // Role should still exist because it has users
@@ -152,7 +153,7 @@ test('isEditMode returns false for new role', function () {
 test('isEditMode returns true for existing role', function () {
     $role = SpatieRole::create(['name' => 'Test Role']);
 
-    $component = Livewire::actingAs($this->user)->test(Form::class, ['id' => $role->id]);
+    $component = Livewire::actingAs($this->user)->test(Form::class, ['id' => Crypt::encryptString((string) $role->id)]);
 
     expect($component->instance()->isEditMode())->toBeTrue();
 });

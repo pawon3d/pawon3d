@@ -27,21 +27,21 @@ class Index extends Component
 
     public $sortDirection = 'desc';
 
-    public $name;
+    public ?string $name = null;
 
-    public $is_active = true;
+    public bool $is_active = true;
 
-    public $category_id;
+    public ?string $category_id = null;
 
-    public $products;
+    public ?int $products = null;
 
-    public $showModal = false;
+    public bool $showModal = false;
 
-    public $showEditModal = false;
+    public bool $showEditModal = false;
 
-    public $showUsageModal = false;
+    public bool $showUsageModal = false;
 
-    public $usageCategoryId;
+    public ?string $usageCategoryId = null;
 
     public $usageProducts = [];
 
@@ -118,7 +118,7 @@ class Index extends Component
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
-            })->with('products', 'productCategories')->withCount('products')->orderBy($this->sortField, $this->sortDirection)
+            })->withCount('products')->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
         return view('livewire.category.index', compact('categories'));
@@ -132,6 +132,9 @@ class Index extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('inventori.produk.kelola') ||
+            auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $this->validate();
 
         Category::create([
@@ -163,15 +166,18 @@ class Index extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('inventori.produk.kelola') ||
+            auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $this->validate([
             'name' => [
                 'required',
                 'min:3',
                 Rule::unique('categories')->ignore($this->category_id),
             ],
-        ]);
+        ], $this->messages);
 
-        $category = \App\Models\Category::find($this->category_id);
+        $category = Category::findOrFail($this->category_id);
         $category->update([
             'name' => $this->name,
             'is_active' => (bool) $this->is_active,
@@ -199,6 +205,8 @@ class Index extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.produk.kelola') ||
+            auth()->user()->can('inventori.persediaan.kelola'), 403);
 
         $category = Category::find($this->category_id);
 

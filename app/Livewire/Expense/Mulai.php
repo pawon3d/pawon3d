@@ -10,23 +10,23 @@ class Mulai extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $expense_id;
+    public ?string $expense_id = null;
 
     public $expense;
 
-    public $expenseDetails = [];
+    public array $expenseDetails = [];
 
-    public $errorInputs = [];
+    public array $errorInputs = [];
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $total_quantity_expect;
+    public int|float|null $total_quantity_expect = null;
 
-    public $total_quantity_get;
+    public int|float|null $total_quantity_get = null;
 
-    public $percentage;
+    public int|float|null $percentage = null;
 
     public function mount($id)
     {
@@ -36,10 +36,10 @@ class Mulai extends Component
         $this->total_quantity_expect = $this->expense->expenseDetails->sum('quantity_expect');
         $this->total_quantity_get = $this->expense->expenseDetails->sum('quantity_get');
         $this->percentage = $this->total_quantity_expect > 0 ? ($this->total_quantity_get / $this->total_quantity_expect) * 100 : 0;
-        
+
         // Filter hanya item yang masih kurang (quantity_get < quantity_expect)
         $this->expenseDetails = $this->expense->expenseDetails
-            ->filter(fn($detail) => $detail->quantity_get < $detail->quantity_expect)
+            ->filter(fn ($detail) => $detail->quantity_get < $detail->quantity_expect)
             ->map(function ($detail) {
                 return [
                     'id' => $detail->id,
@@ -48,12 +48,12 @@ class Mulai extends Component
                     'quantity_get' => $detail->quantity_get,
                     'price_expect' => $detail->price_expect,
                     'price_get' => $detail->price_get ?? $detail->price_expect,
-                    'unit' => $detail->unit->name . ' (' . $detail->unit->alias . ')',
+                    'unit' => $detail->unit->name.' ('.$detail->unit->alias.')',
                     'quantity' => 0,
                     'expiry_date' => null,
                 ];
             })->values()->toArray();
-            
+
         View::share('title', 'Dapatkan Belanja');
         View::share('mainTitle', 'Inventori');
     }
@@ -98,6 +98,8 @@ class Mulai extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.mulai'), 403);
+
         $this->validate([
             'expenseDetails.*.quantity' => 'required|numeric|min:0',
             'expenseDetails.*.price_get' => 'required|numeric|min:0',

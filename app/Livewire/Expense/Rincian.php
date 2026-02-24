@@ -13,33 +13,33 @@ class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $expense_id;
+    public ?string $expense_id = null;
 
     public $expense;
 
     public $expenseDetails;
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $showNoteModal = false;
+    public bool $showNoteModal = false;
 
-    public $noteInput = '';
+    public string $noteInput = '';
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $total_quantity_expect;
+    public int|float|null $total_quantity_expect = null;
 
-    public $total_quantity_get;
+    public int|float|null $total_quantity_get = null;
 
-    public $percentage;
+    public int|float|null $percentage = null;
 
-    public $is_start = false;
+    public bool $is_start = false;
 
-    public $is_finish = false;
+    public bool $is_finish = false;
 
-    public $status;
+    public ?string $status = null;
 
-    public $end_date;
+    public ?string $end_date = null;
 
     protected $listeners = [
         'delete',
@@ -142,6 +142,7 @@ class Rincian extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.rencana.kelola'), 403);
 
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
         if ($expense) {
@@ -159,6 +160,8 @@ class Rincian extends Component
 
     public function start()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.mulai'), 403);
+
         $this->is_start = true;
         $this->status = 'Dimulai';
         $expense = \App\Models\Expense::findOrFail($this->expense_id);
@@ -172,6 +175,8 @@ class Rincian extends Component
 
     public function finish()
     {
+        abort_unless(auth()->user()->can('inventori.belanja.mulai'), 403);
+
         $this->is_finish = true;
         $this->status = 'Selesai';
         $this->end_date = Carbon::now()->toDateTimeString();
@@ -199,7 +204,7 @@ class Rincian extends Component
             $affectedMaterialIds->push($detail->material_id);
 
             // Generate a batch number if not present in detail
-            $batchNumber = 'B-' . Carbon::parse($detail->expiry_date)->format('ymd');
+            $batchNumber = 'B-'.Carbon::parse($detail->expiry_date)->format('ymd');
 
             // Ambil material dan base unit untuk konsolidasi
             $material = \App\Models\Material::find($detail->material_id);
@@ -311,7 +316,7 @@ class Rincian extends Component
         // Notifikasi jika belanja masih kurang
         $totalExpect = $this->expense->expenseDetails->sum('quantity_expect');
         $totalGet = $this->expense->expenseDetails->sum('quantity_get');
-        
+
         if ($totalGet < $totalExpect) {
             $this->alert('warning', 'Belanja telah diselesaikan, namun masih ada barang yang kurang dari rencana.');
         } else {

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\StoreProfile;
 use App\Models\User;
 use App\Notifications\UserInvitationNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\View;
 use Livewire\Volt\Volt;
 
 beforeEach(function () {
@@ -11,11 +14,12 @@ beforeEach(function () {
     \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Kasir']);
 
     // Buat store profile untuk layout
-    StoreProfile::firstOrCreate(['id' => 1], [
+    $profile = StoreProfile::firstOrCreate(['id' => 1], [
         'name' => 'Test Store',
         'address' => 'Test Address',
         'phone' => '08123456789',
     ]);
+    View::share('storeProfile', $profile);
 });
 
 test('user dapat dibuat tanpa password dan mengirim invitation', function () {
@@ -29,12 +33,13 @@ test('user dapat dibuat tanpa password dan mengirim invitation', function () {
 
     $this->actingAs($owner);
 
-    $response = Livewire\Livewire::test(\App\Livewire\User\Tambah::class)
+    $response = Livewire\Livewire::test(\App\Livewire\User\Form::class)
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('phone', '08123456789')
         ->set('gender', 'Laki-laki')
         ->set('role', 'Kasir')
+        ->set('password', 'Password1')
         ->call('createUser');
 
     $response->assertHasNoErrors();

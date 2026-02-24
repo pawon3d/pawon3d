@@ -73,7 +73,7 @@ class LaporanInventori extends Component
         View::share('mainTitle', 'Dashboard');
 
         if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
-            $this->selectedWorker = Auth::user()->id;
+            $this->selectedWorker = (string) Auth::user()->id;
         }
     }
 
@@ -156,14 +156,14 @@ class LaporanInventori extends Component
             $expenseQuery->whereIn('id', $expenseIds);
         }
         $expenseCollection = $expenseQuery->get();
-        $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $expenseCounts = $expenseCollection->groupBy(fn ($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $productionQuery = Production::whereBetween('date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -726,7 +726,7 @@ class LaporanInventori extends Component
                 ->where('causer_id', $this->selectedWorker)
                 ->pluck('subject_id')
                 ->unique();
-            
+
             $expensesQuery->whereIn('id', $expenseIds);
         }
 
@@ -734,17 +734,17 @@ class LaporanInventori extends Component
         $expenses = $this->expenses;
 
         $prevExpensesQuery = Expense::whereBetween('expense_date', [$prevStart->toDateString(), $prevEnd->toDateString()]);
-        
+
         // Filter by worker if not 'semua' - untuk periode sebelumnya juga
         if ($this->selectedWorker !== 'semua') {
             $prevExpenseIds = \Spatie\Activitylog\Models\Activity::inLog('expenses')
                 ->where('causer_id', $this->selectedWorker)
                 ->pluck('subject_id')
                 ->unique();
-            
+
             $prevExpensesQuery->whereIn('id', $prevExpenseIds);
         }
-        
+
         $this->prevExpenses = $prevExpensesQuery->get();
         $prevExpenses = $this->prevExpenses;
 
@@ -781,7 +781,7 @@ class LaporanInventori extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('material_id')->map(function ($items) {
             $total = $items->sum('quantity_get');
@@ -790,7 +790,7 @@ class LaporanInventori extends Component
                 'total' => $total,
                 'name' => $items->first()->material->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $totalExpense = $expenses->count();
         $prevTotalExpense = $prevExpenses->count();
@@ -806,7 +806,6 @@ class LaporanInventori extends Component
         foreach ($cumulativeExpenseDetails as $detail) {
             $grandTotal += $detail->total_actual;
         }
-
 
         // Hitung Nilai Terpakai dari InventoryLog SAMPAI tanggal akhir (kumulatif)
         $usedLogs = InventoryLog::with(['material.material_details', 'materialBatch.unit'])
@@ -833,25 +832,25 @@ class LaporanInventori extends Component
             foreach ($logs as $log) {
                 $qty = abs($log->quantity_change);
                 $totalQty += $qty;
-                
+
                 $material = $log->material;
                 $unit = $log->materialBatch->unit ?? null;
-                
+
                 if ($material && $unit) {
                     $price = $material->getUnitPriceInUnit($unit);
                     $cost = $qty * $price;
                     $totalCost += $cost;
-                    
-                    if (!$unitAlias) {
+
+                    if (! $unitAlias) {
                         $unitAlias = $unit->alias;
                     }
                 }
             }
-            
+
             $usedDataMap[$materialId] = [
                 'qty' => $totalQty,
                 'cost' => $totalCost,
-                'unit_alias' => $unitAlias
+                'unit_alias' => $unitAlias,
             ];
             $usedGrandTotal += $totalCost;
             $totalPriceMapForChart[$materialId] = $totalCost;
@@ -896,6 +895,9 @@ class LaporanInventori extends Component
         // Urutkan dari yang paling tinggi
         $sorted = $sumPrices->sortDesc()->take(10);
 
+        // Fetch all top materials in one query instead of Material::find() per item
+        $topMaterials = Material::whereIn('id', $sorted->keys()->toArray())->get()->keyBy('id');
+
         $topMaterialChartData = [
             'labels' => [],
             'data' => [],
@@ -907,8 +909,7 @@ class LaporanInventori extends Component
                 continue;
             }
 
-            $material = Material::find($materialId);
-            $label = $material?->name ?? 'Unknown';
+            $label = $topMaterials->get($materialId)?->name ?? 'Unknown';
 
             $topMaterialChartData['labels'][] = $label;
             $topMaterialChartData['data'][] = $sumPrice;
@@ -925,16 +926,16 @@ class LaporanInventori extends Component
             $firstValue = $sorted->first();
             $best = [
                 'total' => $firstValue,
-                'name' => Material::find($firstId)?->name ?? 'Unknown',
+                'name' => $topMaterials->get($firstId)?->name ?? 'Unknown',
             ];
 
-            $nonZero = $sorted->filter(fn($v) => $v > 0);
+            $nonZero = $sorted->filter(fn ($v) => $v > 0);
             if ($nonZero->count() > 0) {
                 $lastId = $nonZero->keys()->last();
                 $lastValue = $nonZero->last();
                 $worst = [
                     'total' => $lastValue,
-                    'name' => Material::find($lastId)?->name ?? 'Unknown',
+                    'name' => $topMaterials->get($lastId)?->name ?? 'Unknown',
                 ];
             }
         }
@@ -988,7 +989,7 @@ class LaporanInventori extends Component
         $filteredMaterials = $materialTables;
         if (! empty($this->search)) {
             $searchLower = Str::lower($this->search);
-            $filteredMaterials = $materialTables->filter(fn($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
+            $filteredMaterials = $materialTables->filter(fn ($m) => Str::contains(Str::lower($m->name), $searchLower))->values();
         }
 
         // Create a LengthAwarePaginator for the table component
@@ -1027,16 +1028,16 @@ class LaporanInventori extends Component
             ->map(function ($material) {
                 $totalQty = 0;
                 $unitAlias = null;
-                
+
                 foreach ($material->material_details as $detail) {
                     $qty = $material->batches->where('unit_id', $detail->unit_id)->sum('batch_quantity');
                     $totalQty += $qty;
-                    
-                    if (!$unitAlias && $qty > 0 && $detail->unit) {
+
+                    if (! $unitAlias && $qty > 0 && $detail->unit) {
                         $unitAlias = $detail->unit->alias;
                     }
                 }
-                
+
                 return (object) [
                     'name' => $material->name,
                     'status' => $material->status,
@@ -1044,7 +1045,7 @@ class LaporanInventori extends Component
                     'unit_alias' => $unitAlias ?? '-',
                 ];
             })
-            ->filter(fn($m) => $m->quantity >= 0)
+            ->filter(fn ($m) => $m->quantity >= 0)
             ->sortBy('quantity')
             ->values();
 
@@ -1056,7 +1057,7 @@ class LaporanInventori extends Component
                 $expiryDate = Carbon::parse($batch->date);
                 $today = Carbon::today();
                 $daysUntilExpiry = $today->diffInDays($expiryDate, false);
-                
+
                 // Tentukan status
                 if ($daysUntilExpiry < 0) {
                     $status = 'Expired';
@@ -1065,7 +1066,7 @@ class LaporanInventori extends Component
                 } else {
                     return null; // Skip batch yang masih lama expired
                 }
-                
+
                 return (object) [
                     'material_name' => $batch->material->name ?? '-',
                     'batch_number' => $batch->batch_number ?? '-',

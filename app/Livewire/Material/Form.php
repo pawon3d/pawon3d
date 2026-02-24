@@ -16,68 +16,68 @@ class Form extends Component
     use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
     // Material ID (null for create, has value for edit)
-    public $material_id;
+    public ?string $material_id = null;
 
     // Form fields
-    public $name;
+    public ?string $name = null;
 
-    public $description;
+    public ?string $description = null;
 
-    public $expiry_date = '00/00/0000';
+    public string $expiry_date = '00/00/0000';
 
-    public $status = 'Kosong';
+    public string $status = 'Kosong';
 
-    public $category_ids;
+    public ?array $category_ids = null;
 
-    public $minimum = 0;
+    public int|float $minimum = 0;
 
-    public $is_active = false;
+    public bool $is_active = false;
 
-    public $is_recipe = false;
+    public bool $is_recipe = false;
 
     // Unit related
-    public $main_unit_id;
+    public ?string $main_unit_id = null;
 
-    public $main_unit_alias;
+    public ?string $main_unit_alias = null;
 
-    public $main_unit_name;
+    public ?string $main_unit_name = null;
 
-    public $main_supply_quantity = 0;
+    public int|float $main_supply_quantity = 0;
 
     // Image
-    public $previewImage;
+    public ?string $previewImage = null;
 
     public $image;
 
     // Details
-    public $material_details = [];
+    public array $material_details = [];
 
-    public $ingredient_category_details = [];
+    public array $ingredient_category_details = [];
 
     // Calculations
-    public $supply_quantity_main = 0;
+    public int|float $supply_quantity_main = 0;
 
-    public $supply_quantity_total = 0;
+    public int|float $supply_quantity_total = 0;
 
-    public $supply_quantity_modal = 0;
+    public int|float $supply_quantity_modal = 0;
 
-    public $supply_price_total = 0;
+    public int|float $supply_price_total = 0;
 
-    public $quantity_main;
+    public int|float|null $quantity_main = null;
 
-    public $quantity_main_total;
+    public int|float|null $quantity_main_total = null;
 
     // UI State
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $material;
+    public ?Material $material = null;
 
     // Untuk tracking satuan yang bisa auto-convert
-    public $mainUnitHasConversion = false;
+    public bool $mainUnitHasConversion = false;
 
-    public $unitsWithAutoConversion = [];
+    public array $unitsWithAutoConversion = [];
 
     protected $listeners = [
         'delete',
@@ -164,7 +164,7 @@ class Form extends Component
         }
 
         // Set preview image
-        $this->previewImage = $material->image ? env('APP_URL') . '/storage/' . $material->image : null;
+        $this->previewImage = $material->image ? env('APP_URL').'/storage/'.$material->image : null;
     }
 
     protected function checkAutoConversionStatus(): void
@@ -196,9 +196,9 @@ class Form extends Component
     {
         $details = collect($this->material_details);
         $this->supply_quantity_main = $details->sum('quantity');
-        $this->supply_price_total = $details->sum(fn($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
-        $this->supply_quantity_total = $details->sum(fn($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
-        $this->supply_quantity_modal = $details->sum(fn($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+        $this->supply_price_total = $details->sum(fn ($d) => ($d['supply_price'] ?? 0) * ($d['supply_quantity'] ?? 0));
+        $this->supply_quantity_total = $details->sum(fn ($d) => (max(1, $d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
+        $this->supply_quantity_modal = $details->sum(fn ($d) => (($d['supply_quantity'] ?? 0) * ($d['quantity'] ?? 0)));
     }
 
     public function riwayatPembaruan(): void
@@ -354,6 +354,8 @@ class Form extends Component
 
     public function delete()
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $material = Material::find($this->material_id);
 
         if (! $material) {
@@ -374,6 +376,8 @@ class Form extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $this->validate([
             'name' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
@@ -396,7 +400,7 @@ class Form extends Component
         });
 
         return redirect()->intended(route('bahan-baku'))
-            ->with('success', 'Bahan Baku berhasil ' . ($this->material_id ? 'diperbarui' : 'ditambahkan') . '.');
+            ->with('success', 'Bahan Baku berhasil '.($this->material_id ? 'diperbarui' : 'ditambahkan').'.');
     }
 
     protected function createMaterial(): void
@@ -421,7 +425,7 @@ class Form extends Component
         $material = Material::with('batches')->findOrFail($this->material_id);
 
         // Calculate status based on batches
-        $hasExpiredBatch = $material->batches->contains(fn($batch) => $batch->date < now()->format('Y-m-d'));
+        $hasExpiredBatch = $material->batches->contains(fn ($batch) => $batch->date < now()->format('Y-m-d'));
         $totalQuantity = $material->batches->sum('batch_quantity');
 
         if ($hasExpiredBatch) {
@@ -479,7 +483,7 @@ class Form extends Component
     protected function saveMaterialDetails($material): void
     {
         if (! empty($this->material_details[0]['unit_id'])) {
-            $detailsData = collect($this->material_details)->map(fn($detail) => [
+            $detailsData = collect($this->material_details)->map(fn ($detail) => [
                 'unit_id' => $detail['unit_id'] ?? null,
                 'quantity' => $detail['quantity'] ?? 0,
                 'is_main' => $detail['is_main'] ?? false,

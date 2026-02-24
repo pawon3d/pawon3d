@@ -18,107 +18,107 @@ class RincianPesanan extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, \Livewire\WithFileUploads;
 
-    public $transactionId;
+    public ?string $transactionId = null;
 
-    public $paymentImage;
+    public mixed $paymentImage = null;
 
-    public $details = [];
+    public array $details = [];
 
-    public $paymentChannels = [];
+    public array $paymentChannels = [];
 
-    public $production;
+    public mixed $production = null;
 
-    public $payments;
+    public mixed $payments = null;
 
-    public $totalPayment = 0;
+    public int|float $totalPayment = 0;
 
-    public $paymentChannelId = '';
+    public string $paymentChannelId = '';
 
-    public $paymentMethod = '';
+    public string $paymentMethod = '';
 
-    public $paymentBank = '';
+    public string $paymentBank = '';
 
-    public $paymentAccount = '';
+    public string $paymentAccount = '';
 
-    public $paymentAccountNumber;
+    public ?string $paymentAccountNumber = null;
 
-    public $paymentAccountName;
+    public ?string $paymentAccountName = null;
 
-    public $image;
+    public mixed $image = null;
 
-    public $totalAmount = 0;
+    public int|float $totalAmount = 0;
 
-    public $paidAmount = 0;
+    public int|float $paidAmount = 0;
 
-    public $transaction;
+    public mixed $transaction = null;
 
-    public $total_quantity_plan;
+    public int|float|null $total_quantity_plan = null;
 
-    public $total_quantity_get;
+    public int|float|null $total_quantity_get = null;
 
-    public $percentage;
+    public int|float|null $percentage = null;
 
-    public $showPrintModal = false;
+    public bool $showPrintModal = false;
 
-    public $showImage = false;
+    public bool $showImage = false;
 
-    public $showStruk = false;
+    public bool $showStruk = false;
 
-    public $phoneNumber = '';
+    public string $phoneNumber = '';
 
-    public $pembayaranPertama;
+    public int|float|null $pembayaranPertama = null;
 
-    public $pembayaranKedua;
+    public int|float|null $pembayaranKedua = null;
 
-    public $sisaPembayaranPertama;
+    public int|float|null $sisaPembayaranPertama = null;
 
-    public $kembalian;
+    public int|float|null $kembalian = null;
 
-    public $uploadModal = false;
+    public bool $uploadModal = false;
 
-    public $uploadImage = null;
+    public mixed $uploadImage = null;
 
-    public $paymentId;
+    public ?string $paymentId = null;
 
-    public $previewUploadImage = null;
+    public mixed $previewUploadImage = null;
 
-    public $refundModal = false;
+    public bool $refundModal = false;
 
-    public $refundReason = '';
+    public string $refundReason = '';
 
-    public $refundProofImage = null;
+    public mixed $refundProofImage = null;
 
-    public $refundMethod = '';
+    public string $refundMethod = '';
 
-    public $refundPaymentChannel = '';
+    public string $refundPaymentChannel = '';
 
-    public $refundAccountNumber = '';
+    public string $refundAccountNumber = '';
 
-    public $isRefundReadOnly = false;
+    public bool $isRefundReadOnly = false;
 
-    public $noteModal = false;
+    public bool $noteModal = false;
 
-    public $note = '';
+    public string $note = '';
 
-    public $pointsUsed = 0;
+    public int $pointsUsed = 0;
 
-    public $availablePoints = 0;
+    public int $availablePoints = 0;
 
-    public $customer;
+    public mixed $customer = null;
 
-    public $paymentGroup;
+    public ?string $paymentGroup = null;
 
-    public $paymentMethods = [];
+    public array $paymentMethods = [];
 
-    public $cancelModal = false;
+    public bool $cancelModal = false;
 
-    public $cancelReason = '';
+    public string $cancelReason = '';
 
-    public $cancelProofImage = null;
+    public mixed $cancelProofImage = null;
 
-    public $riwayatModal = false;
+    public bool $riwayatModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
@@ -249,7 +249,7 @@ class RincianPesanan extends Component
             $this->details[$itemId]['refund_quantity']++;
             if ($this->details[$itemId]['refund_quantity'] > $this->details[$itemId]['quantity']) {
                 $this->details[$itemId]['refund_quantity'] = $this->details[$itemId]['quantity'];
-                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: ' . $this->details[$itemId]['quantity']);
+                $this->alert('warning', 'Kuantitas tidak dapat melebihi jumlah yang dibeli: '.$this->details[$itemId]['quantity']);
             }
         }
     }
@@ -295,7 +295,7 @@ class RincianPesanan extends Component
             $isTunai = ($lastPayment->payment_group === 'tunai');
         }
 
-        if (!$isTunai) {
+        if (! $isTunai) {
             return 0;
         }
 
@@ -445,7 +445,7 @@ class RincianPesanan extends Component
             $this->paymentBank = $channel->bank_name;
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
-            $this->paymentAccount = $channel->account_number . ' - ' . $channel->account_name;
+            $this->paymentAccount = $channel->account_number.' - '.$channel->account_name;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
@@ -469,6 +469,7 @@ class RincianPesanan extends Component
         // Validasi metode pembayaran untuk SEMUA pembayaran
         if (empty($this->paymentGroup)) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
+
             return;
         }
 
@@ -476,14 +477,15 @@ class RincianPesanan extends Component
         if ($this->paymentGroup === 'non-tunai') {
             if (empty($this->paymentMethod)) {
                 $this->alert('warning', 'Tipe pembayaran harus dipilih (Transfer/E-wallet/dll).');
+
                 return;
             }
             if ($this->paymentMethod === 'transfer' && empty($this->paymentChannelId)) {
                 $this->alert('warning', 'Bank Tujuan harus dipilih.');
+
                 return;
             }
         }
-
 
         if ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp') {
             $totalAfterPoints = $this->transaction->total_amount - ($this->transaction->points_discount ?? 0);
@@ -523,12 +525,14 @@ class RincianPesanan extends Component
             // Cek apakah sudah lunas
             if ($sisaTagihan <= 0) {
                 $this->alert('warning', 'Transaksi sudah lunas. Tidak perlu pembayaran lagi.');
+
                 return;
             }
 
             // Validasi jumlah pembayaran harus melunasi sisa tagihan
-            if (!empty($this->payments) && ($this->paidAmount < $sisaTagihan)) {
-                $this->alert('warning', 'Jumlah pembayaran harus lunas (minimal Rp ' . number_format($sisaTagihan, 0, ',', '.') . ').');
+            if (! empty($this->payments) && ($this->paidAmount < $sisaTagihan)) {
+                $this->alert('warning', 'Jumlah pembayaran harus lunas (minimal Rp '.number_format($sisaTagihan, 0, ',', '.').').');
+
                 return;
             } else {
                 $status = 'Lunas';
@@ -551,7 +555,8 @@ class RincianPesanan extends Component
 
                     // jika produk kurang dari quantity yang dibeli, tampilkan pesan error
                     if ($availableStock < $detail->quantity) {
-                        $this->alert('warning', 'Stok produk ' . $detail->product->name . ' tidak mencukupi untuk quantity yang dibeli.');
+                        $this->alert('warning', 'Stok produk '.$detail->product->name.' tidak mencukupi untuk quantity yang dibeli.');
+
                         return;
                     }
 
@@ -578,7 +583,7 @@ class RincianPesanan extends Component
                                             'action' => 'penjualan',
                                             'reference_type' => 'App\Models\Transaction',
                                             'reference_id' => $transaction->id,
-                                            'note' => 'Penjualan produk siap beli: ' . $product->name,
+                                            'note' => 'Penjualan produk siap beli: '.$product->name,
                                         ]
                                     );
                                 }
@@ -630,7 +635,7 @@ class RincianPesanan extends Component
                 }
             }
 
-            if ($this->paidAmount > 0 && !empty($this->paymentGroup)) {
+            if ($this->paidAmount > 0 && ! empty($this->paymentGroup)) {
                 $payment = Payment::create([
                     'transaction_id' => $transaction->id,
                     'payment_channel_id' => $this->paymentChannelId != '' ? $this->paymentChannelId : null,
@@ -678,20 +683,20 @@ class RincianPesanan extends Component
         ])->setPaper([0, 0, 227, 400], 'portrait');
 
         // 2. Simpan PDF ke storage
-        $fileName = 'struk-' . $this->transaction->id . '.pdf';
-        Storage::disk('public')->put('struk/' . $fileName, $pdf->output());
-        $pdfUrl = asset('storage/struk/' . $fileName);
+        $fileName = 'struk-'.$this->transaction->id.'.pdf';
+        Storage::disk('public')->put('struk/'.$fileName, $pdf->output());
+        $pdfUrl = asset('storage/struk/'.$fileName);
 
         // 3. Format pesan WhatsApp
         $message = "🧾 *Struk Transaksi*\n"; // 🧾
-        $message .= "\u{1F4C5} Tanggal: " . now()->format('d-m-Y H:i') . "\n\n"; // 📅
+        $message .= "\u{1F4C5} Tanggal: ".now()->format('d-m-Y H:i')."\n\n"; // 📅
         $message .= "\u{1F6D2} *Detail Pesanan:*\n"; // 🛒
 
         foreach ($this->transaction->details as $detail) {
-            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp " . number_format($detail->price) . "\n";
+            $message .= "- {$detail->product->name} x{$detail->quantity} - Rp ".number_format($detail->price)."\n";
         }
 
-        $message .= "\n\u{1F4B0} *Total:* Rp " . number_format($this->transaction->total_amount) . "\n"; // 💰
+        $message .= "\n\u{1F4B0} *Total:* Rp ".number_format($this->transaction->total_amount)."\n"; // 💰
         $message .= "\u{1F4B3} *Status:* {$this->transaction->payment_status}\n"; // 💳
 
         $tipe = match ($this->transaction->method) {
@@ -707,11 +712,11 @@ class RincianPesanan extends Component
         // 4. Kirim ke WhatsApp
         $phone = $this->phoneNumber;
         if (str_starts_with($phone, '08')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone); // pastikan format internasional, misal 628123xxxx
-        $waUrl = 'https://api.whatsapp.com/send/?phone=' . $phone . '&text=' . urlencode($message);
+        $waUrl = 'https://api.whatsapp.com/send/?phone='.$phone.'&text='.urlencode($message);
 
         $this->dispatch('open-wa', ['url' => $waUrl]);
 
@@ -728,9 +733,9 @@ class RincianPesanan extends Component
         // Return stream untuk dibuka di tab baru
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'struk-' . $this->transaction->invoice_number . '.pdf', [
+        }, 'struk-'.$this->transaction->invoice_number.'.pdf', [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="struk-' . $this->transaction->invoice_number . '.pdf"',
+            'Content-Disposition' => 'inline; filename="struk-'.$this->transaction->invoice_number.'.pdf"',
         ]);
     }
 
@@ -978,13 +983,13 @@ class RincianPesanan extends Component
     {
         $payment = Payment::findOrFail($id);
 
-        $path = storage_path('app/public/' . $payment->image);
+        $path = storage_path('app/public/'.$payment->image);
 
         if (! file_exists($path)) {
             $this->alert('error', 'Bukti pembayaran tidak ditemukan.');
         }
         $date = \Carbon\Carbon::parse($payment->paid_at)->format('dmY');
-        $customName = 'bukti-pembayaran-' . $payment->transaction->name . '-' . $payment->channel->bank_name . '-' . $date . '.' . pathinfo($path, PATHINFO_EXTENSION);
+        $customName = 'bukti-pembayaran-'.$payment->transaction->name.'-'.$payment->channel->bank_name.'-'.$date.'.'.pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $customName);
     }
@@ -1236,11 +1241,11 @@ class RincianPesanan extends Component
 
         // Format based on field type
         if (in_array($key, ['total_amount', 'points_discount'])) {
-            return 'Rp' . number_format($value, 0, ',', '.');
+            return 'Rp'.number_format($value, 0, ',', '.');
         }
 
         if (in_array($key, ['points_used'])) {
-            return number_format($value, 0, ',', '.') . ' poin';
+            return number_format($value, 0, ',', '.').' poin';
         }
 
         if (in_array($key, ['cancelled_at', 'end_date', 'created_at', 'updated_at'])) {
@@ -1253,7 +1258,6 @@ class RincianPesanan extends Component
 
         return $value;
     }
-
 
     public function render()
     {

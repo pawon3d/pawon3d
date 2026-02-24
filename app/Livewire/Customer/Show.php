@@ -17,64 +17,64 @@ class Show extends Component
 {
     use LivewireAlert, WithFileUploads, WithPagination;
 
-    public $customerId;
+    public ?string $customerId = null;
 
-    public $name = '';
+    public string $name = '';
 
-    public $phone = '';
+    public string $phone = '';
 
-    public $lastTransaction;
+    public mixed $lastTransaction = null;
 
-    public $points = 0;
+    public int $points = 0;
 
-    public $totalTransactions = 0;
+    public int $totalTransactions = 0;
 
-    public $totalPayment = 0;
+    public float $totalPayment = 0;
 
-    public $addPointsModal = false;
+    public bool $addPointsModal = false;
 
-    public $ig_image = null;
+    public mixed $ig_image = null;
 
-    public $gmaps_image = null;
+    public mixed $gmaps_image = null;
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $showPaymentModal = false;
+    public bool $showPaymentModal = false;
 
-    public $payments = [];
+    public array $payments = [];
 
-    public $refunds = [];
+    public array $refunds = [];
 
-    public $cancellations = [];
+    public array $cancellations = [];
 
-    public $totalPaidInModal = 0;
+    public float $totalPaidInModal = 0;
 
-    public $totalRefundInModal = 0;
+    public float $totalRefundInModal = 0;
 
-    public $netPaidInModal = 0;
+    public float $netPaidInModal = 0;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $historySearch = '';
+    public string $historySearch = '';
 
-    public $historySortField = 'created_at';
+    public string $historySortField = 'created_at';
 
-    public $historySortDirection = 'desc';
+    public string $historySortDirection = 'desc';
 
-    public $orderSearch = '';
+    public string $orderSearch = '';
 
-    public $orderSortField = 'created_at';
+    public string $orderSortField = 'created_at';
 
-    public $orderSortDirection = 'desc';
+    public string $orderSortDirection = 'desc';
 
-    public $orderType = 'pesanan-reguler';
+    public string $orderType = 'pesanan-reguler';
 
     protected $listeners = [
         'delete' => 'delete',
         'cancelled' => 'cancelled',
     ];
 
-    public function mount($id)
+    public function mount(string $id): void
     {
         $customer = Customer::findOrFail($id);
         $this->customerId = $customer->id;
@@ -95,11 +95,11 @@ class Show extends Component
         View::share('mainTitle', 'Pelanggan');
     }
 
-    public function update()
+    public function update(): void
     {
         $this->validate([
             'name' => 'required|string|max:50',
-            'phone' => 'required|string|unique:customers,phone,' . $this->customerId,
+            'phone' => 'required|string|unique:customers,phone,'.$this->customerId,
         ], [
             'name.required' => 'Nama pelanggan harus diisi.',
             'phone.required' => 'Nomor telepon pelanggan harus diisi.',
@@ -123,7 +123,7 @@ class Show extends Component
         }
     }
 
-    public function confirmDelete()
+    public function confirmDelete(): void
     {
         $this->alert('question', 'Apakah Anda yakin ingin menghapus pelanggan ini?', [
             'showConfirmButton' => true,
@@ -136,7 +136,7 @@ class Show extends Component
         ]);
     }
 
-    public function delete()
+    public function delete(): mixed
     {
         $customer = Customer::find($this->customerId);
 
@@ -150,32 +150,32 @@ class Show extends Component
         }
     }
 
-    public function cancelled()
+    public function cancelled(): void
     {
         $this->alert('info', 'Penghapusan dibatalkan.');
     }
 
-    public function showModalTambahPoin()
+    public function showModalTambahPoin(): void
     {
         $this->reset(['ig_image', 'gmaps_image']);
         $this->addPointsModal = true;
     }
 
-    public function updatedIgImage()
+    public function updatedIgImage(): void
     {
         $this->validate([
             'ig_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     }
 
-    public function updatedGmapsImage()
+    public function updatedGmapsImage(): void
     {
         $this->validate([
             'gmaps_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     }
 
-    public function addPoints()
+    public function addPoints(): void
     {
         $this->validate([
             'ig_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -221,7 +221,7 @@ class Show extends Component
         }
     }
 
-    public function sortHistoryBy($field)
+    public function sortHistoryBy(string $field): void
     {
         if ($this->historySortField === $field) {
             $this->historySortDirection = $this->historySortDirection === 'asc' ? 'desc' : 'asc';
@@ -231,7 +231,7 @@ class Show extends Component
         }
     }
 
-    public function sortOrderBy($field)
+    public function sortOrderBy(string $field): void
     {
         if ($this->orderSortField === $field) {
             $this->orderSortDirection = $this->orderSortDirection === 'asc' ? 'desc' : 'asc';
@@ -241,13 +241,13 @@ class Show extends Component
         }
     }
 
-    public function setOrderType($type)
+    public function setOrderType(string $type): void
     {
         $this->orderType = $type;
         $this->resetPage('ordersPage');
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('customers')
             ->where('subject_id', $this->customerId)
@@ -258,7 +258,7 @@ class Show extends Component
         $this->showHistoryModal = true;
     }
 
-    public function showDetailModal()
+    public function showDetailModal(): void
     {
         // Load all payments for transactions that belong to this customer (by customer_id or phone)
         $this->payments = Payment::whereHas('transaction', function ($q) {
@@ -302,10 +302,10 @@ class Show extends Component
 
         if ($this->orderSearch) {
             $query->where(function ($q) {
-                $q->where('id', 'like', '%' . $this->orderSearch . '%')
+                $q->where('id', 'like', '%'.$this->orderSearch.'%')
                     ->orWhereHas('details', function ($q) {
                         $q->whereHas('product', function ($q) {
-                            $q->where('name', 'like', '%' . $this->orderSearch . '%');
+                            $q->where('name', 'like', '%'.$this->orderSearch.'%');
                         });
                     });
             });
@@ -320,9 +320,9 @@ class Show extends Component
         return Transaction::where('phone', $this->phone)
             ->with('details.product')
             ->get()
-            ->flatMap(fn($transaction) => $transaction->details)
-            ->groupBy(fn($detail) => $detail->product?->name ?? 'Unknown')
-            ->map(fn($group, $name) => [
+            ->flatMap(fn ($transaction) => $transaction->details)
+            ->groupBy(fn ($detail) => $detail->product?->name ?? 'Unknown')
+            ->map(fn ($group, $name) => [
                 'name' => $name,
                 'quantity' => $group->sum('quantity'),
             ])
@@ -331,7 +331,7 @@ class Show extends Component
             ->values();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.customer.show', [
             'histories' => $this->pointsHistories,

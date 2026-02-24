@@ -98,7 +98,7 @@ class Index extends Component
         })
             ->when($this->filterStatus, function ($query) {
                 return $query->where('is_active', $this->filterStatus === 'aktif');
-            })->with('details')->withCount('details')
+            })->withCount('details')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
 
@@ -116,6 +116,8 @@ class Index extends Component
 
     public function store(): void
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $this->validate();
 
         IngredientCategory::create([
@@ -141,13 +143,15 @@ class Index extends Component
 
     public function update(): void
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola'), 403);
+
         $this->validate([
             'name' => [
                 'required',
                 'min:3',
                 Rule::unique('ingredient_categories')->ignore($this->category_id),
             ],
-        ]);
+        ], $this->messages);
 
         $category = IngredientCategory::findOrFail($this->category_id);
         $category->update([
@@ -177,6 +181,7 @@ class Index extends Component
 
     public function delete(): void
     {
+        abort_unless(auth()->user()->can('inventori.persediaan.kelola'), 403);
 
         $category = IngredientCategory::find($this->category_id);
 

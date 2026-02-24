@@ -17,73 +17,73 @@ class Index extends Component
 {
     use LivewireAlert, WithPagination;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $filterStatus = '';
+    public string $filterStatus = '';
 
-    public $search = '';
+    public string $search = '';
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $method = 'pesanan-reguler';
+    public string $method = 'pesanan-reguler';
 
     public array $cart = [];
 
-    public $todayShiftId;
+    public ?string $todayShiftId = null;
 
-    public $todayShiftNumber;
+    public ?string $todayShiftNumber = null;
 
-    public $todayShiftStatus;
+    public string $todayShiftStatus = 'closed';
 
-    public $todayShiftStartTime;
+    public mixed $todayShiftStartTime = null;
 
-    public $todayShiftEndTime;
+    public mixed $todayShiftEndTime = null;
 
-    public $todayShiftOpenedBy;
+    public ?string $todayShiftOpenedBy = null;
 
-    public $todayShiftClosedBy;
+    public ?string $todayShiftClosedBy = null;
 
-    public $initialCash = 0;
+    public int|float $initialCash = 0;
 
-    public $finalCash = 0;
+    public int|float $finalCash = 0;
 
-    public $receivedCash = 0;
+    public int|float $receivedCash = 0;
 
-    public $receivedNonCash = 0;
+    public int|float $receivedNonCash = 0;
 
-    public $discountToday = 0;
+    public int|float $discountToday = 0;
 
-    public $expectedCash = 0;
+    public int|float $expectedCash = 0;
 
-    public $refundTotal = 0;
+    public int|float $refundTotal = 0;
 
-    public $refundCash = 0;
+    public int|float $refundCash = 0;
 
-    public $refundNonCash = 0;
+    public int|float $refundNonCash = 0;
 
-    public $openShiftModal = false;
+    public bool $openShiftModal = false;
 
-    public $closeShiftModal = false;
+    public bool $closeShiftModal = false;
 
-    public $finishShiftModal = false;
+    public bool $finishShiftModal = false;
 
-    public $historyShifts = [];
+    public array $historyShifts = [];
 
-    public $showHistoryShiftModal = false;
+    public bool $showHistoryShiftModal = false;
 
-    public $searchHistoryShift = '';
+    public string $searchHistoryShift = '';
 
-    public $searchDate = '';
+    public string $searchDate = '';
 
-    public $showDetailHistoryShiftModal = false;
+    public bool $showDetailHistoryShiftModal = false;
 
-    public $selectedShiftId = null;
+    public ?string $selectedShiftId = null;
 
-    public $selectedShift;
+    public mixed $selectedShift = null;
 
-    public $showNonCashDetailsModal = false;
+    public bool $showNonCashDetailsModal = false;
 
-    public $nonCashDetails = [];
+    public array $nonCashDetails = [];
 
     protected $queryString = ['method'];
 
@@ -179,10 +179,10 @@ class Index extends Component
         foreach ($previousDayOpenShifts as $shift) {
             // Calculate final cash for the shift
             $receivedCash = \App\Models\Transaction::where('created_by_shift', $shift->id)
-                ->whereHas('payments', fn($q) => $q->where('payment_method', 'tunai'))
-                ->with(['payments' => fn($q) => $q->where('payment_method', 'tunai')])
+                ->whereHas('payments', fn ($q) => $q->where('payment_method', 'tunai'))
+                ->with(['payments' => fn ($q) => $q->where('payment_method', 'tunai')])
                 ->get()
-                ->sum(fn($t) => $t->payments->sum('paid_amount'));
+                ->sum(fn ($t) => $t->payments->sum('paid_amount'));
 
             $refundTotal = \App\Models\Transaction::where('refund_by_shift', $shift->id)->sum('total_refund');
 
@@ -204,8 +204,10 @@ class Index extends Component
         }
     }
 
-    public function openShift()
+    public function openShift(): void
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         if ($this->todayShiftId) {
             $this->alert('warning', 'Shift hari ini sudah dibuka!');
 
@@ -235,8 +237,10 @@ class Index extends Component
         $this->alert('success', 'Sesi berhasil dibuka!');
     }
 
-    public function closeShift()
+    public function closeShift(): void
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         if (! $this->todayShiftId) {
             $this->alert('warning', 'Tidak ada sesi yang dibuka hari ini!');
 
@@ -310,7 +314,7 @@ class Index extends Component
             if ($this->method == 'siap-beli') {
                 if ($this->cart[$itemId]['quantity'] >= $this->cart[$itemId]['stock']) {
                     $this->cart[$itemId]['quantity'] = $this->cart[$itemId]['stock'];
-                    $this->alert('warning', 'Stok produk ini hanya tersisa ' . $this->cart[$itemId]['stock'] . ' buah!');
+                    $this->alert('warning', 'Stok produk ini hanya tersisa '.$this->cart[$itemId]['stock'].' buah!');
                 }
             }
         }
@@ -367,15 +371,17 @@ class Index extends Component
     // Perhitungan total
     protected function getTotalProperty()
     {
-        return collect($this->cart)->reduce(fn($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
+        return collect($this->cart)->reduce(fn ($carry, $item) => $carry + ($item['price'] * $item['quantity']), 0);
     }
 
-    public function checkout()
+    public function checkout(): mixed
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         if (empty($this->cart)) {
             $this->alert('warning', 'Keranjang belanja masih kosong!');
 
-            return;
+            return null;
         }
 
         $transaction = Transaction::create([
@@ -408,7 +414,7 @@ class Index extends Component
                 ->when($this->method, function ($query) {
                     $query->whereJsonContains('method', $this->method);
                 })
-                ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
+                ->when($this->search, fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
                 ->paginate(10),
         ]);
     }

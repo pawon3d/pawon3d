@@ -87,7 +87,7 @@ class LaporanKasir extends Component
         View::share('mainTitle', 'Dashboard');
 
         if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
-            $this->selectedWorker = Auth::user()->id;
+            $this->selectedWorker = (string) Auth::user()->id;
         }
     }
 
@@ -179,7 +179,7 @@ class LaporanKasir extends Component
             $transactionQuery->where('method', $this->selectedMethod);
         }
         $transactionCollection = $transactionQuery->get();
-        $transactionCounts = $transactionCollection->groupBy(fn($t) => Carbon::parse($t->start_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $transactionCounts = $transactionCollection->groupBy(fn ($t) => Carbon::parse($t->start_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();
@@ -563,7 +563,7 @@ class LaporanKasir extends Component
     protected function updateChartData($transactions, $details)
     {
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
             return [
                 'total' => $total,
@@ -598,7 +598,7 @@ class LaporanKasir extends Component
         ];
 
         // Data untuk pie chart metode penjualan
-        $salesMethodTotals = $transactions->groupBy('method')->map(fn($g) => $g->sum('total_amount'));
+        $salesMethodTotals = $transactions->groupBy('method')->map(fn ($g) => $g->sum('total_amount'));
         $salesMethodNames = $salesMethodTotals->keys()->transform(function ($method) {
             return match ($method) {
                 'pesanan-reguler' => 'Pesanan Reguler',
@@ -772,7 +772,7 @@ class LaporanKasir extends Component
         $this->updateChartData($transactions, $details);
 
         $groupedProducts = $details->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
             return [
                 'total' => $total,
@@ -786,7 +786,7 @@ class LaporanKasir extends Component
         $best = $sorted->first();
 
         $prevBest = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
             return [
                 'total' => $total,
@@ -794,16 +794,16 @@ class LaporanKasir extends Component
             ];
         })->sortByDesc('total')->first();
 
-        $worst = $sorted->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        $worst = $sorted->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $prevWorst = $prevDetails->groupBy('product_id')->map(function ($items) {
-            $total = $items->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $total = $items->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
             return [
                 'total' => $total,
                 'name' => $items->first()->product->name ?? 'Unknown',
             ];
-        })->filter(fn($p) => $p['total'] > 0)->sortBy('total')->first();
+        })->filter(fn ($p) => $p['total'] > 0)->sortBy('total')->first();
 
         $sessionCount = $transactions->unique('created_by_shift')->count();
         $prevSessionCount = $prevTransactions->unique('created_by_shift')->count();
@@ -814,8 +814,8 @@ class LaporanKasir extends Component
         $customerCount = $transactions->unique('phone')->count();
         $prevCustomerCount = $prevTransactions->unique('phone')->count();
 
-        $productSold = $details->sum(fn($d) => $d->quantity - $d->refund_quantity);
-        $prevProductSold = $prevDetails->sum(fn($d) => $d->quantity - $d->refund_quantity);
+        $productSold = $details->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+        $prevProductSold = $prevDetails->sum(fn ($d) => $d->quantity - $d->refund_quantity);
 
         // === Pendapatan dan Statistik Penjualan ===
         $grossRevenue = $transactions->sum('total_amount');
@@ -842,6 +842,9 @@ class LaporanKasir extends Component
         $prevProfit = $prevNetRevenue - $prevCapitalTotal;
 
         // === Data Bulanan untuk chart (semua tipe) ===
+        // Pre-index transaction month to avoid O(n²) firstWhere() inside loops
+        $transactionMonthMap = $transactions->mapWithKeys(fn ($trx) => [$trx->id => Carbon::parse($trx->start_date)->month]);
+
         $chartGross = [];
         $chartDiscount = [];
         $chartRefund = [];
@@ -849,18 +852,14 @@ class LaporanKasir extends Component
         $chartProfit = [];
 
         foreach (range(1, 12) as $month) {
-            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->start_date)->month === $month);
-            $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
-                $trx = $transactions->firstWhere('id', $d->transaction_id);
-
-                return $trx && Carbon::parse($trx->start_date)->month === $month;
-            });
+            $monthTransactions = $transactions->filter(fn ($trx) => Carbon::parse($trx->start_date)->month === $month);
+            $monthDetails = $details->filter(fn ($d) => ($transactionMonthMap[$d->transaction_id] ?? null) === $month);
 
             $gross = $monthTransactions->sum('total_amount');
             $refund = $monthTransactions->sum('total_refund');
             $discount = $monthTransactions->sum('points_discount');
             $net = $gross - $refund - $discount;
-            $modal = $monthDetails->sum(fn($d) => ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity));
+            $modal = $monthDetails->sum(fn ($d) => ($d->pcs_capital_snapshot ?? 0) * ($d->quantity - $d->refund_quantity));
             $monthProfit = $net - $modal;
 
             $chartGross[] = $gross;
@@ -881,17 +880,18 @@ class LaporanKasir extends Component
         };
 
         // Product sales data for table
+        // Fetch all production counts in one grouped query to avoid N+1
+        $produksiPerProduct = \App\Models\ProductionDetail::whereHas('production', function ($q) use ($startDate, $endDate) {
+            $q->whereBetween('start_date', [$startDate, $endDate]);
+        })
+            ->selectRaw('product_id, sum(quantity_get) as total')
+            ->groupBy('product_id')
+            ->pluck('total', 'product_id');
+
         $products = Product::all();
-        $productSales = $products->map(function ($product) use ($details, $startDate, $endDate) {
-            $terjual = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
-
-            // Get production count from productions table using start_date
-            $produksi = \App\Models\ProductionDetail::whereHas('production', function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate]);
-            })
-                ->where('product_id', $product->id)
-                ->sum('quantity_get');
-
+        $productSales = $products->map(function ($product) use ($details, $produksiPerProduct) {
+            $terjual = $details->where('product_id', $product->id)->sum(fn ($d) => $d->quantity - $d->refund_quantity);
+            $produksi = $produksiPerProduct[$product->id] ?? 0;
             $tidakTerjual = max(0, $produksi - $terjual);
 
             return (object) [
@@ -904,18 +904,14 @@ class LaporanKasir extends Component
 
         // Filter product sales by search term
         if ($this->searchProduct) {
-            $productSales = $productSales->filter(fn($item) => stripos($item->name, $this->searchProduct) !== false)->values();
+            $productSales = $productSales->filter(fn ($item) => stripos($item->name, $this->searchProduct) !== false)->values();
         }
 
         // Monthly reports for Rincian Penjualan table
         $monthlyReports = [];
         foreach (range(1, 12) as $month) {
-            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->start_date)->month === $month);
-            $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
-                $trx = $transactions->firstWhere('id', $d->transaction_id);
-
-                return $trx && Carbon::parse($trx->start_date)->month === $month;
-            });
+            $monthTransactions = $transactions->filter(fn ($trx) => Carbon::parse($trx->start_date)->month === $month);
+            $monthDetails = $details->filter(fn ($d) => ($transactionMonthMap[$d->transaction_id] ?? null) === $month);
 
             $penjualan = $monthTransactions->sum('total_amount');
             $refund = $monthTransactions->sum('total_refund');
@@ -943,7 +939,7 @@ class LaporanKasir extends Component
 
         // Filter monthly reports by search term
         if ($this->searchReport) {
-            $monthlyReports = collect($monthlyReports)->filter(fn($item) => stripos($item->waktu, $this->searchReport) !== false)->values()->toArray();
+            $monthlyReports = collect($monthlyReports)->filter(fn ($item) => stripos($item->waktu, $this->searchReport) !== false)->values()->toArray();
         }
 
         $this->diffStats = [

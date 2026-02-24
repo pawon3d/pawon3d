@@ -17,63 +17,63 @@ class BuatPesanan extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert, WithFileUploads;
 
-    public $transactionId;
+    public ?string $transactionId = null;
 
-    public $search = '';
+    public string $search = '';
 
-    public $transaction;
+    public mixed $transaction = null;
 
-    public $details = [];
+    public array $details = [];
 
-    public $paymentChannels = [];
+    public array $paymentChannels = [];
 
-    public $paymentChannelId = '';
+    public string $paymentChannelId = '';
 
-    public $paymentMethod = '';
+    public string $paymentMethod = '';
 
-    public $paymentBank = '';
+    public string $paymentBank = '';
 
-    public $paymentAccount = '';
+    public string $paymentAccount = '';
 
-    public $paymentAccountNumber;
+    public ?string $paymentAccountNumber = null;
 
-    public $paymentAccountName;
+    public ?string $paymentAccountName = null;
 
-    public $image;
+    public mixed $image = null;
 
-    public $totalAmount = 0;
+    public int|float $totalAmount = 0;
 
-    public $paidAmount = 0;
+    public int|float $paidAmount = 0;
 
-    public $showItemModal = false;
+    public bool $showItemModal = false;
 
-    public $customer;
+    public mixed $customer = null;
 
-    public $phoneCustomer;
+    public ?string $phoneCustomer = null;
 
-    public $nameCustomer;
+    public ?string $nameCustomer = null;
 
-    public $customerModal = false;
+    public bool $customerModal = false;
 
-    public $name;
+    public string $name = '';
 
-    public $phone;
+    public string $phone = '';
 
-    public $date;
+    public string $date = '';
 
-    public $time;
+    public string $time = '';
 
-    public $note;
+    public ?string $note = null;
 
-    public $method;
+    public string $method = '';
 
-    public $pointsUsed = 0;
+    public int $pointsUsed = 0;
 
-    public $availablePoints = 0;
+    public int $availablePoints = 0;
 
-    public $paymentMethods = [];
+    public array $paymentMethods = [];
 
-    public $paymentGroup;
+    public ?string $paymentGroup = null;
 
     protected $messages = [
         'name.required' => 'Nama harus diisi.',
@@ -82,7 +82,7 @@ class BuatPesanan extends Component
         'time.required' => 'Jam harus diisi',
     ];
 
-    public function mount($id)
+    public function mount(string $id): mixed
     {
         View::share('title', 'Buat Pesanan');
         View::share('mainTitle', 'Kasir');
@@ -109,6 +109,8 @@ class BuatPesanan extends Component
 
             return redirect()->route('transaksi');
         }
+
+        return null;
     }
 
     public function showCustomerModal()
@@ -153,7 +155,7 @@ class BuatPesanan extends Component
             $this->pointsUsed = 0;
             $this->alert('warning', 'Poin tidak boleh negatif.');
 
-            return;
+            return null;
         }
 
         // Validasi: tidak boleh melebihi poin yang tersedia
@@ -161,7 +163,7 @@ class BuatPesanan extends Component
             $this->pointsUsed = $this->availablePoints;
             $this->alert('warning', 'Poin yang digunakan melebihi poin tersedia.');
 
-            return;
+            return null;
         }
 
         // Validasi: harus kelipatan 10
@@ -169,7 +171,7 @@ class BuatPesanan extends Component
             $this->pointsUsed = floor($value / 10) * 10;
             $this->alert('warning', 'Poin harus kelipatan 10.');
 
-            return;
+            return null;
         }
 
         // Validasi: maksimal poin yang bisa dipakai = total tagihan / 100 (1 poin = Rp 100)
@@ -178,7 +180,7 @@ class BuatPesanan extends Component
             $this->pointsUsed = floor($maxPoints / 10) * 10;
             $this->alert('warning', 'Poin yang digunakan tidak boleh melebihi total tagihan.');
 
-            return;
+            return null;
         }
 
         $this->pointsUsed = $value;
@@ -219,7 +221,7 @@ class BuatPesanan extends Component
                 if ($product->stock <= 0) {
                     $this->alert('warning', 'Stok produk ini sudah habis!');
 
-                    return;
+                    return null;
                 }
             }
             $this->details[$productId] = [
@@ -272,7 +274,7 @@ class BuatPesanan extends Component
                 ->get()
                 ->unique('type')
                 ->values();
-        } elseif($value == 'tunai') {
+        } elseif ($value == 'tunai') {
             $this->paymentMethod = 'tunai';
         }
     }
@@ -305,8 +307,10 @@ class BuatPesanan extends Component
         }
     }
 
-    public function save()
+    public function save(): mixed
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         if ($this->method != 'siap-beli') {
             $this->validate([
                 'name' => 'required|string|max:255',
@@ -385,8 +389,10 @@ class BuatPesanan extends Component
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
-    public function pay()
+    public function pay(): mixed
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         if ($this->method != 'siap-beli') {
             $this->validate([
                 'name' => 'required|string|max:255',
@@ -421,11 +427,11 @@ class BuatPesanan extends Component
         if ($this->paymentGroup == '' && ($this->transaction->status == 'Draft' || $this->transaction->status == 'temp')) {
             $this->alert('warning', 'Metode pembayaran harus diisi.');
 
-            return;
+            return null;
         } elseif ($this->paymentChannelId == '' && $this->paymentGroup != 'tunai') {
             $this->alert('warning', 'Bank Tujuan Belum Dipilih.');
 
-            return;
+            return null;
             // } elseif ($this->image == null && $this->paymentMethod != 'tunai') {
             //     $this->alert('warning', 'Silakan unggah bukti pembayaran.');
             //     return;
@@ -441,14 +447,14 @@ class BuatPesanan extends Component
                 if ($this->paidAmount < $totalAfterPoints) {
                     $this->alert('warning', 'Untuk pembelian siap saji harus dibayar lunas.');
 
-                    return;
+                    return null;
                 }
             } else {
                 // Untuk pesanan reguler/kotak minimal 50%
                 if ($this->paidAmount < 0.5 * $totalAfterPoints) {
                     $this->alert('warning', 'Jumlah pembayaran minimal 50% dari total setelah diskon poin.');
 
-                    return;
+                    return null;
                 }
             }
         }
@@ -511,11 +517,11 @@ class BuatPesanan extends Component
                             // Produk ready-to-sell: kurangi stok dari material batch
                             $product->load('product_compositions.material.material_details.unit');
                             $composition = $product->product_compositions->first();
-                            
+
                             if ($composition && $composition->material) {
                                 $material = $composition->material;
                                 $mainDetail = $material->material_details->firstWhere('is_main', true);
-                                
+
                                 if ($mainDetail && $mainDetail->unit) {
                                     // Reduce material quantity (FIFO, exclude expired)
                                     $material->reduceQuantity(
@@ -525,7 +531,7 @@ class BuatPesanan extends Component
                                             'action' => 'penjualan',
                                             'reference_type' => 'App\Models\Transaction',
                                             'reference_id' => $transaction->id,
-                                            'note' => 'Penjualan produk siap beli: ' . $product->name,
+                                            'note' => 'Penjualan produk siap beli: '.$product->name,
                                         ]
                                     );
                                 }
@@ -574,8 +580,10 @@ class BuatPesanan extends Component
         return redirect()->route('transaksi.rincian-pesanan', ['id' => $this->transactionId]);
     }
 
-    public function delete()
+    public function delete(): mixed
     {
+        abort_unless(auth()->user()->can('kasir.pesanan.kelola'), 403);
+
         $transaction = Transaction::find($this->transactionId);
         if ($transaction) {
             $invoiceNumber = $transaction->invoice_number;

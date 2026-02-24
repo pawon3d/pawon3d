@@ -15,41 +15,41 @@ class Index extends Component
 {
     use LivewireAlert, WithFileUploads;
 
-    public $search = '';
+    public string $search = '';
 
-    public $sortField = 'created_at';
+    public string $sortField = 'created_at';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $filterStatus;
+    public ?string $filterStatus = null;
 
-    public $customerModal = false;
+    public bool $customerModal = false;
 
-    public $customerDetailModal = false;
+    public bool $customerDetailModal = false;
 
-    public $addPointsModal = false;
+    public bool $addPointsModal = false;
 
-    public $customerId;
+    public ?string $customerId = null;
 
-    public $name = '';
+    public string $name = '';
 
-    public $phone = '';
+    public string $phone = '';
 
-    public $lastTransaction;
+    public mixed $lastTransaction = null;
 
-    public $points = 0;
+    public int $points = 0;
 
-    public $totalTransactions = 0;
+    public int $totalTransactions = 0;
 
-    public $histories = [];
+    public array $histories = [];
 
-    public $ig_image = null;
+    public mixed $ig_image = null;
 
-    public $gmaps_image = null;
+    public mixed $gmaps_image = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -63,13 +63,13 @@ class Index extends Component
         'phone.unique' => 'Nomor telepon ini sudah terdaftar.',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Pelanggan');
         View::share('mainTitle', 'Pelanggan');
     }
 
-    public function riwayatPembaruan()
+    public function riwayatPembaruan(): void
     {
         $this->activityLogs = Activity::inLog('customers')
             ->latest()
@@ -79,13 +79,13 @@ class Index extends Component
         $this->showHistoryModal = true;
     }
 
-    public function showModalTambah()
+    public function showModalTambah(): void
     {
         $this->reset(['customerId', 'name', 'phone']);
         $this->customerModal = true;
     }
 
-    public function addCustomer()
+    public function addCustomer(): void
     {
         $this->validate([
             'name' => 'required|string|max:50',
@@ -105,11 +105,11 @@ class Index extends Component
         ]);
     }
 
-    public function update()
+    public function update(): void
     {
         $this->validate([
             'name' => 'required|string|max:50',
-            'phone' => 'required|string|unique:customers,phone,' . $this->customerId,
+            'phone' => 'required|string|unique:customers,phone,'.$this->customerId,
         ]);
 
         $customer = Customer::find($this->customerId);
@@ -130,7 +130,7 @@ class Index extends Component
         }
     }
 
-    public function showCustomerDetail($id)
+    public function showCustomerDetail(string $id): void
     {
         $customer = \App\Models\Customer::findOrFail($id);
         $this->customerId = $customer->id;
@@ -145,9 +145,8 @@ class Index extends Component
         $this->customerDetailModal = true;
     }
 
-    public function delete()
+    public function delete(): void
     {
-
         $customer = Customer::find($this->customerId);
 
         if ($customer) {
@@ -160,27 +159,27 @@ class Index extends Component
         }
     }
 
-    public function showModalTambahPoin()
+    public function showModalTambahPoin(): void
     {
         $this->reset(['ig_image', 'gmaps_image']);
         $this->addPointsModal = true;
     }
 
-    public function updatedIgImage()
+    public function updatedIgImage(): void
     {
         $this->validate([
             'ig_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     }
 
-    public function updatedGmapsImage()
+    public function updatedGmapsImage(): void
     {
         $this->validate([
             'gmaps_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     }
 
-    public function addPoints()
+    public function addPoints(): void
     {
         $this->validate([
             'ig_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -227,7 +226,7 @@ class Index extends Component
         }
     }
 
-    public function sortBy($field)
+    public function sortBy(string $field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -237,13 +236,13 @@ class Index extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.customer.index', [
             'customers' => \App\Models\Customer::query()
                 ->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('phone', 'like', '%'.$this->search.'%');
                 })
                 ->orderBy($this->sortField, $this->sortDirection)
                 ->paginate(10),

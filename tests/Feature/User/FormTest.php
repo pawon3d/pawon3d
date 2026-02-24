@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 use App\Livewire\User\Form;
 use App\Models\SpatieRole;
+use App\Models\StoreProfile;
 use App\Models\User;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
+    // Ensure StoreProfile exists for sendInvitation()
+    StoreProfile::firstOrCreate(['id' => 1], [
+        'name' => 'Test Store',
+        'address' => 'Test Address',
+        'phone' => '08123456789',
+    ]);
+
     // Create permissions
     Permission::firstOrCreate(['name' => 'manajemen.pekerja.kelola']);
 
@@ -141,3 +149,74 @@ test('can update user keeping same role even if at max_users limit', function ()
     expect($limitedRole->hasReachedMaxUsers())->toBeTrue();
     expect($limitedRole->users()->count())->toBe(1);
 })->skip('Form component has pre-existing Livewire property serialization issue');
+
+// TC-087: Admin menambah pengguna dengan nama kosong
+test('cannot create user with empty name', function () {
+    $kasirRole = SpatieRole::firstOrCreate(['name' => 'Kasir']);
+
+    Livewire::test(Form::class)
+        ->set('name', '')
+        ->set('email', 'fauzi@pawon3d.com')
+        ->set('password', 'Password123')
+        ->set('gender', 'male')
+        ->set('role', 'Kasir')
+        ->call('save')
+        ->assertHasErrors(['name']);
+});
+
+// TC-088: Admin menambah pengguna dengan email format tidak valid
+test('cannot create user with invalid email format', function () {
+    SpatieRole::firstOrCreate(['name' => 'Kasir']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Ahmad Fauzi')
+        ->set('email', 'bukan-email-valid')
+        ->set('password', 'Password123')
+        ->set('gender', 'male')
+        ->set('role', 'Kasir')
+        ->call('save')
+        ->assertHasErrors(['email']);
+});
+
+// TC-089: Admin menambah pengguna dengan email duplikat
+test('cannot create user with duplicate email', function () {
+    User::factory()->create(['email' => 'kasir@pawon3d.com']);
+    SpatieRole::firstOrCreate(['name' => 'Kasir']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Ahmad Fauzi')
+        ->set('email', 'kasir@pawon3d.com')
+        ->set('password', 'Password123')
+        ->set('gender', 'male')
+        ->set('role', 'Kasir')
+        ->call('save')
+        ->assertHasErrors(['email']);
+});
+
+// TC-090: Admin menambah pengguna dengan password kurang dari 8 karakter
+test('cannot create user with password shorter than 8 characters', function () {
+    SpatieRole::firstOrCreate(['name' => 'Kasir']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Ahmad Fauzi')
+        ->set('email', 'fauzi@pawon3d.com')
+        ->set('password', 'Pass1')
+        ->set('gender', 'male')
+        ->set('role', 'Kasir')
+        ->call('save')
+        ->assertHasErrors(['password']);
+});
+
+// TC-091: Admin menambah pengguna dengan password tanpa angka
+test('cannot create user with password containing only letters', function () {
+    SpatieRole::firstOrCreate(['name' => 'Kasir']);
+
+    Livewire::test(Form::class)
+        ->set('name', 'Ahmad Fauzi')
+        ->set('email', 'fauzi@pawon3d.com')
+        ->set('password', 'PasswordSaja')
+        ->set('gender', 'male')
+        ->set('role', 'Kasir')
+        ->call('save')
+        ->assertHasErrors(['password']);
+});

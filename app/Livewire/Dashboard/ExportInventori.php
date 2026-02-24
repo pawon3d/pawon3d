@@ -35,7 +35,7 @@ class ExportInventori extends Component
         View::share('mainTitle', 'Dashboard');
 
         if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
-            $this->selectedWorker = Auth::user()->id;
+            $this->selectedWorker = (string) Auth::user()->id;
         }
     }
 
@@ -141,14 +141,14 @@ class ExportInventori extends Component
         }
 
         $expenseCollection = $expenseQuery->get();
-        $expenseCounts = $expenseCollection->groupBy(fn($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $expenseCounts = $expenseCollection->groupBy(fn ($e) => Carbon::parse($e->expense_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $productionQuery = Production::whereBetween('start_date', [$calendarStart, $calendarEnd]);
         if ($this->selectedWorker !== 'semua') {
-            $productionQuery->whereHas('workers', fn($q) => $q->where('user_id', $this->selectedWorker));
+            $productionQuery->whereHas('workers', fn ($q) => $q->where('user_id', $this->selectedWorker));
         }
         $productionCollection = $productionQuery->get();
-        $productionCounts = $productionCollection->groupBy(fn($p) => Carbon::parse($p->start_date)->toDateString())->map(fn($g) => $g->count())->toArray();
+        $productionCounts = $productionCollection->groupBy(fn ($p) => Carbon::parse($p->start_date)->toDateString())->map(fn ($g) => $g->count())->toArray();
 
         $dates = [];
         $current = $startOfCalendar->copy();

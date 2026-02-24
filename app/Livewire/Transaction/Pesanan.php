@@ -7,17 +7,17 @@ use Livewire\Component;
 
 class Pesanan extends Component
 {
-    public $search = '';
+    public string $search = '';
 
-    public $filterStatus = '';
+    public string $filterStatus = '';
 
-    public $methodName = '';
+    public string $methodName = '';
 
-    public $sortField = 'invoice_number';
+    public string $sortField = 'invoice_number';
 
-    public $sortDirection = 'desc';
+    public string $sortDirection = 'desc';
 
-    public $method = 'pesanan-reguler';
+    public string $method = 'pesanan-reguler';
 
     protected $queryString = ['search', 'sortField', 'sortDirection'];
 

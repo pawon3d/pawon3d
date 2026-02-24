@@ -15,35 +15,35 @@ class Rincian extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $production_id;
+    public ?string $production_id = null;
 
-    public $production;
+    public mixed $production = null;
 
-    public $production_details;
+    public mixed $production_details = null;
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $showNoteModal = false;
+    public bool $showNoteModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $total_quantity_plan;
+    public int|float $total_quantity_plan = 0;
 
-    public $total_quantity_get;
+    public int|float $total_quantity_get = 0;
 
-    public $percentage;
+    public int|float $percentage = 0;
 
-    public $is_start = false;
+    public bool $is_start = false;
 
-    public $is_finish = false;
+    public bool $is_finish = false;
 
-    public $status;
+    public ?string $status = null;
 
-    public $end_date;
+    public ?string $end_date = null;
 
-    public $date;
+    public ?string $date = null;
 
-    public $noteInput = '';
+    public string $noteInput = '';
 
     protected $listeners = [
         'confirmDelete' => 'confirmDelete',
@@ -132,8 +132,9 @@ class Rincian extends Component
         ]);
     }
 
-    public function delete()
+    public function delete(): mixed
     {
+        abort_unless(auth()->user()->can('produksi.rencana.kelola'), 403);
 
         $production = \App\Models\Production::findOrFail($this->production_id);
         if ($production) {
@@ -149,8 +150,10 @@ class Rincian extends Component
         }
     }
 
-    public function start()
+    public function start(): void
     {
+        abort_unless(auth()->user()->can('produksi.mulai'), 403);
+
         $this->is_start = true;
         $this->status = 'Sedang Diproses';
         $this->date = now()->format('Y-m-d H:i');
@@ -173,8 +176,10 @@ class Rincian extends Component
         $this->alert('success', 'Produksi berhasil dimulai.');
     }
 
-    public function finish()
+    public function finish(): void
     {
+        abort_unless(auth()->user()->can('produksi.mulai'), 403);
+
         $this->is_finish = true;
         $this->status = 'Selesai';
         $this->end_date = now()->format('Y-m-d H:i');

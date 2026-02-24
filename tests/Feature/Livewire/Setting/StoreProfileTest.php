@@ -2,15 +2,24 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Setting\Index;
 use App\Livewire\Setting\StoreProfile;
 use App\Models\SpatieRole;
 use App\Models\StoreDocument;
 use App\Models\StoreProfile as StoreProfileModel;
 use App\Models\User;
+use Illuminate\Support\Facades\View;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
+    // Seed StoreProfile so AppServiceProvider View::share doesn't fail
+    $profile = StoreProfileModel::firstOrCreate(
+        ['id' => 1],
+        ['name' => 'Test Store', 'address' => 'Test Address', 'phone' => '08123456789']
+    );
+    View::share('storeProfile', $profile);
+
     // Create permission
     Permission::firstOrCreate(['name' => 'manajemen.profil_usaha.kelola']);
 
@@ -152,7 +161,8 @@ test('validates valid_until must be after valid_from', function () {
 });
 
 test('loads existing store profile data on mount', function () {
-    StoreProfileModel::create([
+    // Update the StoreProfile created in beforeEach with specific values to assert
+    StoreProfileModel::first()->update([
         'name' => 'Existing Store',
         'tagline' => 'Existing Tagline',
         'type' => 'Existing Type',
@@ -184,4 +194,18 @@ test('can sort documents by name', function () {
     // Sort descending (toggle)
     $component->call('sortBy', 'document_name')
         ->assertSet('sortDirection', 'desc');
+});
+
+// TC-103: Admin can access the settings index page
+test('admin can access settings index page', function () {
+    $this->get(route('pengaturan'))
+        ->assertOk()
+        ->assertSeeLivewire(Index::class);
+});
+
+// TC-105: Logo must be PNG format
+test('logo upload validates PNG format only', function () {
+    Livewire::test(StoreProfile::class)
+        ->set('logo', \Illuminate\Http\UploadedFile::fake()->image('logo.jpg'))
+        ->assertHasErrors(['logo']);
 });

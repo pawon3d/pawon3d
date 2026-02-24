@@ -15,72 +15,76 @@ class StoreProfile extends Component
 {
     use LivewireAlert, WithFileUploads, WithPagination;
 
+    // Sort
+    public string $sortField = 'created_at';
+
+    public string $sortDirection = 'desc';
+
     // Image previews
-    public $previewLogoImage;
+    public ?string $previewLogoImage = null;
 
-    public $previewBannerImage;
+    public ?string $previewBannerImage = null;
 
-    public $previewProductImage;
+    public ?string $previewProductImage = null;
 
-    public $previewBuildingImage;
+    public ?string $previewBuildingImage = null;
 
     // File uploads
-    public $logo;
+    public mixed $logo = null;
 
-    public $banner;
+    public mixed $banner = null;
 
-    public $productImage;
+    public mixed $productImage = null;
 
-    public $building;
+    public mixed $building = null;
 
     // Profile info
-    public $name;
+    public ?string $name = null;
 
-    public $tagline;
+    public ?string $tagline = null;
 
-    public $type;
+    public ?string $type = null;
 
-    public $product;
+    public ?string $product = null;
 
-    public $description;
+    public ?string $description = null;
 
     // Address & Contact
-    public $location;
+    public ?string $location = null;
 
-    public $address;
+    public ?string $address = null;
 
-    public $contact;
+    public ?string $contact = null;
 
-    public $email;
+    public ?string $email = null;
 
-    public $website;
+    public ?string $website = null;
 
     // Social media
-    public $social_instagram;
+    public ?string $social_instagram = null;
 
-    public $social_facebook;
+    public ?string $social_facebook = null;
 
-    public $social_whatsapp;
+    public ?string $social_whatsapp = null;
 
     // Document modal
+    public ?string $documentName = null;
 
-    public $documentName;
+    public mixed $documentFile = null;
 
-    public $documentFile;
+    public ?string $documentNumber = null;
 
-    public $documentNumber;
+    public ?string $validFrom = null;
 
-    public $validFrom;
+    public ?string $validUntil = null;
 
-    public $validUntil;
+    public ?string $documentId = null;
 
-    public $documentId;
+    public bool $edit = false;
 
-    public $edit = false;
+    public bool $showModal = false;
 
-    public $showModal = false;
-
-    public function mount()
+    public function mount(): void
     {
         View::share('title', 'Profil Usaha');
         View::share('mainTitle', 'Pengaturan');
@@ -121,13 +125,13 @@ class StoreProfile extends Component
         }
     }
 
-    public function addModal()
+    public function addModal(): void
     {
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit', 'documentId']);
         $this->showModal = true;
     }
 
-    public function editModal($id)
+    public function editModal(string $id): void
     {
         $this->edit = true;
         $document = StoreDocument::findOrFail($id);
@@ -140,7 +144,7 @@ class StoreProfile extends Component
         $this->showModal = true;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $document = StoreDocument::findOrFail($this->documentId);
         if ($document->document_file) {
@@ -159,7 +163,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
     }
 
-    public function storeDocument()
+    public function storeDocument(): void
     {
         $this->validate([
             'documentName' => 'required|string|max:255',
@@ -189,7 +193,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
     }
 
-    public function updateDocument()
+    public function updateDocument(): void
     {
         $this->validate([
             'documentName' => 'required|string|max:255',
@@ -226,7 +230,7 @@ class StoreProfile extends Component
         $this->reset(['documentName', 'documentFile', 'documentNumber', 'validFrom', 'validUntil', 'edit']);
     }
 
-    public function updatedLogo()
+    public function updatedLogo(): void
     {
         $this->validate([
             'logo' => 'image|max:2048|mimes:png',
@@ -234,7 +238,7 @@ class StoreProfile extends Component
         $this->previewLogoImage = $this->logo->temporaryUrl();
     }
 
-    public function updatedBanner()
+    public function updatedBanner(): void
     {
         $this->validate([
             'banner' => 'image|max:2048|mimes:jpg,jpeg,png',
@@ -242,7 +246,7 @@ class StoreProfile extends Component
         $this->previewBannerImage = $this->banner->temporaryUrl();
     }
 
-    public function updatedProductImage()
+    public function updatedProductImage(): void
     {
         $this->validate([
             'productImage' => 'image|max:2048|mimes:jpg,jpeg,png',
@@ -250,7 +254,7 @@ class StoreProfile extends Component
         $this->previewProductImage = $this->productImage->temporaryUrl();
     }
 
-    public function updatedBuilding()
+    public function updatedBuilding(): void
     {
         $this->validate([
             'building' => 'image|max:2048|mimes:jpg,jpeg,png',
@@ -258,7 +262,7 @@ class StoreProfile extends Component
         $this->previewBuildingImage = $this->building->temporaryUrl();
     }
 
-    public function updateStore()
+    public function updateStore(): mixed
     {
         StoreProfileModel::updateOrCreate(
             [],
@@ -339,12 +343,24 @@ class StoreProfile extends Component
             'timer' => 3000,
             'toast' => true,
         ]);
+
+        return null;
     }
 
-    public function render()
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.setting.store-profile', [
-            'storeDocuments' => StoreDocument::orderBy('created_at', 'desc')->paginate(10),
+            'storeDocuments' => StoreDocument::orderBy($this->sortField, $this->sortDirection)->paginate(10),
         ]);
     }
 }

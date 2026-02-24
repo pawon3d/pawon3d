@@ -11,19 +11,19 @@ class MulaiSiapBeli extends Component
 {
     use \Jantinnerezo\LivewireAlert\LivewireAlert;
 
-    public $production_id;
+    public ?string $production_id = null;
 
-    public $production;
+    public mixed $production = null;
 
-    public $production_details = [];
+    public array $production_details = [];
 
-    public $showHistoryModal = false;
+    public bool $showHistoryModal = false;
 
-    public $activityLogs = [];
+    public array $activityLogs = [];
 
-    public $selectedProducts = [];
+    public array $selectedProducts = [];
 
-    public $parsedQuantity;
+    public int|float|null $parsedQuantity = null;
 
     public function mount($id)
     {
@@ -92,13 +92,15 @@ class MulaiSiapBeli extends Component
         return null;
     }
 
-    public function save()
+    public function save(): mixed
     {
+        abort_unless(auth()->user()->can('produksi.mulai'), 403);
+
         foreach ($this->production_details as $detail) {
             if ($this->parseFraction($detail['recipe_quantity'] ?? '') === null) {
                 $this->alert('error', 'Format kuantitas resep tidak valid. Gunakan format pecahan seperti "1/2", atau angka desimal.');
 
-                return;
+                return null;
             }
         }
 
@@ -118,9 +120,9 @@ class MulaiSiapBeli extends Component
                     $availableQuantity = $material->getTotalQuantityInUnit($compositionUnit);
 
                     if ($availableQuantity < $requiredQuantity) {
-                        $this->alert('error', 'Jumlah bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name . ' tidak cukup untuk produksi ini. Tersedia: ' . $availableQuantity . ' ' . $compositionUnit->name . ', dibutuhkan: ' . $requiredQuantity . ' ' . $compositionUnit->name);
+                        $this->alert('error', 'Jumlah bahan baku '.$material->name.' untuk produk '.$productionDetail->product->name.' tidak cukup untuk produksi ini. Tersedia: '.$availableQuantity.' '.$compositionUnit->name.', dibutuhkan: '.$requiredQuantity.' '.$compositionUnit->name);
 
-                        return;
+                        return null;
                     }
                 }
             }
@@ -147,13 +149,13 @@ class MulaiSiapBeli extends Component
                         'action' => 'produksi',
                         'reference_type' => 'production',
                         'reference_id' => $productionDetail->production_id,
-                        'note' => 'Produksi siap-beli ' . $productionDetail->product->name,
+                        'note' => 'Produksi siap-beli '.$productionDetail->product->name,
                     ]);
 
                     if (! $success) {
-                        $this->alert('error', 'Gagal mengurangi stok bahan baku ' . $material->name . ' untuk produk ' . $productionDetail->product->name);
+                        $this->alert('error', 'Gagal mengurangi stok bahan baku '.$material->name.' untuk produk '.$productionDetail->product->name);
 
-                        return;
+                        return null;
                     }
                 }
 

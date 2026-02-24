@@ -39,7 +39,7 @@ class ExportKasir extends Component
         View::share('mainTitle', 'Dashboard');
 
         if (Auth::user()->permission !== 'manajemen.pembayaran.kelola') {
-            $this->selectedWorker = Auth::user()->id;
+            $this->selectedWorker = (string) Auth::user()->id;
         }
     }
 

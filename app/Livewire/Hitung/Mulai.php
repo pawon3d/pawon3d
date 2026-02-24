@@ -135,7 +135,7 @@ class Mulai extends Component
         }
     }
 
-    public function save()
+    public function save(): mixed
     {
         $this->validate([
             'hitungDetails.*.quantity_input' => 'required|numeric|min:0',
@@ -150,7 +150,7 @@ class Mulai extends Component
         if (count($this->errorInputs) > 0) {
             $this->alert('error', 'Masih ada input yang melebihi jumlah yang tersedia.');
 
-            return;
+            return null;
         }
 
         foreach ($this->hitungDetails as $detail) {
@@ -229,7 +229,7 @@ class Mulai extends Component
         $this->validateQuantities();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.hitung.mulai');
     }
