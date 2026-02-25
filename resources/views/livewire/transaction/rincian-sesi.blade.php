@@ -337,14 +337,15 @@
 
                             // Tentukan tipe pembayaran untuk struk ini
                             $paymentCount = $allPayments->count();
+                            $selectedPaymentId = $selectedPayment->id;
                             $currentPaymentIndex = $allPayments->search(
-                            fn($p) => $p->id === $selectedPayment->id,
+                            fn($p) => $p->id === $selectedPaymentId,
                             );
 
                             $isLastPayment = $currentPaymentIndex == $paymentCount - 1;
 
                             // Logika: Label "Lunas" hanya jika transaksi statusnya Lunas DAN ini adalah pembayaran
-                            terakhir
+                            //terakhir
                             if ($selectedTransaction->payment_status == 'Lunas' && $isLastPayment) {
                             $tipe = 'Lunas';
                             } else {

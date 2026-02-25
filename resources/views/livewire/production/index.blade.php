@@ -68,20 +68,18 @@
             <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 @if ($method === 'siap-beli')
                 <flux:button variant="primary" icon="list-bullet" href="{{ route('produksi.antrian-produksi') }}"
-                    wire:navigate class="w-full sm:w-auto">
+                    wire:navigate class="">
                     Antrian Produksi
                 </flux:button>
                 @else
                 <flux:button variant="primary" icon="list-bullet"
-                    href="{{ route('produksi.pesanan', ['method' => $method]) }}" wire:navigate
-                    class="w-full sm:w-auto">
+                    href="{{ route('produksi.pesanan', ['method' => $method]) }}" wire:navigate class="">
                     Antrian Pesanan
                 </flux:button>
                 @endif
 
                 <flux:button variant="primary" icon="history"
-                    href="{{ route('produksi.riwayat', ['method' => $method]) }}" wire:navigate
-                    class="w-full sm:w-auto" />
+                    href="{{ route('produksi.riwayat', ['method' => $method]) }}" wire:navigate class="" />
             </div>
         </div>
 
