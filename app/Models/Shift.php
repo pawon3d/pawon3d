@@ -36,8 +36,13 @@ class Shift extends Model
 
         static::creating(function ($model) {
             $model->id = Str::uuid();
-            $lastShift = DB::table('shifts')->latest()->first();
-            $model->shift_number = $lastShift ? (int) $lastShift->shift_number + 1 : 1;
+            DB::transaction(function () use ($model) {
+                $maxNumber = DB::table('shifts')
+                    ->lockForUpdate()
+                    ->whereRaw("shift_number REGEXP '^[0-9]+$'")
+                    ->max(DB::raw('CAST(shift_number AS UNSIGNED)'));
+                $model->shift_number = ($maxNumber ?? 0) + 1;
+            });
         });
     }
 }
