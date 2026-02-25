@@ -68,6 +68,9 @@
                                 <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
+                        <th class="px-6 py-5 text-center text-sm font-bold text-[#F8F4E1]">
+                            Status
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,10 +92,16 @@
                             <td class="px-6 py-4 text-sm font-medium text-[#666666]">
                                 {{ $channel->account_name ?? '-' }}
                             </td>
+                            <td class="px-6 py-4 text-center" wire:click.stop>
+                                <flux:switch
+                                    :checked="$channel->is_active"
+                                    wire:click="toggleActive('{{ $channel->id }}')"
+                                />
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-sm text-[#666666]">
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-[#666666]">
                                 Tidak ada metode pembayaran yang tersedia.
                             </td>
                         </tr>
@@ -180,6 +189,12 @@
                     @error('accountName')
                         <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
+                </div>
+
+                <!-- Status Aktif -->
+                <div class="flex items-center justify-between">
+                    <label class="block text-sm font-medium text-[#666666]">Status Aktif</label>
+                    <flux:switch wire:model.live="isActive" />
                 </div>
 
                 <!-- Upload File -->

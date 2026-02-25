@@ -76,7 +76,7 @@ class PaymentMethod extends Component
         }
     }
 
-    public function downloadImage(): mixed
+    public function downloadImage()
     {
         if ($this->qrisImage && is_string($this->qrisImage)) {
             $path = storage_path('app/public/'.$this->qrisImage);
@@ -130,7 +130,7 @@ class PaymentMethod extends Component
             'accountNumber' => 'nullable|string|max:50',
             'accountName' => 'nullable|string|max:255',
             'isActive' => 'boolean',
-            'qrisImage' => 'nullable|file|max:2048',
+            'qrisImage' => 'nullable|max:2048',
         ]);
 
         if ($this->edit && $this->paymentChannelId) {
@@ -192,6 +192,14 @@ class PaymentMethod extends Component
         }
         Flux::modals()->close();
         $this->resetFields();
+    }
+
+    public function toggleActive(string $id): void
+    {
+        $channel = \App\Models\PaymentChannel::find($id);
+        if ($channel) {
+            $channel->update(['is_active' => ! $channel->is_active]);
+        }
     }
 
     public function render(): \Illuminate\View\View

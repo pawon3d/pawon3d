@@ -40,32 +40,32 @@
                             style="line-height: 1;" />
                     </div>
                     @if ($phone)
-                        @if ($customer)
-                            <div class="flex justify-between items-center w-full">
-                                <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
-                                    style="line-height: 1;">
-                                    Terdaftar sebagai Pelanggan.
-                                </span>
-                                <button wire:click="$set('customerModal', true)"
-                                    class="flex items-center gap-[2px] font-['Montserrat'] font-semibold text-[12px] text-[#666666]"
-                                    style="line-height: 1;">
-                                    <span>{{ $customer->points ?? 0 }}</span>
-                                    <span>Poin</span>
-                                </button>
-                            </div>
-                        @else
-                            <div class="flex justify-between items-center w-full">
-                                <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
-                                    style="line-height: 1;">
-                                    Ingin menjadi pelanggan?
-                                </span>
-                                <button wire:click="showCustomerModal"
-                                    class="font-['Montserrat'] font-normal text-[12px] text-[#666666] underline cursor-pointer"
-                                    style="line-height: 1;">
-                                    Tambah Pelanggan
-                                </button>
-                            </div>
-                        @endif
+                    @if ($customer)
+                    <div class="flex justify-between items-center w-full">
+                        <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
+                            style="line-height: 1;">
+                            Terdaftar sebagai Pelanggan.
+                        </span>
+                        <button wire:click="$set('customerModal', true)"
+                            class="flex items-center gap-[2px] font-['Montserrat'] font-semibold text-[12px] text-[#666666]"
+                            style="line-height: 1;">
+                            <span>{{ $customer->points ?? 0 }}</span>
+                            <span>Poin</span>
+                        </button>
+                    </div>
+                    @else
+                    <div class="flex justify-between items-center w-full">
+                        <span class="font-['Montserrat'] font-normal text-[12px] text-[#666666] text-justify"
+                            style="line-height: 1;">
+                            Ingin menjadi pelanggan?
+                        </span>
+                        <button wire:click="showCustomerModal"
+                            class="font-['Montserrat'] font-normal text-[12px] text-[#666666] underline cursor-pointer"
+                            style="line-height: 1;">
+                            Tambah Pelanggan
+                        </button>
+                    </div>
+                    @endif
                     @endif
                     <flux:error name="phone" />
                 </div>
@@ -87,16 +87,16 @@
                 <flux:error name="name" />
             </div>
             @if ($transaction->method != 'siap-beli')
-                {{-- Tanggal Ambil Pesanan --}}
-                <div class="flex flex-col gap-[15px]">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
-                        Tanggal Ambil Pesanan</p>
-                    <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                        style="line-height: 1;">Masukkan tanggal Ambil Pesanan.</p>
+            {{-- Tanggal Ambil Pesanan --}}
+            <div class="flex flex-col gap-[15px]">
+                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                    Tanggal Ambil Pesanan</p>
+                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
+                    style="line-height: 1;">Masukkan tanggal Ambil Pesanan.</p>
 
-                    <div class="flex flex-col xl:flex-row gap-[15px] w-full">
-                        {{-- Date Input --}}
-                        <div x-data="{ date: @entangle('date') }" x-init="picker = new Pikaday({
+                <div class="flex flex-col xl:flex-row gap-[15px] w-full">
+                    {{-- Date Input --}}
+                    <div x-data="{ date: @entangle('date') }" x-init="picker = new Pikaday({
                             field: $refs.datepicker,
                             format: 'DD MMM YYYY',
                             toString(date, format) {
@@ -109,18 +109,18 @@
                                 @this.set('date', moment(this.getDate()).format('DD MMM YYYY'));
                             }
                         });" class="flex-1 relative w-full">
-                            <div
-                                class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] flex items-center justify-between cursor-pointer">
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;" x-text="date || 'dd mm yyyy'"></span>
-                                <flux:icon icon="calendar" class="size-5" style="color: #666666;" />
-                            </div>
-                            <input type="text" x-ref="datepicker" wire:model="date"
-                                class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <div
+                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] flex items-center justify-between cursor-pointer">
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;" x-text="date || 'dd mm yyyy'"></span>
+                            <flux:icon icon="calendar" class="size-5" style="color: #666666;" />
                         </div>
+                        <input type="text" x-ref="datepicker" wire:model="date"
+                            class="absolute inset-0 opacity-0 cursor-pointer" />
+                    </div>
 
-                        {{-- Time Input --}}
-                        <div x-data="{ time: @entangle('time').defer }" x-init="flatpickr($refs.input, {
+                    {{-- Time Input --}}
+                    <div x-data="{ time: @entangle('time').defer }" x-init="flatpickr($refs.input, {
                             enableTime: true,
                             noCalendar: true,
                             dateFormat: 'H:i',
@@ -131,47 +131,45 @@
                                 @this.set('time', dateStr);
                             }
                         });" class="flex-1 relative w-full">
-                            <div
-                                class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] flex items-center justify-between cursor-pointer">
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;" x-text="time || 'hh:mm'"></span>
-                                <flux:icon icon="clock" class="size-5" style="color: #666666;" />
-                            </div>
-                            <input x-ref="input" type="text" wire:model="time"
-                                class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <div
+                            class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] flex items-center justify-between cursor-pointer">
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;" x-text="time || 'hh:mm'"></span>
+                            <flux:icon icon="clock" class="size-5" style="color: #666666;" />
                         </div>
-                    </div>
-
-                    <div class="flex gap-[15px]">
-                        <div class="flex-1">
-                            <flux:error name="date" />
-                        </div>
-                        <div class="flex-1">
-                            <flux:error name="time" />
-                        </div>
+                        <input x-ref="input" type="text" wire:model="time"
+                            class="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
                 </div>
+
+                <div class="flex gap-[15px]">
+                    <div class="flex-1">
+                        <flux:error name="date" />
+                    </div>
+                    <div class="flex-1">
+                        <flux:error name="time" />
+                    </div>
+                </div>
+            </div>
             @endif
 
         </div>
 
         @if ($method != 'siap-beli')
-            {{-- Right Column - Catatan --}}
-            <div class="flex-1 w-full flex flex-col gap-[15px] lg:h-[399px]">
-                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
-                    Catatan
-                    Pesanan</p>
-                <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify"
-                    style="line-height: 1;">
-                    Masukkan catatan pesanan apabila diperlukan.</p>
+        {{-- Right Column - Catatan --}}
+        <div class="flex-1 w-full flex flex-col gap-[15px] lg:h-[399px]">
+            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
+                Catatan
+                Pesanan</p>
+            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666] text-justify" style="line-height: 1;">
+                Masukkan catatan pesanan apabila diperlukan.</p>
 
-                <div
-                    class="flex-1 bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] min-h-[150px]">
-                    <textarea wire:model.defer="note" placeholder="Ini adalah catatan pesanan"
-                        class="w-full h-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0 resize-none"
-                        style="line-height: 1;"></textarea>
-                </div>
+            <div class="flex-1 bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] min-h-[150px]">
+                <textarea wire:model.defer="note" placeholder="Ini adalah catatan pesanan"
+                    class="w-full h-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0 resize-none"
+                    style="line-height: 1;"></textarea>
             </div>
+        </div>
         @endif
 
     </div>
@@ -191,65 +189,66 @@
             {{-- Product List --}}
             <div class="flex flex-col gap-[10px] pb-[15px]">
                 @forelse ($details as $id => $item)
-                    <div
-                        class="border-b border-[#ffffff] py-[20px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        {{-- Left Side --}}
-                        <div class="flex flex-col gap-[10px]">
-                            <div class="flex items-center gap-[5px]">
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">
-                                    {{ $item['name'] }}
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-[5px]">
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;">{{ $item['quantity'] }}</span>
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;">x</span>
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Rp{{ number_format($item['price'], 0, ',', '.') }}</span>
-                            </div>
+                <div
+                    class="border-b border-[#ffffff] py-[20px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    {{-- Left Side --}}
+                    <div class="flex flex-col gap-[10px]">
+                        <div class="flex items-center gap-[5px]">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">
+                                {{ $item['name'] }}
+                            </p>
                         </div>
+                        <div class="flex items-center gap-[5px]">
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;">{{ $item['quantity'] }}</span>
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;">x</span>
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;">Rp{{ number_format($item['price'], 0, ',', '.') }}</span>
+                        </div>
+                    </div>
 
-                        {{-- Right Side --}}
-                        <div class="flex flex-col md:flex-row gap-4 items-end md:items-center w-full md:w-auto">
-                            <div class="flex items-center gap-[5px]">
-                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                    style="line-height: 1;">=</span>
-                                <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Rp{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
-                            </div>
-                            <div class="flex items-center gap-[15px] sm:gap-[25px]">
-                                {{-- Delete Button --}}
-                                <button wire:click="removeItem('{{ $id }}')"
-                                    class="bg-[#eb5757] rounded-[15px] flex items-center justify-center size-[32px] shrink-0">
-                                    <flux:icon icon="trash" class="size-3" style="color: #f8f4e1;" />
+                    {{-- Right Side --}}
+                    <div class="flex flex-col md:flex-row gap-4 items-end md:items-center w-full md:w-auto">
+                        <div class="flex items-center gap-[5px]">
+                            <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                style="line-height: 1;">=</span>
+                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">Rp{{ number_format($item['price'] * $item['quantity'], 0, ',',
+                                '.') }}</span>
+                        </div>
+                        <div class="flex items-center gap-[15px] sm:gap-[25px]">
+                            {{-- Delete Button --}}
+                            <button wire:click="removeItem('{{ $id }}')"
+                                class="bg-[#eb5757] rounded-[15px] flex items-center justify-center size-[32px] shrink-0">
+                                <flux:icon icon="trash" class="size-3" style="color: #f8f4e1;" />
+                            </button>
+
+                            {{-- Quantity Controls --}}
+                            <div class="flex items-center gap-[11px] shrink-0">
+                                <button wire:click="decrementItem('{{ $id }}')"
+                                    class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                    <flux:icon icon="minus" class="size-[18px]" style="color: #666666;" />
                                 </button>
-
-                                {{-- Quantity Controls --}}
-                                <div class="flex items-center gap-[11px] shrink-0">
-                                    <button wire:click="decrementItem('{{ $id }}')"
-                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
-                                        <flux:icon icon="minus" class="size-[18px]" style="color: #666666;" />
-                                    </button>
-                                    <div
-                                        class="border border-[rgba(116,81,45,0.2)] rounded-[10px] px-[10px] py-[3px] w-[36px] flex items-center justify-center">
-                                        <span class="font-['Montserrat'] font-semibold text-[16px] text-[#666666]"
-                                            style="line-height: 1;">{{ $item['quantity'] }}</span>
-                                    </div>
-                                    <button wire:click="incrementItem('{{ $id }}')"
-                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
-                                        <flux:icon icon="plus" class="size-[18px]" style="color: #666666;" />
-                                    </button>
+                                <div
+                                    class="border border-[rgba(116,81,45,0.2)] rounded-[10px] px-[10px] py-[3px] w-[36px] flex items-center justify-center">
+                                    <span class="font-['Montserrat'] font-semibold text-[16px] text-[#666666]"
+                                        style="line-height: 1;">{{ $item['quantity'] }}</span>
                                 </div>
+                                <button wire:click="incrementItem('{{ $id }}')"
+                                    class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                    <flux:icon icon="plus" class="size-[18px]" style="color: #666666;" />
+                                </button>
                             </div>
                         </div>
                     </div>
+                </div>
                 @empty
-                    <div class="text-center py-4">
-                        <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk yang
-                            ditambahkan.</p>
-                    </div>
+                <div class="text-center py-4">
+                    <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk yang
+                        ditambahkan.</p>
+                </div>
                 @endforelse
             </div>
 
@@ -272,23 +271,23 @@
                     <span>{{ count($details) }}</span>
                     <span>Produk</span>
                 </div>
-                <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                    style="line-height: 1;">Rp{{ number_format($total, 0, ',', '.') }}</span>
+                <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Rp{{
+                    number_format($total, 0, ',', '.') }}</span>
             </div>
             @if ($pointsUsed > 0)
-                <div class="flex items-center justify-between w-full">
-                    <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]"
-                        style="line-height: 1;">Diskon Poin ({{ number_format($pointsUsed, 0, ',', '.') }}
-                        poin)</span>
-                    <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]" style="line-height: 1;">-
-                        Rp{{ number_format($pointsUsed * 100, 0, ',', '.') }}</span>
-                </div>
+            <div class="flex items-center justify-between w-full">
+                <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]" style="line-height: 1;">Diskon
+                    Poin ({{ number_format($pointsUsed, 0, ',', '.') }}
+                    poin)</span>
+                <span class="font-['Montserrat'] font-medium text-[16px] text-[#27ae60]" style="line-height: 1;">-
+                    Rp{{ number_format($pointsUsed * 100, 0, ',', '.') }}</span>
+            </div>
             @endif
             <div class="flex items-center justify-between w-full">
                 <span class="font-['Montserrat'] font-bold text-[16px] text-[#666666]" style="line-height: 1;">Total
                     Tagihan</span>
-                <span class="font-['Montserrat'] font-bold text-[16px] text-[#666666]"
-                    style="line-height: 1;">Rp{{ number_format($total - $pointsUsed * 100, 0, ',', '.') }}</span>
+                <span class="font-['Montserrat'] font-bold text-[16px] text-[#666666]" style="line-height: 1;">Rp{{
+                    number_format($total - $pointsUsed * 100, 0, ',', '.') }}</span>
             </div>
         </div>
 
@@ -298,20 +297,20 @@
             <div class="flex items-center justify-between w-full">
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Total
                     Bayar</span>
-                <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                    style="line-height: 1;">Rp{{ number_format($paidAmount, 0, ',', '.') }}</span>
+                <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">Rp{{
+                    number_format($paidAmount, 0, ',', '.') }}</span>
             </div>
             <div class="flex items-center justify-between w-full">
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#eb5757]" style="line-height: 1;">Sisa
                     Tagihan</span>
                 <span class="font-['Montserrat'] font-medium text-[16px] text-[#eb5757]" style="line-height: 1;">
                     @php
-                        $totalAfterPoints = $total - $pointsUsed * 100;
+                    $totalAfterPoints = $total - $pointsUsed * 100;
                     @endphp
                     @if ($paidAmount >= $totalAfterPoints)
-                        Rp0
+                    Rp0
                     @else
-                        Rp{{ number_format($totalAfterPoints - $paidAmount, 0, ',', '.') }}
+                    Rp{{ number_format($totalAfterPoints - $paidAmount, 0, ',', '.') }}
                     @endif
                 </span>
             </div>
@@ -336,8 +335,8 @@
                 </div>
             </div>
             <div class="bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] px-[20px] py-[10px]">
-                <input type="number" wire:model.live="pointsUsed" placeholder="0" min="0" step="10"
-                    {{ $availablePoints == 0 ? 'disabled' : '' }}
+                <input type="number" wire:model.live="pointsUsed" placeholder="0" min="0" step="10" {{
+                    $availablePoints==0 ? 'disabled' : '' }}
                     class="w-full font-['Montserrat'] font-normal text-[16px] text-[#959595] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                     style="line-height: 1;" />
             </div>
@@ -364,97 +363,97 @@
             <flux:error name="paymentGroup" />
 
             @if ($paymentGroup == 'non-tunai')
-                <div class="mt-2 flex flex-col sm:flex-row gap-4 w-full relative z-10">
-                    <div class="flex-1">
-                        <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
-                            @foreach ($paymentMethods as $pmethod)
-                                <flux:select.option value="{{ $pmethod->type }}" class="text-gray-700">
-                                    {{ ucfirst($pmethod->type) }}
-                                </flux:select.option>
-                            @endforeach
-                        </flux:select>
-                        <flux:error name="paymentMethod" />
-                    </div>
-                    <div class="flex-1">
-                        <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
-                            @foreach ($paymentChannels as $channel)
-                                <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
-                                    {{ $channel->bank_name }}
-                                </flux:select.option>
-                            @endforeach
-                        </flux:select>
-                        <flux:error name="paymentChannelId" />
-                    </div>
-                    <div class="flex-1">
-                        <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
-                        <flux:error name="paymentAccount" />
-                    </div>
+            <div class="mt-2 flex flex-col sm:flex-row gap-4 w-full relative z-10">
+                <div class="flex-1">
+                    <flux:select wire:model.live="paymentMethod" placeholder="Pilih Metode Pembayaran">
+                        @foreach ($paymentMethods as $pmethod)
+                        <flux:select.option value="{{ $pmethod->type }}" class="text-gray-700">
+                            {{ ucfirst($pmethod->type) }}
+                        </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="paymentMethod" />
                 </div>
+                <div class="flex-1">
+                    <flux:select wire:model.live="paymentChannelId" placeholder="Pilih Bank Tujuan">
+                        @foreach ($paymentChannels as $channel)
+                        <flux:select.option value="{{ $channel->id }}" class="text-gray-700">
+                            {{ $channel->bank_name }}
+                        </flux:select.option>
+                        @endforeach
+                    </flux:select>
+                    <flux:error name="paymentChannelId" />
+                </div>
+                <div class="flex-1">
+                    <flux:input wire:model="paymentAccount" placeholder="Masukkan Nomor Rekening" readonly />
+                    <flux:error name="paymentAccount" />
+                </div>
+            </div>
             @endif
 
             <flux:label>Nominal Pembayaran</flux:label>
             @if ($method == 'siap-beli')
-                <p class="text-sm text-red-600 font-medium">
-                    Untuk pembelian siap saji harus dibayar lunas. Tidak dapat menggunakan sistem uang muka (DP).
-                </p>
+            <p class="text-sm text-red-600 font-medium">
+                Untuk pembelian siap saji harus dibayar lunas. Tidak dapat menggunakan sistem uang muka (DP).
+            </p>
             @else
-                <p class="text-sm text-gray-500">
-                    Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
-                    setengah dari Total Tagihan.
-                </p>
+            <p class="text-sm text-gray-500">
+                Masukkan atau pilih nominal pembayaran tagihan. Untuk uang muka dilakukan dengan minimal 50% atau
+                setengah dari Total Tagihan.
+            </p>
             @endif
             <div class="flex flex-col sm:flex-row gap-4 w-full">
                 <div class="flex flex-col gap-2 w-full">
                     @if ($paymentGroup == 'tunai')
-                        <span class="text-xs text-gray-500">
-                            Nominal Uang Yang Diterima
-                        </span>
+                    <span class="text-xs text-gray-500">
+                        Nominal Uang Yang Diterima
+                    </span>
                     @endif
                     <flux:input placeholder="Masukkan Nominal Pembayaran..." wire:model.number.live="paidAmount" />
                     <flux:error name="paidAmount" />
                 </div>
                 @if ($paymentGroup == 'tunai')
-                    <div class="flex flex-col gap-2 w-full">
-                        <span class="text-xs text-gray-500">
-                            Nominal Uang Kembalian
-                        </span>
-                        <flux:input placeholder="Kembalian" value="Rp{{ number_format($changeAmount, 0, ',', '.') }}"
-                            readonly />
-                    </div>
+                <div class="flex flex-col gap-2 w-full">
+                    <span class="text-xs text-gray-500">
+                        Nominal Uang Kembalian
+                    </span>
+                    <flux:input placeholder="Kembalian" value="Rp{{ number_format($changeAmount, 0, ',', '.') }}"
+                        readonly />
+                </div>
                 @endif
             </div>
 
             @if ($paymentGroup == 'non-tunai')
-                <div class="mb-5 w-full">
-                    <div class="flex flex-row items-center gap-4">
-                        <label
-                            class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75  disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10  shadow-[inset_0px_1px_--theme(--color-white/.2)">
-                            <span class="hidden sm:inline">Pilih Bukti Pembayaran</span>
-                            <flux:icon icon="camera" class="size-5 sm:hidden" style="color: #f8f4e1;" />
-                            <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
-                                class="hidden" />
-                        </label>
+            <div class="mb-5 w-full">
+                <div class="flex flex-row items-center gap-4">
+                    <label
+                        class="relative items-center cursor-pointer font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75  disabled:cursor-default disabled:pointer-events-none h-10 text-sm rounded-lg px-4 inline-flex  bg-[#74512D] hover:bg-[color-mix(in_oklab,_#74512D,_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10  shadow-[inset_0px_1px_--theme(--color-white/.2)">
+                        <span class="hidden sm:inline">Pilih Bukti Pembayaran</span>
+                        <flux:icon icon="camera" class="size-5" style="color: #f8f4e1;" />
+                        <input type="file" wire:model.live="image" accept="image/jpeg, image/png, image/jpg"
+                            class="hidden" />
+                    </label>
 
-                        @if ($image)
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}"
-                                readonly wire:loading.remove wire:target="image">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload gambar..." readonly wire:loading wire:target="image">
-                        @else
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove wire:target="image">
-                            <input type="text"
-                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                value="Mengupload gambar..." readonly wire:loading wire:target="image">
-                        @endif
+                    @if ($image)
+                    <input type="text"
+                        class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                        value="{{ is_string($image) ? basename($image) : $image->getClientOriginalName() }}" readonly
+                        wire:loading.remove wire:target="image">
+                    <input type="text"
+                        class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                        value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                    @else
+                    <input type="text"
+                        class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                        value="Belum Ada Bukti Pembayaran" readonly wire:loading.remove wire:target="image">
+                    <input type="text"
+                        class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                        value="Mengupload gambar..." readonly wire:loading wire:target="image">
+                    @endif
 
-                    </div>
                 </div>
-                <flux:error name="image" />
+            </div>
+            <flux:error name="image" />
             @endif
         </div>
     </div>
@@ -515,90 +514,89 @@
             <div class="flex gap-[15px] h-full max-h-[60vh] overflow-y-auto w-full">
                 <div class="flex-1 flex flex-wrap gap-[30px] content-start justify-center sm:justify-start">
                     @forelse ($products as $product)
-                        <div class="w-full sm:min-w-[180px] sm:max-w-[210px] flex flex-col gap-[20px] pb-[25px]">
-                            {{-- Product Card --}}
-                            <div class="flex flex-col gap-[15px] items-center">
-                                @if ($product->product_image)
-                                    <img src="{{ asset('storage/' . $product->product_image) }}"
-                                        alt="{{ $product->name }}"
-                                        class="h-[119px] w-full sm:w-[182px] object-cover rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
-                                @else
-                                    <div
-                                        class="h-[119px] w-full sm:w-[182px] bg-[#eaeaea] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center">
-                                        <span class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">No
-                                            Image</span>
-                                    </div>
-                                @endif
+                    <div class="w-full sm:min-w-[180px] sm:max-w-[210px] flex flex-col gap-[20px] pb-[25px]">
+                        {{-- Product Card --}}
+                        <div class="flex flex-col gap-[15px] items-center">
+                            @if ($product->product_image)
+                            <img src="{{ asset('storage/' . $product->product_image) }}" alt="{{ $product->name }}"
+                                class="h-[119px] w-full sm:w-[182px] object-cover rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]">
+                            @else
+                            <div
+                                class="h-[119px] w-full sm:w-[182px] bg-[#eaeaea] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] flex items-center justify-center">
+                                <span class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">No
+                                    Image</span>
+                            </div>
+                            @endif
 
-                                {{-- Product Info --}}
-                                <div class="px-[15px] flex flex-col gap-[30px] items-center">
-                                    <div class="flex flex-col gap-[10px] items-center min-h-[70px] w-full">
-                                        {{-- Product Name --}}
-                                        <div class="flex flex-col gap-[5px] items-center w-full">
-                                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] text-center truncate w-full"
-                                                style="line-height: 1;">
-                                                {{ $product->name }}
-                                            </p>
-                                        </div>
-
-                                        {{-- Stock --}}
-                                        <div class="flex items-center justify-center w-full">
-                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                                style="line-height: 1;">(</span>
-                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                                style="line-height: 1;">{{ $product->stock }}</span>
-                                            <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                                style="line-height: 1;"> pcs)</span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Price --}}
-                                    <div class="flex items-center justify-center w-full">
-                                        <span
-                                            class="font-['Montserrat'] font-semibold text-[18px] text-[#666666] text-center truncate"
+                            {{-- Product Info --}}
+                            <div class="px-[15px] flex flex-col gap-[30px] items-center">
+                                <div class="flex flex-col gap-[10px] items-center min-h-[70px] w-full">
+                                    {{-- Product Name --}}
+                                    <div class="flex flex-col gap-[5px] items-center w-full">
+                                        <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] text-center truncate w-full"
                                             style="line-height: 1;">
-                                            Rp{{ number_format($product->price, 0, ',', '.') }}
-                                        </span>
+                                            {{ $product->name }}
+                                        </p>
                                     </div>
+
+                                    {{-- Stock --}}
+                                    <div class="flex items-center justify-center w-full">
+                                        <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                            style="line-height: 1;">(</span>
+                                        <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                            style="line-height: 1;">{{ $product->stock }}</span>
+                                        <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                            style="line-height: 1;"> pcs)</span>
+                                    </div>
+                                </div>
+
+                                {{-- Price --}}
+                                <div class="flex items-center justify-center w-full">
+                                    <span
+                                        class="font-['Montserrat'] font-semibold text-[18px] text-[#666666] text-center truncate"
+                                        style="line-height: 1;">
+                                        Rp{{ number_format($product->price, 0, ',', '.') }}
+                                    </span>
                                 </div>
                             </div>
+                        </div>
 
-                            {{-- Add/Quantity Controls --}}
-                            @if (isset($details[$product->id]))
-                                @php
-                                    $id = $product->id;
-                                    $item = $details[$id];
-                                @endphp
-                                <div
-                                    class="bg-[#fafafa] h-[40px] rounded-[15px] px-[25px] flex items-center justify-between w-full">
-                                    <button wire:click="decrementItem('{{ $id }}')"
-                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
-                                        <flux:icon icon="minus" class="size-[18px]" style="color: #666666;" />
-                                    </button>
-                                    <div
-                                        class="border border-[rgba(116,81,45,0.2)] rounded-[10px] px-[15px] py-[3px] flex items-center justify-center">
-                                        <span class="font-['Montserrat'] font-semibold text-[16px] text-[#666666]"
-                                            style="line-height: 1;">{{ $item['quantity'] }}</span>
-                                    </div>
-                                    <button wire:click="incrementItem('{{ $id }}')"
-                                        class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
-                                        <flux:icon icon="plus" class="size-[18px]" style="color: #666666;" />
-                                    </button>
-                                </div>
-                            @else
-                                <button wire:click="addToCart('{{ $product->id }}')"
-                                    class="bg-[#ffffff] border-[1.5px] border-[#74512d] rounded-[20px] w-full px-[25px] py-[10px]">
-                                    <span class="font-['Montserrat'] font-bold text-[16px] text-[#74512d]"
-                                        style="line-height: 1;">Tambah</span>
-                                </button>
-                            @endif
+                        {{-- Add/Quantity Controls --}}
+                        @if (isset($details[$product->id]))
+                        @php
+                        $id = $product->id;
+                        $item = $details[$id];
+                        @endphp
+                        <div
+                            class="bg-[#fafafa] h-[40px] rounded-[15px] px-[25px] flex items-center justify-between w-full">
+                            <button wire:click="decrementItem('{{ $id }}')"
+                                class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                <flux:icon icon="minus" class="size-[18px]" style="color: #666666;" />
+                            </button>
+                            <div
+                                class="border border-[rgba(116,81,45,0.2)] rounded-[10px] px-[15px] py-[3px] flex items-center justify-center">
+                                <span class="font-['Montserrat'] font-semibold text-[16px] text-[#666666]"
+                                    style="line-height: 1;">{{ $item['quantity'] }}</span>
+                            </div>
+                            <button wire:click="incrementItem('{{ $id }}')"
+                                class="border-[1.5px] border-[#74512d] rounded-[30px] flex items-center justify-center size-[30px]">
+                                <flux:icon icon="plus" class="size-[18px]" style="color: #666666;" />
+                            </button>
                         </div>
+                        @else
+                        <button wire:click="addToCart('{{ $product->id }}')"
+                            class="bg-[#ffffff] border-[1.5px] border-[#74512d] rounded-[20px] w-full px-[25px] py-[10px]">
+                            <span class="font-['Montserrat'] font-bold text-[16px] text-[#74512d]"
+                                style="line-height: 1;">Tambah</span>
+                        </button>
+                        @endif
+                    </div>
                     @empty
-                        <div class="col-span-3 text-center p-4 w-full">
-                            <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk
-                                yang
-                                ditemukan.</p>
-                        </div>
+                    <div class="col-span-3 text-center p-4 w-full">
+                        <p class="font-['Montserrat'] font-normal text-[14px] text-[#666666]">Tidak ada produk
+                            yang
+                            ditemukan.</p>
+                    </div>
                     @endforelse
                 </div>
             </div>
@@ -644,14 +642,13 @@
                         <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]" style="line-height: 1;">
                             No. Telepon</p>
                     </div>
-                    <div
-                        class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
+                    <div class="bg-[#fafafa] border-[1.5px] border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
                         <input type="text" wire:model="phoneCustomer" placeholder="081122334455"
                             class="w-full font-['Montserrat'] font-normal text-[16px] text-[#666666] bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                             style="line-height: 1;" />
                     </div>
                     @error('phoneCustomer')
-                        <span class="font-['Montserrat'] font-normal text-[12px] text-red-500">{{ $message }}</span>
+                    <span class="font-['Montserrat'] font-normal text-[12px] text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -667,7 +664,7 @@
                             style="line-height: 1;" />
                     </div>
                     @error('nameCustomer')
-                        <span class="font-['Montserrat'] font-normal text-[12px] text-red-500">{{ $message }}</span>
+                    <span class="font-['Montserrat'] font-normal text-[12px] text-red-500">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -695,97 +692,95 @@
 
     {{-- Modal Rincian Pelanggan (untuk customer yang sudah terdaftar) --}}
     @if ($customer)
-        <flux:modal name="rincian-customer" class="w-full max-w-md" wire:model="customerModal">
-            <div class="bg-[#fafafa] rounded-[15px] px-[30px] py-[35px] flex flex-col gap-[80px]">
-                {{-- Content --}}
-                <div class="flex flex-col gap-[30px] w-full">
-                    {{-- Header --}}
-                    <div class="flex items-center justify-center">
-                        <p class="font-['Montserrat'] font-medium text-[18px] text-[#666666]" style="line-height: 1;">
-                            Rincian Pelanggan</p>
-                    </div>
-
-                    <div class="flex flex-col gap-[40px]">
-                        {{-- Customer Info --}}
-                        <div class="flex flex-col gap-[30px]">
-                            {{-- No. Telepon --}}
-                            <div class="flex flex-col gap-[10px]">
-                                <div class="flex items-center justify-center">
-                                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                        style="line-height: 1;">No. Telepon</p>
-                                </div>
-                                <div
-                                    class="bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
-                                    <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                        style="line-height: 1;">{{ $customer->phone }}</span>
-                                </div>
-                            </div>
-
-                            {{-- Nama Pelanggan --}}
-                            <div class="flex flex-col gap-[10px]">
-                                <div class="flex items-center justify-center">
-                                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                        style="line-height: 1;">Nama Pelanggan</p>
-                                </div>
-                                <div
-                                    class="bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
-                                    <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
-                                        style="line-height: 1;">{{ $customer->name }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Customer Stats --}}
-                        <div class="flex flex-col gap-[30px]">
-                            {{-- Jumlah Transaksi --}}
-                            <div class="flex items-center justify-between w-full">
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Jumlah Transaksi</p>
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">0</p>
-                            </div>
-
-                            {{-- Jumlah Pembayaran --}}
-                            <div class="flex items-center justify-between w-full">
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Jumlah Pembayaran</p>
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Rp0</p>
-                            </div>
-
-                            {{-- Saldo Poin --}}
-                            <div class="flex items-center justify-between w-full">
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">Saldo Poin</p>
-                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
-                                    style="line-height: 1;">{{ $customer->points ?? 0 }}</p>
-                            </div>
-                        </div>
-                    </div>
+    <flux:modal name="rincian-customer" class="w-full max-w-md" wire:model="customerModal">
+        <div class="bg-[#fafafa] rounded-[15px] px-[30px] py-[35px] flex flex-col gap-[80px]">
+            {{-- Content --}}
+            <div class="flex flex-col gap-[30px] w-full">
+                {{-- Header --}}
+                <div class="flex items-center justify-center">
+                    <p class="font-['Montserrat'] font-medium text-[18px] text-[#666666]" style="line-height: 1;">
+                        Rincian Pelanggan</p>
                 </div>
 
-                {{-- Footer --}}
-                <div class="flex items-center gap-[10px]">
-                    <flux:modal.close>
-                        <button
-                            class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
-                            <flux:icon icon="x-mark" class="size-5" style="color: #333333;" />
-                            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#333333]"
-                                style="line-height: 1;">Batal</span>
-                        </button>
-                    </flux:modal.close>
+                <div class="flex flex-col gap-[40px]">
+                    {{-- Customer Info --}}
+                    <div class="flex flex-col gap-[30px]">
+                        {{-- No. Telepon --}}
+                        <div class="flex flex-col gap-[10px]">
+                            <div class="flex items-center justify-center">
+                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                    style="line-height: 1;">No. Telepon</p>
+                            </div>
+                            <div class="bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
+                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                    style="line-height: 1;">{{ $customer->phone }}</span>
+                            </div>
+                        </div>
 
-                    <flux:modal.close>
-                        <button
-                            class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
-                            <flux:icon icon="check" class="size-5" style="color: #f8f4e1;" />
-                            <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f8f4e1]"
-                                style="line-height: 1;">Simpan Perubahan</span>
-                        </button>
-                    </flux:modal.close>
+                        {{-- Nama Pelanggan --}}
+                        <div class="flex flex-col gap-[10px]">
+                            <div class="flex items-center justify-center">
+                                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                    style="line-height: 1;">Nama Pelanggan</p>
+                            </div>
+                            <div class="bg-[#fafafa] border border-[#adadad] rounded-[15px] px-[20px] py-[10px] w-full">
+                                <span class="font-['Montserrat'] font-normal text-[16px] text-[#666666]"
+                                    style="line-height: 1;">{{ $customer->name }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Customer Stats --}}
+                    <div class="flex flex-col gap-[30px]">
+                        {{-- Jumlah Transaksi --}}
+                        <div class="flex items-center justify-between w-full">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">Jumlah Transaksi</p>
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">0</p>
+                        </div>
+
+                        {{-- Jumlah Pembayaran --}}
+                        <div class="flex items-center justify-between w-full">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">Jumlah Pembayaran</p>
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">Rp0</p>
+                        </div>
+
+                        {{-- Saldo Poin --}}
+                        <div class="flex items-center justify-between w-full">
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">Saldo Poin</p>
+                            <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666]"
+                                style="line-height: 1;">{{ $customer->points ?? 0 }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </flux:modal>
+
+            {{-- Footer --}}
+            <div class="flex items-center gap-[10px]">
+                <flux:modal.close>
+                    <button
+                        class="bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                        <flux:icon icon="x-mark" class="size-5" style="color: #333333;" />
+                        <span class="font-['Montserrat'] font-semibold text-[16px] text-[#333333]"
+                            style="line-height: 1;">Batal</span>
+                    </button>
+                </flux:modal.close>
+
+                <flux:modal.close>
+                    <button
+                        class="bg-[#3f4e4f] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center gap-[5px]">
+                        <flux:icon icon="check" class="size-5" style="color: #f8f4e1;" />
+                        <span class="font-['Montserrat'] font-semibold text-[16px] text-[#f8f4e1]"
+                            style="line-height: 1;">Simpan Perubahan</span>
+                    </button>
+                </flux:modal.close>
+            </div>
+        </div>
+    </flux:modal>
     @endif
 
 </div>
