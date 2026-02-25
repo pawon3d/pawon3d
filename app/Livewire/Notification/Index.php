@@ -44,6 +44,7 @@ class Index extends Component
         if ($notification && ! $notification->is_read) {
             $notification->update(['is_read' => true]);
         }
+        $this->alert('success', 'Notifikasi telah dibaca.');
     }
 
     public function markAllAsRead(): void
