@@ -30,7 +30,7 @@
                         class="w-full bg-transparent border-0 font-['Montserrat'] font-normal text-[16px] text-[#666666] focus:outline-none focus:ring-0">
                         <option value="">- Pilih Toko Persediaan -</option>
                         @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -57,8 +57,7 @@
                             onSelect: function() {
                                 @this.set('expense_date', moment(this.getDate()).format('DD MMM YYYY'));
                             }
-                        });" wire:model.defer="expense_date" id="datepicker"
-                        readonly placeholder="01 Jun 2025" />
+                        });" wire:model.defer="expense_date" id="datepicker" readonly placeholder="01 Jun 2025" />
                     <flux:icon.calendar class="size-5 text-[#666666]" />
                 </div>
                 <flux:error name="expense_date" />
@@ -86,7 +85,8 @@
                     persediaan terkini (satuan utama). Pastikan harga sesuai dengan harga beli. Harga akan manjadi acuan
                     modal dalam produksi.
                 </p>
-                <flux:button type="button" wire:click="addDetail" variant="primary" icon="plus" class="w-full sm:w-auto">
+                <flux:button type="button" wire:click="addDetail" variant="primary" icon="plus"
+                    class="w-full sm:w-auto">
                     Tambah Belanja
                 </flux:button>
             </div>
@@ -101,84 +101,92 @@
             ['label' => 'Harga Satuan', 'class' => 'text-right px-[25px] py-[21px]'],
             ['label' => 'Total Harga', 'class' => 'text-right px-[25px] py-[21px]'],
             ['label' => '', 'class' => 'text-right px-[25px] py-[21px] w-[72px]'],
-        ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]"
-            body-text="text-[#666666]" footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
+        ]" header-bg="bg-[#3f4e4f]" header-text="text-[#f8f4e1]" body-bg="bg-[#fafafa]" body-text="text-[#666666]"
+            footer-bg="bg-[#eaeaea]" footer-text="text-[#666666]"
             empty-message="Belum ada barang belanja. Klik tombol 'Tambah Belanja' untuk menambahkan."
             wrapper-class="mb-0">
+            @error('expense_details')
+            <x-slot:before_table>
+                <div class="px-[25px] py-3 bg-red-50 border-b border-red-200">
+                    <span class="text-sm text-red-600 font-medium">{{ $message }}</span>
+                </div>
+            </x-slot:before_table>
+            @enderror
             <x-slot:rows>
                 @foreach ($expense_details as $index => $detail)
-                    <tr class="bg-[#fafafa] border-b border-[#d4d4d4]">
-                        <td class="px-[25px] py-0 h-[60px]">
-                            <div class="flex items-center gap-[10px]">
-                                <select
-                                    class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
-                                    wire:model="expense_details.{{ $index }}.material_id"
-                                    wire:change="setMaterial({{ $index }}, $event.target.value)">
-                                    <option value="">- Pilih Bahan Baku -</option>
-                                    @foreach ($materials as $material)
-                                        <option value="{{ $material->id }}">{{ $material->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </td>
-                        <td
-                            class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] max-w-[120px]">
-                            {{ $detail['material_quantity'] }}
-                        </td>
-                        <td class="px-[25px] py-0 h-[60px] w-[130px]">
-                            <input type="number" placeholder="0" min="0"
-                                wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
-                                class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
-                        </td>
-                        <td class="px-[25px] py-0 h-[60px] w-[210px]">
-                            <div class="flex items-center gap-[10px]">
-                                <select
-                                    class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
-                                    wire:model="expense_details.{{ $index }}.unit_id"
-                                    wire:change="setUnit({{ $index }}, $event.target.value)">
-                                    @php
-                                        $material = $materials->firstWhere('id', $detail['material_id']);
-                                        $units = $material?->material_details
-                                            ->map(function ($detail) {
-                                                return $detail->unit;
-                                            })
-                                            ->filter();
-                                    @endphp
-                                    <option value="">- Pilih Satuan Ukur -</option>
-                                    @foreach ($units ?? [] as $unit)
-                                        <option value="{{ $unit->id }}">
-                                            {{ $unit->name }} ({{ $unit->alias }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </td>
-                        <td class="px-[25px] py-1 h-[60px]">
-                            <input type="number" placeholder="0" min="0"
-                                wire:model.number.live="expense_details.{{ $index }}.price_expect"
-                                class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
-                            @if (isset($prevInputs[$index]))
-                                <div class="text-xs text-blue-500 mt-1">Harga Sebelumnya:
-                                    Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</div>
-                            @endif
-                        </td>
-                        <td
-                            class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666]">
-                            Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
-                        </td>
-                        <td class="px-[25px] py-0 h-[60px] text-center w-[72px]">
-                            <button type="button" wire:click.prevent="removeDetail({{ $index }})"
-                                class="inline-flex items-center justify-center">
-                                <flux:icon.trash class="size-[22px] text-[#666666]" />
-                            </button>
-                        </td>
-                    </tr>
+                <tr class="bg-[#fafafa] border-b border-[#d4d4d4]">
+                    <td class="px-[25px] py-0 h-[60px]">
+                        <div class="flex items-center gap-[10px]">
+                            <select
+                                class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                wire:model="expense_details.{{ $index }}.material_id"
+                                wire:change="setMaterial({{ $index }}, $event.target.value)">
+                                <option value="">- Pilih Bahan Baku -</option>
+                                @foreach ($materials as $material)
+                                <option value="{{ $material->id }}">{{ $material->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </td>
+                    <td
+                        class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] max-w-[120px]">
+                        {{ $detail['material_quantity'] }}
+                    </td>
+                    <td class="px-[25px] py-0 h-[60px] w-[130px]">
+                        <input type="number" placeholder="0" min="0"
+                            wire:model.number.live="expense_details.{{ $index }}.quantity_expect"
+                            class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
+                    </td>
+                    <td class="px-[25px] py-0 h-[60px] w-[210px]">
+                        <div class="flex items-center gap-[10px]">
+                            <select
+                                class="flex-1 bg-transparent border-0 font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0"
+                                wire:model="expense_details.{{ $index }}.unit_id"
+                                wire:change="setUnit({{ $index }}, $event.target.value)">
+                                @php
+                                $material = $materials->firstWhere('id', $detail['material_id']);
+                                $units = $material?->material_details
+                                ->map(function ($detail) {
+                                return $detail->unit;
+                                })
+                                ->filter();
+                                @endphp
+                                <option value="">- Pilih Satuan Ukur -</option>
+                                @foreach ($units ?? [] as $unit)
+                                <option value="{{ $unit->id }}">
+                                    {{ $unit->name }} ({{ $unit->alias }})
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </td>
+                    <td class="px-[25px] py-1 h-[60px]">
+                        <input type="number" placeholder="0" min="0"
+                            wire:model.number.live="expense_details.{{ $index }}.price_expect"
+                            class="w-full bg-[#fafafa] border border-[#adadad] rounded-[5px] px-[10px] py-[6px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666] focus:outline-none focus:ring-0" />
+                        @if (isset($prevInputs[$index]))
+                        <div class="text-xs text-blue-500 mt-1">Harga Sebelumnya:
+                            Rp{{ number_format($prevPrice[$index], 0, ',', '.') }}</div>
+                        @endif
+                    </td>
+                    <td
+                        class="px-[25px] py-0 h-[60px] text-right font-['Montserrat'] font-medium text-[14px] text-[#666666]">
+                        Rp{{ number_format($detail['detail_total_expect'], 0, ',', '.') }}
+                    </td>
+                    <td class="px-[25px] py-0 h-[60px] text-center w-[72px]">
+                        <button type="button" wire:click.prevent="removeDetail({{ $index }})"
+                            class="inline-flex items-center justify-center">
+                            <flux:icon.trash class="size-[22px] text-[#666666]" />
+                        </button>
+                    </td>
+                </tr>
                 @endforeach
             </x-slot:rows>
 
             <x-slot:footer>
                 <tr class="border-b border-[#d4d4d4]">
-                    <td class="px-[25px] py-0 h-[60px] font-['Montserrat'] font-bold text-[14px] text-[#666666] rounded-bl-[15px]">
+                    <td
+                        class="px-[25px] py-0 h-[60px] font-['Montserrat'] font-bold text-[14px] text-[#666666] rounded-bl-[15px]">
                         Total
                     </td>
                     <td></td>
@@ -192,7 +200,8 @@
                     <td class="px-[25px] py-0 h-[60px] rounded-br-[15px]"></td>
                 </tr>
             </x-slot:footer>
-            </x-table.form>
+        </x-table.form>
+        <flux:error name="expense_details" />
     </div>
 
 
@@ -204,15 +213,15 @@
             Batal
         </flux:button>
         @if ($expense_id)
-            <flux:button type="button" wire:click.prevent="update" variant="secondary" icon="save"
-                class="w-full sm:w-auto text-nowrap">
-                Simpan Perubahan
-            </flux:button>
+        <flux:button type="button" wire:click.prevent="update" variant="secondary" icon="save"
+            class="w-full sm:w-auto text-nowrap">
+            Simpan Perubahan
+        </flux:button>
         @else
-            <flux:button type="button" wire:click.prevent="store" variant="secondary" icon="archive-box"
-                class="w-full sm:w-auto text-nowrap">
-                Buat Rencana Belanja
-            </flux:button>
+        <flux:button type="button" wire:click.prevent="store" variant="secondary" icon="archive-box"
+            class="w-full sm:w-auto text-nowrap">
+            Buat Rencana Belanja
+        </flux:button>
         @endif
     </div>
 
