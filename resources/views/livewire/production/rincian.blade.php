@@ -47,117 +47,105 @@
                 </div>
 
                 {{-- Date and User Information --}}
-                <div class="flex gap-x-[34px] justify-content-between gap-y-4 w-full">
-                    <div class="flex gap-3">
-
-                        @if ($production->method == 'siap-beli')
-                        {{-- Tanggal Pembuatan Rencana --}}
-                        <div class="flex flex-col gap-[5px]">
-                            <p class="font-medium text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                Tanggal Pembuatan Rencana</p>
-                            <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                @if ($date)
-                                <span>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y H:i') }}</span>
-                                @else
-                                <span>-</span>
-                                @endif
-                            </div>
-                        </div>
-                        {{-- Tanggal Pelaksanaan Produksi --}}
-                        <div class="flex flex-col gap-[5px]">
-                            <p class="font-medium text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                Tanggal Pelaksanaan Produksi</p>
-                            <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                @if ($production->start_date)
-                                <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y')
-                                    }}</span>
-                                <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') :
-                                    '00:00' }}</span>
-                                @else
-                                <span>-</span>
-                                @endif
-                            </div>
-                        </div>
-                        @else
-                        {{-- Tanggal Produksi --}}
-                        <div class="flex flex-col gap-[5px]">
-                            <p class="font-medium text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                Tanggal Produksi</p>
-                            <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                @if ($production->start_date)
-                                <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y')
-                                    }}</span>
-                                <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') :
-                                    '00:00' }}</span>
-                                @else
-                                <span>-</span>
-                                @endif
-                            </div>
-                        </div>
-                        {{-- Tanggal Ambil Pesanan --}}
-                        <div class="flex flex-col gap-[5px]">
-                            <p class="font-medium text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                Tanggal Ambil Pesanan</p>
-                            <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                @if ($production->transaction && $production->transaction->date)
-                                <span>{{ \Carbon\Carbon::parse($production->transaction->date)->translatedFormat('d M
-                                    Y')
-                                    }}</span>
-                                <span>{{ $production->transaction->time ?
-                                    \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '00:00'
-                                    }}</span>
-                                @else
-                                <span>-</span>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-                        {{-- Tanggal Produksi Selesai --}}
-                        <div class="flex flex-col gap-[5px] text-[16px] text-[#666666]"
+                <div class="flex flex-wrap gap-x-[34px] gap-y-4 w-full">
+                    @if ($production->method == 'siap-beli')
+                    {{-- Tanggal Pembuatan Rencana --}}
+                    <div class="flex flex-col gap-[5px]">
+                        <p class="font-medium text-[16px] text-[#666666]"
                             style="font-family: 'Montserrat', sans-serif;">
-                            <p class="font-medium">Tanggal Produksi Selesai</p>
-                            <p class="font-normal">
-                                @if ($end_date)
-                                {{ \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y H:i') }}
-                                @else
-                                -
-                                @endif
-                            </p>
+                            Tanggal Pembuatan Rencana</p>
+                        <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            @if ($date)
+                            <span>{{ \Carbon\Carbon::parse($date)->translatedFormat('d M Y H:i') }}</span>
+                            @else
+                            <span>-</span>
+                            @endif
                         </div>
                     </div>
-
-                    <div class="flex gap-3">
-
-                        @if ($production->method != 'siap-beli')
-                        {{-- ID Pesanan --}}
-                        <div class="flex flex-col gap-[5px]">
-                            <p class="font-medium text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                ID Pesanan</p>
-                            <p class="font-normal text-[16px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                {{ $production->transaction->invoice_number ?? '-' }}</p>
-                        </div>
-                        @endif
-                        {{-- Koki --}}
-                        <div class="flex flex-col gap-[5px]"
-                            style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666;">
-                            <p class="font-medium">Koki</p>
-                            <p class="font-normal">
-                                {{ $production->workers->count() > 0 ? $production->workers->map(fn($w) =>
-                                $w->worker?->name)->filter()->implode(', ') : '-' }}
-                            </p>
+                    {{-- Tanggal Pelaksanaan Produksi --}}
+                    <div class="flex flex-col gap-[5px]">
+                        <p class="font-medium text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            Tanggal Pelaksanaan Produksi</p>
+                        <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            @if ($production->start_date)
+                            <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
+                            <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') :
+                                '00:00' }}</span>
+                            @else
+                            <span>-</span>
+                            @endif
                         </div>
                     </div>
-
+                    @else
+                    {{-- Tanggal Produksi --}}
+                    <div class="flex flex-col gap-[5px]">
+                        <p class="font-medium text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            Tanggal Produksi</p>
+                        <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            @if ($production->start_date)
+                            <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
+                            <span>{{ $production->time ? \Carbon\Carbon::parse($production->time)->format('H:i') :
+                                '00:00' }}</span>
+                            @else
+                            <span>-</span>
+                            @endif
+                        </div>
+                    </div>
+                    {{-- Tanggal Ambil Pesanan --}}
+                    <div class="flex flex-col gap-[5px]">
+                        <p class="font-medium text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            Tanggal Ambil Pesanan</p>
+                        <div class="flex items-center gap-[10px] font-normal text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            @if ($production->transaction && $production->transaction->date)
+                            <span>{{ \Carbon\Carbon::parse($production->transaction->date)->translatedFormat('d M Y')
+                                }}</span>
+                            <span>{{ $production->transaction->time ?
+                                \Carbon\Carbon::parse($production->transaction->time)->format('H:i') : '00:00' }}</span>
+                            @else
+                            <span>-</span>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+                    {{-- Tanggal Produksi Selesai --}}
+                    <div class="flex flex-col gap-[5px] text-[16px] text-[#666666]"
+                        style="font-family: 'Montserrat', sans-serif;">
+                        <p class="font-medium">Tanggal Produksi Selesai</p>
+                        <p class="font-normal">
+                            @if ($end_date)
+                            {{ \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y H:i') }}
+                            @else
+                            -
+                            @endif
+                        </p>
+                    </div>
+                    @if ($production->method != 'siap-beli')
+                    {{-- ID Pesanan --}}
+                    <div class="flex flex-col gap-[5px]">
+                        <p class="font-medium text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            ID Pesanan</p>
+                        <p class="font-normal text-[16px] text-[#666666]"
+                            style="font-family: 'Montserrat', sans-serif;">
+                            {{ $production->transaction->invoice_number ?? '-' }}</p>
+                    </div>
+                    @endif
+                    {{-- Koki --}}
+                    <div class="flex flex-col gap-[5px]"
+                        style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666;">
+                        <p class="font-medium">Koki</p>
+                        <p class="font-normal">
+                            {{ $production->workers->count() > 0 ? $production->workers->map(fn($w) =>
+                            $w->worker?->name)->filter()->implode(', ') : '-' }}
+                        </p>
+                    </div>
                 </div>
 
                 {{-- Progress Bar --}}
