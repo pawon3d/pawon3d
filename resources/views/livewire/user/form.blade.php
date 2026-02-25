@@ -155,8 +155,8 @@
                             Masukkan email aktif.
                         </p>
                     </div>
-                    <input type="email" wire:model="email" placeholder="Contoh: namaemail@gmail.com" @if
-                        ($this->isEditMode()) disabled @endif
+                    <input type="email" wire:model="email" placeholder="Contoh: namaemail@gmail.com"
+                        @disabled($this->isEditMode())
                     class="w-full px-5 py-2.5 {{ $this->isEditMode() ? 'bg-[#eaeaea]' : 'bg-[#fafafa]' }} border
                     border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595]
                     focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed" />
