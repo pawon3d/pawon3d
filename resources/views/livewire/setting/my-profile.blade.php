@@ -1,4 +1,6 @@
 <div>
+    @php $canEdit = auth()->user()->hasRole(['Admin', 'Pemilik', 'Manajemen Sistem']); @endphp
+
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
         <a href="{{ route('pengaturan') }}"
             class="w-full sm:w-auto px-6 py-2 bg-[#313131] rounded-[15px] flex items-center justify-center text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] hover:bg-[#252324]"
@@ -12,7 +14,11 @@
 
     <x-alert.info>
         <p class="text-sm font-semibold leading-normal">
-            Profil Anda. Lihat atau ubah informasi Anda jika diperlukan. Ubah kata sandi untuk mengubah kata sandi Anda.
+            @if($canEdit)
+            Profil Anda. Anda dapat mengubah nama, jenis kelamin, no. telepon, foto profil, dan kata sandi.
+            @else
+            Profil Anda. Anda hanya dapat mengubah kata sandi.
+            @endif
         </p>
     </x-alert.info>
 
@@ -22,6 +28,7 @@
             <flux:label class="text-[#666666] text-base font-medium">Foto Profil</flux:label>
 
             <div class="flex flex-col items-center w-full space-y-5">
+                @if($canEdit)
                 <!-- Dropzone Area -->
                 <div class="relative w-full sm:w-[300px] h-[170px] border-2 border-dashed border-black rounded-[15px] bg-[#fafafa] hover:bg-gray-50 transition-colors duration-200 overflow-hidden"
                     wire:ignore
@@ -32,24 +39,24 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                                <!-- Image Preview -->
-                                <img src="{{ $previewImage }}" alt="Preview"
-                                    class="object-cover w-full h-full rounded-[15px]" id="image-preview" />
+                            <!-- Image Preview -->
+                            <img src="{{ $previewImage }}" alt="Preview"
+                                class="object-cover w-full h-full rounded-[15px]" id="image-preview" />
                             @else
-                                <!-- Default Content -->
-                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
-                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-2 text-gray-400" />
-                                    <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
-                                    <p class="mb-2 text-xs text-gray-600">
-                                        Ukuran gambar tidak lebih dari
-                                        <span class="font-semibold">2mb</span>
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        Pastikan gambar dalam format
-                                        <span class="font-semibold">JPG </span> atau
-                                        <span class="font-semibold">PNG</span>
-                                    </p>
-                                </div>
+                            <!-- Default Content -->
+                            <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-2 text-gray-400" />
+                                <p class="mb-2 text-lg font-semibold text-gray-600">Unggah Gambar</p>
+                                <p class="mb-2 text-xs text-gray-600">
+                                    Ukuran gambar tidak lebih dari
+                                    <span class="font-semibold">2mb</span>
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    Pastikan gambar dalam format
+                                    <span class="font-semibold">JPG </span> atau
+                                    <span class="font-semibold">PNG</span>
+                                </p>
+                            </div>
                             @endif
                         </div>
                     </label>
@@ -67,15 +74,26 @@
 
                 <!-- Error Message -->
                 @error('image')
-                    <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                        {{ $message }}
-                    </div>
+                <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                    {{ $message }}
+                </div>
                 @enderror
 
                 <!-- Loading Indicator -->
                 <div wire:loading wire:target="image" class="w-full p-3 text-sm text-blue-700 bg-blue-100 rounded-lg">
                     Mengupload gambar...
                 </div>
+                @else
+                <!-- Read-only: tampilkan foto saja -->
+                <div
+                    class="w-full sm:w-[300px] h-[170px] rounded-[15px] overflow-hidden border border-[#d4d4d4] bg-[#eaeaea] flex items-center justify-center">
+                    @if($previewImage)
+                    <img src="{{ $previewImage }}" alt="Foto Profil" class="object-cover w-full h-full" />
+                    @else
+                    <flux:icon icon="user" class="w-16 h-16 text-[#959595]" />
+                    @endif
+                </div>
+                @endif
             </div>
         </div>
 
@@ -84,16 +102,16 @@
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Nama</flux:label>
                 <input placeholder="Nama Lengkap"
-                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
-                    wire:model.defer="name" disabled />
+                    class="w-full px-5 py-2.5 {{ $canEdit ? 'bg-white border-[#666666]' : 'bg-[#eaeaea] border-[#d4d4d4]' }} border rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="name" @if(!$canEdit) disabled @endif />
                 <flux:error name="name" />
             </div>
 
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">Jenis Kelamin</flux:label>
                 <select wire:model.defer="gender"
-                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
-                    disabled>
+                    class="w-full px-5 py-2.5 {{ $canEdit ? 'bg-white border-[#666666]' : 'bg-[#eaeaea] border-[#d4d4d4]' }} border rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    @if(!$canEdit) disabled @endif>
                     <option value="" disabled>Pilih Jenis Kelamin</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
@@ -111,8 +129,8 @@
             <div class="flex flex-col gap-4">
                 <flux:label class="text-[#666666] text-base font-medium">No. Telepon</flux:label>
                 <input placeholder="08xxxxxx"
-                    class="w-full px-5 py-2.5 bg-[#eaeaea] border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
-                    wire:model.defer="phone" disabled />
+                    class="w-full px-5 py-2.5 {{ $canEdit ? 'bg-white border-[#666666]' : 'bg-[#eaeaea] border-[#d4d4d4]' }} border rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed"
+                    wire:model.defer="phone" @if(!$canEdit) disabled @endif />
                 <flux:error name="phone" />
             </div>
 

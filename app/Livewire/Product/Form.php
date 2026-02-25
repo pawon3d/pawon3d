@@ -373,7 +373,7 @@ class Form extends Component
     protected function recalculateCapital(): void
     {
         $compositionTotal = collect($this->product_compositions)
-            ->sum(fn ($c) => ($c['material_price'] ?? 0) * ($c['material_quantity'] ?? 0));
+            ->sum(fn ($c) => (float) ($c['material_price'] ?? 0) * (float) ($c['material_quantity'] ?? 0));
 
         $otherTotal = collect($this->other_costs)
             ->sum('price');

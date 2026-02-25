@@ -246,8 +246,8 @@
                     <div class="flex justify-between items-center pt-2 border-t border-dashed border-[#D4D4D4]">
                         <span class="text-sm font-bold text-[#666666]">Jumlah Harga</span>
                         <span class="text-sm font-bold text-[#666666]">
-                            Rp{{ number_format(($composition['material_price'] ?? 0) *
-                            ($composition['material_quantity'] ?? 0), 0, ',', '.') }}
+                            Rp{{ number_format((float) ($composition['material_price'] ?? 0) *
+                            (float) ($composition['material_quantity'] ?? 0), 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
@@ -256,8 +256,9 @@
                 <div class="p-4 bg-[#EAEAEA] rounded-xl border border-[#D4D4D4] flex justify-between items-center">
                     <span class="font-bold text-sm text-[#666666]">Total Harga Bahan Baku</span>
                     <span class="font-bold text-sm text-[#666666]">
-                        Rp{{ number_format(collect($product_compositions)->sum(fn($c) => ($c['material_price'] ?? 0) *
-                        ($c['material_quantity'] ?? 0)), 0, ',', '.') }}
+                        Rp{{ number_format(collect($product_compositions)->sum(fn($c) => (float) ($c['material_price']
+                        ?? 0) *
+                        (float) ($c['material_quantity'] ?? 0)), 0, ',', '.') }}
                     </span>
                 </div>
             </div>
@@ -320,8 +321,8 @@
                                 </select>
                             </td>
                             <td class="px-6 text-right text-[#666666] font-medium">
-                                Rp{{ number_format(($composition['material_price'] ?? 0) *
-                                ($composition['material_quantity'] ?? 0), 0, ',', '.') }}
+                                Rp{{ number_format((float) ($composition['material_price'] ?? 0) *
+                                (float) ($composition['material_quantity'] ?? 0), 0, ',', '.') }}
                             </td>
                             <td class="px-6 text-center">
                                 <button type="button" wire:click.prevent="removeComposition({{ $index }})"
@@ -341,8 +342,9 @@
                                 Baku
                             </td>
                             <td class="px-6 text-right font-bold text-sm text-[#666666]">
-                                Rp{{ number_format(collect($product_compositions)->sum(fn($c) => ($c['material_price']
-                                ?? 0) * ($c['material_quantity'] ?? 0)), 0, ',', '.') }}
+                                Rp{{ number_format(collect($product_compositions)->sum(fn($c) => (float)
+                                ($c['material_price']
+                                ?? 0) * (float) ($c['material_quantity'] ?? 0)), 0, ',', '.') }}
                             </td>
                             <td></td>
                         </tr>
