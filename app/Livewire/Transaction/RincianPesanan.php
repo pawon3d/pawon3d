@@ -22,9 +22,9 @@ class RincianPesanan extends Component
 
     public mixed $paymentImage = null;
 
-    public array $details = [];
+    public $details = [];
 
-    public array $paymentChannels = [];
+    public $paymentChannels = [];
 
     public mixed $production = null;
 
@@ -120,7 +120,7 @@ class RincianPesanan extends Component
 
     public bool $riwayatModal = false;
 
-    public array $activityLogs = [];
+    public $activityLogs = [];
 
     protected $listeners = [
         'deleteTransaction' => 'deleteTransaction',
