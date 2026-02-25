@@ -38,22 +38,19 @@ class Index extends Component
         }
     }
 
-    public function markAsRead(string $notificationId): mixed
+    public function markAsRead(string $notificationId): void
     {
         $notification = \App\Models\Notification::find($notificationId);
         if ($notification && ! $notification->is_read) {
             $notification->update(['is_read' => true]);
-
-            return redirect()->intended(route('notifikasi'))->with('notification', 'Notifikasi telah dibaca');
         }
     }
 
-    public function markAllAsRead(): mixed
+    public function markAllAsRead(): void
     {
         $user = Auth::user();
         \App\Models\Notification::where('user_id', $user->id)->where('is_read', false)->update(['is_read' => true]);
-
-        return redirect()->intended(route('notifikasi'))->with('notification', 'Semua notifikasi telah dibaca');
+        $this->alert('success', 'Semua notifikasi telah dibaca.');
     }
 
     public function render(): \Illuminate\View\View
