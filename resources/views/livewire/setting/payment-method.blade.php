@@ -37,35 +37,35 @@
                             wire:click="sortBy('bank_name')">
                             Sumber Pembayaran
                             @if ($sortField === 'bank_name')
-                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
                         <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('type')">
                             Media Pembayaran
                             @if ($sortField === 'type')
-                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
                         <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('group')">
                             Metode Pembayaran
                             @if ($sortField === 'group')
-                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
                         <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('account_number')">
                             Nomor Tujuan
                             @if ($sortField === 'account_number')
-                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
                         <th class="px-6 py-5 text-left text-sm font-bold text-[#F8F4E1] cursor-pointer"
                             wire:click="sortBy('account_name')">
                             Atas Nama
                             @if ($sortField === 'account_name')
-                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @endif
                         </th>
                         <th class="px-6 py-5 text-center text-sm font-bold text-[#F8F4E1]">
@@ -75,36 +75,34 @@
                 </thead>
                 <tbody>
                     @forelse ($paymentChannels as $channel)
-                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 cursor-pointer"
-                            wire:click="openModal(true,'{{ $channel->id }}')">
-                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
-                                {{ $channel->bank_name }}
-                            </td>
-                            <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
-                                {{ $channel->type }}
-                            </td>
-                            <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
-                                {{ $channel->group }}
-                            </td>
-                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
-                                {{ $channel->account_number ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 text-sm font-medium text-[#666666]">
-                                {{ $channel->account_name ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 text-center" wire:click.stop>
-                                <flux:switch
-                                    :checked="$channel->is_active"
-                                    wire:click="toggleActive('{{ $channel->id }}')"
-                                />
-                            </td>
-                        </tr>
+                    <tr class="border-b border-[#d4d4d4] hover:bg-gray-50 cursor-pointer"
+                        wire:click="openModal(true,'{{ $channel->id }}')">
+                        <td class="px-6 py-4 text-sm font-medium text-[#666666]">
+                            {{ $channel->bank_name }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
+                            {{ $channel->type }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-[#666666] capitalize">
+                            {{ $channel->group }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-[#666666]">
+                            {{ $channel->account_number ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-[#666666]">
+                            {{ $channel->account_name ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-center" wire:click.stop>
+                            <flux:switch :checked="$channel->is_active"
+                                wire:click="toggleActive('{{ $channel->id }}')" />
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-sm text-[#666666]">
-                                Tidak ada metode pembayaran yang tersedia.
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-sm text-[#666666]">
+                            Tidak ada metode pembayaran yang tersedia.
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -112,9 +110,9 @@
 
         <!-- Pagination -->
         @if ($paymentChannels->hasPages())
-            <div class="mt-4">
-                {{ $paymentChannels->links() }}
-            </div>
+        <div class="mt-4">
+            {{ $paymentChannels->links() }}
+        </div>
         @endif
     </div>
 
@@ -134,7 +132,7 @@
                     <input type="text" wire:model.defer="bankName" placeholder="Contoh : Bank Mandiri (Mandiri)"
                         class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
                     @error('bankName')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -148,7 +146,7 @@
                         <option value="non-tunai">Non-Tunai</option>
                     </select>
                     @error('group')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -159,15 +157,15 @@
                         class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] focus:outline-none focus:ring-2 focus:ring-[#74512D]">
                         <option value="" hidden>Pilih Media Pembayaran</option>
                         @if ($this->group == 'tunai')
-                            <option value="tunai">Tunai</option>
+                        <option value="tunai">Tunai</option>
                         @else
-                            <option value="transfer">Transfer Bank</option>
-                            <option value="dompet digital">Dompet Digital</option>
-                            <option value="qris">QRIS</option>
+                        <option value="transfer">Transfer Bank</option>
+                        <option value="dompet digital">Dompet Digital</option>
+                        <option value="qris">QRIS</option>
                         @endif
                     </select>
                     @error('type')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -177,7 +175,7 @@
                     <input type="text" wire:model.defer="accountNumber" placeholder="098765432109"
                         class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
                     @error('accountNumber')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -187,7 +185,7 @@
                     <input type="text" wire:model.defer="accountName" placeholder="RARA"
                         class="w-full px-4 py-2.5 border border-[#d4d4d4] rounded-[10px] text-sm text-[#333333] placeholder:text-[#adadad] focus:outline-none focus:ring-2 focus:ring-[#74512D]" />
                     @error('accountName')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -220,24 +218,24 @@
                         </div>
 
                         @if ($edit && $qrisImage)
-                            <div class="flex gap-2 justify-end sm:justify-start">
-                                <button type="button" wire:click="previewImage"
-                                    class="p-2 bg-[#525252] hover:bg-[#404040] rounded-full">
-                                    <flux:icon.eye class="size-5 text-white" />
-                                </button>
-                                <button type="button" wire:click="downloadImage"
-                                    class="p-2 bg-[#27ae60] hover:bg-[#229954] rounded-full">
-                                    <flux:icon.arrow-down-tray class="size-5 text-white" />
-                                </button>
-                                <button type="button" wire:click="deleteImage"
-                                    class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
-                                    <flux:icon.trash class="size-5 text-white" />
-                                </button>
-                            </div>
+                        <div class="flex gap-2 justify-end sm:justify-start">
+                            <button type="button" wire:click="previewImage"
+                                class="p-2 bg-[#525252] hover:bg-[#404040] rounded-full">
+                                <flux:icon.eye class="size-5 text-white" />
+                            </button>
+                            <button type="button" wire:click="downloadImage"
+                                class="p-2 bg-[#27ae60] hover:bg-[#229954] rounded-full">
+                                <flux:icon.arrow-down-tray class="size-5 text-white" />
+                            </button>
+                            <button type="button" wire:click="deleteImage"
+                                class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
+                                <flux:icon.trash class="size-5 text-white" />
+                            </button>
+                        </div>
                         @endif
                     </div>
                     @error('qrisImage')
-                        <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
+                    <span class="text-sm text-red-500 mt-1">{{ $message }}</span>
                     @enderror
                 </div>
             </div>
@@ -245,12 +243,12 @@
             <!-- Action Buttons -->
             <div class="flex justify-between items-center pt-4">
                 @if ($edit)
-                    <button type="button" wire:click="confirmDelete"
-                        class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
-                        <flux:icon.trash class="size-5 text-white" />
-                    </button>
+                <button type="button" wire:click="confirmDelete"
+                    class="p-2 bg-[#eb5757] hover:bg-[#c0392b] rounded-full">
+                    <flux:icon.trash class="size-5 text-white" />
+                </button>
                 @else
-                    <div></div>
+                <div></div>
                 @endif
 
                 <div class="flex gap-3">
@@ -276,8 +274,8 @@
 
             <div class="bg-gray-100 rounded-lg p-4 flex items-center justify-center">
                 @if ($previewImageUrl)
-                    <img src="{{ $previewImageUrl }}" alt="QRIS Preview"
-                        class="max-w-full max-h-[70vh] object-contain rounded">
+                <img src="{{ $previewImageUrl }}" alt="QRIS Preview"
+                    class="max-w-full max-h-[70vh] object-contain rounded">
                 @endif
             </div>
         </div>
