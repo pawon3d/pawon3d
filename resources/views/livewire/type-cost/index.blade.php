@@ -43,14 +43,7 @@
                     <input wire:model.live="search" placeholder="Cari Jenis Biaya."
                         class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none bg-transparent" />
                 </div>
-                <button class="flex items-center gap-2 text-[#666666] font-medium text-base w-full sm:w-auto justify-center">
-                    <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Filter
-                </button>
+
             </div>
             <flux:button variant="primary" icon="plus" wire:click="showAddModal" class="w-full sm:w-auto">
                 Tambah Jenis Biaya
@@ -87,23 +80,21 @@
             <!-- Table Body -->
             <div class="overflow-x-auto overflow-y-auto max-h-[600px]">
                 @forelse($typeCosts as $typeCost)
-                    <button wire:click="edit('{{ $typeCost->id }}')"
-                        class="flex items-center w-full hover:bg-gray-50 transition-colors text-left cursor-pointer">
-                        <div
-                            class="flex-1 max-w-[350px] min-w-[100px] px-6 py-5 bg-[#fafafa] border-b border-[#d4d4d4]">
-                            <p class="font-medium text-sm text-[#666666] truncate">{{ $typeCost->name }}</p>
-                        </div>
-                        <div
-                            class="flex-1 min-w-[100px] px-6 py-5 bg-[#fafafa] border-b border-[#d4d4d4] flex justify-end">
-                            <p class="font-medium text-sm text-[#666666] text-right">
-                                {{ $typeCost->other_costs_count }}
-                            </p>
-                        </div>
-                    </button>
-                @empty
-                    <div class="px-6 py-8 text-center">
-                        <p class="text-sm text-[#666666]">Tidak ada data.</p>
+                <button wire:click="edit('{{ $typeCost->id }}')"
+                    class="flex items-center w-full hover:bg-gray-50 transition-colors text-left cursor-pointer">
+                    <div class="flex-1 max-w-[350px] min-w-[100px] px-6 py-5 bg-[#fafafa] border-b border-[#d4d4d4]">
+                        <p class="font-medium text-sm text-[#666666] truncate">{{ $typeCost->name }}</p>
                     </div>
+                    <div class="flex-1 min-w-[100px] px-6 py-5 bg-[#fafafa] border-b border-[#d4d4d4] flex justify-end">
+                        <p class="font-medium text-sm text-[#666666] text-right">
+                            {{ $typeCost->other_costs_count }}
+                        </p>
+                    </div>
+                </button>
+                @empty
+                <div class="px-6 py-8 text-center">
+                    <p class="text-sm text-[#666666]">Tidak ada data.</p>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -116,21 +107,19 @@
             </p>
             <div class="flex items-center gap-2.5">
                 @if ($typeCosts->onFirstPage())
-                    <button disabled
-                        class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md opacity-50 cursor-not-allowed">
-                        <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
+                <button disabled
+                    class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md opacity-50 cursor-not-allowed">
+                    <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
                 @else
-                    <button wire:click="previousPage"
-                        class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md hover:bg-gray-100">
-                        <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
+                <button wire:click="previousPage"
+                    class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md hover:bg-gray-100">
+                    <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
                 @endif
 
                 <div class="min-w-[30px] px-2.5 py-1.5 bg-[#666666] rounded-md text-center">
@@ -138,21 +127,19 @@
                 </div>
 
                 @if ($typeCosts->hasMorePages())
-                    <button wire:click="nextPage"
-                        class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md hover:bg-gray-100">
-                        <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                <button wire:click="nextPage"
+                    class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md hover:bg-gray-100">
+                    <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
                 @else
-                    <button disabled
-                        class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md opacity-50 cursor-not-allowed">
-                        <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                <button disabled
+                    class="min-w-[30px] px-2.5 py-1.5 bg-[#fafafa] border border-[#666666] rounded-md opacity-50 cursor-not-allowed">
+                    <svg class="w-[17px] h-[17px] text-[#666666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
                 @endif
             </div>
         </div>
@@ -171,7 +158,7 @@
                         <input type="text" id="name" wire:model.lazy="name" placeholder="Contoh : Gas"
                             class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#d4d4d4] rounded-[15px] text-base text-[#959595] focus:outline-none focus:border-[#666666]" />
                         @error('name')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
@@ -206,7 +193,7 @@
                             <input type="text" id="edit_name" wire:model.lazy="name"
                                 class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666]" />
                             @error('name')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
                     </div>
@@ -246,7 +233,8 @@
                             Batal
                         </flux:button>
                     </flux:modal.close>
-                    <flux:button variant="secondary" icon="save" type="button" wire:click="update" class="w-full sm:w-auto">
+                    <flux:button variant="secondary" icon="save" type="button" wire:click="update"
+                        class="w-full sm:w-auto">
                         Simpan Perubahan
                     </flux:button>
                 </div>
@@ -308,8 +296,8 @@
                                         <path d="M1 1L7.5 8.5L14 1" stroke="#f8f4e1" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    <svg class="absolute bottom-[1px] w-[15px] h-[10px] -rotate-90"
-                                        viewBox="0 0 15 10" fill="none">
+                                    <svg class="absolute bottom-[1px] w-[15px] h-[10px] -rotate-90" viewBox="0 0 15 10"
+                                        fill="none">
                                         <path d="M1 1L7.5 8.5L14 1" stroke="#f8f4e1" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
@@ -321,29 +309,28 @@
                         <!-- Table Body -->
                         <div class="max-h-[180px] overflow-y-auto pb-2.5">
                             @if ($usageProducts && $usageProducts->count() > 0)
-                                @foreach ($usageProducts as $product)
-                                    <div class="bg-[#fafafa] flex items-center border-b border-[#d4d4d4]">
-                                        <div class="flex-1 min-w-[270px] px-6 py-5">
-                                            <p class="font-medium text-sm text-[#666666] truncate">
-                                                {{ $product->name }}
-                                            </p>
-                                        </div>
-                                        <div class="w-[72px] px-6 py-5 flex items-center justify-center">
-                                            <button class="text-[#666666] hover:text-[#eb5757] transition-colors">
-                                                <svg class="w-[22px] h-[22px]" fill="currentColor"
-                                                    viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="px-6 py-8 text-center">
-                                    <p class="text-sm text-[#666666]">Tidak ada data produk.</p>
+                            @foreach ($usageProducts as $product)
+                            <div class="bg-[#fafafa] flex items-center border-b border-[#d4d4d4]">
+                                <div class="flex-1 min-w-[270px] px-6 py-5">
+                                    <p class="font-medium text-sm text-[#666666] truncate">
+                                        {{ $product->name }}
+                                    </p>
                                 </div>
+                                <div class="w-[72px] px-6 py-5 flex items-center justify-center">
+                                    <button class="text-[#666666] hover:text-[#eb5757] transition-colors">
+                                        <svg class="w-[22px] h-[22px]" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            @endforeach
+                            @else
+                            <div class="px-6 py-8 text-center">
+                                <p class="text-sm text-[#666666]">Tidak ada data produk.</p>
+                            </div>
                             @endif
                         </div>
                     </div>
@@ -397,13 +384,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

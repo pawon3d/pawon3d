@@ -498,12 +498,6 @@
                             style="line-height: 1;" />
                     </div>
 
-                    {{-- Filter --}}
-                    <div class="flex items-center justify-center">
-                        <flux:icon icon="funnel" class="size-[25px]" style="color: #666666;" />
-                        <span class="font-['Montserrat'] font-medium text-[16px] text-[#666666] px-[5px] py-[10px]"
-                            style="line-height: 1;">Filter</span>
-                    </div>
                 </div>
             </div>
 

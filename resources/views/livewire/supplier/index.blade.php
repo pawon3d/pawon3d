@@ -29,13 +29,10 @@
                     <input wire:model.live="search" placeholder="Cari Toko Persediaan"
                         class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
                 </div>
-                <div class="flex items-center gap-1 cursor-pointer justify-center">
-                    <flux:icon.funnel class="size-[25px] text-[#666666]" />
-                    <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
-                </div>
+
             </div>
-            <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}"
-                wire:navigate class="w-full sm:w-auto">
+            <flux:button type="button" variant="primary" icon="plus" href="{{ route('supplier.tambah') }}" wire:navigate
+                class="w-full sm:w-auto">
                 Tambah Toko
             </flux:button>
         </div>
@@ -58,25 +55,25 @@
             headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666" emptyMessage="Tidak ada data."
             wrapperClass="w-full rounded-[15px] overflow-hidden border-0 shadow-none">
             @foreach ($suppliers as $supplier)
-                <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors">
-                    <td class="px-6 py-0">
-                        <a href="{{ route('supplier.edit', $supplier->id) }}" class="block" wire:navigate>
-                            <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                                {{ $supplier->name }}
-                            </span>
-                        </a>
-                    </td>
-                    <td class="px-6 py-0">
+            <tr class="border-b border-[#d4d4d4] h-[60px] hover:bg-[#f0f0f0] transition-colors">
+                <td class="px-6 py-0">
+                    <a href="{{ route('supplier.edit', $supplier->id) }}" class="block" wire:navigate>
                         <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                            {{ $supplier->contact_name }}
+                            {{ $supplier->name }}
                         </span>
-                    </td>
-                    <td class="px-6 py-0">
-                        <span class="font-montserrat font-medium text-[14px] text-[#666666]">
-                            {{ $supplier->phone }}
-                        </span>
-                    </td>
-                </tr>
+                    </a>
+                </td>
+                <td class="px-6 py-0">
+                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                        {{ $supplier->contact_name }}
+                    </span>
+                </td>
+                <td class="px-6 py-0">
+                    <span class="font-montserrat font-medium text-[14px] text-[#666666]">
+                        {{ $supplier->phone }}
+                    </span>
+                </td>
+            </tr>
             @endforeach
         </x-table.paginated>
     </div>
@@ -89,13 +86,13 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b py-2">
-                        <div class="text-sm font-medium">{{ $log->description }}</div>
-                        <div class="text-xs text-gray-500">
-                            {{ $log->causer->name ?? 'System' }} -
-                            {{ $log->created_at->format('d M Y H:i') }}
-                        </div>
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
                     </div>
+                </div>
                 @endforeach
             </div>
         </div>

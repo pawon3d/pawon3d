@@ -30,12 +30,6 @@
                         style="font-family: 'Montserrat', sans-serif; font-weight: 500;" />
                 </div>
 
-                {{-- Filter Button --}}
-                <button class="flex items-center gap-0 text-[#666666] hover:text-[#3f4e4f] transition-colors justify-center">
-                    <flux:icon icon="funnel" class="size-[25px]" />
-                    <span class="text-[16px] font-medium px-[5px] py-[10px]"
-                        style="font-family: 'Montserrat', sans-serif;">Filter</span>
-                </button>
             </div>
         </div>
 
@@ -56,81 +50,82 @@
                     ['label' => 'Jumlah Awal Tunai', 'sortable' => true, 'sort-by' => 'initial_cash'],
                     ['label' => 'Penerimaan', 'sortable' => false],
                     ['label' => 'Jumlah Sebenarnya', 'sortable' => true, 'sort-by' => 'final_cash'],
-                ]" :paginator="$shifts" emptyMessage="Belum ada riwayat sesi penjualan."
-                    headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                ]" :paginator="$shifts" emptyMessage="Belum ada riwayat sesi penjualan." headerBg="#3f4e4f"
+                    headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
                     wrapperClass="rounded-[15px] border border-[#d4d4d4]">
                     @foreach ($shifts as $shift)
-                <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
-                    {{-- No. Sesi --}}
-                    <td class="px-6 py-4">
-                        <a href="{{ route('transaksi.rincian-sesi', ['id' => $shift->id]) }}"
-                            class="font-medium text-[14px] text-[#666666] hover:underline text-right block"
-                            style="font-family: 'Montserrat', sans-serif;" wire:navigate>
-                            {{ $shift->shift_number }}
-                        </a>
-                    </td>
+                    <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
+                        {{-- No. Sesi --}}
+                        <td class="px-6 py-4">
+                            <a href="{{ route('transaksi.rincian-sesi', ['id' => $shift->id]) }}"
+                                class="font-medium text-[14px] text-[#666666] hover:underline text-right block"
+                                style="font-family: 'Montserrat', sans-serif;" wire:navigate>
+                                {{ $shift->shift_number }}
+                            </a>
+                        </td>
 
-                    {{-- Tanggal Buka --}}
-                    <td class="px-6 py-4">
-                        <div class="flex gap-[10px] items-center">
+                        {{-- Tanggal Buka --}}
+                        <td class="px-6 py-4">
+                            <div class="flex gap-[10px] items-center">
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ \Carbon\Carbon::parse($shift->start_time)->translatedFormat('d F Y') }}
+                                </span>
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ \Carbon\Carbon::parse($shift->start_time)->format('H:i') }}
+                                </span>
+                            </div>
+                        </td>
+
+                        {{-- Tanggal Tutup --}}
+                        <td class="px-6 py-4">
+                            <div class="flex gap-[10px] items-center">
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->translatedFormat('d F
+                                    Y') : '-' }}
+                                </span>
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->format('H:i') : '' }}
+                                </span>
+                            </div>
+                        </td>
+
+                        {{-- Kasir --}}
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-[14px] text-[#666666] truncate"
+                                style="font-family: 'Montserrat', sans-serif;">
+                                {{ $shift->openedBy->name ?? '-' }}
+                            </span>
+                        </td>
+
+                        {{-- Jumlah Awal Tunai --}}
+                        <td class="px-6 py-4">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($shift->start_time)->translatedFormat('d F Y') }}
+                                Rp{{ number_format($shift->initial_cash, 0, ',', '.') }}
                             </span>
+                        </td>
+
+                        {{-- Penerimaan --}}
+                        <td class="px-6 py-4">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($shift->start_time)->format('H:i') }}
+                                Rp{{ number_format($shift->final_cash - $shift->initial_cash, 0, ',', '.') }}
                             </span>
-                        </div>
-                    </td>
+                        </td>
 
-                    {{-- Tanggal Tutup --}}
-                    <td class="px-6 py-4">
-                        <div class="flex gap-[10px] items-center">
+                        {{-- Jumlah Sebenarnya --}}
+                        <td class="px-6 py-4">
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->translatedFormat('d F Y') : '-' }}
+                                Rp{{ number_format($shift->final_cash, 0, ',', '.') }}
                             </span>
-                            <span class="font-medium text-[14px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                {{ $shift->end_time ? \Carbon\Carbon::parse($shift->end_time)->format('H:i') : '' }}
-                            </span>
-                        </div>
-                    </td>
-
-                    {{-- Kasir --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666] truncate"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            {{ $shift->openedBy->name ?? '-' }}
-                        </span>
-                    </td>
-
-                    {{-- Jumlah Awal Tunai --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666]"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            Rp{{ number_format($shift->initial_cash, 0, ',', '.') }}
-                        </span>
-                    </td>
-
-                    {{-- Penerimaan --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666]"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            Rp{{ number_format($shift->final_cash - $shift->initial_cash, 0, ',', '.') }}
-                        </span>
-                    </td>
-
-                    {{-- Jumlah Sebenarnya --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666]"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            Rp{{ number_format($shift->final_cash, 0, ',', '.') }}
-                        </span>
-                    </td>
-                </tr>
-            @endforeach
+                        </td>
+                    </tr>
+                    @endforeach
                 </x-table.paginated>
             </div>
         </div>

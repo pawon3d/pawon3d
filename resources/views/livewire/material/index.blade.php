@@ -24,10 +24,7 @@
                     <input wire:model.live="search" placeholder="Cari Barang Persediaan..."
                         class="flex-1 px-2.5 py-2.5 font-montserrat font-medium text-[16px] text-[#959595] border-0 focus:outline-none focus:ring-0 bg-transparent" />
                 </div>
-                <div class="flex items-center gap-1 cursor-pointer justify-center">
-                    <flux:icon.funnel class="size-[20px] text-[#666666]" />
-                    <span class="font-montserrat font-medium text-[16px] text-[#666666] px-1 py-2.5">Filter</span>
-                </div>
+
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full xl:w-auto">
                 <flux:button type="button" variant="primary" href="{{ route('satuan-ukur') }}" icon="lamp-ceiling"

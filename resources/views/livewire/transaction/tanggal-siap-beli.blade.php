@@ -22,11 +22,7 @@
                     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Produk"
                         class="border-0 focus:ring-0 text-[16px] text-[#959595] py-[10px] flex-1 bg-transparent" />
                 </div>
-                <div
-                    class="flex items-center gap-[5px] text-[#666666] cursor-pointer hover:opacity-70 transition-opacity justify-center">
-                    <flux:icon icon="adjustments-horizontal" class="size-[25px]" />
-                    <span class="text-[16px] font-medium">Filter</span>
-                </div>
+
             </div>
         </div>
 
@@ -39,26 +35,26 @@
                     ['label' => 'Jumlah Produksi', 'sortable' => true, 'sort-by' => 'total_production', 'align' => 'right'],
                     ['label' => 'Terjual', 'sortable' => true, 'sort-by' => 'total_sold', 'align' => 'right'],
                     ['label' => 'Tersisa', 'sortable' => true, 'sort-by' => 'total_remaining', 'align' => 'right'],
-                ]" :paginator="$products" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
-                    bodyText="#666666" emptyMessage="Tidak ada produk yang ditemukan.">
+                ]" :paginator="$products" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                    emptyMessage="Tidak ada produk yang ditemukan.">
                     @foreach ($products as $product)
-                        <tr class="border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
-                            <td class="px-[25px] py-[15px] text-[#666666] font-medium text-[14px]">
-                                {{ $product['product_name'] }}
-                            </td>
-                            <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
-                                {{ $product['production_id'] }}
-                            </td>
-                            <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
-                                {{ $product['total_production'] }}
-                            </td>
-                            <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
-                                {{ $product['total_sold'] }}
-                            </td>
-                            <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
-                                {{ $product['total_remaining'] }}
-                            </td>
-                        </tr>
+                    <tr class="border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
+                        <td class="px-[25px] py-[15px] text-[#666666] font-medium text-[14px]">
+                            {{ $product['product_name'] }}
+                        </td>
+                        <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
+                            {{ $product['production_id'] }}
+                        </td>
+                        <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
+                            {{ $product['total_production'] }}
+                        </td>
+                        <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
+                            {{ $product['total_sold'] }}
+                        </td>
+                        <td class="px-[25px] py-[15px] text-right text-[#666666] font-medium text-[14px]">
+                            {{ $product['total_remaining'] }}
+                        </td>
+                    </tr>
                     @endforeach
                 </x-table.paginated>
             </div>

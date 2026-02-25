@@ -25,16 +25,10 @@
                     <input wire:model.live.debounce.300ms="search" placeholder="Cari Peran"
                         class="flex-1 px-2.5 py-2.5 focus:outline-none text-[#959595] text-base font-medium border-none bg-transparent" />
                 </div>
-                <button class="flex items-center gap-2 text-[#666666] font-medium text-base w-full sm:w-auto justify-center">
-                    <svg class="w-[25px] h-[25px]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Filter
-                </button>
+
             </div>
-            <flux:button variant="primary" icon="plus" href="{{ route('role.tambah') }}" wire:navigate class="w-full sm:w-auto">
+            <flux:button variant="primary" icon="plus" href="{{ route('role.tambah') }}" wire:navigate
+                class="w-full sm:w-auto">
                 Tambah Peran
             </flux:button>
         </div>
@@ -44,22 +38,23 @@
             ['label' => 'Peran', 'sortable' => true, 'sort-by' => 'name'],
             ['label' => 'Akses', 'sortable' => false],
             ['label' => 'Jumlah', 'sortable' => true, 'sort-by' => 'users_count', 'align' => 'right'],
-        ]" :paginator="$roles" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa"
-            bodyText="#666666" emptyMessage="Tidak ada data peran.">
+        ]" :paginator="$roles" headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+            emptyMessage="Tidak ada data peran.">
             @foreach ($roles as $role)
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                        <a href="{{ route('role.edit', \Illuminate\Support\Facades\Crypt::encryptString($role->id)) }}" class="hover:underline" wire:navigate>
-                            {{ $role->name }}
-                        </a>
-                    </td>
-                    <td class="px-6 py-5 text-[#666666] font-medium text-sm">
-                        {{ $this->getReadableAccessLabels($role) }}
-                    </td>
-                    <td class="px-6 py-5 text-[#666666] font-medium text-sm text-right">
-                        {{ $role->users_count }}
-                    </td>
-                </tr>
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                    <a href="{{ route('role.edit', \Illuminate\Support\Facades\Crypt::encryptString($role->id)) }}"
+                        class="hover:underline" wire:navigate>
+                        {{ $role->name }}
+                    </a>
+                </td>
+                <td class="px-6 py-5 text-[#666666] font-medium text-sm">
+                    {{ $this->getReadableAccessLabels($role) }}
+                </td>
+                <td class="px-6 py-5 text-[#666666] font-medium text-sm text-right">
+                    {{ $role->users_count }}
+                </td>
+            </tr>
             @endforeach
         </x-table.paginated>
     </div>
@@ -72,41 +67,41 @@
             </div>
             <div class="max-h-96 overflow-y-auto">
                 @foreach ($activityLogs as $log)
-                    <div class="border-b border-gray-200 py-3">
-                        <div class="flex justify-between items-start">
-                            <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
-                            <div class="text-xs text-gray-500">
-                                {{ $log->created_at->format('d M Y H:i') }}
-                            </div>
+                <div class="border-b border-gray-200 py-3">
+                    <div class="flex justify-between items-start">
+                        <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500">
+                            {{ $log->created_at->format('d M Y H:i') }}
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">
-                            Oleh: {{ $log->causer->name ?? 'System' }}
-                        </div>
-
-                        {{-- Tampilkan detail perubahan untuk event 'updated' --}}
-                        @if ($log->event === 'updated' && $log->properties)
-                            @php
-                                $old = $log->properties['old'] ?? [];
-                                $attributes = $log->properties['attributes'] ?? [];
-                                $fieldLabels = [
-                                    'name' => 'Nama Peran',
-                                    'guard_name' => 'Guard',
-                                ];
-                            @endphp
-                            <div class="mt-2 text-xs space-y-1 bg-gray-50 rounded p-2">
-                                @foreach ($attributes as $field => $newValue)
-                                    @if (isset($fieldLabels[$field]))
-                                        <div class="flex flex-wrap gap-1">
-                                            <span class="font-medium text-[#666666]">{{ $fieldLabels[$field] }}:</span>
-                                            <span class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
-                                            <span class="text-gray-400">→</span>
-                                            <span class="text-green-600">{{ $newValue ?? '-' }}</span>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
                     </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Oleh: {{ $log->causer->name ?? 'System' }}
+                    </div>
+
+                    {{-- Tampilkan detail perubahan untuk event 'updated' --}}
+                    @if ($log->event === 'updated' && $log->properties)
+                    @php
+                    $old = $log->properties['old'] ?? [];
+                    $attributes = $log->properties['attributes'] ?? [];
+                    $fieldLabels = [
+                    'name' => 'Nama Peran',
+                    'guard_name' => 'Guard',
+                    ];
+                    @endphp
+                    <div class="mt-2 text-xs space-y-1 bg-gray-50 rounded p-2">
+                        @foreach ($attributes as $field => $newValue)
+                        @if (isset($fieldLabels[$field]))
+                        <div class="flex flex-wrap gap-1">
+                            <span class="font-medium text-[#666666]">{{ $fieldLabels[$field] }}:</span>
+                            <span class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
+                            <span class="text-gray-400">→</span>
+                            <span class="text-green-600">{{ $newValue ?? '-' }}</span>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
                 @endforeach
             </div>
         </div>

@@ -20,11 +20,7 @@
                     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari Tanggal"
                         class="border-0 focus:ring-0 text-[16px] text-[#959595] py-[10px] flex-1 bg-transparent" />
                 </div>
-                <div
-                    class="flex items-center gap-[5px] text-[#666666] cursor-pointer hover:opacity-70 transition-opacity justify-center">
-                    <flux:icon icon="adjustments-horizontal" class="size-[25px]" />
-                    <span class="text-[16px] font-medium">Filter</span>
-                </div>
+
             </div>
         </div>
 
@@ -57,29 +53,29 @@
                 <!-- Table Body -->
                 <div class="bg-[#fafafa] flex flex-col overflow-y-auto">
                     @forelse ($products as $item)
-                        <div class="flex border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
-                            <div class="flex-1 px-[25px] py-[15px] min-w-[100px]">
-                                <a href="{{ route('transaksi.tanggal-siap-beli', ['date' => $item['date']]) }}"
-                                    class="font-medium text-[14px] text-[#666666] hover:underline" wire:navigate>
-                                    {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}</a>
-                            </div>
-                            <div class="w-[170px] px-[25px] py-[15px] text-right">
-                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['jenis_produk'] }}</p>
-                            </div>
-                            <div class="w-[170px] px-[25px] py-[15px] text-right">
-                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_produksi'] }}</p>
-                            </div>
-                            <div class="w-[170px] px-[25px] py-[15px] text-right">
-                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_terjual'] }}</p>
-                            </div>
-                            <div class="w-[170px] px-[25px] py-[15px] text-right">
-                                <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_tersisa'] }}</p>
-                            </div>
+                    <div class="flex border-b border-[#d4d4d4] hover:bg-gray-100 transition-colors">
+                        <div class="flex-1 px-[25px] py-[15px] min-w-[100px]">
+                            <a href="{{ route('transaksi.tanggal-siap-beli', ['date' => $item['date']]) }}"
+                                class="font-medium text-[14px] text-[#666666] hover:underline" wire:navigate>
+                                {{ \Carbon\Carbon::parse($item['date'])->translatedFormat('d F Y') }}</a>
                         </div>
+                        <div class="w-[170px] px-[25px] py-[15px] text-right">
+                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['jenis_produk'] }}</p>
+                        </div>
+                        <div class="w-[170px] px-[25px] py-[15px] text-right">
+                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_produksi'] }}</p>
+                        </div>
+                        <div class="w-[170px] px-[25px] py-[15px] text-right">
+                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_terjual'] }}</p>
+                        </div>
+                        <div class="w-[170px] px-[25px] py-[15px] text-right">
+                            <p class="font-medium text-[14px] text-[#666666]">{{ $item['total_tersisa'] }}</p>
+                        </div>
+                    </div>
                     @empty
-                        <div class="px-[25px] py-[40px] text-center">
-                            <p class="font-medium text-[14px] text-[#666666]">Tidak ada produk yang ditemukan.</p>
-                        </div>
+                    <div class="px-[25px] py-[40px] text-center">
+                        <p class="font-medium text-[14px] text-[#666666]">Tidak ada produk yang ditemukan.</p>
+                    </div>
                     @endforelse
                 </div>
             </div>
@@ -93,19 +89,21 @@
             </p>
             <div class="flex items-center gap-[10px]">
                 <button wire:click="previousPage" {{ $products->onFirstPage() ? 'disabled' : '' }}
-                    class="bg-white border border-[#666666] rounded-[5px] px-[10px] py-[5px] hover:opacity-70 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="bg-white border border-[#666666] rounded-[5px] px-[10px] py-[5px] hover:opacity-70
+                    transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
                     <flux:icon icon="chevron-left" class="size-[17px] text-[#666666]" />
                 </button>
 
                 @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
-                    <button wire:click="gotoPage({{ $page }})"
-                        class="min-w-[30px] rounded-[5px] px-[10px] py-[5px] font-medium text-[14px] {{ $products->currentPage() == $page ? 'bg-[#666666] text-white' : 'bg-white border border-[#666666] text-[#666666] hover:opacity-70' }} transition-opacity">
-                        {{ $page }}
-                    </button>
+                <button wire:click="gotoPage({{ $page }})"
+                    class="min-w-[30px] rounded-[5px] px-[10px] py-[5px] font-medium text-[14px] {{ $products->currentPage() == $page ? 'bg-[#666666] text-white' : 'bg-white border border-[#666666] text-[#666666] hover:opacity-70' }} transition-opacity">
+                    {{ $page }}
+                </button>
                 @endforeach
 
                 <button wire:click="nextPage" {{ !$products->hasMorePages() ? 'disabled' : '' }}
-                    class="bg-white border border-[#666666] rounded-[5px] px-[10px] py-[5px] hover:opacity-70 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="bg-white border border-[#666666] rounded-[5px] px-[10px] py-[5px] hover:opacity-70
+                    transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
                     <flux:icon icon="chevron-right" class="size-[17px] text-[#666666]" />
                 </button>
             </div>

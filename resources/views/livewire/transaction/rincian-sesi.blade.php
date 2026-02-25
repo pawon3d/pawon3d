@@ -15,7 +15,8 @@
                     <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
                         Sesi {{ $shift->shift_number }}
                     </p>
-                    <p class="hidden sm:block font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1]">:</p>
+                    <p class="hidden sm:block font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1]">:
+                    </p>
                 </div>
                 <p class="font-['Montserrat'] font-medium text-[20px] text-[#333333] leading-[1] whitespace-nowrap">
                     {{ $shift->openedBy?->name ?? '-' }}
@@ -38,20 +39,13 @@
         <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[30px]">
             <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 sm:gap-[15px] w-full">
                 {{-- Search Input --}}
-                <div class="flex-1 flex items-center gap-0 bg-white border border-[#666666] rounded-[20px] px-[15px] w-full">
+                <div
+                    class="flex-1 flex items-center gap-0 bg-white border border-[#666666] rounded-[20px] px-[15px] w-full">
                     <flux:icon.magnifying-glass class="w-[30px] h-[30px] text-[#666666]" />
                     <input type="text" wire:model.live="search" placeholder="Cari Struk"
                         class="flex-1 w-full px-[10px] py-[10px] font-['Montserrat'] font-medium text-[16px] text-[#666666] placeholder-[#959595] border-0 focus:ring-0 focus:outline-none leading-[1]">
                 </div>
 
-                {{-- Filter Button --}}
-                <div class="flex items-center gap-0 justify-center">
-                    <flux:icon.funnel class="w-[25px] h-[25px] text-[#666666]" />
-                    <button class="px-[5px] py-[10px]">
-                        <span
-                            class="font-['Montserrat'] font-medium text-[16px] text-[#666666] leading-[1]">Filter</span>
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -65,80 +59,80 @@
                     ['label' => 'Pembeli', 'sortable' => true, 'sort-by' => 'name', 'class' => 'w-[180px]'],
                     ['label' => 'Status Bayar', 'sortable' => true, 'sort-by' => 'payment_status'],
                     ['label' => 'Tanggal Cetak', 'sortable' => true, 'sort-by' => 'created_at', 'class' => 'w-[190px]'],
-                ]" :paginator="$transactions" emptyMessage="Tidak ada data transaksi."
-                    headerBg="#3f4e4f" headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
+                ]" :paginator="$transactions" emptyMessage="Tidak ada data transaksi." headerBg="#3f4e4f"
+                    headerText="#f8f4e1" bodyBg="#fafafa" bodyText="#666666"
                     wrapperClass="rounded-[15px] border border-[#d4d4d4]">
-            @foreach ($transactions as $transaction)
-                <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
-                    {{-- ID Struk --}}
-                    <td class="px-6 py-4">
-                        @if ($transaction->payments->count() > 0 || $transaction->refund)
+                    @foreach ($transactions as $transaction)
+                    <tr class="border-b border-[#d4d4d4] hover:bg-[#f0f0f0] transition-colors">
+                        {{-- ID Struk --}}
+                        <td class="px-6 py-4">
+                            @if ($transaction->payments->count() > 0 || $transaction->refund)
                             <div class="flex flex-col gap-[5px]">
                                 @foreach ($transaction->payments as $payment)
-                                    <p wire:click="showStrukModal('{{ $payment->id }}')"
-                                        class="font-medium text-[14px] text-[#666666] truncate cursor-pointer hover:text-[#3f4e4f] hover:underline"
-                                        style="font-family: 'Montserrat', sans-serif;">
-                                        {{ $payment->receipt_number }}
-                                    </p>
+                                <p wire:click="showStrukModal('{{ $payment->id }}')"
+                                    class="font-medium text-[14px] text-[#666666] truncate cursor-pointer hover:text-[#3f4e4f] hover:underline"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ $payment->receipt_number }}
+                                </p>
                                 @endforeach
                                 @if ($transaction->refund)
-                                    <p wire:click="showRefundStrukModal('{{ $transaction->id }}')"
-                                        class="font-medium text-[14px] text-[#eb5757] truncate cursor-pointer hover:text-[#c44545] hover:underline"
-                                        style="font-family: 'Montserrat', sans-serif;">
-                                        Refund
-                                    </p>
+                                <p wire:click="showRefundStrukModal('{{ $transaction->id }}')"
+                                    class="font-medium text-[14px] text-[#eb5757] truncate cursor-pointer hover:text-[#c44545] hover:underline"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    Refund
+                                </p>
                                 @endif
                             </div>
-                        @else
+                            @else
                             <span class="font-medium text-[14px] text-[#666666]"
                                 style="font-family: 'Montserrat', sans-serif;">-</span>
-                        @endif
-                    </td>
+                            @endif
+                        </td>
 
-                    {{-- ID Transaksi --}}
-                    <td class="px-6 py-4">
-                        <a href="{{ route('transaksi.rincian-pesanan', ['id' => $transaction->id]) }}"
-                            class="hover:underline" wire:navigate>
+                        {{-- ID Transaksi --}}
+                        <td class="px-6 py-4">
+                            <a href="{{ route('transaksi.rincian-pesanan', ['id' => $transaction->id]) }}"
+                                class="hover:underline" wire:navigate>
+                                <span class="font-medium text-[14px] text-[#666666] truncate"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ $transaction->invoice_number }}
+                                </span>
+                            </a>
+                        </td>
+
+                        {{-- Jenis Penjualan --}}
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-[14px] text-[#666666]"
+                                style="font-family: 'Montserrat', sans-serif;">
+                                @if ($transaction->method == 'pesanan-reguler')
+                                Pesanan Reguler
+                                @elseif($transaction->method == 'siap-beli')
+                                Siap Saji
+                                @elseif($transaction->method == 'pesanan-kotak')
+                                Pesanan Kotak
+                                @else
+                                {{ $transaction->method }}
+                                @endif
+                            </span>
+                        </td>
+
+                        {{-- Pembeli --}}
+                        <td class="px-6 py-4">
                             <span class="font-medium text-[14px] text-[#666666] truncate"
                                 style="font-family: 'Montserrat', sans-serif;">
-                                {{ $transaction->invoice_number }}
+                                {{ $transaction->name ?? 'Umum' }}
                             </span>
-                        </a>
-                    </td>
+                        </td>
 
-                    {{-- Jenis Penjualan --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666]"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            @if ($transaction->method == 'pesanan-reguler')
-                                Pesanan Reguler
-                            @elseif($transaction->method == 'siap-beli')
-                                Siap Saji
-                            @elseif($transaction->method == 'pesanan-kotak')
-                                Pesanan Kotak
-                            @else
-                                {{ $transaction->method }}
-                            @endif
-                        </span>
-                    </td>
-
-                    {{-- Pembeli --}}
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-[14px] text-[#666666] truncate"
-                            style="font-family: 'Montserrat', sans-serif;">
-                            {{ $transaction->name ?? 'Umum' }}
-                        </span>
-                    </td>
-
-                    {{-- Status Bayar --}}
-                    <td class="px-6 py-4">
-                        @if ($transaction->payment_status == 'Lunas')
+                        {{-- Status Bayar --}}
+                        <td class="px-6 py-4">
+                            @if ($transaction->payment_status == 'Lunas')
                             <div
                                 class="bg-[#56c568] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <span class="font-bold text-[12px] text-[#fafafa]"
                                     style="font-family: 'Montserrat', sans-serif;">Lunas</span>
                             </div>
-                        @elseif ($transaction->payment_status == 'Belum Lunas')
+                            @elseif ($transaction->payment_status == 'Belum Lunas')
                             <div
                                 class="bg-[#ffc400] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <div class="flex flex-col items-center justify-center">
@@ -148,30 +142,30 @@
                                         style="font-family: 'Montserrat', sans-serif;">Lunas</span>
                                 </div>
                             </div>
-                        @elseif ($transaction->payment_status == 'Refund')
+                            @elseif ($transaction->payment_status == 'Refund')
                             <div
                                 class="bg-[#ff4d4d] rounded-[15px] px-[15px] py-[5px] min-w-[90px] flex items-center justify-center">
                                 <span class="font-bold text-[12px] text-[#fafafa]"
                                     style="font-family: 'Montserrat', sans-serif;">Refund</span>
                             </div>
-                        @endif
-                    </td>
+                            @endif
+                        </td>
 
-                    {{-- Tanggal Cetak --}}
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center flex-row flex-nowrap gap-[10px]">
-                            <span class="font-medium text-[14px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($transaction->created_at)->translatedFormat('d F Y') }}
-                            </span>
-                            <span class="font-medium text-[14px] text-[#666666]"
-                                style="font-family: 'Montserrat', sans-serif;">
-                                {{ \Carbon\Carbon::parse($transaction->created_at)->format('H:i') }}
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-            @endforeach
+                        {{-- Tanggal Cetak --}}
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center flex-row flex-nowrap gap-[10px]">
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ \Carbon\Carbon::parse($transaction->created_at)->translatedFormat('d F Y') }}
+                                </span>
+                                <span class="font-medium text-[14px] text-[#666666]"
+                                    style="font-family: 'Montserrat', sans-serif;">
+                                    {{ \Carbon\Carbon::parse($transaction->created_at)->format('H:i') }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
                 </x-table.paginated>
             </div>
         </div>
@@ -179,184 +173,190 @@
 
     {{-- Modal Struk --}}
     @if ($showStruk && $selectedPayment && $selectedTransaction)
-        <div class="fixed inset-0 top-0 bottom-0 overflow-y-scroll bg-gray-100/95 z-50" wire:ignore.self>
-            <div class="w-full px-4">
-                <div class="relative min-h-screen pb-32">
-                    <div class="fixed top-2 right-4 z-50">
-                        <flux:button type="button" icon="x-mark" wire:click="closeStrukModal" variant="ghost" />
-                    </div>
+    <div class="fixed inset-0 top-0 bottom-0 overflow-y-scroll bg-gray-100/95 z-50" wire:ignore.self>
+        <div class="w-full px-4">
+            <div class="relative min-h-screen pb-32">
+                <div class="fixed top-2 right-4 z-50">
+                    <flux:button type="button" icon="x-mark" wire:click="closeStrukModal" variant="ghost" />
+                </div>
 
-                    <div class="w-full max-w-[280px] mt-8 mb-4 mx-auto bg-[#fafafa] border-[0.5px] border-[#666666] rounded-[15px] shadow-md"
-                        style="font-family: Montserrat, sans-serif;">
-                        <div class="flex flex-col gap-[15px] items-center px-[20px] pt-[30px] pb-[100px]">
+                <div class="w-full max-w-[280px] mt-8 mb-4 mx-auto bg-[#fafafa] border-[0.5px] border-[#666666] rounded-[15px] shadow-md"
+                    style="font-family: Montserrat, sans-serif;">
+                    <div class="flex flex-col gap-[15px] items-center px-[20px] pt-[30px] pb-[100px]">
 
-                            {{-- Header Info --}}
-                            <div class="flex flex-col items-center justify-center w-full">
-                                <div class="flex items-start justify-between pb-[15px] w-full">
-                                    <div class="flex-1 flex flex-col gap-[12px] items-center">
-                                        {{-- Logo Pawon3D --}}
-                                        <div class="flex flex-col justify-center leading-[50px] text-center text-black"
-                                            style="font-family: Pacifico, cursive; font-size: 0;">
+                        {{-- Header Info --}}
+                        <div class="flex flex-col items-center justify-center w-full">
+                            <div class="flex items-start justify-between pb-[15px] w-full">
+                                <div class="flex-1 flex flex-col gap-[12px] items-center">
+                                    {{-- Logo Pawon3D --}}
+                                    <div class="flex flex-col justify-center leading-[50px] text-center text-black"
+                                        style="font-family: Pacifico, cursive; font-size: 0;">
+                                        <p class="whitespace-pre">
+                                            <span style="font-size: 32px;">{{ $storeProfile->name != '' ?
+                                                $storeProfile->name : 'Pawon3D' }}</span>
+                                        </p>
+                                    </div>
+                                    {{-- Alamat --}}
+                                    <div class="flex flex-col gap-[4px] items-center text-center text-black"
+                                        style="font-size: 10px; line-height: 1.2;">
+                                        <div class="flex flex-col justify-center">
+                                            <p class="mb-0">
+                                                {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal
+                                                Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian,
+                                                Kab.Batang Hari, Jambi, 36613' }}
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col justify-center">
                                             <p class="whitespace-pre">
-                                                <span
-                                                    style="font-size: 32px;">{{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}</span>
+                                                {{ $storeProfile->contact != '' ? $storeProfile->contact :
+                                                '081122334455' }}
                                             </p>
                                         </div>
-                                        {{-- Alamat --}}
-                                        <div class="flex flex-col gap-[4px] items-center text-center text-black"
-                                            style="font-size: 10px; line-height: 1.2;">
-                                            <div class="flex flex-col justify-center">
-                                                <p class="mb-0">
-                                                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian, Kab.Batang Hari, Jambi, 36613' }}
-                                                </p>
-                                            </div>
-                                            <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">
-                                                    {{ $storeProfile->contact != '' ? $storeProfile->contact : '081122334455' }}
-                                                </p>
-                                            </div>
-                                            <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">{{ config('app.url') }}</p>
-                                            </div>
+                                        <div class="flex flex-col justify-center">
+                                            <p class="whitespace-pre">{{ config('app.url') }}</p>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {{-- Info Transaksi --}}
-                                <div class="border-t border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal">
-                                            <p class="whitespace-nowrap">ID Transaksi</p>
-                                        </div>
-                                        <div class="font-medium text-right">
-                                            <p class="break-all">{{ $selectedTransaction->invoice_number }}</p>
-                                        </div>
+                            {{-- Info Transaksi --}}
+                            <div class="border-t border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal">
+                                        <p class="whitespace-nowrap">ID Transaksi</p>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Tanggal Bayar</p>
+                                    <div class="font-medium text-right">
+                                        <p class="break-all">{{ $selectedTransaction->invoice_number }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Tanggal Bayar</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p>
+                                            {{ $selectedPayment->paid_at ?
+                                            \Carbon\Carbon::parse($selectedPayment->paid_at)->translatedFormat('d M Y
+                                            H:i') : '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Status Bayar</p>
+                                    </div>
+                                    <div class="font-medium text-right"
+                                        style="color: {{ $selectedTransaction->payment_status == 'Lunas' ? '#56c568' : '#ffc400' }};">
+                                        <p>{{ $selectedTransaction->payment_status }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Kasir</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p class="break-words">{{ $selectedTransaction->user->name ?? '-' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Daftar Produk --}}
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                @foreach ($selectedTransaction->details as $detail)
+                                <div class="flex flex-col gap-[6px] items-start w-full">
+                                    <div class="flex items-start justify-between gap-2 w-full text-black">
+                                        <div class="font-normal flex-1">
+                                            <p class="break-words">{{ $detail->product->name }}</p>
                                         </div>
-                                        <div class="font-medium text-right">
-                                            <p>
-                                                {{ $selectedPayment->paid_at ? \Carbon\Carbon::parse($selectedPayment->paid_at)->translatedFormat('d M Y H:i') : '-' }}
+                                        <div class="font-medium whitespace-nowrap">
+                                            <p>Rp{{ number_format($detail->product->price * $detail->quantity, 0, ',',
+                                                '.') }}
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Status Bayar</p>
-                                        </div>
-                                        <div class="font-medium text-right"
-                                            style="color: {{ $selectedTransaction->payment_status == 'Lunas' ? '#56c568' : '#ffc400' }};">
-                                            <p>{{ $selectedTransaction->payment_status }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Kasir</p>
-                                        </div>
-                                        <div class="font-medium text-right">
-                                            <p class="break-words">{{ $selectedTransaction->user->name ?? '-' }}</p>
-                                        </div>
+                                    <div class="flex gap-[4px] items-center w-full font-normal text-black">
+                                        <p>{{ $detail->quantity }}</p>
+                                        <p>x</p>
+                                        <p>Rp{{ number_format($detail->product->price, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
+                                @endforeach
+                            </div>
 
-                                {{-- Daftar Produk --}}
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    @foreach ($selectedTransaction->details as $detail)
-                                        <div class="flex flex-col gap-[6px] items-start w-full">
-                                            <div class="flex items-start justify-between gap-2 w-full text-black">
-                                                <div class="font-normal flex-1">
-                                                    <p class="break-words">{{ $detail->product->name }}</p>
-                                                </div>
-                                                <div class="font-medium whitespace-nowrap">
-                                                    <p>Rp{{ number_format($detail->product->price * $detail->quantity, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="flex gap-[4px] items-center w-full font-normal text-black">
-                                                <p>{{ $detail->quantity }}</p>
-                                                <p>x</p>
-                                                <p>Rp{{ number_format($detail->product->price, 0, ',', '.') }}</p>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                {{-- Total --}}
-                                @php
-                                    $subtotal = $selectedTransaction->details->sum(function ($detail) {
-                                        return $detail->quantity * $detail->product->price;
-                                    });
-                                    $totalItems = $selectedTransaction->details->sum('quantity');
-                                    $pointsDiscount = $selectedTransaction->points_discount ?? 0;
-                                    $pointsUsed = $selectedTransaction->points_used ?? 0;
-                                @endphp
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="flex gap-[4px] items-center font-normal">
-                                            <p class="whitespace-nowrap">Subtotal {{ $totalItems }} Produk</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
-                                        </div>
+                            {{-- Total --}}
+                            @php
+                            $subtotal = $selectedTransaction->details->sum(function ($detail) {
+                            return $detail->quantity * $detail->product->price;
+                            });
+                            $totalItems = $selectedTransaction->details->sum('quantity');
+                            $pointsDiscount = $selectedTransaction->points_discount ?? 0;
+                            $pointsUsed = $selectedTransaction->points_used ?? 0;
+                            @endphp
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="flex gap-[4px] items-center font-normal">
+                                        <p class="whitespace-nowrap">Subtotal {{ $totalItems }} Produk</p>
                                     </div>
-                                    @if ($pointsUsed > 0)
-                                        <div class="flex items-center justify-between w-full text-black">
-                                            <div class="flex gap-[4px] items-center font-normal">
-                                                <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
-                                            </div>
-                                            <p class="font-medium whitespace-nowrap">
-                                                -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
-                                        </div>
-                                    @endif
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Total Tagihan</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
-                                        </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
+                                @if ($pointsUsed > 0)
+                                <div class="flex items-center justify-between w-full text-black">
+                                    <div class="flex gap-[4px] items-center font-normal">
+                                        <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
+                                    </div>
+                                    <p class="font-medium whitespace-nowrap">
+                                        -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
+                                </div>
+                                @endif
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Total Tagihan</p>
+                                    </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                                {{-- Pembayaran --}}
-                                @php
-                                    $allPayments = $selectedTransaction->payments;
-                                    $totalPaid = $allPayments->sum('paid_amount');
-                                    $remainingAmount = $subtotal - $totalPaid;
+                            {{-- Pembayaran --}}
+                            @php
+                            $allPayments = $selectedTransaction->payments;
+                            $totalPaid = $allPayments->sum('paid_amount');
+                            $remainingAmount = $subtotal - $totalPaid;
 
-                                    // Info untuk pembayaran yang dipilih (struk ini)
-                                    $method = $selectedPayment->payment_method
-                                        ? ucfirst($selectedPayment->payment_method)
-                                        : '-';
-                                    $bank = $selectedPayment->channel->bank_name ?? null;
+                            // Info untuk pembayaran yang dipilih (struk ini)
+                            $method = $selectedPayment->payment_method
+                            ? ucfirst($selectedPayment->payment_method)
+                            : '-';
+                            $bank = $selectedPayment->channel->bank_name ?? null;
 
-                                    // Tentukan tipe pembayaran untuk struk ini
-                                    $paymentCount = $allPayments->count();
-                                    $currentPaymentIndex = $allPayments->search(
-                                        fn($p) => $p->id === $selectedPayment->id,
-                                    );
+                            // Tentukan tipe pembayaran untuk struk ini
+                            $paymentCount = $allPayments->count();
+                            $currentPaymentIndex = $allPayments->search(
+                            fn($p) => $p->id === $selectedPayment->id,
+                            );
 
-                                    $isLastPayment = $currentPaymentIndex == $paymentCount - 1;
+                            $isLastPayment = $currentPaymentIndex == $paymentCount - 1;
 
-                                    // Logika: Label "Lunas" hanya jika transaksi statusnya Lunas DAN ini adalah pembayaran terakhir
-                                    if ($selectedTransaction->payment_status == 'Lunas' && $isLastPayment) {
-                                        $tipe = 'Lunas';
-                                    } else {
-                                        $tipe = 'Uang Muka';
-                                    }
+                            // Logika: Label "Lunas" hanya jika transaksi statusnya Lunas DAN ini adalah pembayaran
+                            terakhir
+                            if ($selectedTransaction->payment_status == 'Lunas' && $isLastPayment) {
+                            $tipe = 'Lunas';
+                            } else {
+                            $tipe = 'Uang Muka';
+                            }
 
-                                    $paymentLabel = "($tipe) $method" . ($bank ? " - $bank" : '');
+                            $paymentLabel = "($tipe) $method" . ($bank ? " - $bank" : '');
 
-                                    // Hitung sisa tagihan setelah pembayaran ini
-                                    $paidBeforeThis = $allPayments
-                                        ->filter(fn($p, $idx) => $idx <= $currentPaymentIndex)
-                                        ->sum('paid_amount');
-                                    $remainingAfterThis = $subtotal - $paidBeforeThis;
+                            // Hitung sisa tagihan setelah pembayaran ini
+                            $paidBeforeThis = $allPayments
+                            ->filter(fn($p, $idx) => $idx <= $currentPaymentIndex) ->sum('paid_amount');
+                                $remainingAfterThis = $subtotal - $paidBeforeThis;
                                 @endphp
                                 <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
                                     style="font-size: 10px; line-height: 1.3;">
@@ -413,295 +413,299 @@
                                     style="font-size: 9px; line-height: 1.4; font-weight: 400;">
                                     <p>Mohon Cek Kembali Uang Kembalian Sebelum Meninggalkan Kasir</p>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     @endif
 
     {{-- Modal Struk Refund --}}
     @if ($showRefundStruk && $selectedRefundTransaction)
-        <div class="fixed inset-0 top-0 bottom-0 overflow-y-scroll bg-gray-100/95 z-50" wire:ignore.self>
-            <div class="w-full px-4">
-                <div class="relative min-h-screen pb-32">
-                    <div class="fixed top-2 right-4 z-50">
-                        <flux:button type="button" icon="x-mark" wire:click="closeRefundStrukModal"
-                            variant="ghost" />
-                    </div>
+    <div class="fixed inset-0 top-0 bottom-0 overflow-y-scroll bg-gray-100/95 z-50" wire:ignore.self>
+        <div class="w-full px-4">
+            <div class="relative min-h-screen pb-32">
+                <div class="fixed top-2 right-4 z-50">
+                    <flux:button type="button" icon="x-mark" wire:click="closeRefundStrukModal" variant="ghost" />
+                </div>
 
-                    <div class="w-full max-w-[280px] mt-8 mb-4 mx-auto bg-[#fafafa] border-[0.5px] border-[#666666] rounded-[15px] shadow-md"
-                        style="font-family: Montserrat, sans-serif;">
-                        <div class="flex flex-col gap-[15px] items-center px-[20px] pt-[30px] pb-[100px]">
+                <div class="w-full max-w-[280px] mt-8 mb-4 mx-auto bg-[#fafafa] border-[0.5px] border-[#666666] rounded-[15px] shadow-md"
+                    style="font-family: Montserrat, sans-serif;">
+                    <div class="flex flex-col gap-[15px] items-center px-[20px] pt-[30px] pb-[100px]">
 
-                            {{-- Header Info --}}
-                            <div class="flex flex-col items-center justify-center w-full">
-                                <div class="flex items-start justify-between pb-[15px] w-full">
-                                    <div class="flex-1 flex flex-col gap-[12px] items-center">
-                                        {{-- Logo Pawon3D --}}
-                                        <div class="flex flex-col justify-center leading-[50px] text-center text-black"
-                                            style="font-family: Pacifico, cursive; font-size: 0;">
+                        {{-- Header Info --}}
+                        <div class="flex flex-col items-center justify-center w-full">
+                            <div class="flex items-start justify-between pb-[15px] w-full">
+                                <div class="flex-1 flex flex-col gap-[12px] items-center">
+                                    {{-- Logo Pawon3D --}}
+                                    <div class="flex flex-col justify-center leading-[50px] text-center text-black"
+                                        style="font-family: Pacifico, cursive; font-size: 0;">
+                                        <p class="whitespace-pre">
+                                            <span style="font-size: 32px;">{{ $storeProfile->name != '' ?
+                                                $storeProfile->name : 'Pawon3D' }}</span>
+                                        </p>
+                                    </div>
+                                    {{-- Alamat --}}
+                                    <div class="flex flex-col gap-[4px] items-center text-center text-black"
+                                        style="font-size: 10px; line-height: 1.2;">
+                                        <div class="flex flex-col justify-center">
+                                            <p class="mb-0">
+                                                {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal
+                                                Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian,
+                                                Kab.Batang Hari, Jambi, 36613' }}
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col justify-center">
                                             <p class="whitespace-pre">
-                                                <span
-                                                    style="font-size: 32px;">{{ $storeProfile->name != '' ? $storeProfile->name : 'Pawon3D' }}</span>
+                                                {{ $storeProfile->contact != '' ? $storeProfile->contact :
+                                                '081122334455' }}
                                             </p>
                                         </div>
-                                        {{-- Alamat --}}
-                                        <div class="flex flex-col gap-[4px] items-center text-center text-black"
-                                            style="font-size: 10px; line-height: 1.2;">
-                                            <div class="flex flex-col justify-center">
-                                                <p class="mb-0">
-                                                    {{ $storeProfile->address != '' ? $storeProfile->address : 'Jl. Jenderal Sudirman Km.3 RT.25 RW.07 Kel. Muara Bulian, Kec.Muara Bulian, Kab.Batang Hari, Jambi, 36613' }}
-                                                </p>
-                                            </div>
-                                            <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">
-                                                    {{ $storeProfile->contact != '' ? $storeProfile->contact : '081122334455' }}
-                                                </p>
-                                            </div>
-                                            <div class="flex flex-col justify-center">
-                                                <p class="whitespace-pre">{{ config('app.url') }}</p>
-                                            </div>
+                                        <div class="flex flex-col justify-center">
+                                            <p class="whitespace-pre">{{ config('app.url') }}</p>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {{-- Info Transaksi --}}
-                                <div class="border-t border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal">
-                                            <p class="whitespace-nowrap">ID Transaksi</p>
-                                        </div>
-                                        <div class="font-medium text-right">
-                                            <p class="break-all">{{ $selectedRefundTransaction->invoice_number }}</p>
-                                        </div>
+                            {{-- Info Transaksi --}}
+                            <div class="border-t border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal">
+                                        <p class="whitespace-nowrap">ID Transaksi</p>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Tanggal Refund</p>
+                                    <div class="font-medium text-right">
+                                        <p class="break-all">{{ $selectedRefundTransaction->invoice_number }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Tanggal Refund</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p>
+                                            {{ $selectedRefundTransaction->refund &&
+                                            $selectedRefundTransaction->refund->refunded_at ?
+                                            \Carbon\Carbon::parse($selectedRefundTransaction->refund->refunded_at)->translatedFormat('d
+                                            M Y H:i') : '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Status Bayar</p>
+                                    </div>
+                                    <div class="font-medium text-right" style="color: #eb5757;">
+                                        <p>Refund</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Kasir</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p class="break-words">{{ $selectedRefundTransaction->user->name ?? '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                @if ($selectedRefundTransaction->refund && $selectedRefundTransaction->refund->reason)
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Alasan Refund</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p class="break-words">
+                                            {{ $selectedRefundTransaction->refund->reason }}</p>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+
+                            {{-- Daftar Produk --}}
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                @foreach ($selectedRefundTransaction->details as $detail)
+                                <div class="flex flex-col gap-[6px] items-start w-full">
+                                    <div class="flex items-start justify-between gap-2 w-full text-black">
+                                        <div class="font-normal flex-1">
+                                            <p class="break-words">{{ $detail->product->name }}</p>
                                         </div>
-                                        <div class="font-medium text-right">
-                                            <p>
-                                                {{ $selectedRefundTransaction->refund && $selectedRefundTransaction->refund->refunded_at ? \Carbon\Carbon::parse($selectedRefundTransaction->refund->refunded_at)->translatedFormat('d M Y H:i') : '-' }}
+                                        <div class="font-medium whitespace-nowrap">
+                                            <p>Rp{{ number_format($detail->price * $detail->quantity, 0, ',', '.') }}
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Status Bayar</p>
-                                        </div>
-                                        <div class="font-medium text-right" style="color: #eb5757;">
-                                            <p>Refund</p>
-                                        </div>
+                                    <div class="flex gap-[4px] items-center w-full font-normal text-black">
+                                        <p>{{ $detail->quantity }}</p>
+                                        <p>x</p>
+                                        <p>Rp{{ number_format($detail->price, 0, ',', '.') }}</p>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Kasir</p>
+                                    @if ($detail->refund_quantity > 0)
+                                    <div class="flex items-start justify-between gap-2 w-full" style="color: #eb5757;">
+                                        <div class="font-normal flex-1">
+                                            <p class="break-words">Refund {{ $detail->refund_quantity }}
+                                            </p>
                                         </div>
-                                        <div class="font-medium text-right">
-                                            <p class="break-words">{{ $selectedRefundTransaction->user->name ?? '-' }}
+                                        <div class="font-medium whitespace-nowrap">
+                                            <p>-Rp{{ number_format($detail->price * $detail->refund_quantity, 0, ',',
+                                                '.') }}
                                             </p>
                                         </div>
                                     </div>
-                                    @if ($selectedRefundTransaction->refund && $selectedRefundTransaction->refund->reason)
-                                        <div class="flex items-start justify-between w-full text-black">
-                                            <div class="font-normal whitespace-nowrap">
-                                                <p>Alasan Refund</p>
-                                            </div>
-                                            <div class="font-medium text-right">
-                                                <p class="break-words">
-                                                    {{ $selectedRefundTransaction->refund->reason }}</p>
-                                            </div>
-                                        </div>
                                     @endif
                                 </div>
+                                @endforeach
+                            </div>
 
-                                {{-- Daftar Produk --}}
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    @foreach ($selectedRefundTransaction->details as $detail)
-                                        <div class="flex flex-col gap-[6px] items-start w-full">
-                                            <div class="flex items-start justify-between gap-2 w-full text-black">
-                                                <div class="font-normal flex-1">
-                                                    <p class="break-words">{{ $detail->product->name }}</p>
-                                                </div>
-                                                <div class="font-medium whitespace-nowrap">
-                                                    <p>Rp{{ number_format($detail->price * $detail->quantity, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="flex gap-[4px] items-center w-full font-normal text-black">
-                                                <p>{{ $detail->quantity }}</p>
-                                                <p>x</p>
-                                                <p>Rp{{ number_format($detail->price, 0, ',', '.') }}</p>
-                                            </div>
-                                            @if ($detail->refund_quantity > 0)
-                                                <div class="flex items-start justify-between gap-2 w-full"
-                                                    style="color: #eb5757;">
-                                                    <div class="font-normal flex-1">
-                                                        <p class="break-words">Refund {{ $detail->refund_quantity }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="font-medium whitespace-nowrap">
-                                                        <p>-Rp{{ number_format($detail->price * $detail->refund_quantity, 0, ',', '.') }}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
+                            {{-- Total --}}
+                            @php
+                            $subtotal = $selectedRefundTransaction->details->sum(function ($detail) {
+                            return $detail->quantity * $detail->price;
+                            });
+                            $totalItems = $selectedRefundTransaction->details->sum('quantity');
+                            $totalRefund = $selectedRefundTransaction->refund
+                            ? $selectedRefundTransaction->refund->total_amount
+                            : 0;
+                            $pointsDiscount = $selectedRefundTransaction->points_discount ?? 0;
+                            $pointsUsed = $selectedRefundTransaction->points_used ?? 0;
+                            @endphp
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="flex gap-[4px] items-center font-normal">
+                                        <p class="whitespace-nowrap">Subtotal {{ $totalItems }} Produk</p>
+                                    </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                @if ($pointsUsed > 0)
+                                <div class="flex items-center justify-between w-full text-black">
+                                    <div class="flex gap-[4px] items-center font-normal">
+                                        <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
+                                    </div>
+                                    <p class="font-medium whitespace-nowrap">
+                                        -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
+                                </div>
+                                @endif
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Total Tagihan</p>
+                                    </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Pembayaran --}}
+                            @php
+                            $allPayments = $selectedRefundTransaction->payments;
+                            $totalPaid = $allPayments->sum('paid_amount');
+                            $refund = $selectedRefundTransaction->refund;
+                            @endphp
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Total Bayar</p>
+                                    </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp{{ number_format($totalPaid, 0, ',', '.') }}</p>
+                                    </div>
                                 </div>
 
-                                {{-- Total --}}
+                                {{-- Refund Entry (di atas) --}}
+                                @if ($refund)
                                 @php
-                                    $subtotal = $selectedRefundTransaction->details->sum(function ($detail) {
-                                        return $detail->quantity * $detail->price;
-                                    });
-                                    $totalItems = $selectedRefundTransaction->details->sum('quantity');
-                                    $totalRefund = $selectedRefundTransaction->refund
-                                        ? $selectedRefundTransaction->refund->total_amount
-                                        : 0;
-                                    $pointsDiscount = $selectedRefundTransaction->points_discount ?? 0;
-                                    $pointsUsed = $selectedRefundTransaction->points_used ?? 0;
+                                $refundMethodLabel =
+                                $refund->refund_method == 'tunai'
+                                ? 'Tunai'
+                                : 'Transfer' .
+                                ($refund->channel ? ' - ' . $refund->channel->bank_name : '');
                                 @endphp
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="flex gap-[4px] items-center font-normal">
-                                            <p class="whitespace-nowrap">Subtotal {{ $totalItems }} Produk</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
-                                        </div>
+                                <div class="flex items-start justify-between gap-2 w-full font-normal"
+                                    style="color: #eb5757;">
+                                    <div class="break-words flex-1">
+                                        <p>(Refund) {{ $refundMethodLabel }}</p>
                                     </div>
-                                    @if ($pointsUsed > 0)
-                                        <div class="flex items-center justify-between w-full text-black">
-                                            <div class="flex gap-[4px] items-center font-normal">
-                                                <p class="whitespace-nowrap">Tukar {{ $pointsUsed }} Poin</p>
-                                            </div>
-                                            <p class="font-medium whitespace-nowrap">
-                                                -Rp{{ number_format($pointsDiscount, 0, ',', '.') }}</p>
-                                        </div>
-                                    @endif
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Total Tagihan</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($subtotal - $pointsDiscount, 0, ',', '.') }}</p>
-                                        </div>
+                                    <div class="whitespace-nowrap font-medium">
+                                        <p>-Rp{{ number_format($refund->total_amount, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
+                                @endif
 
-                                {{-- Pembayaran --}}
+                                {{-- Semua Pembayaran --}}
+                                @foreach ($allPayments as $index => $payment)
                                 @php
-                                    $allPayments = $selectedRefundTransaction->payments;
-                                    $totalPaid = $allPayments->sum('paid_amount');
-                                    $refund = $selectedRefundTransaction->refund;
+                                $method = $payment->payment_method
+                                ? ucfirst($payment->payment_method)
+                                : '-';
+                                $bank = $payment->channel->bank_name ?? null;
+
+                                $paymentCount = $allPayments->count();
+                                if ($paymentCount == 1) {
+                                $tipe = 'Lunas';
+                                } else {
+                                $tipe = $index == $paymentCount - 1 ? 'Lunas' : 'Uang Muka';
+                                }
+
+                                $paymentLabel = "($tipe) $method" . ($bank ? " - $bank" : '');
                                 @endphp
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Total Bayar</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp{{ number_format($totalPaid, 0, ',', '.') }}</p>
-                                        </div>
+                                <div class="flex items-start justify-between gap-2 w-full text-black font-normal">
+                                    <div class="break-words flex-1">
+                                        <p>{{ $paymentLabel }}</p>
                                     </div>
-
-                                    {{-- Refund Entry (di atas) --}}
-                                    @if ($refund)
-                                        @php
-                                            $refundMethodLabel =
-                                                $refund->refund_method == 'tunai'
-                                                    ? 'Tunai'
-                                                    : 'Transfer' .
-                                                        ($refund->channel ? ' - ' . $refund->channel->bank_name : '');
-                                        @endphp
-                                        <div class="flex items-start justify-between gap-2 w-full font-normal"
-                                            style="color: #eb5757;">
-                                            <div class="break-words flex-1">
-                                                <p>(Refund) {{ $refundMethodLabel }}</p>
-                                            </div>
-                                            <div class="whitespace-nowrap font-medium">
-                                                <p>-Rp{{ number_format($refund->total_amount, 0, ',', '.') }}</p>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    {{-- Semua Pembayaran --}}
-                                    @foreach ($allPayments as $index => $payment)
-                                        @php
-                                            $method = $payment->payment_method
-                                                ? ucfirst($payment->payment_method)
-                                                : '-';
-                                            $bank = $payment->channel->bank_name ?? null;
-
-                                            $paymentCount = $allPayments->count();
-                                            if ($paymentCount == 1) {
-                                                $tipe = 'Lunas';
-                                            } else {
-                                                $tipe = $index == $paymentCount - 1 ? 'Lunas' : 'Uang Muka';
-                                            }
-
-                                            $paymentLabel = "($tipe) $method" . ($bank ? " - $bank" : '');
-                                        @endphp
-                                        <div
-                                            class="flex items-start justify-between gap-2 w-full text-black font-normal">
-                                            <div class="break-words flex-1">
-                                                <p>{{ $paymentLabel }}</p>
-                                            </div>
-                                            <div class="whitespace-nowrap">
-                                                <p>Rp{{ number_format($payment->paid_amount, 0, ',', '.') }}</p>
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                    <div class="flex items-start justify-between w-full" style="color: #666666;">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Sisa Tagihan</p>
-                                        </div>
-                                        <div class="font-medium whitespace-nowrap">
-                                            <p>Rp0</p>
-                                        </div>
+                                    <div class="whitespace-nowrap">
+                                        <p>Rp{{ number_format($payment->paid_amount, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
+                                @endforeach
 
-                                {{-- Footer Info --}}
-                                <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
-                                    style="font-size: 10px; line-height: 1.3;">
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>ID Transaksi</p>
-                                        </div>
-                                        <div class="font-medium">
-                                            <p>{{ $selectedRefundTransaction->invoice_number }}</p>
-                                        </div>
+                                <div class="flex items-start justify-between w-full" style="color: #666666;">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Sisa Tagihan</p>
                                     </div>
-                                    <div class="flex items-start justify-between w-full text-black">
-                                        <div class="font-normal whitespace-nowrap">
-                                            <p>Tanggal Cetak</p>
-                                        </div>
-                                        <div class="font-medium text-right">
-                                            <p>{{ now()->translatedFormat('d M Y H:i') }}</p>
-                                        </div>
+                                    <div class="font-medium whitespace-nowrap">
+                                        <p>Rp0</p>
                                     </div>
                                 </div>
+                            </div>
 
-                                {{-- Pesan Footer --}}
-                                <div class="flex flex-col justify-center w-full text-center text-black px-2"
-                                    style="font-size: 9px; line-height: 1.4; font-weight: 400;">
-                                    <p>Terima Kasih Atas Pengertian Anda</p>
+                            {{-- Footer Info --}}
+                            <div class="border-b border-dashed border-black flex flex-col gap-[10px] items-center justify-center py-[12px] w-full"
+                                style="font-size: 10px; line-height: 1.3;">
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>ID Transaksi</p>
+                                    </div>
+                                    <div class="font-medium">
+                                        <p>{{ $selectedRefundTransaction->invoice_number }}</p>
+                                    </div>
                                 </div>
+                                <div class="flex items-start justify-between w-full text-black">
+                                    <div class="font-normal whitespace-nowrap">
+                                        <p>Tanggal Cetak</p>
+                                    </div>
+                                    <div class="font-medium text-right">
+                                        <p>{{ now()->translatedFormat('d M Y H:i') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Pesan Footer --}}
+                            <div class="flex flex-col justify-center w-full text-center text-black px-2"
+                                style="font-size: 9px; line-height: 1.4; font-weight: 400;">
+                                <p>Terima Kasih Atas Pengertian Anda</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     @endif
 
     <!-- Modal Detail Rincian Sesi -->
@@ -739,10 +743,11 @@
                                 <div class="flex items-center gap-[10px] text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
                                     @if ($detailShiftStartTime)
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->translatedFormat('d F Y') }}</span>
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->format('H:i') }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->translatedFormat('d F Y')
+                                        }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($detailShiftStartTime)->format('H:i') }}</span>
                                     @else
-                                        <span>-</span>
+                                    <span>-</span>
                                     @endif
                                 </div>
                             </div>
@@ -754,10 +759,11 @@
                                 <div class="flex items-center gap-[10px] text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
                                     @if ($detailShiftEndTime)
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->translatedFormat('d F Y') }}</span>
-                                        <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->format('H:i') }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->translatedFormat('d F Y')
+                                        }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($detailShiftEndTime)->format('H:i') }}</span>
                                     @else
-                                        <span>-</span>
+                                    <span>-</span>
                                     @endif
                                 </div>
                             </div>
@@ -930,7 +936,8 @@
                                 </span>
                                 <span class="text-[#666666] font-normal text-[16px]"
                                     style="font-family: 'Montserrat', sans-serif; line-height: 1;">
-                                    Rp{{ number_format($detailReceivedCash + $detailReceivedNonCash - $detailRefundTotal - $detailDiscountToday, 0, ',', '.') }}
+                                    Rp{{ number_format($detailReceivedCash + $detailReceivedNonCash - $detailRefundTotal
+                                    - $detailDiscountToday, 0, ',', '.') }}
                                 </span>
                             </div>
                         </div>
@@ -963,29 +970,29 @@
             </div>
             <div class="flex-1 overflow-y-auto px-4 pb-2">
                 @if (count($nonCashDetails) > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-xs">
-                            <thead class="bg-gray-50 sticky top-0">
-                                <tr>
-                                    <th class="px-3 py-2 text-left font-medium text-gray-500">ID Struk</th>
-                                    <th class="px-3 py-2 text-left font-medium text-gray-500">Bank</th>
-                                    <th class="px-3 py-2 text-right font-medium text-gray-500">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($nonCashDetails as $detail)
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900">{{ $detail['receipt_number'] }}</td>
-                                        <td class="px-3 py-2 text-gray-500">{{ $detail['bank_name'] }}</td>
-                                        <td class="px-3 py-2 text-right text-gray-900">
-                                            Rp{{ number_format($detail['paid_amount'], 0, ',', '.') }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-xs">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-medium text-gray-500">ID Struk</th>
+                                <th class="px-3 py-2 text-left font-medium text-gray-500">Bank</th>
+                                <th class="px-3 py-2 text-right font-medium text-gray-500">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach ($nonCashDetails as $detail)
+                            <tr>
+                                <td class="px-3 py-2 text-gray-900">{{ $detail['receipt_number'] }}</td>
+                                <td class="px-3 py-2 text-gray-500">{{ $detail['bank_name'] }}</td>
+                                <td class="px-3 py-2 text-right text-gray-900">
+                                    Rp{{ number_format($detail['paid_amount'], 0, ',', '.') }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 @else
-                    <p class="text-sm text-center text-gray-500 py-8">Tidak ada pembayaran non tunai</p>
+                <p class="text-sm text-center text-gray-500 py-8">Tidak ada pembayaran non tunai</p>
                 @endif
             </div>
 
