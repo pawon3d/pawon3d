@@ -44,6 +44,8 @@ class RincianPesanan extends Component
 
     public ?string $paymentAccountName = null;
 
+    public ?string $selectedChannelQrisImage = null;
+
     public mixed $image = null;
 
     public int|float $totalAmount = 0;
@@ -108,7 +110,7 @@ class RincianPesanan extends Component
 
     public ?string $paymentGroup = null;
 
-    public array $paymentMethods = [];
+    public $paymentMethods = [];
 
     public bool $cancelModal = false;
 
@@ -421,6 +423,7 @@ class RincianPesanan extends Component
             $this->paymentAccount = '';
             $this->paymentChannels = [];
             $this->paymentMethods = [];
+            $this->selectedChannelQrisImage = null;
             $this->image = null;
         }
     }
@@ -434,6 +437,7 @@ class RincianPesanan extends Component
             $this->paymentAccountNumber = '';
             $this->paymentAccountName = '';
             $this->paymentAccount = '';
+            $this->selectedChannelQrisImage = null;
             $this->paymentChannels = PaymentChannel::where('type', $value)->where('is_active', true)->get();
         }
     }
@@ -446,10 +450,12 @@ class RincianPesanan extends Component
             $this->paymentAccountNumber = $channel->account_number;
             $this->paymentAccountName = $channel->account_name;
             $this->paymentAccount = $channel->account_number.' - '.$channel->account_name;
+            $this->selectedChannelQrisImage = $channel->qris_image ?: null;
         } else {
             $this->paymentBank = '';
             $this->paymentAccountNumber = '';
             $this->paymentAccountName = '';
+            $this->selectedChannelQrisImage = null;
         }
     }
 

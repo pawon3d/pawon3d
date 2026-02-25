@@ -194,10 +194,17 @@ class Rincian extends Component
                 ->where('unit_id', $detail->unit_id)
                 ->first();
             if ($materialDetail) {
-                $materialDetail->update([
+                $updateData = [
                     'supply_quantity' => $materialDetail->supply_quantity + $detail->quantity_get,
-                    'supply_price' => $detail->price_get ?? $detail->price_expect,
-                ]);
+                ];
+
+                // Only update supply_price if actual quantity and price are greater than zero
+                $actualPrice = $detail->price_get ?? 0;
+                if ($detail->quantity_get > 0 && $actualPrice > 0) {
+                    $updateData['supply_price'] = $actualPrice;
+                }
+
+                $materialDetail->update($updateData);
             }
 
             // Track material yang terpengaruh

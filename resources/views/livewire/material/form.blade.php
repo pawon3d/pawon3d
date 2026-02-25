@@ -11,11 +11,11 @@
                 {{ $material_id ? 'Rincian' : 'Tambah' }} Barang Persediaan</h1>
         </div>
         @if ($material_id)
-            <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
-                    Riwayat Pembaruan
-                </flux:button>
-            </div>
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
+                Riwayat Pembaruan
+            </flux:button>
+        </div>
         @endif
     </div>
     <x-alert.info>
@@ -45,24 +45,24 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-container" class="w-full h-full">
                                 @if ($previewImage)
-                                    <!-- Image Preview -->
-                                    <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                        id="image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="image-preview" />
                                 @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-4 text-center">
-                                        <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-4 text-gray-400" />
-                                        <p class="mb-2 text-base font-semibold text-gray-600">Unggah Gambar</p>
-                                        <p class="mb-1 text-xs text-gray-600 mt-4">
-                                            Ukuran gambar tidak lebih dari
-                                            <span class="font-semibold">2mb</span>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            Pastikan gambar dalam format
-                                            <span class="font-semibold">JPG </span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-4 text-center">
+                                    <flux:icon icon="arrow-up-tray" class="w-8 h-8 mb-4 text-gray-400" />
+                                    <p class="mb-2 text-base font-semibold text-gray-600">Unggah Gambar</p>
+                                    <p class="mb-1 text-xs text-gray-600 mt-4">
+                                        Ukuran gambar tidak lebih dari
+                                        <span class="font-semibold">2mb</span>
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        Pastikan gambar dalam format
+                                        <span class="font-semibold">JPG </span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -80,9 +80,9 @@
 
                     <!-- Error Message -->
                     @error('image')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
+                    <div data-image-error class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                     <!-- Loading Indicator -->
@@ -124,8 +124,8 @@
                 Masukkan nama kategori yang ingin dikaitkan dan sesuai dengan ciri-ciri produk seperti rasa, bentuk,
                 kegunaan, dan lain sebagainya.
             </p>
-            <x-form.multi-select :options="$categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->toArray()" :selected="$category_ids ?? []" name="category_ids"
-                placeholder="Pilih kategori produk" />
+            <x-form.multi-select :options="$categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->toArray()"
+                :selected="$category_ids ?? []" name="category_ids" placeholder="Pilih kategori produk" />
         </div>
     </div>
 
@@ -140,272 +140,260 @@
             </p>
 
             @foreach ($material_details as $index => $detail)
-                @if ($index === 0)
-                    <select wire:model="material_details.{{ $index }}.unit_id"
-                        wire:change="setUnit({{ $index }}, $event.target.value)"
-                        class="w-full px-5 py-2.5 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-2xl text-base font-normal text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors appearance-none pr-12">
-                        <option value="">- Pilih Satuan -</option>
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->alias }})</option>
-                        @endforeach
-                    </select>
-                @endif
+            @if ($index === 0)
+            <select wire:model="material_details.{{ $index }}.unit_id"
+                wire:change="setUnit({{ $index }}, $event.target.value)"
+                class="w-full px-5 py-2.5 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-2xl text-base font-normal text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors appearance-none pr-12">
+                <option value="">- Pilih Satuan -</option>
+                @foreach ($units as $unit)
+                <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->alias }})</option>
+                @endforeach
+            </select>
+            @endif
             @endforeach
         </div>
     </div>
 
     @if ($material_details)
-        @if ($material_details[0]['unit_id'] != null && $material_details[0]['unit_id'] != '')
-            <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
-                <div class="w-full flex flex-col gap-4">
-                    <h3 class="text-lg font-medium text-[#666666]">Satuan Lainnya</h3>
-                    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed max-w-[780px]">
-                            Tambah satuan lainya untuk mengubah satuan utama menjadi satuan lain yang lebih kecil atau
-                            besar. Satuan lain digunakan untuk menentukan jumlah rinci bahan baku yang akan digunakan
-                            dalam
-                            sebuah resep kue.
-                        </p>
-                        <flux:button variant="primary" icon="plus" type="button" wire:click="addUnit" class="w-full sm:w-auto shrink-0">
-                            Tambah Satuan Lainnya
-                        </flux:button>
-                    </div>
+    @if ($material_details[0]['unit_id'] != null && $material_details[0]['unit_id'] != '')
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="w-full flex flex-col gap-4">
+            <h3 class="text-lg font-medium text-[#666666]">Satuan Lainnya</h3>
+            <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed max-w-[780px]">
+                    Tambah satuan lainya untuk mengubah satuan utama menjadi satuan lain yang lebih kecil atau
+                    besar. Satuan lain digunakan untuk menentukan jumlah rinci bahan baku yang akan digunakan
+                    dalam
+                    sebuah resep kue.
+                </p>
+                <flux:button variant="primary" icon="plus" type="button" wire:click="addUnit"
+                    class="w-full sm:w-auto shrink-0">
+                    Tambah Satuan Lainnya
+                </flux:button>
+            </div>
 
-                            <x-table.form
-                                :headers="[
+            <x-table.form :headers="[
                                     ['label' => 'Satuan Ukur', 'class' => 'text-left px-6 font-bold text-sm text-[#F8F4E1] min-w-[200px]'],
                                     ['label' => 'Besar Satuan', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[120px]'],
                                     ['label' => 'Besar (Utama)', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[150px]'],
                                     ['label' => '', 'class' => 'w-[72px]'],
-                                ]"
-                                bodyBg="bg-[#FAFAFA]"
-                            >
-                                <x-slot name="rows">
-                                    <tr class="h-[60px] border-b border-[#D4D4D4]">
-                                        <td class="px-6 text-[#666666] font-medium">{{ $main_unit_name ?? '-' }}
-                                            ({{ $main_unit_alias ?? '' }})</td>
-                                        <td class="px-6 text-right text-[#666666] font-medium">1
-                                            {{ $main_unit_alias ?? '' }}
-                                        </td>
-                                        <td class="px-6 text-right text-[#666666] font-medium">1
-                                            {{ $main_unit_alias ?? '' }}
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                    @foreach ($material_details as $index => $detail)
-                                        @if ($index === 0)
-                                            @continue
-                                        @endif
-                                        <tr class="h-[60px] border-b border-[#D4D4D4]">
-                                            <td class="px-6">
-                                                <div class="flex items-center gap-2">
-                                                    <select wire:model="material_details.{{ $index }}.unit_id"
-                                                        wire:change="setUnit({{ $index }}, $event.target.value)"
-                                                        class="flex-1 bg-transparent border-0 border-b border-[#D4D4D4] focus:border-[#74512D] focus:outline-none focus:ring-0 text-[#666666] font-medium appearance-none pr-8">
-                                                        <option value="">- Pilih Satuan -</option>
-                                                        @foreach ($units as $unit)
-                                                            <option value="{{ $unit->id }}">{{ $unit->name }}
-                                                                ({{ $unit->alias }})
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if (!empty($unitsWithAutoConversion[$index]))
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                                            Auto
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td class="px-6 text-right text-[#666666] font-medium">1
-                                                {{ $detail['unit'] ?? '' }}</td>
-                                            <td class="px-6 text-right">
-                                                <div class="flex items-center justify-end gap-2">
-                                                    <input type="number"
-                                                        wire:model.number.live="material_details.{{ $index }}.quantity"
-                                                        placeholder="0" min="0"
-                                                        @if (!empty($unitsWithAutoConversion[$index])) readonly @endif
-                                                        class="w-full max-w-[190px] px-2.5 py-1.5 border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D] {{ !empty($unitsWithAutoConversion[$index]) ? 'bg-green-50 cursor-not-allowed' : 'bg-[#FAFAFA]' }}" />
-                                                    @if ($main_unit_alias)
-                                                        <span
-                                                            class="text-[#959595] font-medium">{{ $main_unit_alias }}</span>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td class="px-6 text-center">
-                                                <button type="button"
-                                                    wire:click.prevent="removeUnit({{ $index }})"
-                                                    class="inline-flex items-center justify-center w-[22px] h-[22px] text-[#666666] hover:text-red-600 transition-colors">
-                                                    <svg class="w-3 h-4" fill="currentColor" viewBox="0 0 12 16">
-                                                        <path
-                                                            d="M11 2H8.5L7.5 1H4.5L3.5 2H1V4H11V2ZM2 14C2 15.1 2.9 16 4 16H8C9.1 16 10 15.1 10 14V5H2V14Z" />
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                ]" bodyBg="bg-[#FAFAFA]">
+                <x-slot name="rows">
+                    <tr class="h-[60px] border-b border-[#D4D4D4]">
+                        <td class="px-6 text-[#666666] font-medium">{{ $main_unit_name ?? '-' }}
+                            ({{ $main_unit_alias ?? '' }})</td>
+                        <td class="px-6 text-right text-[#666666] font-medium">1
+                            {{ $main_unit_alias ?? '' }}
+                        </td>
+                        <td class="px-6 text-right text-[#666666] font-medium">1
+                            {{ $main_unit_alias ?? '' }}
+                        </td>
+                        <td></td>
+                    </tr>
+                    @foreach ($material_details as $index => $detail)
+                    @if ($index === 0)
+                    @continue
+                    @endif
+                    <tr class="h-[60px] border-b border-[#D4D4D4]">
+                        <td class="px-6">
+                            <div class="flex items-center gap-2">
+                                <select wire:model="material_details.{{ $index }}.unit_id"
+                                    wire:change="setUnit({{ $index }}, $event.target.value)"
+                                    class="flex-1 bg-transparent border-0 border-b border-[#D4D4D4] focus:border-[#74512D] focus:outline-none focus:ring-0 text-[#666666] font-medium appearance-none pr-8">
+                                    <option value="">- Pilih Satuan -</option>
+                                    @foreach ($units as $unit)
+                                    <option value="{{ $unit->id }}">{{ $unit->name }}
+                                        ({{ $unit->alias }})
+                                    </option>
                                     @endforeach
-                                </x-slot>
-                            </x-table.form>
-                </div>
-            </div>
+                                </select>
+                                @if (!empty($unitsWithAutoConversion[$index]))
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                    Auto
+                                </span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-6 text-right text-[#666666] font-medium">1
+                            {{ $detail['unit'] ?? '' }}</td>
+                        <td class="px-6 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <input type="number" wire:model.number.live="material_details.{{ $index }}.quantity"
+                                    placeholder="0" min="0" @if (!empty($unitsWithAutoConversion[$index])) readonly
+                                    @endif
+                                    class="w-full max-w-[190px] px-2.5 py-1.5 border border-[#ADADAD] rounded-md text-right text-[#666666] font-medium focus:outline-none focus:border-[#74512D] {{ !empty($unitsWithAutoConversion[$index]) ? 'bg-green-50 cursor-not-allowed' : 'bg-[#FAFAFA]' }}" />
+                                @if ($main_unit_alias)
+                                <span class="text-[#959595] font-medium">{{ $main_unit_alias }}</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-6 text-center">
+                            <button type="button" wire:click.prevent="removeUnit({{ $index }})"
+                                class="inline-flex items-center justify-center w-[22px] h-[22px] text-[#666666] hover:text-red-600 transition-colors">
+                                <svg class="w-3 h-4" fill="currentColor" viewBox="0 0 12 16">
+                                    <path
+                                        d="M11 2H8.5L7.5 1H4.5L3.5 2H1V4H11V2ZM2 14C2 15.1 2.9 16 4 16H8C9.1 16 10 15.1 10 14V5H2V14Z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </x-slot>
+            </x-table.form>
+        </div>
+    </div>
 
-            <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
-                <div class="w-full flex flex-col gap-4">
-                    <h3 class="text-lg font-medium text-[#666666]">Jumlah dan Expired Persediaan</h3>
-                    <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
-                        Belanja persediaan untuk mendapatkan jumlah persediaan dan tanggal expired (merah expired,
-                        kuning
-                        hampir expired, hijau belum expired).
-                    </p>
-                    @if (!empty($material->batches) && $material->batches->count() > 0)
-                        <x-table.form
-                            :headers="[
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="w-full flex flex-col gap-4">
+            <h3 class="text-lg font-medium text-[#666666]">Jumlah dan Expired Persediaan</h3>
+            <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
+                Belanja persediaan untuk mendapatkan jumlah persediaan dan tanggal expired (merah expired,
+                kuning
+                hampir expired, hijau belum expired).
+            </p>
+            @if (!empty($material->batches) && $material->batches->count() > 0)
+            <x-table.form :headers="[
                                 ['label' => 'Batch', 'class' => 'text-left px-6 py-3 min-w-[120px]'],
                                 ['label' => 'Jumlah', 'class' => 'text-right px-6 py-3 min-w-[150px]'],
                                 ['label' => 'Jumlah (Utama)', 'class' => 'text-right px-6 py-3 min-w-[150px]'],
                                 ['label' => 'Tanggal Expired', 'class' => 'text-right px-6 py-3 min-w-[180px]'],
-                            ]"
-                            bodyBg="bg-[#fafafa]"
-                        >
-                            <x-slot name="rows">
-                                @php
-                                    $batches = $material->batches->sortBy('date');
-                                @endphp
-                                @foreach ($batches as $b)
-                                    <tr>
-                                        <td class="px-6 py-3">
-                                            <span class="text-gray-700">
-                                                {{ $b->batch_number ?? '-' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-3 text-right">
-                                            <span class="text-gray-700">
-                                                {{ $b->batch_quantity ?? 0 }} {{ $b->unit->alias ?? '' }}
-                                            </span>
-                                        </td>
-                                        @php
-                                            $detail = \App\Models\MaterialDetail::where(
-                                                'material_id',
-                                                $material->id,
-                                            )
-                                                ->where('unit_id', $b->unit_id)
-                                                ->first();
-                                            $quantity_main = $b->batch_quantity * $detail->quantity;
-                                            $quantity_main_total += $quantity_main;
-                                        @endphp
-                                        <td class="px-6 py-3 text-right">
-                                            <span class="text-gray-700">
-                                                {{ $quantity_main ?? 0 }} {{ $main_unit_alias ?? '' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-3 text-right">
-                                            <div class="relative w-full">
-                                                <input type="text" class="rounded-md border-gray-300"
-                                                    value="{{ \Carbon\Carbon::parse($b->date)->format('d / m / Y') }}"
-                                                    disabled />
-                                                <span
-                                                    class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                                    <flux:icon.calendar class="w-4 h-4" />
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </x-slot>
-                            <x-slot name="footer">
-                                <tr class="h-[60px] bg-gray-200">
-                                    <td class="px-6 py-3" colspan="1">
-                                        <span class="text-gray-700 font-bold">Total</span>
-                                    </td>
-                                    <td class="px-6 py-3"></td>
-                                    <td class="px-6 py-3 text-right">
-                                        <span class="text-gray-700">
-                                            {{ $quantity_main_total . ' ' . ($main_unit_alias ?? '') }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-3">
-                                    </td>
-                                </tr>
-                            </x-slot>
-                        </x-table.form>
-                    @else
-                        <input type="text" value="Belum Ada Persediaan" disabled
-                            class="w-full px-5 py-2.5 bg-[#EAEAEA] border border-[#D4D4D4] rounded-2xl text-base font-medium text-[#666666] cursor-not-allowed" />
-                    @endif
-                </div>
+                            ]" bodyBg="bg-[#fafafa]">
+                <x-slot name="rows">
+                    @php
+                    $batches = $material->batches->sortBy('date');
+                    @endphp
+                    @foreach ($batches as $b)
+                    <tr>
+                        <td class="px-6 py-3">
+                            <span class="text-gray-700">
+                                {{ $b->batch_number ?? '-' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-right">
+                            <span class="text-gray-700">
+                                {{ $b->batch_quantity ?? 0 }} {{ $b->unit->alias ?? '' }}
+                            </span>
+                        </td>
+                        @php
+                        $detail = \App\Models\MaterialDetail::where(
+                        'material_id',
+                        $material->id,
+                        )
+                        ->where('unit_id', $b->unit_id)
+                        ->first();
+                        $quantity_main = $b->batch_quantity * $detail->quantity;
+                        $quantity_main_total += $quantity_main;
+                        @endphp
+                        <td class="px-6 py-3 text-right">
+                            <span class="text-gray-700">
+                                {{ $quantity_main ?? 0 }} {{ $main_unit_alias ?? '' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-right">
+                            <div class="relative w-full">
+                                <input type="text" class="rounded-md border-gray-300"
+                                    value="{{ \Carbon\Carbon::parse($b->date)->format('d / m / Y') }}" disabled />
+                                <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                    <flux:icon.calendar class="w-4 h-4" />
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </x-slot>
+                <x-slot name="footer">
+                    <tr class="h-[60px] bg-gray-200">
+                        <td class="px-6 py-3" colspan="1">
+                            <span class="text-gray-700 font-bold">Total</span>
+                        </td>
+                        <td class="px-6 py-3"></td>
+                        <td class="px-6 py-3 text-right">
+                            <span class="text-gray-700">
+                                {{ $quantity_main_total . ' ' . ($main_unit_alias ?? '') }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3">
+                        </td>
+                    </tr>
+                </x-slot>
+            </x-table.form>
+            @else
+            <input type="text" value="Belum Ada Persediaan" disabled
+                class="w-full px-5 py-2.5 bg-[#EAEAEA] border border-[#D4D4D4] rounded-2xl text-base font-medium text-[#666666] cursor-not-allowed" />
+            @endif
+        </div>
+    </div>
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="w-full flex flex-col gap-4">
+            <h3 class="text-lg font-medium text-[#666666]">Status dan Minimal Persediaan</h3>
+            <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
+                Masukkan nilai minimal persediaan untuk pembaruan status persediaan. Status terdiri dari <span
+                    class="font-medium">Tersedia</span> (lebih dari minimal dikali 2), <span class="font-medium">Hampir
+                    Habis</span> (kurang dari minimal dikali 2), dan <span class="font-medium">Habis</span> (kurang dari
+                minimal). Kemudian status <span class="font-medium">Expired</span> akan diambil dari tanggal expired
+                terdekat.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" wire:model.defer="status" disabled value="Hampir Habis"
+                    class="w-full sm:flex-1 px-5 py-2.5 bg-[#EAEAEA] border border-[#D4D4D4] rounded-2xl text-base font-medium text-[#666666] cursor-not-allowed" />
+                <input type="number" wire:model.number.defer="minimum" placeholder="5 kg"
+                    class="w-full sm:flex-1 px-5 py-2.5 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-2xl text-base font-medium text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors" />
             </div>
-            <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
-                <div class="w-full flex flex-col gap-4">
-                    <h3 class="text-lg font-medium text-[#666666]">Status dan Minimal Persediaan</h3>
-                    <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
-                        Masukkan nilai minimal persediaan untuk pembaruan status persediaan. Status terdiri dari <span
-                            class="font-medium">Tersedia</span> (lebih dari minimal dikali 2), <span
-                            class="font-medium">Hampir Habis</span> (kurang dari minimal dikali 2), dan <span
-                            class="font-medium">Habis</span> (kurang dari minimal). Kemudian status <span
-                            class="font-medium">Expired</span> akan diambil dari tanggal expired terdekat.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <input type="text" wire:model.defer="status" disabled value="Hampir Habis"
-                            class="w-full sm:flex-1 px-5 py-2.5 bg-[#EAEAEA] border border-[#D4D4D4] rounded-2xl text-base font-medium text-[#666666] cursor-not-allowed" />
-                        <input type="number" wire:model.number.defer="minimum" placeholder="5 kg"
-                            class="w-full sm:flex-1 px-5 py-2.5 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-2xl text-base font-medium text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors" />
-                    </div>
-                    <flux:error name="minimum" />
-                </div>
-            </div>
+            <flux:error name="minimum" />
+        </div>
+    </div>
 
-            <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
-                <div class="w-full flex flex-col gap-4">
-                    <h3 class="text-lg font-medium text-[#666666]">Modal Barang</h3>
-                    <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
-                        Belanja persediaan untuk menentukan berapa harga modal. Modal otomatis akan dihitung berdasarkan
-                        harga belanja.
-                    </p>
+    <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-2xl p-8">
+        <div class="w-full flex flex-col gap-4">
+            <h3 class="text-lg font-medium text-[#666666]">Modal Barang</h3>
+            <p class="text-sm font-normal text-[#666666] text-justify leading-relaxed">
+                Belanja persediaan untuk menentukan berapa harga modal. Modal otomatis akan dihitung berdasarkan
+                harga belanja.
+            </p>
 
-                            <x-table.form
-                                :headers="[
+            <x-table.form :headers="[
                                     ['label' => 'Satuan', 'class' => 'text-left px-6 font-bold text-sm text-[#F8F4E1] min-w-[180px]'],
                                     ['label' => 'Besar', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[120px]'],
                                     ['label' => 'Harga', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[120px]'],
                                     ['label' => 'Jumlah', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[120px]'],
                                     ['label' => 'Total', 'class' => 'text-right px-6 font-bold text-sm text-[#F8F4E1] min-w-[120px]'],
-                                ]"
-                                bodyBg="bg-[#FAFAFA]"
-                            >
-                                <x-slot name="rows">
-                                    @foreach ($material_details as $index => $detail)
-                                        <tr class="h-[60px] border-b border-[#D4D4D4]">
-                                            <td class="px-6 text-[#666666] font-medium">{{ $detail['unit_name'] ?? '-' }}
-                                                ({{ $detail['unit'] ?? '' }})
-                                            </td>
-                                            <td class="px-6 text-right text-[#666666] font-medium">1
-                                                {{ $detail['unit'] ?? '' }} ({{ $detail['quantity'] ?? 0 }}
-                                                {{ $main_unit_alias ?? '' }})</td>
-                                            <td class="px-6 text-right text-[#666666] font-medium">
-                                                Rp{{ number_format($detail['supply_price'], 0, ',', '.') ?? 0 }}</td>
-                                            <td class="px-6 text-right text-[#666666] font-medium">
-                                                {{ $detail['supply_quantity'] }} {{ $detail['unit'] ?? '' }}</td>
-                                            <td class="px-6 text-right text-[#666666] font-medium">
-                                                Rp{{ number_format(($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0), 0, ',', '.') }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </x-slot>
-                                <x-slot name="footer">
-                                    <tr class="h-[60px] bg-[#EAEAEA]">
-                                        <td class="px-6 font-bold text-sm text-[#666666]">Total Harga</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="px-6 text-right font-bold text-sm text-[#666666]">
-                                            {{ $supply_price_total ? 'Rp' . number_format($supply_price_total, 0, ',', '.') : 'Rp0' }}
-                                        </td>
-                                    </tr>
-                                </x-slot>
-                            </x-table.form>
-                </div>
-            </div>
-        @endif
+                                ]" bodyBg="bg-[#FAFAFA]">
+                <x-slot name="rows">
+                    @foreach ($material_details as $index => $detail)
+                    <tr class="h-[60px] border-b border-[#D4D4D4]">
+                        <td class="px-6 text-[#666666] font-medium">{{ $detail['unit_name'] ?? '-' }}
+                            ({{ $detail['unit'] ?? '' }})
+                        </td>
+                        <td class="px-6 text-right text-[#666666] font-medium">1
+                            {{ $detail['unit'] ?? '' }} ({{ $detail['quantity'] ?? 0 }}
+                            {{ $main_unit_alias ?? '' }})</td>
+                        <td class="px-6 text-right text-[#666666] font-medium">
+                            Rp{{ number_format($detail['supply_price'], 0, ',', '.') ?? 0 }}</td>
+                        <td class="px-6 text-right text-[#666666] font-medium">
+                            {{ $detail['supply_quantity'] }} {{ $detail['unit'] ?? '' }}</td>
+                        <td class="px-6 text-right text-[#666666] font-medium">
+                            Rp{{ number_format(($detail['supply_price'] ?? 0) * ($detail['supply_quantity'] ?? 0), 0,
+                            ',', '.') }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </x-slot>
+                <x-slot name="footer">
+                    <tr class="h-[60px] bg-[#EAEAEA]">
+                        <td class="px-6 font-bold text-sm text-[#666666]">Total Harga</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="px-6 text-right font-bold text-sm text-[#666666]">
+                            {{ $supply_price_total ? 'Rp' . number_format($supply_price_total, 0, ',', '.') : 'Rp0' }}
+                        </td>
+                    </tr>
+                </x-slot>
+            </x-table.form>
+        </div>
+    </div>
+    @endif
     @endif
 
     <div class="mt-8 bg-[#FAFAFA] shadow-sm rounded-[15px] p-6 sm:p-8">
@@ -433,11 +421,12 @@
         </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row {{ $material_id ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
+    <div
+        class="flex flex-col sm:flex-row {{ $material_id ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
         @if ($material_id)
-            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
-                Hapus Persediaan
-            </flux:button>
+        <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
+            Hapus Persediaan
+        </flux:button>
         @endif
         <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto">
             <a href="{{ route('bahan-baku') }}"
@@ -446,35 +435,45 @@
                 <flux:icon.x-mark class="size-4" />
                 Batal
             </a>
-            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save" class="w-full sm:w-auto">
+            <flux:button icon="save" type="button" variant="secondary" wire:click.prevent="save"
+                class="w-full sm:w-auto">
                 Simpan
             </flux:button>
         </div>
     </div>
 
     @if ($material_id)
-        <!-- Modal Riwayat Pembaruan -->
-        <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
-            <div class="space-y-6">
-                <div>
-                    <flux:heading size="lg">Riwayat Pembaruan Barang Persediaan</flux:heading>
-                </div>
-                <div class="max-h-96 overflow-y-auto">
-                    @foreach ($activityLogs as $log)
-                        <div class="border-b py-2">
-                            <div class="text-sm font-medium">{{ $log->description }}</div>
-                            <div class="text-xs text-gray-500">
-                                {{ $log->causer->name ?? 'System' }} -
-                                {{ $log->created_at->format('d M Y H:i') }}
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+    <!-- Modal Riwayat Pembaruan -->
+    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Riwayat Pembaruan Barang Persediaan</flux:heading>
             </div>
-        </flux:modal>
+            <div class="max-h-96 overflow-y-auto">
+                @foreach ($activityLogs as $log)
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </flux:modal>
     @endif
 
     <script>
+        function clearPreview(containerId, imgId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const defaultContent = container.querySelector('.flex-col');
+            const img = document.getElementById(imgId);
+            if (img) img.remove();
+            if (defaultContent) defaultContent.style.display = '';
+        }
+
         function handleDrop(event) {
             event.preventDefault();
             const container = event.currentTarget;
@@ -490,30 +489,39 @@
         }
 
         function previewImage(input) {
+            clearPreview('preview-container', 'image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
+            const reader = new FileReader();
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
 
-                reader.onload = function(e) {
-                    // Update preview image
-                    let previewImg = document.getElementById('image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-
-                    // Sembunyikan konten default
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
+            reader.readAsDataURL(file);
         }
+
+        document.addEventListener('livewire:updated', function() {
+            const errorEl = document.querySelector('[data-image-error]');
+            if (errorEl && errorEl.textContent.trim()) {
+                clearPreview('preview-container', 'image-preview');
+            }
+        });
     </script>
 
 </div>

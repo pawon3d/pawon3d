@@ -117,7 +117,7 @@
                     <!-- Message Bag -->
                     <div class="w-full space-y-2">
                         @error('product_image')
-                        <div class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        <div data-image-error class="w-full p-3 text-sm text-red-700 bg-red-100 rounded-lg">
                             {{ $message }}
                         </div>
                         @enderror
@@ -872,6 +872,15 @@
     @endif
 
     <script>
+        function clearPreview(containerId, imgId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const defaultContent = container.querySelector('.flex-col');
+            const img = document.getElementById(imgId);
+            if (img) img.remove();
+            if (defaultContent) defaultContent.style.display = '';
+        }
+
         function handleDrop(event) {
             event.preventDefault();
             const container = event.currentTarget;
@@ -887,30 +896,39 @@
         }
 
         function previewImage(input) {
+            clearPreview('preview-container', 'image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
+            const reader = new FileReader();
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
 
-                reader.onload = function(e) {
-                    // Update preview image
-                    let previewImg = document.getElementById('image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-
-                    // Sembunyikan konten default
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
+            reader.readAsDataURL(file);
         }
+
+        document.addEventListener('livewire:updated', function() {
+            const errorEl = document.querySelector('[data-image-error]');
+            if (errorEl && errorEl.textContent.trim()) {
+                clearPreview('preview-container', 'image-preview');
+            }
+        });
     </script>
 
 </div>

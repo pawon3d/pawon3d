@@ -17,23 +17,23 @@
             </h1>
         </div>
         @if ($this->isEditMode())
-            <div class="flex gap-2.5 w-full lg:w-auto">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
-                    Riwayat Pembaruan
-                </flux:button>
-            </div>
+        <div class="flex gap-2.5 w-full lg:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
+                Riwayat Pembaruan
+            </flux:button>
+        </div>
         @endif
     </div>
 
     <!-- Info Box -->
     <x-alert.info>
         @if ($this->isEditMode())
-            Anda dapat mengubah atau menghapus pekerja. Sesuaikan informasi jika terdapat perubahan, pastikan informasi
-            yang dimasukan benar dan tepat. Informasi akan ditampilkan untuk mengetahui data diri pekerja dan kegiatan
-            yang dilakukan.
+        Anda dapat mengubah atau menghapus pekerja. Sesuaikan informasi jika terdapat perubahan, pastikan informasi
+        yang dimasukan benar dan tepat. Informasi akan ditampilkan untuk mengetahui data diri pekerja dan kegiatan
+        yang dilakukan.
         @else
-            Tambah Pekerja. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat.
-            Informasi akan ditampilkan untuk mengetahui data diri pekerja dan kegiatan yang dilakukan.
+        Tambah Pekerja. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan tepat.
+        Informasi akan ditampilkan untuk mengetahui data diri pekerja dan kegiatan yang dilakukan.
         @endif
     </x-alert.info>
 
@@ -62,25 +62,25 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-container" class="w-full h-full">
                                 @if ($previewImage)
-                                    <!-- Image Preview -->
-                                    <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                        id="image-preview" />
+                                <!-- Image Preview -->
+                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="image-preview" />
                                 @else
-                                    <!-- Default Content -->
-                                    <div class="flex flex-col items-center justify-center p-5 text-center h-full">
-                                        <svg class="w-[22px] h-[22px] mb-2.5 text-[#666666]" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                        <p class="text-base font-medium text-[#666666] mb-2">Unggah Foto</p>
-                                        <p class="text-sm text-[#666666]">
-                                            Ukuran foto tidak lebih dari <span class="font-bold">2mb</span>
-                                        </p>
-                                        <p class="text-sm text-[#666666]">
-                                            (<span class="font-bold">JPG</span> atau <span class="font-bold">PNG</span>)
-                                        </p>
-                                    </div>
+                                <!-- Default Content -->
+                                <div class="flex flex-col items-center justify-center p-5 text-center h-full">
+                                    <svg class="w-[22px] h-[22px] mb-2.5 text-[#666666]" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="text-base font-medium text-[#666666] mb-2">Unggah Foto</p>
+                                    <p class="text-sm text-[#666666]">
+                                        Ukuran foto tidak lebih dari <span class="font-bold">2mb</span>
+                                    </p>
+                                    <p class="text-sm text-[#666666]">
+                                        (<span class="font-bold">JPG</span> atau <span class="font-bold">PNG</span>)
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -98,9 +98,9 @@
 
                     <!-- Error Message -->
                     @error('image')
-                        <div class="w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                            {{ $message }}
-                        </div>
+                    <div data-image-error class="w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                        {{ $message }}
+                    </div>
                     @enderror
 
                     <!-- Loading Indicator -->
@@ -124,7 +124,7 @@
                     <input type="text" wire:model="name" placeholder="Contoh: Ruru"
                         class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666]" />
                     @error('name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -143,7 +143,7 @@
                         <option value="Perempuan">Perempuan</option>
                     </select>
                     @error('gender')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -155,11 +155,13 @@
                             Masukkan email aktif.
                         </p>
                     </div>
-                    <input type="email" wire:model="email" placeholder="Contoh: namaemail@gmail.com"
-                        @if ($this->isEditMode()) disabled @endif
-                        class="w-full px-5 py-2.5 {{ $this->isEditMode() ? 'bg-[#eaeaea]' : 'bg-[#fafafa]' }} border border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed" />
+                    <input type="email" wire:model="email" placeholder="Contoh: namaemail@gmail.com" @if
+                        ($this->isEditMode()) disabled @endif
+                    class="w-full px-5 py-2.5 {{ $this->isEditMode() ? 'bg-[#eaeaea]' : 'bg-[#fafafa]' }} border
+                    border-[#d4d4d4] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595]
+                    focus:outline-none focus:border-[#666666] disabled:cursor-not-allowed" />
                     @error('email')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -192,7 +194,7 @@
                         </button>
                     </div>
                     @error('password')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -207,7 +209,7 @@
                     <input type="text" wire:model="phone" placeholder="Contoh: 081122334455"
                         class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] placeholder:text-[#959595] focus:outline-none focus:border-[#666666]" />
                     @error('phone')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -216,76 +218,78 @@
                     <div class="flex flex-col gap-4">
                         <p class="text-base font-medium text-[#666666]">Peran</p>
                         <p class="text-sm font-normal text-[#666666]">
-                            {{ $this->isEditMode() ? 'Pilih peran yang akan dijalankan.' : 'Masukkan nomor telepon aktif (WhatsApp).' }}
+                            {{ $this->isEditMode() ? 'Pilih peran yang akan dijalankan.' : 'Masukkan nomor telepon aktif
+                            (WhatsApp).' }}
                         </p>
                     </div>
                     <select wire:model="role"
                         class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666] appearance-none cursor-pointer">
                         <option value="" class="text-[#959595]">Pilih Peran</option>
                         @foreach ($roles as $roleItem)
-                            <option value="{{ $roleItem->name }}">{{ $roleItem->name }}</option>
+                        <option value="{{ $roleItem->name }}">{{ $roleItem->name }}</option>
                         @endforeach
                     </select>
                     @error('role')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
                 @if ($this->isEditMode())
-                    <!-- Status Pekerja -->
+                <!-- Status Pekerja -->
+                <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-4">
-                        <div class="flex flex-col gap-4">
-                            <p class="text-base font-medium text-[#666666]">Status Pekerja</p>
-                            <p class="text-sm font-normal text-[#666666]">
-                                Pilih status pekerja seperti <span class="font-bold">Aktif</span> atau <span
-                                    class="font-bold">Nonaktif/Dinonaktifkan.</span> Aktif jika pekerja masih bekerja
-                                dan
-                                nonaktif jika pekerja bermasalah, berhenti atau keluar dari pekerjaan.
-                            </p>
-                        </div>
-                        <select wire:model="is_active"
-                            class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666] appearance-none cursor-pointer">
-                            <option value="" class="text-[#959595]">Pilih Status</option>
-                            <option value="1">Aktif</option>
-                            <option value="0">Nonaktif/Dinonaktifkan</option>
-                        </select>
-                        @error('is_active')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <p class="text-base font-medium text-[#666666]">Status Pekerja</p>
+                        <p class="text-sm font-normal text-[#666666]">
+                            Pilih status pekerja seperti <span class="font-bold">Aktif</span> atau <span
+                                class="font-bold">Nonaktif/Dinonaktifkan.</span> Aktif jika pekerja masih bekerja
+                            dan
+                            nonaktif jika pekerja bermasalah, berhenti atau keluar dari pekerjaan.
+                        </p>
                     </div>
+                    <select wire:model="is_active"
+                        class="w-full px-5 py-2.5 bg-[#fafafa] border border-[#adadad] rounded-[15px] text-base text-[#666666] focus:outline-none focus:border-[#666666] appearance-none cursor-pointer">
+                        <option value="" class="text-[#959595]">Pilih Status</option>
+                        <option value="1">Aktif</option>
+                        <option value="0">Nonaktif/Dinonaktifkan</option>
+                    </select>
+                    @error('is_active')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
                 @endif
             </div>
         </div>
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center mt-12 gap-4 sm:gap-8 mb-8">
+    <div
+        class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center mt-12 gap-4 sm:gap-8 mb-8">
         @if ($this->isEditMode())
-            <!-- Delete Button (Only in Edit Mode) -->
-            <button type="button" wire:click="confirmDelete"
-                class="w-full sm:w-auto bg-[#eb5757] hover:bg-[#d64545] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clip-rule="evenodd" />
-                </svg>
-                Hapus Pekerja
-            </button>
+        <!-- Delete Button (Only in Edit Mode) -->
+        <button type="button" wire:click="confirmDelete"
+            class="w-full sm:w-auto bg-[#eb5757] hover:bg-[#d64545] text-[#f8f4e1] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clip-rule="evenodd" />
+            </svg>
+            Hapus Pekerja
+        </button>
         @endif
 
         <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full sm:w-auto">
             @if (!$this->isEditMode())
-                <!-- Cancel Button (Only in Add Mode) -->
-                <a href="{{ route('user') }}"
-                    class="w-full sm:w-auto bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                    wire:navigate>
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Batal
-                </a>
+            <!-- Cancel Button (Only in Add Mode) -->
+            <a href="{{ route('user') }}"
+                class="w-full sm:w-auto bg-[#c4c4c4] hover:bg-[#b0b0b0] text-[#333333] font-semibold text-base px-6 py-2.5 rounded-[15px] shadow-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                wire:navigate>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+                Batal
+            </a>
             @endif
 
             <!-- Save Button -->
@@ -297,76 +301,84 @@
 
     <!-- Modal Riwayat Pembaruan -->
     @if ($this->isEditMode())
-        <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
-            <div class="space-y-6">
-                <div>
-                    <flux:heading size="lg">Riwayat Pembaruan Pekerja</flux:heading>
-                </div>
-                <div class="max-h-96 overflow-y-auto">
-                    @forelse ($activityLogs as $log)
-                        <div class="border-b py-3">
-                            <div class="flex justify-between items-start">
-                                <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
-                                <div class="text-xs text-gray-500 whitespace-nowrap ml-2">
-                                    {{ $log->created_at->format('d M Y H:i') }}
-                                </div>
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">
-                                Oleh: {{ $log->causer->name ?? 'System' }}
-                            </div>
+    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Riwayat Pembaruan Pekerja</flux:heading>
+            </div>
+            <div class="max-h-96 overflow-y-auto">
+                @forelse ($activityLogs as $log)
+                <div class="border-b py-3">
+                    <div class="flex justify-between items-start">
+                        <div class="text-sm font-medium text-[#666666]">{{ $log->description }}</div>
+                        <div class="text-xs text-gray-500 whitespace-nowrap ml-2">
+                            {{ $log->created_at->format('d M Y H:i') }}
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Oleh: {{ $log->causer->name ?? 'System' }}
+                    </div>
 
-                            {{-- Show changes for update event --}}
-                            @if ($log->event === 'updated' && $log->properties->has('old') && $log->properties->has('attributes'))
-                                <div class="mt-2 text-xs bg-gray-50 rounded-lg p-2">
-                                    <div class="font-medium text-[#666666] mb-1">Perubahan:</div>
-                                    @php
-                                        $old = $log->properties->get('old', []);
-                                        $new = $log->properties->get('attributes', []);
-                                        $fieldLabels = [
-                                            'name' => 'Nama',
-                                            'email' => 'Email',
-                                            'phone' => 'No. Telepon',
-                                            'gender' => 'Jenis Kelamin',
-                                            'image' => 'Foto',
-                                            'password' => 'Kata Sandi',
-                                            'role' => 'Peran',
-                                            'is_active' => 'Status Aktif',
-                                        ];
-                                    @endphp
-                                    @foreach ($new as $field => $newValue)
-                                        @if (isset($fieldLabels[$field]))
-                                            <div class="flex items-start gap-2 py-1">
-                                                <span
-                                                    class="font-medium text-[#666666] min-w-[100px]">{{ $fieldLabels[$field] }}:</span>
-                                                @if ($field === 'password')
-                                                    <span class="text-gray-500">Kata sandi diperbarui</span>
-                                                @elseif ($field === 'image')
-                                                    <span class="text-gray-500">Foto diperbarui</span>
-                                                @else
-                                                    <span
-                                                        class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
-                                                    <span class="text-gray-400">→</span>
-                                                    <span class="text-green-600">{{ $newValue ?? '-' }}</span>
-                                                @endif
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                    {{-- Show changes for update event --}}
+                    @if ($log->event === 'updated' && $log->properties->has('old') &&
+                    $log->properties->has('attributes'))
+                    <div class="mt-2 text-xs bg-gray-50 rounded-lg p-2">
+                        <div class="font-medium text-[#666666] mb-1">Perubahan:</div>
+                        @php
+                        $old = $log->properties->get('old', []);
+                        $new = $log->properties->get('attributes', []);
+                        $fieldLabels = [
+                        'name' => 'Nama',
+                        'email' => 'Email',
+                        'phone' => 'No. Telepon',
+                        'gender' => 'Jenis Kelamin',
+                        'image' => 'Foto',
+                        'password' => 'Kata Sandi',
+                        'role' => 'Peran',
+                        'is_active' => 'Status Aktif',
+                        ];
+                        @endphp
+                        @foreach ($new as $field => $newValue)
+                        @if (isset($fieldLabels[$field]))
+                        <div class="flex items-start gap-2 py-1">
+                            <span class="font-medium text-[#666666] min-w-[100px]">{{ $fieldLabels[$field] }}:</span>
+                            @if ($field === 'password')
+                            <span class="text-gray-500">Kata sandi diperbarui</span>
+                            @elseif ($field === 'image')
+                            <span class="text-gray-500">Foto diperbarui</span>
+                            @else
+                            <span class="text-red-500 line-through">{{ $old[$field] ?? '-' }}</span>
+                            <span class="text-gray-400">→</span>
+                            <span class="text-green-600">{{ $newValue ?? '-' }}</span>
                             @endif
                         </div>
-                    @empty
-                        <div class="text-center text-gray-500 py-4">
-                            Belum ada riwayat pembaruan.
-                        </div>
-                    @endforelse
+                        @endif
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
+                @empty
+                <div class="text-center text-gray-500 py-4">
+                    Belum ada riwayat pembaruan.
+                </div>
+                @endforelse
             </div>
-        </flux:modal>
+        </div>
+    </flux:modal>
     @endif
 </div>
 
 @script
-    <script>
+<script>
+    function clearPreview(containerId, imgId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const defaultContent = container.querySelector('.flex-col');
+            const img = document.getElementById(imgId);
+            if (img) img.remove();
+            if (defaultContent) defaultContent.style.display = '';
+        }
+
         function handleDrop(event) {
             event.preventDefault();
             const container = event.currentTarget;
@@ -384,27 +396,39 @@
         }
 
         function previewImage(input) {
+            clearPreview('preview-container', 'image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
+            const reader = new FileReader();
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
 
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
 
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
+            reader.readAsDataURL(file);
         }
-    </script>
+
+        document.addEventListener('livewire:updated', function() {
+            const errorEl = document.querySelector('[data-image-error]');
+            if (errorEl && errorEl.textContent.trim()) {
+                clearPreview('preview-container', 'image-preview');
+            }
+        });
+</script>
 @endscript

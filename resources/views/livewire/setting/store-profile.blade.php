@@ -79,16 +79,16 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-logo-container" class="w-full h-full">
                                 @if ($previewLogoImage)
-                                    <img src="{{ $previewLogoImage }}" alt="Preview" class="object-cover w-full h-full"
-                                        id="logo-image-preview" />
+                                <img src="{{ $previewLogoImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="logo-image-preview" />
                                 @else
-                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
-                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
-                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
-                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
-                                                class="font-semibold">2mb</span></p>
-                                        <p class="text-xs text-gray-500"><span class="font-semibold">PNG</span></p>
-                                    </div>
+                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                    <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                    <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                    <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                            class="font-semibold">2mb</span></p>
+                                    <p class="text-xs text-gray-500"><span class="font-semibold">PNG</span></p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -103,7 +103,8 @@
                     </flux:button>
 
                     @error('logo')
-                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    <div data-logo-error class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}
+                    </div>
                     @enderror
 
                     <div wire:loading wire:target="logo"
@@ -129,18 +130,18 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-banner-container" class="w-full h-full">
                                 @if ($previewBannerImage)
-                                    <img src="{{ $previewBannerImage }}" alt="Preview"
-                                        class="object-cover w-full h-full" id="banner-image-preview" />
+                                <img src="{{ $previewBannerImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="banner-image-preview" />
                                 @else
-                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
-                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
-                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
-                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
-                                                class="font-semibold">2mb</span></p>
-                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                    <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                    <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                    <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                            class="font-semibold">2mb</span></p>
+                                    <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -155,7 +156,8 @@
                     </flux:button>
 
                     @error('banner')
-                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    <div data-banner-error class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}
+                    </div>
                     @enderror
 
                     <div wire:loading wire:target="banner"
@@ -181,18 +183,18 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-product-container" class="w-full h-full">
                                 @if ($previewProductImage)
-                                    <img src="{{ $previewProductImage }}" alt="Preview"
-                                        class="object-cover w-full h-full" id="product-image-preview" />
+                                <img src="{{ $previewProductImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="product-image-preview" />
                                 @else
-                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
-                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
-                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
-                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
-                                                class="font-semibold">2mb</span></p>
-                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                    <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                    <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                    <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                            class="font-semibold">2mb</span></p>
+                                    <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -207,7 +209,8 @@
                     </flux:button>
 
                     @error('productImage')
-                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    <div data-product-image-error class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{
+                        $message }}</div>
                     @enderror
 
                     <div wire:loading wire:target="productImage"
@@ -242,18 +245,18 @@
                             class="w-full h-full cursor-pointer flex items-center justify-center">
                             <div id="preview-building-container" class="w-full h-full">
                                 @if ($previewBuildingImage)
-                                    <img src="{{ $previewBuildingImage }}" alt="Preview"
-                                        class="object-cover w-full h-full" id="building-image-preview" />
+                                <img src="{{ $previewBuildingImage }}" alt="Preview" class="object-cover w-full h-full"
+                                    id="building-image-preview" />
                                 @else
-                                    <div class="flex flex-col items-center justify-center p-4 text-center h-full">
-                                        <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
-                                        <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
-                                        <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
-                                                class="font-semibold">2mb</span></p>
-                                        <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
-                                            <span class="font-semibold">PNG</span>
-                                        </p>
-                                    </div>
+                                <div class="flex flex-col items-center justify-center p-4 text-center h-full">
+                                    <flux:icon icon="arrow-up-tray" class="w-6 h-6 mb-2 text-gray-400" />
+                                    <p class="mb-1 text-sm font-semibold text-gray-600">Unggah Foto</p>
+                                    <p class="text-xs text-gray-500">Ukuran foto tidak lebih dari <span
+                                            class="font-semibold">2mb</span></p>
+                                    <p class="text-xs text-gray-500"><span class="font-semibold">JPG</span> atau
+                                        <span class="font-semibold">PNG</span>
+                                    </p>
+                                </div>
                                 @endif
                             </div>
                         </label>
@@ -268,7 +271,8 @@
                     </flux:button>
 
                     @error('building')
-                        <div class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message }}</div>
+                    <div data-building-error class="w-full p-2 text-sm text-red-700 bg-red-100 rounded-lg">{{ $message
+                        }}</div>
                     @enderror
 
                     <div wire:loading wire:target="building"
@@ -282,8 +286,7 @@
             <div class="flex flex-col gap-4">
                 <flux:field>
                     <flux:label>Titik Google Maps</flux:label>
-                    <flux:input placeholder="Contoh: https://maps.app.goo.gl/socTAnFbJXJ3mUFw9"
-                        wire:model="location" />
+                    <flux:input placeholder="Contoh: https://maps.app.goo.gl/socTAnFbJXJ3mUFw9" wire:model="location" />
                     <flux:error name="location" />
                 </flux:field>
 
@@ -361,32 +364,34 @@
             ['label' => 'Nomor Dokumen', 'class' => 'bg-[#3F4E4F] text-white'],
             ['label' => 'Tanggal Terbit', 'class' => 'bg-[#3F4E4F] text-white'],
             ['label' => 'Berlaku Hingga', 'class' => 'bg-[#3F4E4F] text-white'],
-        ]"
-            emptyMessage="Tidak ada dokumen legalitas yang tersedia.">
+        ]" emptyMessage="Tidak ada dokumen legalitas yang tersedia.">
             @foreach ($storeDocuments as $document)
-                <tr class="hover:bg-gray-100 border-b border-gray-200" wire:key="document-{{ $document->id }}">
-                    <td class="px-6 py-4 cursor-pointer hover:text-black"
-                        wire:click="editModal('{{ $document->id }}')">
-                        {{ $document->document_name }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $document->document_number ?? '-' }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->translatedFormat('d M Y') : '-' }}
-                    </td>
-                    <td class="px-6 py-4">
-                        {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->translatedFormat('d M Y') : 'Tidak Terbatas' }}
-                    </td>
-                </tr>
+            <tr class="hover:bg-gray-100 border-b border-gray-200" wire:key="document-{{ $document->id }}">
+                <td class="px-6 py-4 cursor-pointer hover:text-black" wire:click="editModal('{{ $document->id }}')">
+                    {{ $document->document_name }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ $document->document_number ?? '-' }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ $document->valid_from ? \Carbon\Carbon::parse($document->valid_from)->translatedFormat('d M Y') :
+                    '-' }}
+                </td>
+                <td class="px-6 py-4">
+                    {{ $document->valid_until ? \Carbon\Carbon::parse($document->valid_until)->translatedFormat('d M Y')
+                    : 'Tidak Terbatas' }}
+                </td>
+            </tr>
             @endforeach
         </x-table.paginated>
     </div>
 
     {{-- Action Buttons --}}
     <div class="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-        <flux:button href="{{ route('pengaturan') }}" icon="x-mark" wire:navigate class="w-full sm:w-auto">Batal</flux:button>
-        <flux:button wire:click="updateStore" icon="save" variant="primary" class="w-full sm:w-auto">Simpan</flux:button>
+        <flux:button href="{{ route('pengaturan') }}" icon="x-mark" wire:navigate class="w-full sm:w-auto">Batal
+        </flux:button>
+        <flux:button wire:click="updateStore" icon="save" variant="primary" class="w-full sm:w-auto">Simpan
+        </flux:button>
     </div>
 
     {{-- Document Modal --}}
@@ -436,14 +441,14 @@
                             </label>
 
                             @if ($documentFile)
-                                <input type="text"
-                                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 truncate"
-                                    value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
-                                    readonly wire:loading.remove wire:target="documentFile">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 truncate"
+                                value="{{ is_string($documentFile) ? basename($documentFile) : $documentFile->getClientOriginalName() }}"
+                                readonly wire:loading.remove wire:target="documentFile">
                             @else
-                                <input type="text"
-                                    class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
-                                    value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
+                            <input type="text"
+                                class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100"
+                                value="File Belum Dipilih" readonly wire:loading.remove wire:target="documentFile">
                             @endif
                             <input type="text"
                                 class="w-full px-3 py-2 text-sm text-gray-800 border border-gray-300 rounded-md bg-gray-100 hidden"
@@ -457,17 +462,17 @@
 
             <div class="flex justify-end gap-2">
                 @if ($edit)
-                    <flux:modal.trigger name="delete-document" class="mr-auto">
-                        <flux:button variant="ghost" icon="trash" />
-                    </flux:modal.trigger>
+                <flux:modal.trigger name="delete-document" class="mr-auto">
+                    <flux:button variant="ghost" icon="trash" />
+                </flux:modal.trigger>
                 @endif
                 <flux:button type="button" icon="x-mark" wire:click="$set('showModal', false)">Batal</flux:button>
                 @if ($edit)
-                    <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
-                    </flux:button>
+                <flux:button type="button" icon="save" variant="primary" wire:click="updateDocument">Simpan
+                </flux:button>
                 @else
-                    <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
-                    </flux:button>
+                <flux:button type="button" icon="save" variant="primary" wire:click="storeDocument">Simpan
+                </flux:button>
                 @endif
             </div>
         </div>
@@ -493,6 +498,15 @@
 
     {{-- JavaScript for Image Previews --}}
     <script>
+        function clearPreview(containerId, imgId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const defaultContent = container.querySelector('.flex-col');
+            const img = document.getElementById(imgId);
+            if (img) img.remove();
+            if (defaultContent) defaultContent.style.display = '';
+        }
+
         function handleDropLogo(event) {
             event.preventDefault();
             const container = event.currentTarget;
@@ -507,23 +521,29 @@
         }
 
         function previewLogoImage(input) {
+            clearPreview('preview-logo-container', 'logo-image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-logo-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('logo-image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'logo-image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('logo-image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'logo-image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         }
 
         function handleDropBanner(event) {
@@ -540,23 +560,29 @@
         }
 
         function previewBannerImage(input) {
+            clearPreview('preview-banner-container', 'banner-image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-banner-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('banner-image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'banner-image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('banner-image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'banner-image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         }
 
         function handleDropProductImage(event) {
@@ -577,23 +603,29 @@
         }
 
         function previewProductImageHandler(input) {
+            clearPreview('preview-product-container', 'product-image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-product-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('product-image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'product-image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('product-image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'product-image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         }
 
         function handleDropBuilding(event) {
@@ -610,68 +642,89 @@
         }
 
         function previewBuildingImage(input) {
+            clearPreview('preview-building-container', 'building-image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-building-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('building-image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'building-image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('building-image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'building-image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
         }
+
+        document.addEventListener('livewire:updated', function() {
+            if (document.querySelector('[data-logo-error]')?.textContent.trim()) {
+                clearPreview('preview-logo-container', 'logo-image-preview');
+            }
+            if (document.querySelector('[data-banner-error]')?.textContent.trim()) {
+                clearPreview('preview-banner-container', 'banner-image-preview');
+            }
+            if (document.querySelector('[data-product-image-error]')?.textContent.trim()) {
+                clearPreview('preview-product-container', 'product-image-preview');
+            }
+            if (document.querySelector('[data-building-error]')?.textContent.trim()) {
+                clearPreview('preview-building-container', 'building-image-preview');
+            }
+        });
     </script>
 
     @section('css')
-        <style>
-            .tanggal {
-                position: relative;
-                width: 100%;
-                height: 2.5rem;
-                padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-                color: transparent;
-                background-color: #f9fafb;
-                border: 1px solid #d1d5db;
-                border-radius: 0.5rem;
-                font-size: 0.875rem;
-                outline: none;
-            }
+    <style>
+        .tanggal {
+            position: relative;
+            width: 100%;
+            height: 2.5rem;
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            color: transparent;
+            background-color: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            outline: none;
+        }
 
-            .tanggal:before {
-                position: absolute;
-                top: 50%;
-                left: 0.75rem;
-                transform: translateY(-50%);
-                content: attr(data-date);
-                display: inline-block;
-                color: #111827;
-                pointer-events: none;
-                font-size: 0.875rem;
-            }
+        .tanggal:before {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            content: attr(data-date);
+            display: inline-block;
+            color: #111827;
+            pointer-events: none;
+            font-size: 0.875rem;
+        }
 
-            .tanggal::-webkit-datetime-edit,
-            .tanggal::-webkit-inner-spin-button,
-            .tanggal::-webkit-clear-button {
-                display: none;
-            }
+        .tanggal::-webkit-datetime-edit,
+        .tanggal::-webkit-inner-spin-button,
+        .tanggal::-webkit-clear-button {
+            display: none;
+        }
 
-            .tanggal::-webkit-calendar-picker-indicator {
-                position: absolute;
-                top: 50%;
-                right: 0.75rem;
-                transform: translateY(-50%);
-                opacity: 1;
-                color: #6b7280;
-                cursor: pointer;
-            }
-        </style>
+        .tanggal::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem;
+            transform: translateY(-50%);
+            opacity: 1;
+            color: #6b7280;
+            cursor: pointer;
+        }
+    </style>
     @endsection
 </div>

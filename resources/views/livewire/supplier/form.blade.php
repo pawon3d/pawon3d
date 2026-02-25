@@ -12,16 +12,18 @@
             </h1>
         </div>
         @if ($this->isEditMode())
-            <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
-                <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
-                    Riwayat Pembaruan
-                </flux:button>
-            </div>
+        <div class="flex flex-col sm:flex-row gap-2.5 items-center w-full lg:w-auto">
+            <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full lg:w-auto">
+                Riwayat Pembaruan
+            </flux:button>
+        </div>
         @endif
     </div>
 
     <x-alert.info>
-        {{ $this->isEditMode() ? 'Perbarui toko persediaan. Pastikan data benar agar bisa dipilih sebelum belanja persediaan.' : 'Tambah toko persediaan. Lengkapi informasi yang diminta untuk dipilih sebelum belanja persediaan.' }}
+        {{ $this->isEditMode() ? 'Perbarui toko persediaan. Pastikan data benar agar bisa dipilih sebelum belanja
+        persediaan.' : 'Tambah toko persediaan. Lengkapi informasi yang diminta untuk dipilih sebelum belanja
+        persediaan.' }}
     </x-alert.info>
 
     <!-- First Section: Foto Toko + Basic Info -->
@@ -40,32 +42,32 @@
                     <label for="dropzone-file" class="w-full h-full cursor-pointer flex items-center justify-center">
                         <div id="preview-container" class="w-full h-full">
                             @if ($previewImage)
-                                <!-- Image Preview -->
-                                <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
-                                    id="image-preview" />
+                            <!-- Image Preview -->
+                            <img src="{{ $previewImage }}" alt="Preview" class="object-cover w-full h-full"
+                                id="image-preview" />
                             @else
-                                <!-- Default Content -->
-                                <div class="flex flex-col items-center justify-center p-4 text-center">
-                                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg" class="mb-3">
-                                        <path d="M17 22.6667V11.3333M17 11.3333L11.3333 17M17 11.3333L22.6667 17"
-                                            stroke="#666666" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        <path
-                                            d="M29.75 22.6667V27.625C29.75 28.4538 29.4208 29.2487 28.8347 29.8347C28.2487 30.4208 27.4538 30.75 26.625 30.75H7.375C6.54619 30.75 5.75134 30.4208 5.16529 29.8347C4.57924 29.2487 4.25 28.4538 4.25 27.625V22.6667"
-                                            stroke="#666666" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    <p class="font-montserrat font-medium text-[16px] text-[#666666] mb-2">Unggah Gambar
-                                    </p>
-                                    <p class="font-montserrat font-normal text-[14px] text-[#666666]">
-                                        Ukuran gambar tidak lebih dari <span class="font-semibold">2mb</span>
-                                    </p>
-                                    <p class="font-montserrat font-normal text-[14px] text-[#959595]">
-                                        Pastikan gambar dalam format <span class="font-semibold">JPG</span> atau <span
-                                            class="font-semibold">PNG</span>
-                                    </p>
-                                </div>
+                            <!-- Default Content -->
+                            <div class="flex flex-col items-center justify-center p-4 text-center">
+                                <svg width="34" height="34" viewBox="0 0 34 34" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                                    <path d="M17 22.6667V11.3333M17 11.3333L11.3333 17M17 11.3333L22.6667 17"
+                                        stroke="#666666" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path
+                                        d="M29.75 22.6667V27.625C29.75 28.4538 29.4208 29.2487 28.8347 29.8347C28.2487 30.4208 27.4538 30.75 26.625 30.75H7.375C6.54619 30.75 5.75134 30.4208 5.16529 29.8347C4.57924 29.2487 4.25 28.4538 4.25 27.625V22.6667"
+                                        stroke="#666666" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <p class="font-montserrat font-medium text-[16px] text-[#666666] mb-2">Unggah Gambar
+                                </p>
+                                <p class="font-montserrat font-normal text-[14px] text-[#666666]">
+                                    Ukuran gambar tidak lebih dari <span class="font-semibold">2mb</span>
+                                </p>
+                                <p class="font-montserrat font-normal text-[14px] text-[#959595]">
+                                    Pastikan gambar dalam format <span class="font-semibold">JPG</span> atau <span
+                                        class="font-semibold">PNG</span>
+                                </p>
+                            </div>
                             @endif
                         </div>
                     </label>
@@ -83,9 +85,9 @@
 
                 <!-- Error Message -->
                 @error('image')
-                    <div class="w-full max-w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
-                        {{ $message }}
-                    </div>
+                <div data-image-error class="w-full max-w-[300px] p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+                    {{ $message }}
+                </div>
                 @enderror
 
                 <!-- Loading Indicator -->
@@ -108,7 +110,7 @@
                     <input type="text" wire:model.defer="name" placeholder="Ketik nama toko"
                         class="w-full h-[46px] px-4 bg-white border border-[#d4d4d4] rounded-[5px] font-montserrat font-normal text-[16px] text-[#333333] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3f4e4f]" />
                     @error('name')
-                        <p class="font-montserrat font-normal text-[14px] text-red-600">{{ $message }}</p>
+                    <p class="font-montserrat font-normal text-[14px] text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -122,7 +124,7 @@
                     <input type="text" wire:model.defer="description" placeholder="Ketik deskripsi produk"
                         class="w-full h-[46px] px-4 bg-white border border-[#d4d4d4] rounded-[5px] font-montserrat font-normal text-[16px] text-[#333333] placeholder:text-[#c4c4c4] focus:outline-none focus:border-[#3f4e4f]" />
                     @error('description')
-                        <p class="font-montserrat font-normal text-[14px] text-red-600">{{ $message }}</p>
+                    <p class="font-montserrat font-normal text-[14px] text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -156,7 +158,7 @@
                     class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 font-montserrat font-normal text-[16px] text-[#666666] placeholder-[#959595] p-0" />
             </div>
             @error('maps_link')
-                <span class="text-sm text-red-500 font-montserrat">{{ $message }}</span>
+            <span class="text-sm text-red-500 font-montserrat">{{ $message }}</span>
             @enderror
         </div>
     </div>
@@ -174,7 +176,7 @@
                         class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 font-montserrat font-normal text-[16px] text-[#666666] placeholder-[#959595] p-0" />
                 </div>
                 @error('contact_name')
-                    <p class="text-sm text-red-600">{{ $message }}</p>
+                <p class="text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -188,7 +190,7 @@
                         class="w-full bg-transparent border-0 focus:outline-none focus:ring-0 font-montserrat font-normal text-[16px] text-[#666666] placeholder-[#959595] p-0" />
                 </div>
                 @error('phone')
-                    <p class="text-sm text-red-600">{{ $message }}</p>
+                <p class="text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
         </div>
@@ -197,14 +199,13 @@
     <div
         class="flex flex-col sm:flex-row {{ $this->isEditMode() ? 'sm:justify-between' : 'sm:justify-end' }} items-center gap-4 mt-8">
         @if ($this->isEditMode())
-            <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()"
-                class="w-full sm:w-auto">
-                {{ __('Hapus Toko') }}
-            </flux:button>
+        <flux:button icon="trash" type="button" variant="danger" wire:click="confirmDelete()" class="w-full sm:w-auto">
+            {{ __('Hapus Toko') }}
+        </flux:button>
         @endif
         <div class="flex flex-col sm:flex-row justify-end gap-4 w-full sm:w-auto">
-            <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('supplier') }}"
-                wire:navigate class="w-full sm:w-auto">
+            <flux:button type="button" variant="filled" icon="x-mark" href="{{ route('supplier') }}" wire:navigate
+                class="w-full sm:w-auto">
                 Batal
             </flux:button>
             <flux:button type="button" wire:click.prevent="save" variant="secondary" icon="save"
@@ -215,29 +216,38 @@
     </div>
 
     @if ($this->isEditMode())
-        <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
-            <div class="space-y-6">
-                <div>
-                    <flux:heading size="lg">Riwayat Pembaruan Toko Persediaan</flux:heading>
-                </div>
-                <div class="max-h-96 overflow-y-auto">
-                    @forelse ($activityLogs as $log)
-                        <div class="border-b py-2">
-                            <div class="text-sm font-medium">{{ $log->description }}</div>
-                            <div class="text-xs text-gray-500">
-                                {{ $log->causer->name ?? 'System' }} -
-                                {{ $log->created_at->format('d M Y H:i') }}
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-sm text-gray-500">Belum ada riwayat pembaruan.</div>
-                    @endforelse
-                </div>
+    <flux:modal name="riwayat-pembaruan" class="w-full max-w-2xl" wire:model="showHistoryModal">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Riwayat Pembaruan Toko Persediaan</flux:heading>
             </div>
-        </flux:modal>
+            <div class="max-h-96 overflow-y-auto">
+                @forelse ($activityLogs as $log)
+                <div class="border-b py-2">
+                    <div class="text-sm font-medium">{{ $log->description }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ $log->causer->name ?? 'System' }} -
+                        {{ $log->created_at->format('d M Y H:i') }}
+                    </div>
+                </div>
+                @empty
+                <div class="text-sm text-gray-500">Belum ada riwayat pembaruan.</div>
+                @endforelse
+            </div>
+        </div>
+    </flux:modal>
     @endif
 
     <script>
+        function clearPreview(containerId, imgId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const defaultContent = container.querySelector('.flex-col');
+            const img = document.getElementById(imgId);
+            if (img) img.remove();
+            if (defaultContent) defaultContent.style.display = '';
+        }
+
         function handleDrop(event) {
             event.preventDefault();
             const container = event.currentTarget;
@@ -255,27 +265,38 @@
         }
 
         function previewImage(input) {
+            clearPreview('preview-container', 'image-preview');
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const maxSize = 2 * 1024 * 1024;
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (file.size > maxSize || !validTypes.includes(file.type)) return;
+
             const previewContainer = document.getElementById('preview-container');
             const defaultContent = previewContainer.querySelector('.flex-col');
+            const reader = new FileReader();
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+            reader.onload = function(e) {
+                let previewImg = document.getElementById('image-preview');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.id = 'image-preview';
+                    previewImg.className = 'object-cover w-full h-full';
+                    previewContainer.appendChild(previewImg);
+                }
+                previewImg.src = e.target.result;
+                if (defaultContent) defaultContent.style.display = 'none';
+            };
 
-                reader.onload = function(e) {
-                    let previewImg = document.getElementById('image-preview');
-                    if (!previewImg) {
-                        previewImg = document.createElement('img');
-                        previewImg.id = 'image-preview';
-                        previewImg.className = 'object-cover w-full h-full';
-                        previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = e.target.result;
-
-                    if (defaultContent) defaultContent.style.display = 'none';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
+            reader.readAsDataURL(file);
         }
+
+        document.addEventListener('livewire:updated', function() {
+            const errorEl = document.querySelector('[data-image-error]');
+            if (errorEl && errorEl.textContent.trim()) {
+                clearPreview('preview-container', 'image-preview');
+            }
+        });
     </script>
 </div>
