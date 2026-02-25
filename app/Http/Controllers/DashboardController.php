@@ -11,29 +11,33 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Check permissions in order of priority
-        $permissionGroups = [
-            'laporan-kasir' => ['kasir.pesanan.kelola', 'kasir.laporan.kelola'],
-            'laporan-produksi' => ['produksi.rencana.kelola', 'produksi.mulai', 'produksi.laporan.kelola'],
-            'laporan-inventori' => [
-                'inventori.produk.kelola',
-                'inventori.persediaan.kelola',
-                'inventori.belanja.rencana.kelola',
-                'inventori.toko.kelola',
-                'inventori.belanja.mulai',
-                'inventori.hitung.kelola',
-                'inventori.alur.lihat',
-                'inventori.laporan.kelola',
-            ],
+        // Ordered list: most-specific permission → target route
+        $redirectMap = [
+            // Laporan pages (require specific laporan permission)
+            'kasir.laporan.kelola' => 'laporan-kasir',
+            'produksi.laporan.kelola' => 'laporan-produksi',
+            'inventori.laporan.kelola' => 'laporan-inventori',
+            // Operational pages when laporan is not accessible
+            'kasir.pesanan.kelola' => 'transaksi',
+            'produksi.rencana.kelola' => 'produksi',
+            'produksi.mulai' => 'produksi',
+            'inventori.persediaan.kelola' => 'bahan-baku',
+            'inventori.belanja.rencana.kelola' => 'belanja',
+            'inventori.hitung.kelola' => 'hitung',
+            'inventori.produk.kelola' => 'produk',
+            'inventori.alur.lihat' => 'alur-persediaan',
+            'manajemen.pekerja.kelola' => 'user',
+            'manajemen.peran.kelola' => 'role',
+            'manajemen.pelanggan.kelola' => 'customer',
         ];
 
-        foreach ($permissionGroups as $routeName => $permissions) {
-            if ($user->hasAnyPermission($permissions)) {
+        foreach ($redirectMap as $permission => $routeName) {
+            if ($user->hasPermissionTo($permission)) {
                 return redirect()->route($routeName);
             }
         }
 
-        // User has no permissions, redirect to waiting page
+        // User has no recognised permissions
         return redirect()->route('no-role');
     }
 }

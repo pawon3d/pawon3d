@@ -17,8 +17,8 @@
 </head>
 
 @php
-    use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
 
 @endphp
 
@@ -28,102 +28,100 @@
 
         <flux:navlist variant="outline" class="my-4 overflow-y-scroll overflow-x-hidden h-screen scroll-hide">
 
+            @canany(['kasir.laporan.kelola', 'produksi.laporan.kelola', 'inventori.laporan.kelola'])
             <flux:navlist.group onclick="openSidebar()" expandable :expanded="false"
                 current="{{ Str::startsWith(Route::currentRouteName(), 'ringkasan') || Str::startsWith(Route::currentRouteName(), 'laporan-') }}"
                 heading="Dashboard" icon="align-end-horizontal">
-                {{-- <flux:navlist.item :href="route('ringkasan-umum')"
-                    :current="Str::startsWith(Route::currentRouteName(), 'ringkasan')" wire:navigate>
-                    {{ __('Ringkasan Umum') }}</flux:navlist.item> --}}
                 @can('kasir.laporan.kelola')
-                    <flux:navlist.item :href="route('laporan-kasir')" :current="request()->routeIs('laporan-kasir')"
-                        wire:navigate>
-                        {{ __('Laporan Kasir') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('laporan-kasir')" :current="request()->routeIs('laporan-kasir')"
+                    wire:navigate>
+                    {{ __('Laporan Kasir') }}</flux:navlist.item>
                 @endcan
                 @can('produksi.laporan.kelola')
-                    <flux:navlist.item :href="route('laporan-produksi')" :current="request()->routeIs('laporan-produksi')"
-                        wire:navigate>
-                        {{ __('Laporan Produksi') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('laporan-produksi')" :current="request()->routeIs('laporan-produksi')"
+                    wire:navigate>
+                    {{ __('Laporan Produksi') }}</flux:navlist.item>
                 @endcan
                 @can('inventori.laporan.kelola')
-                    <flux:navlist.item :href="route('laporan-inventori')" :current="request()->routeIs('laporan-inventori')"
-                        wire:navigate>
-                        {{ __('Laporan Inventori') }}</flux:navlist.item>
+                <flux:navlist.item :href="route('laporan-inventori')" :current="request()->routeIs('laporan-inventori')"
+                    wire:navigate>
+                    {{ __('Laporan Inventori') }}</flux:navlist.item>
                 @endcan
             </flux:navlist.group>
+            @endcanany
 
             @can('kasir.pesanan.kelola')
-                <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
-                    :current="request()->routeIs('transaksi')" wire:navigate>
-                    {{ __('Transaksi') }}
-                </flux:navlist.item>
+            <flux:navlist.item solo="true" :href="route('transaksi')" icon="cashier"
+                :current="request()->routeIs('transaksi')" wire:navigate>
+                {{ __('Transaksi') }}
+            </flux:navlist.item>
             @endcan
 
             @canany(['produksi.rencana.kelola', 'produksi.mulai'])
-                <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
-                    icon="chef-hat" wire:navigate>
-                    {{ __('Produksi') }}
-                </flux:navlist.item>
+            <flux:navlist.item solo="true" :href="route('produksi')" :current="request()->routeIs('produksi')"
+                icon="chef-hat" wire:navigate>
+                {{ __('Produksi') }}
+            </flux:navlist.item>
             @endcanany
 
             @canany(['inventori.persediaan.kelola', 'inventori.produk.kelola', 'inventori.belanja.rencana.kelola',
-                'inventori.hitung.kelola'])
-                <flux:navlist.group onclick="openSidebar()" heading="Inventori"
-                    current="{{ Str::startsWith(Route::currentRouteName(), 'bahan-baku') || Str::startsWith(Route::currentRouteName(), 'supplier') || Str::startsWith(Route::currentRouteName(), 'belanja') || Str::startsWith(Route::currentRouteName(), 'hitung') || Str::startsWith(Route::currentRouteName(), 'kategori') || request()->routeIs('produk') || request()->routeIs('produk.tambah') || request()->routeIs('produk.edit') || Str::startsWith(Route::currentRouteName(), 'satuan-ukur') || request()->routeIs('alur-persediaan') }}"
-                    expandable icon="warehouse" :expanded="false">
-                    @can('inventori.persediaan.kelola')
-                        <flux:navlist.item :href="route('bahan-baku')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
-                            {{ __('Bahan Baku') }}
-                        </flux:navlist.item>
-                        {{-- <flux:navlist.item :href="route('supplier')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
-                            {{ __('Toko Persediaan') }}</flux:navlist.item> --}}
-                    @endcan
-                    @can('inventori.belanja.rencana.kelola')
-                        <flux:navlist.item :href="route('belanja')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{ __('Belanja') }}
-                        </flux:navlist.item>
-                    @endcan
-                    @can('inventori.hitung.kelola')
-                        <flux:navlist.item :href="route('hitung')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>
-                            {{ __('Hitung dan Catat') }}</flux:navlist.item>
-                    @endcan
-                    @can('inventori.produk.kelola')
-                        <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>
-                            {{ __('Produk') }}
-                        </flux:navlist.item>
-                    @endcan
-                    @can('inventori.alur.lihat')
-                        <flux:navlist.item :href="route('alur-persediaan')" :current="request()->routeIs('alur-persediaan')"
-                            wire:navigate>
-                            {{ __('Alur Persediaan') }}
-                        </flux:navlist.item>
-                    @endcan
-                </flux:navlist.group>
+            'inventori.hitung.kelola'])
+            <flux:navlist.group onclick="openSidebar()" heading="Inventori"
+                current="{{ Str::startsWith(Route::currentRouteName(), 'bahan-baku') || Str::startsWith(Route::currentRouteName(), 'supplier') || Str::startsWith(Route::currentRouteName(), 'belanja') || Str::startsWith(Route::currentRouteName(), 'hitung') || Str::startsWith(Route::currentRouteName(), 'kategori') || request()->routeIs('produk') || request()->routeIs('produk.tambah') || request()->routeIs('produk.edit') || Str::startsWith(Route::currentRouteName(), 'satuan-ukur') || request()->routeIs('alur-persediaan') }}"
+                expandable icon="warehouse" :expanded="false">
+                @can('inventori.persediaan.kelola')
+                <flux:navlist.item :href="route('bahan-baku')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'bahan-baku')" wire:navigate>
+                    {{ __('Bahan Baku') }}
+                </flux:navlist.item>
+                {{-- <flux:navlist.item :href="route('supplier')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'supplier')" wire:navigate>
+                    {{ __('Toko Persediaan') }}</flux:navlist.item> --}}
+                @endcan
+                @can('inventori.belanja.rencana.kelola')
+                <flux:navlist.item :href="route('belanja')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'belanja')" wire:navigate>{{ __('Belanja') }}
+                </flux:navlist.item>
+                @endcan
+                @can('inventori.hitung.kelola')
+                <flux:navlist.item :href="route('hitung')"
+                    :current="Str::startsWith(Route::currentRouteName(), 'hitung')" wire:navigate>
+                    {{ __('Hitung dan Catat') }}</flux:navlist.item>
+                @endcan
+                @can('inventori.produk.kelola')
+                <flux:navlist.item :href="route('produk')" :current="request()->routeIs('produk')" wire:navigate>
+                    {{ __('Produk') }}
+                </flux:navlist.item>
+                @endcan
+                @can('inventori.alur.lihat')
+                <flux:navlist.item :href="route('alur-persediaan')" :current="request()->routeIs('alur-persediaan')"
+                    wire:navigate>
+                    {{ __('Alur Persediaan') }}
+                </flux:navlist.item>
+                @endcan
+            </flux:navlist.group>
             @endcanany
 
             @can('manajemen.pelanggan.kelola')
-                <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer*')"
-                    icon="user-group" wire:navigate>
-                    {{ __('Pelanggan') }}
-                </flux:navlist.item>
+            <flux:navlist.item solo="true" :href="route('customer')" :current="request()->routeIs('customer*')"
+                icon="user-group" wire:navigate>
+                {{ __('Pelanggan') }}
+            </flux:navlist.item>
             @endcan
             @canany(['manajemen.pekerja.kelola', 'manajemen.peran.kelola'])
-                <flux:navlist.group onclick="openSidebar()" heading="Karyawan" expandable icon="id-card"
-                    :expanded="false"
-                    current="{{ Str::startsWith(Route::currentRouteName(), 'user') || Str::startsWith(Route::currentRouteName(), 'role') || Str::startsWith(Route::currentRouteName(), 'user.tambah') || Str::startsWith(Route::currentRouteName(), 'user.edit') || Str::startsWith(Route::currentRouteName(), 'role.tambah') || Str::startsWith(Route::currentRouteName(), 'role.edit') }}">
-                    @can('manajemen.pekerja.kelola')
-                        <flux:navlist.item :href="route('user')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'user')" wire:navigate>{{ __('Pekerja') }}
-                        </flux:navlist.item>
-                    @endcan
-                    @can('manajemen.peran.kelola')
-                        <flux:navlist.item :href="route('role')"
-                            :current="Str::startsWith(Route::currentRouteName(), 'role')" wire:navigate>{{ __('Peran') }}
-                        </flux:navlist.item>
-                    @endcan
-                </flux:navlist.group>
+            <flux:navlist.group onclick="openSidebar()" heading="Karyawan" expandable icon="id-card" :expanded="false"
+                current="{{ Str::startsWith(Route::currentRouteName(), 'user') || Str::startsWith(Route::currentRouteName(), 'role') || Str::startsWith(Route::currentRouteName(), 'user.tambah') || Str::startsWith(Route::currentRouteName(), 'user.edit') || Str::startsWith(Route::currentRouteName(), 'role.tambah') || Str::startsWith(Route::currentRouteName(), 'role.edit') }}">
+                @can('manajemen.pekerja.kelola')
+                <flux:navlist.item :href="route('user')" :current="Str::startsWith(Route::currentRouteName(), 'user')"
+                    wire:navigate>{{ __('Pekerja') }}
+                </flux:navlist.item>
+                @endcan
+                @can('manajemen.peran.kelola')
+                <flux:navlist.item :href="route('role')" :current="Str::startsWith(Route::currentRouteName(), 'role')"
+                    wire:navigate>{{ __('Peran') }}
+                </flux:navlist.item>
+                @endcan
+            </flux:navlist.group>
             @endcanany
             <flux:navlist.item solo="true" :href="route('pengaturan')" icon="cog-6-tooth"
                 :current="request()->routeIs('pengaturan') || request()->routeIs('profil-saya') || request()->routeIs('profil-usaha') || request()->routeIs('metode-pembayaran') || request()->routeIs('notifikasi')"
@@ -142,20 +140,20 @@
                     <flux:icon.bars-3 variant="outline" class="text-gray-100" />
                 </flux:button>
                 @if (!empty($mainTitle))
-                    <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
-                        <div class="ml-1 flex flex-row gap-3 items-center flex-1 text-left text-lg">
-                            @if (!empty($storeProfile?->logo))
-                                <img src="{{ asset('storage/' . $storeProfile->logo) }}" alt="Logo"
-                                    class="w-14 h-14 object-cover rounded-full">
-                            @endif
+                <div class="md:flex flex-row hidden flex-nowrap items-center gap-2 px-6 py-4 whitespace-nowrap">
+                    <div class="ml-1 flex flex-row gap-3 items-center flex-1 text-left text-lg">
+                        @if (!empty($storeProfile?->logo))
+                        <img src="{{ asset('storage/' . $storeProfile->logo) }}" alt="Logo"
+                            class="w-14 h-14 object-cover rounded-full">
+                        @endif
 
-                            <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
-                        </div>
+                        <span class="mb-0.5 truncate text-white">{{ $mainTitle }}</span>
                     </div>
+                </div>
                 @else
-                    <flux:navbar.item href="{{ route('dashboard') }}" class="md:flex hidden">
-                        <x-app-logo />
-                    </flux:navbar.item>
+                <flux:navbar.item href="{{ route('dashboard') }}" class="md:flex hidden">
+                    <x-app-logo />
+                </flux:navbar.item>
                 @endif
             </div>
             <div class="flex items-center gap-4 flex-row">
@@ -175,18 +173,18 @@
                     <flux:button variant="ghost">
                         <div class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
                             @if (auth()->user()->image)
-                                <img src="{{ asset('storage/' . auth()->user()->image) }}"
-                                    alt="{{ auth()->user()->name }}" class="h-full w-full object-cover rounded-full">
+                            <img src="{{ asset('storage/' . auth()->user()->image) }}" alt="{{ auth()->user()->name }}"
+                                class="h-full w-full object-cover rounded-full">
                             @else
-                                <span
-                                    class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black  ">
-                                    {{ auth()->user()->initials() }}
-                                </span>
+                            <span
+                                class="flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-black  ">
+                                {{ auth()->user()->initials() }}
+                            </span>
                             @endif
                         </div>
                         <span class="font-semibold text-gray-100">{{ auth()->user()->name }}</span>
-                        <span
-                            class="font-semibold text-gray-100 hidden lg:inline">({{ auth()->user()->getRoleNames()->first() }})</span>
+                        <span class="font-semibold text-gray-100 hidden lg:inline">({{
+                            auth()->user()->getRoleNames()->first() }})</span>
                         <flux:icon.chevron-down variant="outline" class="text-gray-100 size-4" />
                     </flux:button>
 
@@ -219,7 +217,8 @@
 
                 <flux:button type="button" variant="ghost" icon="bell" href="{{ route('notifikasi') }}"
                     class="cursor-pointer !text-gray-100" wire:navigate />
-                {{-- <livewire:notification.dropdown /> --}}
+                {{--
+                <livewire:notification.dropdown /> --}}
             </div>
 
         </div>
@@ -267,8 +266,8 @@
         });
     </script>
     @if (session('notification'))
-        <script>
-            Swal.fire({
+    <script>
+        Swal.fire({
                 icon: 'success',
                 text: '{{ session('notification') }}',
                 showConfirmButton: false,
@@ -277,7 +276,7 @@
                 position: 'top-end',
                 timerProgressBar: true,
             });
-        </script>
+    </script>
     @endif
 
     <script>
