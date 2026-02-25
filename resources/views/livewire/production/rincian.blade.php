@@ -47,7 +47,7 @@
                 </div>
 
                 {{-- Date and User Information --}}
-                <div class="flex flex-wrap gap-x-[34px] justify-content-between gap-y-4 w-full">
+                <div class="flex gap-x-[34px] justify-content-between gap-y-4 w-full">
                     <div class="flex gap-3">
 
                         @if ($production->method == 'siap-beli')
