@@ -12,6 +12,13 @@
                 style="font-family: Montserrat, sans-serif;">Notifikasi</h1>
         </div>
 
+        {{-- Actions + Filter Tabs --}}
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <flux:button wire:click="markAllAsRead" variant="ghost" icon="check-circle"
+            class="whitespace-nowrap text-sm sm:text-[14px] text-[#666666] border border-[#d4d4d4] rounded-[15px]">
+            Tandai semua sudah dibaca
+        </flux:button>
+
         {{-- Filter Tabs --}}
         <div class="flex items-center gap-2 sm:gap-[10px] overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
             @canany(['kasir.pesanan.kelola', 'kasir.laporan.kelola'])
@@ -37,6 +44,7 @@
                     Inventori
                 </button>
             @endcanany
+        </div>
         </div>
     </div>
 
