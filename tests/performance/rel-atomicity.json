@@ -1,0 +1,196 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "FASE1: status 200": {
+                    "name": "FASE1: status 200",
+                    "path": "::FASE1: status 200",
+                    "id": "0d7dfe52daab8416825e2cbfd49ddca6",
+                    "passes": 1,
+                    "fails": 0
+                },
+                "FASE1: commit=true": {
+                    "passes": 1,
+                    "fails": 0,
+                    "name": "FASE1: commit=true",
+                    "path": "::FASE1: commit=true",
+                    "id": "2e6a4a7e059f4c9fabe79f36d14c3c74"
+                },
+                "FASE1: stok berkurang 1": {
+                    "id": "7319dcd514e128743d149bcf30646602",
+                    "passes": 1,
+                    "fails": 0,
+                    "name": "FASE1: stok berkurang 1",
+                    "path": "::FASE1: stok berkurang 1"
+                },
+                "FASE2: returned error": {
+                    "passes": 1,
+                    "fails": 0,
+                    "name": "FASE2: returned error",
+                    "path": "::FASE2: returned error",
+                    "id": "ecb968214e61e5981508a1966bd8fad7"
+                },
+                "FASE2: rolled_back=true": {
+                    "name": "FASE2: rolled_back=true",
+                    "path": "::FASE2: rolled_back=true",
+                    "id": "95a7cde6f254c762180373241c409b54",
+                    "passes": 1,
+                    "fails": 0
+                },
+                "FASE2: stok tidak berubah setelah rollback": {
+                    "name": "FASE2: stok tidak berubah setelah rollback",
+                    "path": "::FASE2: stok tidak berubah setelah rollback",
+                    "id": "7c57c73f62590bb5c26a5550a4e08f30",
+                    "passes": 1,
+                    "fails": 0
+                }
+            }
+    },
+    "metrics": {
+        "http_req_duration{expected_response:true}": {
+            "max": 685.072,
+            "p(90)": 646.17356,
+            "p(95)": 665.6227799999999,
+            "avg": 506.69550000000004,
+            "min": 442.5672,
+            "med": 458.23119999999994
+        },
+        "http_req_connecting": {
+            "med": 0,
+            "max": 0.6703,
+            "p(90)": 0.6460100000000001,
+            "p(95)": 0.658155,
+            "avg": 0.23822500000000002,
+            "min": 0
+        },
+        "data_received": {
+            "count": 14333,
+            "rate": 3470.6327397162254
+        },
+        "iterations": {
+            "count": 1,
+            "rate": 0.24214279911506492
+        },
+        "http_req_duration": {
+            "avg": 506.69550000000004,
+            "min": 442.5672,
+            "med": 458.23119999999994,
+            "max": 685.072,
+            "p(90)": 646.17356,
+            "p(95)": 665.6227799999999,
+            "thresholds": {
+                "p(95)<5000": false
+            }
+        },
+        "http_req_tls_handshaking": {
+            "avg": 7.163475,
+            "min": 0,
+            "med": 0,
+            "max": 30.0143,
+            "p(90)": 19.885789999999997,
+            "p(95)": 24.950044999999992
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 8,
+            "value": 0
+        },
+        "vus": {
+            "value": 0,
+            "min": 0,
+            "max": 1
+        },
+        "atom_fail": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+                "count<1": false
+            }
+        },
+        "http_req_waiting": {
+            "avg": 506.0538375,
+            "min": 442.023,
+            "med": 457.59614999999997,
+            "max": 684.513,
+            "p(90)": 645.61911,
+            "p(95)": 665.066055
+        },
+        "data_sent": {
+            "count": 9002,
+            "rate": 2179.7694776338144
+        },
+        "http_req_receiving": {
+            "p(95)": 0.9023249999999999,
+            "avg": 0.29575,
+            "min": 0,
+            "med": 0,
+            "max": 1.0012,
+            "p(90)": 0.80345
+        },
+        "atom_data_integrity_ok": {
+            "count": 1,
+            "rate": 0.24214279911506492
+        },
+        "iteration_duration": {
+            "med": 2694.462,
+            "max": 2694.462,
+            "p(90)": 2694.462,
+            "p(95)": 2694.462,
+            "avg": 2694.462,
+            "min": 2694.462
+        },
+        "http_req_blocked": {
+            "min": 0,
+            "med": 0,
+            "max": 38.2416,
+            "p(90)": 22.773909999999994,
+            "p(95)": 30.50775499999999,
+            "avg": 8.4206875
+        },
+        "atom_success_rollback": {
+            "count": 1,
+            "rate": 0.24214279911506492
+        },
+        "atom_success_commit": {
+            "count": 1,
+            "rate": 0.24214279911506492
+        },
+        "atom_error_rate": {
+            "passes": 0,
+            "fails": 2,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_sending": {
+            "min": 0,
+            "med": 0.5478000000000001,
+            "max": 0.5602,
+            "p(90)": 0.5593600000000001,
+            "p(95)": 0.55978,
+            "avg": 0.3459125
+        },
+        "http_reqs": {
+            "count": 8,
+            "rate": 1.9371423929205194
+        },
+        "vus_max": {
+            "max": 1,
+            "value": 1,
+            "min": 1
+        },
+        "checks": {
+            "passes": 6,
+            "fails": 0,
+            "value": 1
+        }
+    },
+    "setup_data": {
+        "productId": "15079cdd-d856-4a17-bb99-a3f5a64352a3",
+        "initialStock": 5
+    }
+}

@@ -19,6 +19,16 @@ return Application::configure(basePath: dirname(__DIR__))
         // Redirect authenticated users to dashboard instead of home
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/dashboard');
+
+        // Exclude test-only endpoints dari CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'test/login',
+            'test/stock-reset',
+            'test/concurrent-buy',
+            'test/material-batch-reset',
+            'test/concurrent-produce',
+            'test/atomicity-buy',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

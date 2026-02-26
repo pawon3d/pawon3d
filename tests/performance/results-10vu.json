@@ -1,0 +1,168 @@
+{
+    "metrics": {
+        "http_req_blocked": {
+            "avg": 22.806403773584904,
+            "min": 0,
+            "med": 0,
+            "max": 254.9772,
+            "p(90)": 88.84642000000012,
+            "p(95)": 162.95087999999996
+        },
+        "txn_successful_buys": {
+            "count": 50,
+            "rate": 5.450481535872443
+        },
+        "http_req_waiting": {
+            "max": 2154.4454,
+            "p(90)": 1680.3880200000008,
+            "p(95)": 1821.78848,
+            "avg": 1309.3604433962264,
+            "min": 401.7911,
+            "med": 1288.2247
+        },
+        "data_sent": {
+            "rate": 3154.7387129629697,
+            "count": 28940
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 53,
+            "value": 0
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(90)": 1680.5229600000007,
+            "p(95)": 1821.78848,
+            "avg": 1309.7074377358497,
+            "min": 401.7911,
+            "med": 1288.7946,
+            "max": 2155.0247
+        },
+        "data_received": {
+            "count": 78181,
+            "rate": 8522.48193912087
+        },
+        "http_req_connecting": {
+            "p(90)": 1.3342200000000013,
+            "p(95)": 1.7240599999999988,
+            "avg": 0.33413018867924527,
+            "min": 0,
+            "med": 0,
+            "max": 3.9386
+        },
+        "http_req_receiving": {
+            "avg": 0.12933207547169812,
+            "min": 0,
+            "med": 0,
+            "max": 1.2157,
+            "p(90)": 0.5775600000000003,
+            "p(95)": 0.7745199999999999
+        },
+        "http_req_sending": {
+            "med": 0,
+            "max": 0.816,
+            "p(90)": 0.6678400000000001,
+            "p(95)": 0.7076399999999999,
+            "avg": 0.2176622641509434,
+            "min": 0
+        },
+        "vus": {
+            "value": 0,
+            "min": 0,
+            "max": 10
+        },
+        "txn_buy_duration_ms": {
+            "avg": 1378.64,
+            "min": 1091,
+            "med": 1315.5,
+            "max": 2410,
+            "p(90)": 1853,
+            "p(95)": 1932.85
+        },
+        "http_reqs": {
+            "count": 53,
+            "rate": 5.777510428024789
+        },
+        "http_req_tls_handshaking": {
+            "max": 253.8793,
+            "p(90)": 87.34744000000012,
+            "p(95)": 159.82135999999997,
+            "avg": 22.303922641509438,
+            "min": 0,
+            "med": 0
+        },
+        "iteration_duration": {
+            "avg": 1378.8498739999998,
+            "min": 1091.4165,
+            "med": 1315.4436999999998,
+            "max": 2410.4115,
+            "p(90)": 1852.75301,
+            "p(95)": 1933.0540899999999
+        },
+        "vus_max": {
+            "max": 10,
+            "value": 10,
+            "min": 10
+        },
+        "checks": {
+            "passes": 100,
+            "fails": 0,
+            "value": 1
+        },
+        "iterations": {
+            "rate": 5.450481535872443,
+            "count": 50
+        },
+        "http_req_duration": {
+            "avg": 1309.7074377358497,
+            "min": 401.7911,
+            "med": 1288.7946,
+            "max": 2155.0247,
+            "p(90)": 1680.5229600000007,
+            "p(95)": 1821.78848,
+            "thresholds": {
+                "p(95)<3000": false
+            }
+        },
+        "txn_error_rate": {
+            "passes": 0,
+            "fails": 50,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "txn_server_errors_5xx": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+                "count<1": false
+            }
+        }
+    },
+    "setup_data": {
+        "initialStock": 50,
+        "productId": "ce58294a-1530-4166-9d59-e658a71ad5c3"
+    },
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "tidak ada HTTP 5xx": {
+                    "path": "::tidak ada HTTP 5xx",
+                    "id": "f175134cebd27e5ed8eb0c6220ee78f2",
+                    "passes": 50,
+                    "fails": 0,
+                    "name": "tidak ada HTTP 5xx"
+                },
+                "respons valid (200 atau 409)": {
+                    "name": "respons valid (200 atau 409)",
+                    "path": "::respons valid (200 atau 409)",
+                    "id": "a6ff4700286483c12fda101738eb94a7",
+                    "passes": 50,
+                    "fails": 0
+                }
+            },
+        "name": "",
+        "path": ""
+    }
+}

@@ -1,0 +1,172 @@
+{
+    "root_group": {
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "tidak ada HTTP 5xx": {
+                    "path": "::tidak ada HTTP 5xx",
+                    "id": "f175134cebd27e5ed8eb0c6220ee78f2",
+                    "passes": 15,
+                    "fails": 0,
+                    "name": "tidak ada HTTP 5xx"
+                }
+            },
+        "name": ""
+    },
+    "metrics": {
+        "rel_kasir_server_error": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+                "count<1": false
+            }
+        },
+        "http_req_failed": {
+            "passes": 10,
+            "fails": 7,
+            "value": 0.5882352941176471
+        },
+        "data_sent": {
+            "count": 14648,
+            "rate": 4298.66759792726
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(95)": 988.91904,
+            "avg": 733.8000714285714,
+            "min": 453.6977,
+            "med": 755.5107,
+            "max": 1039.6854,
+            "p(90)": 938.1526800000001
+        },
+        "http_req_duration": {
+            "p(90)": 851.08108,
+            "p(95)": 904.3084399999999,
+            "avg": 640.9502470588236,
+            "min": 453.6977,
+            "med": 630.2993,
+            "max": 1039.6854,
+            "thresholds": {
+                "p(95)<5000": false
+            }
+        },
+        "rel_kasir_duration_ms": {
+            "p(95)": 969.5999999999998,
+            "avg": 673.1333333333333,
+            "min": 479,
+            "med": 634,
+            "max": 1125,
+            "p(90)": 885.8
+        },
+        "http_req_tls_handshaking": {
+            "avg": 19.864164705882356,
+            "min": 0,
+            "med": 0,
+            "max": 109.5022,
+            "p(90)": 65.58554000000001,
+            "p(95)": 87.21803999999999
+        },
+        "http_req_sending": {
+            "avg": 0.2934882352941176,
+            "min": 0,
+            "med": 0,
+            "max": 0.7845,
+            "p(90)": 0.67842,
+            "p(95)": 0.75114
+        },
+        "rel_kasir_race_condition": {
+            "count": 0,
+            "rate": 0,
+            "thresholds": {
+                "count<1": false
+            }
+        },
+        "http_reqs": {
+            "count": 17,
+            "rate": 4.988896038009519
+        },
+        "http_req_connecting": {
+            "med": 0,
+            "max": 3.1278,
+            "p(90)": 2.1419,
+            "p(95)": 2.3390799999999996,
+            "avg": 0.7181705882352941,
+            "min": 0
+        },
+        "http_req_waiting": {
+            "p(90)": 850.3292799999999,
+            "p(95)": 903.5368399999999,
+            "avg": 640.6351647058824,
+            "min": 452.9549,
+            "med": 629.7859,
+            "max": 1039.6854
+        },
+        "vus": {
+            "value": 0,
+            "min": 0,
+            "max": 5
+        },
+        "rel_kasir_stok_habis": {
+            "count": 10,
+            "rate": 2.9346447282408934
+        },
+        "vus_max": {
+            "max": 5,
+            "value": 5,
+            "min": 5
+        },
+        "http_req_blocked": {
+            "p(95)": 90.67717999999998,
+            "avg": 21.227223529411763,
+            "min": 0,
+            "med": 0,
+            "max": 112.2275,
+            "p(90)": 68.32772
+        },
+        "rel_kasir_error_rate": {
+            "passes": 0,
+            "fails": 15,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "iterations": {
+            "count": 15,
+            "rate": 4.40196709236134
+        },
+        "http_req_receiving": {
+            "p(95)": 0.07341999999999974,
+            "avg": 0.021594117647058823,
+            "min": 0,
+            "med": 0,
+            "max": 0.3671,
+            "p(90)": 0
+        },
+        "checks": {
+            "passes": 15,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 32071,
+            "rate": 9411.69910794137
+        },
+        "iteration_duration": {
+            "p(95)": 969.7851799999997,
+            "avg": 673.5637800000001,
+            "min": 479.0899,
+            "med": 634.4692,
+            "max": 1126.1397,
+            "p(90)": 885.78534
+        },
+        "rel_kasir_success": {
+            "count": 5,
+            "rate": 1.4673223641204467
+        }
+    },
+    "setup_data": {
+        "initialStock": 5,
+        "productId": "ce58294a-1530-4166-9d59-e658a71ad5c3"
+    }
+}

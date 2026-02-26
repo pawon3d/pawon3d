@@ -205,4 +205,266 @@ Route::middleware(['auth'])->group(function () {
     Route::get('transaksi/laporan', [PDFController::class, 'printReport'])->name('transaksi.laporan');
 });
 
-require __DIR__ . '/auth.php';
+// ─── Test-only login endpoint (hanya tersedia di local env) ─────────────────
+// Digunakan oleh k6 reliability testing untuk mendapatkan sesi tanpa CSRF.
+if (app()->environment('local')) {
+    Route::post('/test/login', function (\Illuminate\Http\Request $request) {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if (! \Illuminate\Support\Facades\Auth::attempt($credentials)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if (! $user->activated_at) {
+            \Illuminate\Support\Facades\Auth::logout();
+
+            return response()->json(['message' => 'Account not activated'], 403);
+        }
+
+        if (! $user->is_active) {
+            \Illuminate\Support\Facades\Auth::logout();
+
+            return response()->json(['message' => 'Account disabled'], 403);
+        }
+
+        $request->session()->regenerate();
+
+        return response()->json(['message' => 'OK', 'user' => $user->email]);
+    })->name('test.login');
+
+    // Cek stok produk
+    Route::get('/test/stock-check/{productId}', function (string $productId) {
+        $product = \App\Models\Product::select('id', 'name', 'stock')->find($productId);
+        if (! $product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $product->id,
+            'name' => $product->name,
+            'stock' => $product->stock,
+        ]);
+    });
+
+    // Reset stok produk ke nilai tertentu (untuk setup sebelum pengujian)
+    Route::post('/test/stock-reset', function (\Illuminate\Http\Request $request) {
+        $productId = $request->input('product_id');
+        $stock = (int) $request->input('stock', 100);
+
+        $affected = \App\Models\Product::where('id', $productId)->update(['stock' => $stock]);
+        if (! $affected) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return response()->json(['success' => true, 'product_id' => $productId, 'stock' => $stock]);
+    });
+
+    // Simulasi pembelian siap-beli (tanpa lock) – untuk uji race condition
+    Route::post('/test/concurrent-buy', function (\Illuminate\Http\Request $request) {
+        $productId = $request->input('product_id');
+        $quantity = (int) $request->input('quantity', 1);
+
+        $product = \App\Models\Product::find($productId);
+        if (! $product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $stockBefore = $product->stock;
+
+        if ($stockBefore < $quantity) {
+            return response()->json([
+                'success' => false,
+                'error' => 'insufficient_stock',
+                'message' => 'Stok tidak cukup',
+                'stock_before' => $stockBefore,
+                'stock_after' => $stockBefore,
+            ], 409);
+        }
+
+        // Sengaja TIDAK menggunakan lockForUpdate() untuk mendemonstrasikan
+        // potensi race condition pada pengurangan stok konkuren.
+        $product->decrement('stock', $quantity);
+        $stockAfter = $product->fresh()->stock;
+
+        return response()->json([
+            'success' => true,
+            'stock_before' => $stockBefore,
+            'stock_after' => $stockAfter,
+            'possible_race' => $stockAfter < 0,
+        ]);
+    });
+
+    // Cek total batch quantity sebuah material (untuk validasi reliability produksi)
+    Route::get('/test/material-batch/{materialId}', function (string $materialId) {
+        $material = \App\Models\Material::select('id', 'name', 'status', 'minimum')
+            ->find($materialId);
+
+        if (! $material) {
+            return response()->json(['error' => 'Material not found'], 404);
+        }
+
+        $totalBatch = \App\Models\MaterialBatch::where('material_id', $materialId)
+            ->sum('batch_quantity');
+
+        $batches = \App\Models\MaterialBatch::where('material_id', $materialId)
+            ->select('id', 'batch_quantity', 'date')
+            ->get();
+
+        return response()->json([
+            'id' => $material->id,
+            'name' => $material->name,
+            'status' => $material->status,
+            'minimum' => $material->minimum,
+            'total_batch' => (float) $totalBatch,
+            'batches' => $batches,
+        ]);
+    });
+
+    // Reset batch quantity material (gunakan ID batch spesifik)
+    Route::post('/test/material-batch-reset', function (\Illuminate\Http\Request $request) {
+        $batchId = $request->input('batch_id');
+        $quantity = (float) $request->input('quantity', 20);
+
+        $affected = \App\Models\MaterialBatch::where('id', $batchId)
+            ->update(['batch_quantity' => $quantity]);
+
+        if (! $affected) {
+            return response()->json(['error' => 'Batch not found'], 404);
+        }
+
+        return response()->json(['success' => true, 'batch_id' => $batchId, 'quantity' => $quantity]);
+    });
+
+    // Simulasi pengurangan bahan baku produksi secara konkuren (tanpa lock)
+    Route::post('/test/concurrent-produce', function (\Illuminate\Http\Request $request) {
+        $materialId = $request->input('material_id');
+        $quantity = (float) $request->input('quantity', 1);
+
+        // Ambil batch pertama yang masih ada stok (FIFO)
+        $batch = \App\Models\MaterialBatch::where('material_id', $materialId)
+            ->where('batch_quantity', '>', 0)
+            ->orderBy('date')
+            ->first();
+
+        if (! $batch) {
+            return response()->json([
+                'success' => false,
+                'error' => 'insufficient_material',
+                'message' => 'Stok bahan baku tidak cukup',
+            ], 409);
+        }
+
+        $batchBefore = (float) $batch->batch_quantity;
+
+        if ($batchBefore < $quantity) {
+            return response()->json([
+                'success' => false,
+                'error' => 'insufficient_material',
+                'message' => 'Stok batch tidak mencukupi',
+                'batch_before' => $batchBefore,
+            ], 409);
+        }
+
+        // Kurangi tanpa lockForUpdate() — untuk mendeteksi race condition
+        $batch->decrement('batch_quantity', $quantity);
+        $batchAfter = (float) \App\Models\MaterialBatch::find($batch->id)->batch_quantity;
+
+        return response()->json([
+            'success' => true,
+            'batch_id' => $batch->id,
+            'batch_before' => $batchBefore,
+            'batch_after' => $batchAfter,
+            'possible_race' => $batchAfter < 0,
+        ]);
+    });
+
+    // Uji atomisitas transaksi: beli produk dalam DB::transaction, opsional gagal di tengah
+    Route::post('/test/atomicity-buy', function (\Illuminate\Http\Request $request) {
+        $productId = $request->input('product_id');
+        $quantity = (int) $request->input('quantity', 1);
+        $forceFail = (bool) $request->input('force_fail', false);
+
+        $product = \App\Models\Product::find($productId);
+        if (! $product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        $stockBefore = $product->stock;
+        $committed = false;
+        $rolledBack = false;
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($product, $quantity, $forceFail, &$committed) {
+                if ($product->stock < $quantity) {
+                    throw new \Exception('insufficient_stock');
+                }
+
+                // Kurangi stok dalam transaksi
+                $product->decrement('stock', $quantity);
+
+                if ($forceFail) {
+                    // Simulasi kegagalan di tengah transaksi
+                    throw new \Exception('simulated_failure');
+                }
+
+                $committed = true;
+            });
+        } catch (\Exception $e) {
+            $rolledBack = ! $committed;
+
+            if ($e->getMessage() === 'insufficient_stock') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'insufficient_stock',
+                    'stock_before' => $stockBefore,
+                    'stock_after' => $product->fresh()->stock,
+                    'rolled_back' => null,
+                ], 409);
+            }
+
+            $stockAfterRollback = $product->fresh()->stock;
+
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'stock_before' => $stockBefore,
+                'stock_after_rollback' => $stockAfterRollback,
+                'rolled_back' => $rolledBack,
+                'stock_unchanged' => $stockAfterRollback === $stockBefore,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'stock_before' => $stockBefore,
+            'stock_after' => $product->fresh()->stock,
+            'rolled_back' => false,
+        ]);
+    });
+
+    // Jalankan perintah inventory:check-alerts dan kembalikan output-nya
+    Route::get('/test/run-inventory-check', function () {
+        $output = new \Symfony\Component\Console\Output\BufferedOutput;
+
+        $exitCode = \Illuminate\Support\Facades\Artisan::call('inventory:check-alerts', [], $output);
+
+        $lines = array_filter(
+            array_map('trim', explode("\n", $output->fetch())),
+            fn ($l) => $l !== ''
+        );
+
+        return response()->json([
+            'exit_code' => $exitCode,
+            'success' => $exitCode === 0,
+            'output_lines' => array_values($lines),
+        ]);
+    });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+require __DIR__.'/auth.php';
