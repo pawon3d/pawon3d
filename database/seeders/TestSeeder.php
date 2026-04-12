@@ -419,7 +419,7 @@ class TestSeeder extends Seeder
             ['name' => 'Tepung Terigu'],
             [
                 'description' => 'Bahan dasar kue',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 5,
             ]
@@ -438,7 +438,7 @@ class TestSeeder extends Seeder
             ['name' => 'Gula Pasir'],
             [
                 'description' => 'Pemanis kue',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 3,
             ]
@@ -457,7 +457,7 @@ class TestSeeder extends Seeder
             ['name' => 'Coklat Bubuk'],
             [
                 'description' => 'Coklat bubuk premium',
-                'status' => 'minim',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 1,
             ]
@@ -477,7 +477,7 @@ class TestSeeder extends Seeder
             ['name' => 'Mentega'],
             [
                 'description' => 'Lemak hewani untuk kue',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 1,
             ]
@@ -497,7 +497,7 @@ class TestSeeder extends Seeder
             ['name' => 'Telur Ayam'],
             [
                 'description' => 'Bahan pengikat',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 12,
             ]
@@ -516,7 +516,7 @@ class TestSeeder extends Seeder
             ['name' => 'Keju Cheddar'],
             [
                 'description' => 'Keju untuk topping dan adonan',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 1,
             ]
@@ -535,7 +535,7 @@ class TestSeeder extends Seeder
             ['name' => 'Susu Cair'],
             [
                 'description' => 'Susu cair full cream',
-                'status' => 'aman',
+                'status' => 'Kosong',
                 'is_active' => true,
                 'minimum' => 2,
             ]
