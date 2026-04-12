@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Livewire\Transaction\BuatPesanan;
+use App\Livewire\Transaction\Edit;
 use App\Livewire\Transaction\Index;
+use App\Models\Payment;
 use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Shift;
@@ -359,6 +361,42 @@ it('TC-080: selecting non-tunai loads payment methods in BuatPesanan', function 
     $paymentMethods = $component->get('paymentMethods');
 
     expect($paymentMethods)->toHaveCount(1);
+});
+
+// ─────────────────────────────────────────────
+// TC-080A: Edit loads payment channels for transfer
+// ─────────────────────────────────────────────
+
+it('TC-080A: edit loads payment channels for transfer without type error', function () {
+    $transaction = makeTransaction($this->user->id, 'pesanan-reguler');
+    $transaction->update([
+        'date' => now()->addDays(4)->toDateString(),
+        'time' => now()->format('H:i:s'),
+    ]);
+
+    $channel = PaymentChannel::create([
+        'type' => 'transfer',
+        'group' => 'non-tunai',
+        'bank_name' => 'Bank Test',
+        'account_number' => '1234567890',
+        'account_name' => 'Kasir Test',
+        'is_active' => true,
+    ]);
+
+    Payment::create([
+        'transaction_id' => $transaction->id,
+        'payment_channel_id' => $channel->id,
+        'payment_method' => 'transfer',
+        'payment_group' => 'non-tunai',
+        'paid_amount' => 100000,
+        'paid_at' => now(),
+    ]);
+
+    $component = Livewire::actingAs($this->user)
+        ->test(Edit::class, ['id' => (string) $transaction->id]);
+
+    $component->assertSet('paymentMethod', 'transfer')
+        ->assertSet('paymentChannelId', $channel->id);
 });
 
 // ─────────────────────────────────────────────

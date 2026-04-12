@@ -23,7 +23,7 @@ class Edit extends Component
 
     public array $details = [];
 
-    public array $paymentChannels = [];
+    public $paymentChannels = [];
 
     public string $paymentChannelId = '';
 
@@ -70,15 +70,16 @@ class Edit extends Component
         View::share('title', 'Ubah Pesanan');
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
-        $transaction = \App\Models\Transaction::find($id);        
+        $transaction = \App\Models\Transaction::find($id);
 
         // Menghitung selisih hari antara sekarang dan tanggal transaksi
-$selisihHari = abs(\Carbon\Carbon::parse($transaction->date)->diffInDays(now()));
+        $selisihHari = abs(\Carbon\Carbon::parse($transaction->date)->diffInDays(now()));
 
-if ($transaction->date && $selisihHari < 3) {
-    session()->flash('error', 'Tidak dapat mengubah pesanan karena sudah tanggal ambil pesanan kurang dari 3 hari.');
-    return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
-}
+        if ($transaction->date && $selisihHari < 3) {
+            session()->flash('error', 'Tidak dapat mengubah pesanan karena sudah tanggal ambil pesanan kurang dari 3 hari.');
+
+            return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
+        }
         $this->transaction = $transaction;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
