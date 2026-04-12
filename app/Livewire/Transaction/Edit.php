@@ -73,8 +73,7 @@ class Edit extends Component
         $transaction = \App\Models\Transaction::find($id);        
 
         // Menghitung selisih hari antara sekarang dan tanggal transaksi
-$selisihHari = \Carbon\Carbon::parse($transaction->date)->diffInDays(now());
-dd($selisihHari);
+$selisihHari = abs(\Carbon\Carbon::parse($transaction->date)->diffInDays(now()));
 
 if ($transaction->date && $selisihHari < 3) {
     session()->flash('error', 'Tidak dapat mengubah pesanan karena sudah tanggal ambil pesanan kurang dari 3 hari.');
