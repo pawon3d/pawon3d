@@ -21,7 +21,7 @@ class Edit extends Component
 
     public string $search = '';
 
-    public array $details = [];
+    public $details = [];
 
     public $paymentChannels = [];
 

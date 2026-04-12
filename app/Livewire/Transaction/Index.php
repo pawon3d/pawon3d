@@ -17,7 +17,7 @@ class Index extends Component
 {
     use LivewireAlert, WithPagination;
 
-    public array $activityLogs = [];
+    public $activityLogs = [];
 
     public string $filterStatus = '';
 
@@ -27,7 +27,7 @@ class Index extends Component
 
     public string $method = 'pesanan-reguler';
 
-    public array $cart = [];
+    public $cart = [];
 
     public ?string $todayShiftId = null;
 
@@ -67,7 +67,7 @@ class Index extends Component
 
     public bool $finishShiftModal = false;
 
-    public array $historyShifts = [];
+    public $historyShifts = [];
 
     public bool $showHistoryShiftModal = false;
 
@@ -83,7 +83,7 @@ class Index extends Component
 
     public bool $showNonCashDetailsModal = false;
 
-    public array $nonCashDetails = [];
+    public $nonCashDetails = [];
 
     protected $queryString = ['method'];
 

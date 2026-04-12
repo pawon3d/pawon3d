@@ -62,7 +62,7 @@ class RincianSesi extends Component
 
     public string $detailShiftOpenedBy = '';
 
-    public array $nonCashDetails = [];
+    public $nonCashDetails = [];
 
     public bool $showNonCashDetailsModal = false;
 
