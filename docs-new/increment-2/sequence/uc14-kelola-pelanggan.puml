@@ -1,0 +1,47 @@
+@startuml Sequence_UC14
+title UC-14: Kelola Pelanggan dan Poin
+
+actor "Admin" as Admin
+participant "Halaman Pelanggan\n(livewire/pelanggan)" as View
+participant "Customer\\Index\n(Livewire)" as Component
+participant "Customer Model" as CustomerModel
+participant "PointsHistory Model" as PointModel
+database "Database" as DB
+
+Admin -> View: Membuka /pelanggan
+View -> Component: mount()
+Component -> DB: SELECT customers WITH points_count
+DB --> Component: Daftar pelanggan
+Component --> View: Render daftar pelanggan
+
+== Cari Pelanggan ==
+Admin -> View: Ketik di kolom pencarian
+View -> Component: updatedSearch($value)
+Component -> CustomerModel: Customer::query()->where('name','like',...)->orWhere('phone','like',...)
+CustomerModel -> DB: SELECT customers WHERE ...
+DB --> Component: Filtered results
+Component --> View: Perbarui tampilan
+
+== Lihat Detail & Riwayat Poin ==
+Admin -> View: Klik nama pelanggan
+View -> Component: showDetail($phone)
+Component -> CustomerModel: Customer::where('phone',$phone)->first()
+CustomerModel -> DB: SELECT customers WHERE phone = ?
+Component -> PointModel: PointsHistory::where('phone',$phone)->latest()->get()
+PointModel -> DB: SELECT points_histories WHERE phone = ?
+DB --> Component: Riwayat poin
+Component --> View: Tampil modal detail pelanggan
+
+== Tambah Poin Manual ==
+Admin -> View: Klik Tambah Poin → isi form → Konfirmasi
+View -> Component: addPoints($phone, $points, $note)
+Component -> Component: validate(['points'=>'required|integer|min:1'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+else Berhasil
+  Component -> PointModel: PointsHistory::create(['phone'=>$phone,'action'=>'manual','points'=>$points])
+  PointModel -> DB: INSERT INTO points_histories
+  Component --> View: Notifikasi sukses
+end
+
+@enduml

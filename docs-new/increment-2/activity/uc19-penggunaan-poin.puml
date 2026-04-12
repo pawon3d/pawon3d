@@ -1,0 +1,41 @@
+@startuml Activity_UC19
+title UC-19: Penggunaan Poin
+
+|Kasir|
+start
+:Kasir membuka halaman Buat Pesanan;
+:Kasir memilih produk dan mengisi\ndata pelanggan (nama + no. HP);
+
+|Sistem|
+:Sistem mencari data pelanggan\nbersarkan nomor HP;
+
+if (Pelanggan ditemukan dan\nmemiliki poin?) then (Ya)
+  :Sistem menampilkan informasi poin\nyang tersedia dan nilai potongannya;
+else (Tidak)
+  :Sistem tidak menampilkan\nopsi penggunaan poin;
+endif
+
+|Kasir|
+:Kasir mengaktifkan opsi\n"Gunakan Poin Pelanggan";
+:Kasir mengisi jumlah poin\nyang akan digunakan;
+
+|Sistem|
+if (Jumlah poin melebihi\npoin yang dimiliki?) then (Ya)
+  :Sistem menampilkan validasi\npoin tidak mencukupi;
+  stop
+else (Tidak)
+endif
+:Sistem menghitung potongan harga\nberdasarkan poin yang digunakan;
+:Sistem memperbarui total yang\nharus dibayar;
+
+|Kasir|
+:Kasir melanjutkan proses pembayaran;
+
+|Sistem|
+:Sistem mengurangi poin pelanggan;
+:Sistem mencatat riwayat penggunaan poin;
+:Sistem menyimpan transaksi;
+:Sistem menampilkan struk;
+
+stop
+@enduml

@@ -1,0 +1,53 @@
+@startuml Activity_UC11
+title UC-11: Kelola Pengguna dan Undangan
+
+|Admin|
+start
+:Admin membuka halaman Pekerja;
+
+|Sistem|
+:Sistem menampilkan daftar pengguna\nbeserta peran dan status akun;
+
+|Admin|
+fork
+  :Menambah Pengguna Baru;
+  :Admin menekan tombol Undang Pengguna;
+  :Admin mengisi nama, email, dan peran;
+  :Admin menekan tombol Kirim Undangan;
+
+  |Sistem|
+  if (Email sudah terdaftar?) then (Ya)
+    :Sistem menampilkan validasi\nemail harus unik;
+    stop
+  else (Tidak)
+  endif
+  if (Batas pengguna pada peran\nsudah penuh?) then (Ya)
+    :Sistem menampilkan pesan\nbatas maksimum pengguna tercapai;
+    stop
+  else (Tidak)
+  endif
+  :Sistem membuat akun dengan\nstatus belum teraktivasi;
+  :Sistem menghasilkan token undangan;
+  :Sistem mengirimkan email undangan\nbeserta tautan aktivasi;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Menonaktifkan / Mengaktifkan Pengguna;
+  :Admin menekan tombol ubah status\npada salah satu pengguna;
+
+  |Sistem|
+  :Sistem mengubah is_active pengguna;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Kirim Ulang Undangan;
+  :Admin menekan tombol Kirim Ulang\npada pengguna yang belum aktivasi;
+
+  |Sistem|
+  :Sistem menghasilkan token baru;
+  :Sistem mengirimkan ulang email undangan;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

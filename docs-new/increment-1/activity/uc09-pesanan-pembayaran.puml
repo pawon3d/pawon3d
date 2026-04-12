@@ -1,0 +1,97 @@
+@startuml Activity_UC09
+title UC-09: Membuat Pesanan dan Pembayaran
+
+|Kasir|
+start
+:Kasir memilih menu Buat Pesanan;
+
+|Sistem|
+:Sistem menampilkan formulir pemesanan\ndan meminta pilihan metode;
+
+|Kasir|
+:Kasir memilih metode penjualan\n(Pesanan Reguler / Pesanan Kotak / Siap Beli);
+
+fork
+  :Alur Pesanan Reguler atau Kotak;
+  :Kasir menambahkan produk dan jumlahnya;
+
+  |Sistem|
+  if (Jumlah produk melebihi stok\n(untuk Siap Beli)?) then (Ya)
+    :Sistem membatasi jumlah\nmaksimal sesuai stok;
+  else (Tidak)
+  endif
+  :Sistem menghitung total harga otomatis;
+
+  |Kasir|
+  :Kasir mengisi nama pelanggan dan nomor telepon\n(opsional);
+  :Kasir memilih tanggal\ndan waktu pengambilan;
+  :Kasir menekan tombol Proses Bayar;
+
+  |Sistem|
+  if (Produk belum ditambahkan?) then (Ya)
+    :Sistem menampilkan validasi\ntambahkan minimal satu produk;
+    stop
+  else (Tidak)
+  endif
+
+  |Kasir|
+  :Kasir memilih metode pembayaran\n(Tunai / QRIS / Transfer);
+  :Kasir mengisi jumlah uang yang diterima;
+  :Kasir menekan tombol Konfirmasi Pembayaran;
+
+  |Sistem|
+  if (Nominal dibayar < 50% dari\ntotal untuk Pesanan?) then (Ya)
+    :Sistem menampilkan validasi\nuang muka minimal 50%;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan transaksi\ndengan status "Aktif";
+  :Sistem membuat antrian produksi;
+  :Sistem mengirimkan notifikasi ke Bagian Produksi;
+
+fork again
+  :Alur Siap Beli;
+  :Kasir menambahkan produk dari stok siap beli;
+
+  |Sistem|
+  :Sistem memeriksa ketersediaan stok produk;
+  if (Stok produk tidak tersedia?) then (Ya)
+    :Sistem menonaktifkan produk tersebut\ndari pilihan;
+  else (Tidak)
+  endif
+
+  |Kasir|
+  :Kasir menekan tombol Proses Bayar;
+
+  |Sistem|
+  if (Produk belum dipilih?) then (Ya)
+    :Sistem menampilkan validasi\ntambahkan minimal satu produk;
+    stop
+  else (Tidak)
+  endif
+
+  |Kasir|
+  :Kasir memilih metode pembayaran;
+  :Kasir mengisi nominal yang dibayarkan;
+  :Kasir menekan tombol Konfirmasi Pembayaran;
+
+  |Sistem|
+  if (Nominal dibayar < total\nharga (harus lunas)?) then (Ya)
+    :Sistem menampilkan validasi\npembayaran harus lunas untuk Siap Beli;
+    stop
+  else (Tidak)
+  endif
+  :Sistem mengurangi stok produk;
+  :Sistem menyimpan transaksi\ndengan status "Selesai";
+
+end fork
+
+|Sistem|
+:Sistem mencatat riwayat pembayaran;
+:Sistem menampilkan halaman struk;
+
+|Kasir|
+:Kasir mencetak atau mengunduh struk\n(opsional);
+
+stop
+@enduml

@@ -1,0 +1,37 @@
+@startuml Sequence_UC19
+title UC-19: Penggunaan Poin
+
+actor "Kasir" as User
+participant "Halaman Buat Pesanan\n(livewire/transaction)" as View
+participant "Transaction\\BuatPesanan\n(Livewire)" as Component
+participant "Customer Model" as CustomerModel
+participant "PointsHistory Model" as PointModel
+participant "Transaction Model" as TxModel
+database "Database" as DB
+
+User -> View: Mengisi nomor HP pelanggan
+View -> Component: updatedPhone($phone)
+Component -> CustomerModel: Customer::where('phone',$phone)->first()
+CustomerModel -> DB: SELECT customers WHERE phone = ?
+DB --> Component: Customer dengan total_points
+Component --> View: Tampil info poin yang tersedia
+
+User -> View: Mengaktifkan opsi Gunakan Poin\n& mengisi jumlah poin
+View -> Component: Set $pointsUsed = $amount
+Component -> Component: Hitung diskon poin = $pointsUsed * nilai_per_poin
+Component --> View: Update total_bayar dikurangi diskon poin
+
+User -> View: Klik Proses Bayar → Konfirmasi
+View -> Component: processPayment()
+Component -> Component: validate(['points_used'=>'lte:customer.total_points'])
+alt Poin tidak cukup
+  Component --> View: Validasi gagal
+else Berhasil
+  Component -> TxModel: Transaction::create(['points_used'=>$points,'points_discount'=>$discount,...])
+  TxModel -> DB: INSERT INTO transactions
+  Component -> PointModel: PointsHistory::create(['phone'=>$phone,'action'=>'used','points'=>-$points,'transaction_id'=>$txId])
+  PointModel -> DB: INSERT INTO points_histories
+  Component --> View: Redirect ke struk
+end
+
+@enduml

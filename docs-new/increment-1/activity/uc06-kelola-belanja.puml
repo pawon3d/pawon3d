@@ -1,0 +1,68 @@
+@startuml Activity_UC06
+title UC-06: Kelola Belanja
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Belanja;
+
+|Sistem|
+:Sistem menampilkan daftar rencana belanja\nyang sedang aktif;
+
+|Bagian Inventori|
+:Pengguna menekan tombol Tambah Belanja;
+:Pengguna memilih supplier;
+:Pengguna memilih tanggal belanja;
+:Pengguna menambahkan item bahan baku\nbeserta jumlah dan harga ekspektasi;
+:Pengguna menekan tombol Simpan;
+
+|Sistem|
+if (Supplier tidak dipilih?) then (Ya)
+  :Sistem menampilkan validasi\nsupplier wajib dipilih;
+  stop
+else (Tidak)
+endif
+if (Tidak ada item belanja?) then (Ya)
+  :Sistem menampilkan validasi\nminimal satu item harus ditambahkan;
+  stop
+else (Tidak)
+endif
+:Sistem menghasilkan nomor belanja\n(BP-YYMMDD-XXXX);
+:Sistem menyimpan rencana belanja\ndengan status "Draft";
+:Sistem menampilkan notifikasi sukses;
+
+|Bagian Inventori|
+:Pengguna membuka rincian belanja;
+:Pengguna menekan tombol Mulai Belanja;
+
+|Sistem|
+:Sistem mengubah status belanja\nmenjadi "Dimulai";
+:Sistem menampilkan formulir\ninput hasil belanja;
+
+|Bagian Inventori|
+:Pengguna mengisi jumlah aktual, harga aktual,\ndan tanggal kedaluwarsa untuk setiap item;
+:Pengguna menekan tombol Simpan;
+
+|Sistem|
+if (Ada jumlah aktual yang\nmelebihi jumlah ekspektasi?) then (Ya)
+  :Sistem menampilkan pesan error\njumlah melebihi yang diharapkan;
+  stop
+else (Tidak)
+endif
+:Sistem menyimpan input hasil belanja;
+
+|Bagian Inventori|
+:Pengguna menekan tombol Selesaikan Belanja;
+
+|Sistem|
+if (Semua item jumlah aktual = 0?) then (Ya)
+  :Sistem mengubah status belanja menjadi "Gagal";
+else (Tidak)
+  :Sistem membuat batch baru untuk setiap item;
+  :Sistem memperbarui stok bahan baku;
+  :Sistem mencatat log inventori;
+  :Sistem mengubah status belanja menjadi "Selesai";
+endif
+:Sistem menampilkan notifikasi sukses;
+
+stop
+@enduml

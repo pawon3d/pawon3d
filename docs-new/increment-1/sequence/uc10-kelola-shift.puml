@@ -1,0 +1,48 @@
+@startuml Sequence_UC10
+title UC-10: Kelola Shift Kasir
+
+actor "Kasir" as User
+participant "Halaman Transaksi\n(livewire/transaction)" as View
+participant "Transaction\\Index\n(Livewire)" as Component
+participant "Shift Model" as ShiftModel
+database "Database" as DB
+
+User -> View: Membuka /kasir/transaksi
+View -> Component: mount()
+Component -> DB: SELECT shifts WHERE status = 'Aktif'\nAND opened_by = auth()->id()
+DB --> Component: Shift aktif atau null
+
+alt Tidak ada shift aktif
+  Component --> View: Tampilkan modal Buka Shift Baru
+  User -> View: Isi modal awal kas
+  User -> View: Klik Buka Shift
+
+  View -> Component: openShift($initialCash)
+  Component -> Component: validate(['initial_cash'=>'required|numeric|min:0'])
+  alt Validasi gagal
+    Component --> View: Pesan kesalahan
+  else Berhasil
+    Component -> ShiftModel: Shift::create(['shift_number'=>...,\n'opened_by'=>$userId,\n'start_time'=>now(),\n'initial_cash'=>$amount,\n'status'=>'Aktif'])
+    ShiftModel -> DB: INSERT INTO shifts
+    DB --> ShiftModel: Shift baru
+    Component --> View: Tampil halaman daftar transaksi
+  end
+else Ada shift aktif
+  Component --> View: Tampil daftar transaksi berjalan
+end
+
+User -> View: Mengelola pesanan dan pembayaran\nselama shift berjalan
+
+User -> View: Klik Tutup Shift
+View -> Component: requestCloseShift()
+Component -> DB: SELECT SUM(paid_amount) FROM payments\nWHERE shift_id = ?
+DB --> Component: Total penjualan
+Component --> View: Tampil konfirmasi ringkasan shift\n(total transaksi, total pendapatan, kas akhir)
+
+User -> View: Konfirmasi tutup shift
+View -> Component: closeShift()
+Component -> ShiftModel: $shift->update(['status'=>'Ditutup',\n'end_time'=>now(),\n'closed_by'=>$userId,\n'total_sales'=>$total,\n'final_cash'=>$finalCash])
+ShiftModel -> DB: UPDATE shifts SET status = 'Ditutup', ...
+Component --> View: Redirect ke halaman laporan shift
+
+@enduml

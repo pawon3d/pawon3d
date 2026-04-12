@@ -1,0 +1,55 @@
+@startuml Activity_UC13
+title UC-13: Profil dan Metode Pembayaran
+
+|Admin|
+start
+:Admin membuka halaman Profil Usaha;
+
+|Sistem|
+:Sistem menampilkan informasi profil usaha\n(nama, kontak, alamat, jam operasional, media sosial);
+
+|Admin|
+fork
+  :Mengubah Profil Usaha;
+  :Admin mengubah nama, tagline, alamat,\nkontak, media sosial, jam operasional;
+  :Admin mengunggah logo atau banner baru (opsional);
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  if (Ukuran gambar > 2MB?) then (Ya)
+    :Sistem menampilkan validasi\nukuran file maksimal 2MB;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan perubahan profil usaha;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengelola Dokumen Usaha;
+  :Admin menekan tombol Tambah Dokumen;
+  :Admin mengisi nama dokumen, nomor, masa berlaku,\ndan mengunggah file PDF;
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  :Sistem menyimpan dokumen usaha;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengelola Metode Pembayaran;
+  :Admin membuka halaman Metode Pembayaran;
+  :Admin menekan tombol Tambah Metode;
+  :Admin memilih jenis (Tunai / Transfer / QRIS),\nmengisi detail rekening atau unggah gambar QRIS;
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  if (Jenis QRIS tanpa gambar?) then (Ya)
+    :Sistem menampilkan validasi\ngambar QRIS wajib diunggah;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan metode pembayaran;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

@@ -1,0 +1,44 @@
+@startuml Activity_UC14
+title UC-14: Kelola Pelanggan dan Poin
+
+|Admin|
+start
+:Admin membuka halaman Pelanggan;
+
+|Sistem|
+:Sistem menampilkan daftar pelanggan\nbeserta total poin yang dimiliki;
+
+|Admin|
+fork
+  :Mencari dan Melihat Detail Pelanggan;
+  :Admin mengetikkan nama atau nomor HP\npada kolom pencarian;
+
+  |Sistem|
+  :Sistem memfilter daftar pelanggan\nsesuai kata kunci;
+
+  |Admin|
+  :Admin menekan nama pelanggan;
+
+  |Sistem|
+  :Sistem menampilkan detail pelanggan\n(riwayat transaksi, riwayat poin);
+
+fork again
+  :Menambah Poin Pelanggan Manual;
+  :Admin membuka rincian pelanggan;
+  :Admin menekan tombol Tambah Poin;
+  :Admin mengisi jumlah poin dan keterangan;
+  :Admin menekan tombol Konfirmasi;
+
+  |Sistem|
+  if (Jumlah poin tidak valid?) then (Ya)
+    :Sistem menampilkan validasi\njumlah poin harus lebih dari 0;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menambah total poin pelanggan;
+  :Sistem mencatat riwayat poin;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

@@ -1,0 +1,51 @@
+@startuml Activity_UC10
+title UC-10: Kelola Shift Kasir
+
+|Kasir|
+start
+:Kasir membuka halaman Transaksi;
+
+|Sistem|
+if (Shift aktif sudah ada?) then (Ya)
+  :Sistem langsung menampilkan\ndaftar transaksi berjalan;
+  |Kasir|
+  :Kasir mengelola pesanan dan pembayaran\nselama shift berjalan;
+else (Tidak)
+  :Sistem menampilkan modal\nBuka Shift Baru;
+
+  |Kasir|
+  :Kasir mengisi jumlah modal awal kas;
+  :Kasir menekan tombol Buka Shift;
+
+  |Sistem|
+  if (Modal awal tidak diisi?) then (Ya)
+    :Sistem menampilkan validasi\nmodal awal wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menghasilkan nomor shift\n(SHIFT-YYYYMMDD-XXX);
+  :Sistem mencatat waktu buka shift;
+  :Sistem menyimpan shift dengan\nstatus "Aktif";
+
+  |Kasir|
+  :Kasir mengelola pesanan dan pembayaran\nselama shift berjalan;
+endif
+
+|Kasir|
+:Kasir menekan tombol Tutup Shift;
+
+|Sistem|
+:Sistem menampilkan ringkasan shift:\n- Total penjualan\n- Total diskon\n- Saldo kas akhir;
+
+|Kasir|
+:Kasir mengonfirmasi penutupan shift;
+:Kasir menekan tombol Konfirmasi Tutup Shift;
+
+|Sistem|
+:Sistem menghitung total pendapatan\ndan kas akhir;
+:Sistem mencatat waktu tutup shift;
+:Sistem mengubah status shift\nmenjadi "Ditutup";
+:Sistem menampilkan halaman\nlaporan ringkasan shift;
+
+stop
+@enduml

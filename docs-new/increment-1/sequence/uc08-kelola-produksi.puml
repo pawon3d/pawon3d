@@ -1,0 +1,72 @@
+@startuml Sequence_UC08
+title UC-08: Kelola Produksi
+
+actor "Bagian Produksi" as User
+participant "Halaman Produksi\n(livewire/production)" as View
+participant "Production\\AntrianProduksi\n(Livewire)" as AntrianComponent
+participant "Production\\Mulai\n(Livewire)" as MulaiComponent
+participant "Production Model" as ProductionModel
+participant "ProductionDetail Model" as DetailModel
+participant "MaterialDetail Model" as MatDetailModel
+participant "Notification Model" as NotifModel
+database "Database" as DB
+
+== Lihat Antrian Produksi ==
+User -> View: Membuka /produksi/antrian
+View -> AntrianComponent: mount()
+AntrianComponent -> DB: SELECT productions JOIN transactions\nWHERE status = 'Menunggu'\nAND method != 'siap_beli'
+DB --> AntrianComponent: Daftar antrian pesanan
+AntrianComponent --> View: Render antrian produksi
+
+== Mulai Produksi Pesanan ==
+User -> View: Klik Mulai Produksi pada pesanan
+View -> MulaiComponent: mount($productionId)
+MulaiComponent -> ProductionModel: Production::findOrFail($id)->load(['details.product'])
+ProductionModel -> DB: SELECT productions, production_details
+DB --> MulaiComponent: Data produksi
+
+User -> View: Isi jumlah hasil produksi lalu simpan
+View -> MulaiComponent: save()
+MulaiComponent -> MulaiComponent: Cek ketersediaan stok tiap bahan
+
+alt Stok bahan tidak mencukupi
+  MulaiComponent --> View: Pesan error bahan kurang
+else Stok mencukupi
+  loop Setiap bahan dalam komposisi
+    MulaiComponent -> MatDetailModel: Kurangi supply_quantity
+    MatDetailModel -> DB: UPDATE material_details
+  end
+  MulaiComponent -> DetailModel: ProductionDetail::update(['quantity_get'=>...])
+  DetailModel -> DB: UPDATE production_details
+  MulaiComponent -> ProductionModel: $production->update(['status'=>'Selesai'])
+  ProductionModel -> DB: UPDATE productions
+  MulaiComponent -> DB: UPDATE transactions SET status = 'Dapat Diambil'
+  MulaiComponent -> NotifModel: Notification::create(['type'=>'production_done',...])
+  NotifModel -> DB: INSERT INTO notifications
+  MulaiComponent --> View: Notifikasi sukses → redirect daftar
+end
+
+== Produksi Siap Beli ==
+User -> View: Klik Tambah Produksi Siap Beli
+View -> MulaiComponent: mountReadyToBuy()
+User -> View: Isi produk & jumlah rencana lalu simpan
+View -> MulaiComponent: saveReadyToBuy()
+
+MulaiComponent -> MulaiComponent: Cek stok bahan
+alt Stok tidak cukup
+  MulaiComponent --> View: Pesan error bahan kurang
+else Cukup
+  MulaiComponent -> ProductionModel: Production::create(['method'=>'siap_beli',...])
+  ProductionModel -> DB: INSERT INTO productions
+  MulaiComponent -> DetailModel: ProductionDetail::insert([...])
+  DetailModel -> DB: INSERT INTO production_details
+  MulaiComponent --> View: Notifikasi sukses
+end
+
+User -> View: Klik Selesaikan Produksi Siap Beli
+View -> MulaiComponent: finish()
+MulaiComponent -> DB: UPDATE products SET stock = stock + quantity_get
+MulaiComponent -> ProductionModel: $production->update(['status'=>'Selesai'])
+MulaiComponent --> View: Notifikasi sukses
+
+@enduml

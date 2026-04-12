@@ -1,0 +1,77 @@
+@startuml Sequence_UC06
+title UC-06: Kelola Belanja
+
+actor "Bagian Inventori" as User
+participant "Halaman Belanja\n(livewire/expense)" as View
+participant "Expense\\Form\n(Livewire)" as FormComponent
+participant "Expense\\Mulai\n(Livewire)" as MulaiComponent
+participant "Expense Model" as ExpenseModel
+participant "ExpenseDetail Model" as DetailModel
+participant "MaterialBatch Model" as BatchModel
+participant "MaterialDetail Model" as MatDetailModel
+participant "InventoryLog Model" as LogModel
+database "Database" as DB
+
+== Membuat Rencana Belanja ==
+User -> View: Membuka /belanja → klik Tambah
+View -> FormComponent: mount()
+FormComponent -> DB: SELECT suppliers, materials, units
+DB --> FormComponent: Data referensi
+FormComponent --> View: Tampil form rencana belanja
+
+User -> View: Pilih supplier, isi item belanja,\nlalu klik Simpan
+View -> FormComponent: save()
+FormComponent -> FormComponent: validate(['supplier_id'=>'required',\n'items'=>'required|min:1'])
+alt Validasi gagal
+  FormComponent --> View: Pesan kesalahan
+else Berhasil
+  FormComponent -> ExpenseModel: Expense::create(['expense_number'=>..., 'status'=>'Draft'])
+  ExpenseModel -> DB: INSERT INTO expenses
+  FormComponent -> DetailModel: ExpenseDetail::insert([items...])
+  DetailModel -> DB: INSERT INTO expense_details
+  FormComponent --> View: Notifikasi sukses → redirect daftar
+end
+
+== Mulai Belanja ==
+User -> View: Buka rincian → klik Mulai Belanja
+View -> MulaiComponent: mount($expenseId)
+MulaiComponent -> ExpenseModel: Expense::findOrFail($id)->load(['details.material','details.unit'])
+ExpenseModel -> DB: SELECT expenses & expense_details
+DB --> MulaiComponent: Expense dengan detailnya
+MulaiComponent --> View: Tampil form isi hasil belanja
+
+User -> View: Isi jumlah aktual, harga aktual,\ndan tanggal kedaluwarsa lalu simpan
+View -> MulaiComponent: save()
+
+loop Setiap item
+  MulaiComponent -> DetailModel: ExpenseDetail::update(['quantity_get'=>...])
+  DetailModel -> DB: UPDATE expense_details
+end
+
+MulaiComponent -> ExpenseModel: $expense->update(['status'=>'Dimulai'])
+ExpenseModel -> DB: UPDATE expenses SET status = 'Dimulai'
+MulaiComponent --> View: Notifikasi sukses
+
+== Selesaikan Belanja ==
+User -> View: Klik Selesaikan Belanja
+View -> MulaiComponent: finish()
+
+alt Semua quantity_get = 0
+  MulaiComponent -> ExpenseModel: $expense->update(['status'=>'Gagal'])
+  ExpenseModel -> DB: UPDATE expenses SET status = 'Gagal'
+else Ada item yang masuk
+  loop Setiap item dengan quantity_get > 0
+    MulaiComponent -> BatchModel: MaterialBatch::create(['material_id'=>..., 'batch_quantity'=>...])
+    BatchModel -> DB: INSERT INTO material_batches
+    MulaiComponent -> MatDetailModel: Perbarui supply_quantity (stok gabungan)
+    MatDetailModel -> DB: UPDATE material_details
+    MulaiComponent -> LogModel: InventoryLog::create(['action'=>'expense', ...])
+    LogModel -> DB: INSERT INTO inventory_logs
+  end
+  MulaiComponent -> ExpenseModel: $expense->update(['status'=>'Selesai'])
+  ExpenseModel -> DB: UPDATE expenses SET status = 'Selesai'
+end
+
+MulaiComponent --> View: Notifikasi sukses → redirect daftar
+
+@enduml

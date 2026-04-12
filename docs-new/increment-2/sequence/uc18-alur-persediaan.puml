@@ -1,0 +1,38 @@
+@startuml Sequence_UC18
+title UC-18: Kelola Alur Persediaan
+
+actor "Bagian Inventori" as User
+participant "Halaman Alur\n(livewire/alur)" as View
+participant "Alur\\Index\n(Livewire)" as Component
+participant "InventoryLog Model" as LogModel
+database "Database" as DB
+
+User -> View: Membuka /alur-persediaan
+View -> Component: mount()
+Component -> LogModel: InventoryLog::with(['material','user','materialBatch'])->latest()->paginate()
+LogModel -> DB: SELECT inventory_logs JOIN materials, users, material_batches
+DB --> Component: Daftar log inventori
+Component --> View: Render daftar log persediaan
+
+== Filter Log ==
+User -> View: Memilih filter material / action / tanggal
+View -> Component: applyFilter($materialId, $action, $from, $to)
+Component -> LogModel: InventoryLog::query()->when(...)->get()
+LogModel -> DB: SELECT inventory_logs WHERE ...
+DB --> Component: Filtered logs
+Component --> View: Perbarui tampilan
+
+== Lihat Detail & Navigasi ke Referensi ==
+User -> View: Klik entri log
+View -> Component: showDetail($logId)
+Component -> LogModel: InventoryLog::findOrFail($logId)
+LogModel -> DB: SELECT inventory_logs WHERE id = ?
+DB --> Component: Log detail
+Component --> View: Tampil detail log (aksi, jumlah, stok setelah, referensi)
+
+User -> View: Klik tautan referensi
+View -> Component: keRincian($referenceType, $referenceId)
+Component -> Component: Tentukan route berdasarkan reference_type\n(expense→belanja.rincian,\nproduction→produksi.rincian,\nhitung→hitung.rincian)
+Component --> View: Redirect ke halaman rincian dokumen
+
+@enduml

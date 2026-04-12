@@ -1,0 +1,59 @@
+@startuml UC_Increment1
+title Use Case Diagram — Increment 1: Modul Inti Operasional
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor White
+  BorderColor #336699
+}
+skinparam actor {
+  BackgroundColor #D4E8FF
+  BorderColor #336699
+}
+
+actor "Bagian Inventori" as INV
+actor "Bagian Produksi" as PRD
+actor "Kasir"           as KSR
+
+rectangle "Sistem Manajemen Bisnis Pawon3D — Increment 1" {
+
+  rectangle "Autentikasi" {
+    (UC-01\nLogin dan Logout) as UC01
+  }
+
+  rectangle "Modul Inventori" {
+    (UC-02\nKelola Kategori Produk)         as UC02
+    (UC-03\nKelola Satuan dan Konversi)     as UC03
+    (UC-04\nKelola Supplier)               as UC04
+    (UC-05\nKelola Bahan Baku)             as UC05
+    (UC-06\nKelola Belanja)                as UC06
+    (UC-07\nKelola Produk dan Komposisi)   as UC07
+  }
+
+  rectangle "Modul Produksi" {
+    (UC-08\nKelola Produksi) as UC08
+  }
+
+  rectangle "Modul Kasir" {
+    (UC-09\nMembuat Pesanan\ndan Pembayaran) as UC09
+    (UC-10\nKelola Shift Kasir)             as UC10
+  }
+}
+
+INV --> UC01
+INV --> UC02
+INV --> UC03
+INV --> UC04
+INV --> UC05
+INV --> UC06
+INV --> UC07
+
+PRD --> UC01
+PRD --> UC08
+
+KSR --> UC01
+KSR --> UC09
+KSR --> UC10
+
+@enduml

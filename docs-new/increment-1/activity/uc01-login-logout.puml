@@ -1,0 +1,34 @@
+@startuml Activity_UC01
+title UC-01: Login dan Logout
+
+|Pengguna|
+start
+:Pengguna membuka halaman login;
+:Pengguna memasukkan email dan password;
+:Pengguna menekan tombol Login;
+
+|Sistem|
+if (Email atau password kosong?) then (Ya)
+  :Sistem menampilkan pesan validasi\nfield tidak boleh kosong;
+  stop
+else (Tidak)
+endif
+
+if (Email dan password cocok?) then (Tidak)
+  :Sistem menampilkan pesan\n"Email atau password salah";
+  stop
+else (Ya)
+endif
+
+:Sistem memulai sesi pengguna;
+:Sistem mengarahkan ke halaman dashboard;
+
+|Pengguna|
+:Pengguna membuka menu profil;
+:Pengguna menekan tombol Logout;
+
+|Sistem|
+:Sistem mengakhiri sesi pengguna;
+:Sistem mengarahkan ke halaman login;
+stop
+@enduml

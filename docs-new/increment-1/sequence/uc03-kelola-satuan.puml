@@ -1,0 +1,53 @@
+@startuml Sequence_UC03
+title UC-03: Kelola Satuan dan Konversi
+
+actor "Bagian Inventori" as User
+participant "Halaman Satuan\n(livewire/unit)" as View
+participant "Unit\\Index\n(Livewire)" as Component
+participant "Unit Model" as UnitModel
+database "Database" as DB
+
+User -> View: Membuka /satuan
+View -> Component: mount()
+Component -> DB: SELECT units (with base_unit relation)
+DB --> Component: Collection<Unit>
+Component --> View: Render daftar satuan dasar & turunan
+
+== Tambah Satuan Dasar ==
+User -> View: Mengisi nama & singkatan\n(tanpa pilih satuan induk) lalu simpan
+View -> Component: save()
+Component -> Component: validate(['name'=>'required|unique','alias'=>'required'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+else Berhasil
+  Component -> UnitModel: Unit::create(['name'=>$name,'alias'=>$alias])
+  UnitModel -> DB: INSERT INTO units (base_unit_id = NULL)
+  Component --> View: Notifikasi sukses
+end
+
+== Tambah Satuan Turunan ==
+User -> View: Memilih satuan induk, mengisi nama,\nsingkatan, dan faktor konversi lalu simpan
+View -> Component: save()
+Component -> Component: validate(['base_unit_id'=>'required',\n'conversion_factor'=>'required|numeric|min:0.001'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+else Berhasil
+  Component -> UnitModel: Unit::create([..., 'base_unit_id'=>$id,\n'conversion_factor'=>$factor])
+  UnitModel -> DB: INSERT INTO units
+  Component --> View: Notifikasi sukses
+end
+
+== Hapus Satuan ==
+User -> View: Klik hapus pada satuan
+View -> Component: delete($id)
+Component -> DB: SELECT COUNT(*) FROM materials\nWHERE unit_id = ?
+DB --> Component: Jumlah pemakaian
+alt Satuan sedang digunakan
+  Component --> View: Pesan error "Satuan masih digunakan"
+else Aman dihapus
+  Component -> UnitModel: Unit::destroy($id)
+  UnitModel -> DB: DELETE FROM units WHERE id = ?
+  Component --> View: Notifikasi sukses
+end
+
+@enduml

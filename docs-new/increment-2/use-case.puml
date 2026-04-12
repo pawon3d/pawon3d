@@ -1,0 +1,95 @@
+@startuml UseCase_Increment2
+title Use Case Diagram - Increment 2 (UC-01 s.d. UC-22)
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Bagian Inventori" as Inventori
+actor "Bagian Produksi" as Produksi
+actor "Kasir" as Kasir
+actor "Admin" as Admin
+actor "Semua Pengguna" as AllUser
+actor "Pengguna Baru" as NewUser
+actor "Pengunjung" as Visitor
+
+' ========================
+' INCREMENT 1 (inherited)
+' ========================
+rectangle "Increment 1 - Fitur Inti" {
+  usecase "UC-01\nLogin dan Logout" as UC01
+  usecase "UC-02\nKelola Kategori Produk" as UC02
+  usecase "UC-03\nKelola Satuan dan Konversi" as UC03
+  usecase "UC-04\nKelola Supplier" as UC04
+  usecase "UC-05\nKelola Bahan Baku" as UC05
+  usecase "UC-06\nKelola Belanja" as UC06
+  usecase "UC-07\nKelola Produk dan Komposisi" as UC07
+  usecase "UC-08\nKelola Produksi" as UC08
+  usecase "UC-09\nMembuat Pesanan dan Pembayaran" as UC09
+  usecase "UC-10\nKelola Shift Kasir" as UC10
+}
+
+' ========================
+' INCREMENT 2 (new)
+' ========================
+rectangle "Increment 2 - Fitur Lanjutan" {
+  ' Admin
+  usecase "UC-11\nKelola Pengguna dan Undangan" as UC11
+  usecase "UC-12\nKelola Peran dan Hak Akses" as UC12
+  usecase "UC-13\nProfil dan Pembayaran" as UC13
+  usecase "UC-14\nKelola Pelanggan dan Poin" as UC14
+  usecase "UC-15\nAkses dan Ekspor Laporan" as UC15
+
+  ' Pengguna Baru
+  usecase "UC-16\nAktivasi Akun" as UC16
+
+  ' Bagian Inventori
+  usecase "UC-17\nKelola Stock Opname" as UC17
+  usecase "UC-18\nKelola Alur Persediaan" as UC18
+
+  ' Kasir
+  usecase "UC-19\nPenggunaan Poin" as UC19
+
+  ' Pengunjung
+  usecase "UC-20\nMengakses Landing Page" as UC20
+
+  ' Semua Pengguna
+  usecase "UC-21\nKelola Profil Pribadi" as UC21
+  usecase "UC-22\nKelola Notifikasi" as UC22
+}
+
+' ========================
+' RELASI INCREMENT 1
+' ========================
+AllUser --> UC01
+Inventori --> UC02
+Inventori --> UC03
+Inventori --> UC04
+Inventori --> UC05
+Inventori --> UC06
+Inventori --> UC07
+Produksi --> UC08
+Kasir --> UC09
+Kasir --> UC10
+
+' ========================
+' RELASI INCREMENT 2
+' ========================
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+
+NewUser --> UC16
+
+Inventori --> UC17
+Inventori --> UC18
+
+Kasir --> UC19
+
+Visitor --> UC20
+
+AllUser --> UC21
+AllUser --> UC22
+
+@enduml

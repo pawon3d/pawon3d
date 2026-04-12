@@ -1,0 +1,42 @@
+@startuml Sequence_UC04
+title UC-04: Kelola Supplier
+
+actor "Bagian Inventori" as User
+participant "Halaman Supplier\n(livewire/supplier)" as View
+participant "Supplier\\Form\n(Livewire)" as Component
+participant "Supplier Model" as SupplierModel
+database "Database" as DB
+
+User -> View: Membuka /supplier
+View -> Component: mount()
+Component -> DB: SELECT suppliers
+DB --> Component: Collection<Supplier>
+Component --> View: Render daftar supplier
+
+== Tambah Supplier ==
+User -> View: Klik Tambah Supplier\nlalu isi form lalu simpan
+View -> Component: save()
+Component -> Component: validate(['name'=>'required|min:3',\n'phone'=>'nullable',\n'maps_link'=>'nullable|url',\n'image'=>'nullable|image|max:2048'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan validasi
+  View --> User: Tampilkan error
+else Berhasil
+  Component -> Component: Handle upload gambar jika ada
+  Component -> SupplierModel: Supplier::create([...])
+  SupplierModel -> DB: INSERT INTO suppliers
+  DB --> SupplierModel: Supplier baru
+  Component --> View: Notifikasi sukses & daftar diperbarui
+end
+
+== Ubah Supplier ==
+User -> View: Klik edit, ubah data, lalu simpan
+View -> Component: edit($id), save()
+Component -> SupplierModel: Supplier::findOrFail($id)
+SupplierModel -> DB: SELECT suppliers WHERE id = ?
+DB --> SupplierModel: Supplier record
+Component -> Component: validate & handle gambar baru
+Component -> SupplierModel: $supplier->update([...])
+SupplierModel -> DB: UPDATE suppliers SET ... WHERE id = ?
+Component --> View: Notifikasi sukses
+
+@enduml

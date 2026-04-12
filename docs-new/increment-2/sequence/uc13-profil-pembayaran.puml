@@ -1,0 +1,28 @@
+@startuml Sequence_UC13
+title UC-13: Kelola Metode Pembayaran
+
+actor "Admin" as Admin
+participant "Halaman Metode Pembayaran\n(livewire/profil-usaha)" as View
+participant "Payment\\Index\n(Livewire)" as PaymentComponent
+participant "PaymentChannel Model" as ChannelModel
+database "Database" as DB
+
+Admin -> View: Membuka /profil-usaha (tab Metode Pembayaran)
+View -> PaymentComponent: mount()
+PaymentComponent -> DB: SELECT payment_channels
+DB --> PaymentComponent: Data metode pembayaran
+PaymentComponent --> View: Render daftar metode pembayaran
+
+== Tambah Metode Pembayaran ==
+Admin -> View: Buka Metode Pembayaran → Tambah → isi form → Simpan
+View -> PaymentComponent: savePaymentChannel()
+PaymentComponent -> PaymentComponent: validate(['type'=>'required', 'qris_image'=>'required_if:type,qris'])
+alt Validasi gagal
+  PaymentComponent --> View: Pesan kesalahan
+else Berhasil
+  PaymentComponent -> ChannelModel: PaymentChannel::create([...])
+  ChannelModel -> DB: INSERT INTO payment_channels
+  PaymentComponent --> View: Notifikasi sukses
+end
+
+@enduml

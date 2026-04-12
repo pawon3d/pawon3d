@@ -1,0 +1,63 @@
+@startuml Activity_UC03
+title UC-03: Kelola Satuan dan Konversi
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Satuan Ukur;
+
+|Sistem|
+:Sistem menampilkan daftar satuan\n(nama, singkatan, kelompok, faktor konversi);
+
+|Bagian Inventori|
+fork
+  :Menambah Satuan Dasar;
+  :Pengguna menekan tombol Tambah Satuan;
+  :Pengguna mengisi nama, singkatan, dan kelompok;
+  |Sistem|
+  if (Nama atau singkatan kosong?) then (Ya)
+    :Sistem menampilkan validasi\nfield wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  if (Kelompok tidak dipilih?) then (Ya)
+    :Sistem menampilkan validasi\nkelompok satuan wajib dipilih;
+    stop
+  else (Tidak)
+  endif
+  if (Nama sudah ada?) then (Ya)
+    :Sistem menampilkan validasi\nsatuan sudah terdaftar;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan satuan\ndengan faktor konversi = 1;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Menambah Satuan Turunan;
+  :Pengguna mengisi nama, singkatan, kelompok;
+  :Pengguna memilih satuan dasar;
+  :Pengguna mengisi faktor konversi;
+  |Sistem|
+  if (Satuan dasar dipilih\ntapi faktor konversi kosong?) then (Ya)
+    :Sistem menampilkan validasi\nfaktor konversi wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan satuan turunan\ndengan faktor konversi terhadap satuan dasar;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Menghapus Satuan;
+  :Pengguna menekan tombol Hapus pada satuan;
+  |Sistem|
+  if (Satuan masih digunakan\noleh bahan baku?) then (Ya)
+    :Sistem menampilkan pesan error\nsatuan tidak dapat dihapus;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menghapus satuan;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

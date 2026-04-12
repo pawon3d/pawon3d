@@ -1,0 +1,37 @@
+@startuml Sequence_UC15
+title UC-15: Akses dan Ekspor Laporan
+
+actor "Pengguna" as User
+participant "Halaman Laporan\n(livewire/laporan)" as View
+participant "Laporan\\Index\n(Livewire)" as Component
+participant "PdfController" as PdfCtrl
+participant "XXXExport\n(Maatwebsite)" as ExcelExport
+database "Database" as DB
+
+User -> View: Membuka /laporan
+View -> Component: mount()
+Component --> View: Render form filter laporan
+
+User -> View: Pilih jenis laporan,\nrentang tanggal, filter tambahan
+View -> Component: applyFilter($type, $from, $to, $filters)
+Component -> DB: SELECT ... FROM transactions/expenses/productions/hitungs\nWHERE date BETWEEN ? AND ?
+DB --> Component: Data laporan
+Component --> View: Render tabel & ringkasan laporan
+
+== Ekspor PDF ==
+User -> View: Klik Ekspor PDF
+View -> PdfCtrl: GET /laporan/export-pdf?type=...&from=...&to=...
+PdfCtrl -> DB: Query data laporan
+DB --> PdfCtrl: Data
+PdfCtrl -> PdfCtrl: $pdf = PDF::loadView('laporan.pdf', $data)
+PdfCtrl --> User: return $pdf->download('laporan.pdf')
+
+== Ekspor Excel ==
+User -> View: Klik Ekspor Excel
+View -> ExcelExport: GET /laporan/export-excel
+ExcelExport -> DB: Query data sesuai filter
+DB --> ExcelExport: Data
+ExcelExport -> ExcelExport: Excel::download(new XxxExport($data), 'laporan.xlsx')
+ExcelExport --> User: Download file Excel
+
+@enduml

@@ -1,0 +1,376 @@
+@startuml ClassDiagram_Increment2
+title Class Diagram - Increment 2 (UC-01 s.d. UC-26)
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle Bold
+
+' ===== AUTENTIKASI & PENGGUNA =====
+class User {
+  +id: int
+  +name: string
+  +email: string
+  +password: string
+  +phone: string
+  +image: string
+  +gender: string
+  +is_active: bool
+  +invitation_token: string|null
+  +invitation_sent_at: datetime|null
+  +activated_at: datetime|null
+}
+
+class Role {
+  +id: int
+  +name: string
+  +guard_name: string
+  +max_users: int
+}
+
+class Permission {
+  +id: int
+  +name: string
+  +guard_name: string
+}
+
+User "*" --> "*" Role : has roles
+Role "*" --> "*" Permission : has permissions
+
+' ===== PROFIL USAHA =====
+class StoreProfile {
+  +id: int
+  +logo: string
+  +name: string
+  +tagline: string
+  +type: string
+  +banner: string
+  +description: text
+  +address: text
+  +contact: string
+  +email: string
+  +website: string
+  +is_senin: bool
+  +open_senin: time
+  +close_senin: time
+  +instagram: string
+  +facebook: string
+}
+
+class StoreDocument {
+  +id: int
+  +document_name: string
+  +document_number: string
+  +document_file: string
+  +valid_from: date
+  +valid_until: date
+}
+StoreProfile "1" *-- "0..*" StoreDocument
+
+' ===== PELANGGAN & POIN =====
+class Customer {
+  +phone: string
+  +name: string
+  +email: string
+  +total_points: int
+}
+
+class PointsHistory {
+  +id: int
+  +phone: string
+  +action_id: int|null
+  +action: string
+  +points: int
+  +transaction_id: int|null
+  +image: string
+}
+Customer "1" *-- "0..*" PointsHistory : poin
+PointsHistory "*" --> "0..1" Transaction
+
+' ===== KATEGORI & SATUAN =====
+class Category {
+  +id: int
+  +name: string
+  +is_active: bool
+}
+
+class Unit {
+  +id: int
+  +name: string
+  +alias: string
+  +group: string
+  +base_unit_id: int|null
+  +conversion_factor: float|null
+}
+Unit "*" --> "0..1" Unit : base unit of
+
+' ===== SUPPLIER =====
+class Supplier {
+  +id: int
+  +name: string
+  +contact_name: string
+  +phone: string
+  +street: string
+  +landmark: string
+  +maps_link: string
+  +image: string
+}
+
+' ===== BAHAN BAKU =====
+class Material {
+  +id: int
+  +name: string
+  +description: string
+  +image: string
+  +status: string
+  +is_active: bool
+  +is_recipe: bool
+  +minimum: float
+}
+
+class MaterialDetail {
+  +id: int
+  +material_id: int
+  +unit_id: int
+  +is_main: bool
+  +quantity: float
+  +supply_quantity: float
+  +supply_price: decimal
+}
+
+class MaterialBatch {
+  +id: int
+  +material_id: int
+  +unit_id: int
+  +batch_number: string
+  +date: date
+  +batch_quantity: float
+}
+Material "1" *-- "0..*" MaterialDetail
+Material "1" *-- "0..*" MaterialBatch
+MaterialDetail "*" --> "1" Unit
+MaterialBatch "*" --> "1" Unit
+
+' ===== BELANJA =====
+class Expense {
+  +id: int
+  +expense_number: string
+  +expense_date: date
+  +supplier_id: int
+  +status: string
+  +grand_total_expect: decimal
+  +grand_total_actual: decimal
+  +is_start: bool
+  +is_finish: bool
+}
+
+class ExpenseDetail {
+  +id: int
+  +expense_id: int
+  +material_id: int
+  +unit_id: int
+  +quantity_expect: float
+  +quantity_get: float
+  +price_expect: decimal
+  +price_get: decimal
+  +expiry_date: date
+}
+Expense "*" --> "1" Supplier
+Expense "1" *-- "1..*" ExpenseDetail
+ExpenseDetail "*" --> "1" Material
+ExpenseDetail "*" --> "1" Unit
+
+' ===== PRODUK =====
+class Product {
+  +id: int
+  +name: string
+  +description: string
+  +price: decimal
+  +stock: int
+  +method: json
+  +is_active: bool
+  +pcs: int
+  +capital: decimal
+}
+
+class ProductComposition {
+  +id: int
+  +product_id: int
+  +material_id: int
+  +unit_id: int
+  +material_quantity: float
+}
+
+class OtherCost {
+  +id: int
+  +product_id: int
+  +type_cost_id: int
+  +price: decimal
+}
+
+class TypeCost {
+  +id: int
+  +name: string
+}
+Product "1" *-- "0..*" ProductComposition
+Product "1" *-- "0..*" OtherCost
+Product "*" --> "*" Category : product_categories
+ProductComposition "*" --> "1" Material
+OtherCost "*" --> "1" TypeCost
+
+' ===== PRODUKSI =====
+class Production {
+  +id: int
+  +production_number: string
+  +transaction_id: int|null
+  +method: string
+  +date: date
+  +status: string
+  +is_start: bool
+  +is_finish: bool
+}
+
+class ProductionDetail {
+  +id: int
+  +production_id: int
+  +product_id: int
+  +quantity_plan: float
+  +quantity_get: float
+  +quantity_fail: float
+  +cycle: int
+}
+Production "1" *-- "1..*" ProductionDetail
+Production "*" --> "0..1" Transaction
+
+' ===== TRANSAKSI (lengkap Inc2) =====
+class Transaction {
+  +id: int
+  +user_id: int
+  +customer_id: int|null
+  +invoice_number: string
+  +name: string
+  +phone: string
+  +date: date
+  +payment_status: string
+  +status: string
+  +method: string
+  +total_amount: decimal
+  +points_used: int
+  +points_discount: decimal
+  +total_refund: decimal
+  +cancel_reason: string|null
+  +created_by_shift: int
+}
+
+class TransactionDetail {
+  +id: int
+  +transaction_id: int
+  +product_id: int
+  +quantity: int
+  +price: decimal
+  +refund_quantity: int
+  +pcs_capital_snapshot: decimal
+}
+
+class Payment {
+  +id: int
+  +receipt_number: string
+  +transaction_id: int
+  +payment_channel_id: int
+  +payment_method: string
+  +paid_amount: decimal
+  +paid_at: datetime
+}
+
+class PaymentChannel {
+  +id: int
+  +type: string
+  +group: string
+  +bank_name: string
+  +account_number: string
+  +account_name: string
+  +qris_image: string
+  +is_active: bool
+}
+Transaction "*" --> "1" User
+Transaction "*" --> "0..1" Customer
+Transaction "1" *-- "1..*" TransactionDetail
+Transaction "1" *-- "1..*" Payment
+Payment "*" --> "1" PaymentChannel
+TransactionDetail "*" --> "1" Product
+
+' ===== SHIFT =====
+class Shift {
+  +id: int
+  +shift_number: string
+  +opened_by: int
+  +closed_by: int|null
+  +start_time: datetime
+  +end_time: datetime|null
+  +status: string
+  +initial_cash: decimal
+  +final_cash: decimal|null
+  +total_sales: decimal
+  +total_refunds: decimal
+  +total_discounts: decimal
+}
+Transaction "*" --> "0..1" Shift
+Shift "*" --> "1" User : opened_by
+
+' ===== STOCK OPNAME =====
+class Hitung {
+  +id: int
+  +user_id: int
+  +hitung_number: string
+  +action: string
+  +note: string
+  +status: string
+  +hitung_date: date
+  +is_start: bool
+  +is_finish: bool
+  +grand_total: decimal
+  +loss_grand_total: decimal
+}
+
+class HitungDetail {
+  +id: int
+  +hitung_id: int
+  +material_id: int
+  +material_batch_id: int|null
+  +quantity_expect: decimal
+  +quantity_actual: decimal
+  +total: decimal
+  +loss_total: decimal
+}
+Hitung "*" --> "1" User
+Hitung "1" *-- "1..*" HitungDetail
+HitungDetail "*" --> "1" Material
+HitungDetail "*" --> "0..1" MaterialBatch
+
+' ===== INVENTORY LOG & NOTIFIKASI =====
+class InventoryLog {
+  +id: int
+  +material_id: int
+  +material_batch_id: int|null
+  +user_id: int
+  +action: string
+  +quantity_change: float
+  +quantity_after: float
+  +reference_type: string
+  +reference_id: int
+  +note: string
+}
+
+class Notification {
+  +id: int
+  +user_id: int
+  +title: string
+  +body: string
+  +type: string
+  +is_read: bool
+  +status: string
+}
+InventoryLog "*" --> "1" Material
+InventoryLog "*" --> "0..1" MaterialBatch
+InventoryLog "*" --> "1" User
+Notification "*" --> "1" User
+
+@enduml

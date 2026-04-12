@@ -1,0 +1,59 @@
+@startuml Activity_UC02
+title UC-02: Kelola Kategori Produk
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Kategori;
+
+|Sistem|
+:Sistem menampilkan daftar kategori\nbeserta nama, status, dan jumlah produk;
+
+|Bagian Inventori|
+fork
+  :Menambah Kategori;
+  :Pengguna menekan tombol Tambah Kategori;
+  :Pengguna mengisi nama kategori\ndan mengatur status aktif;
+  |Sistem|
+  if (Nama kosong?) then (Ya)
+    :Sistem menampilkan validasi\nnama tidak boleh kosong;
+    stop
+  else (Tidak)
+  endif
+  if (Nama < 3 karakter?) then (Ya)
+    :Sistem menampilkan validasi\nnama minimal 3 karakter;
+    stop
+  else (Tidak)
+  endif
+  if (Nama sudah digunakan?) then (Ya)
+    :Sistem menampilkan validasi\nnama kategori sudah ada;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan kategori baru;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Kategori;
+  :Pengguna menekan tombol Edit;
+  :Pengguna mengubah nama atau status;
+  |Sistem|
+  if (Data valid?) then (Tidak)
+    :Sistem menampilkan validasi;
+    stop
+  else (Ya)
+    :Sistem memperbarui data kategori;
+    :Sistem menampilkan notifikasi sukses;
+  endif
+
+fork again
+  :Menghapus Kategori;
+  :Pengguna menekan tombol Hapus;
+  :Pengguna mengonfirmasi penghapusan;
+  |Sistem|
+  :Sistem menghapus kategori;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+
+stop
+@enduml

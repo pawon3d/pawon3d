@@ -1,0 +1,66 @@
+@startuml Sequence_UC09
+title UC-09: Membuat Pesanan dan Pembayaran
+
+actor "Kasir" as User
+participant "Halaman Buat Pesanan\n(livewire/transaction)" as View
+participant "Transaction\\BuatPesanan\n(Livewire)" as Component
+participant "Transaction Model" as TxModel
+participant "TransactionDetail Model" as DetailModel
+participant "Payment Model" as PaymentModel
+participant "Production Model" as ProductionModel
+participant "Notification Model" as NotifModel
+database "Database" as DB
+
+User -> View: Membuka /kasir/buat-pesanan
+View -> Component: mount()
+Component -> DB: SELECT products (active), payment_channels, shifts (active)
+DB --> Component: Data referensi
+Component --> View: Tampil form pesanan
+
+User -> View: Memilih metode (Reguler/Kotak/SiapBeli)
+View -> Component: Set $method
+
+User -> View: Menambahkan produk & jumlah
+View -> Component: addItem($productId, $qty)
+Component -> DB: SELECT products WHERE id = ?
+DB --> Component: Product dengan harga & stok
+Component -> Component: Hitung subtotal & grand total
+Component --> View: Perbarui tampilan keranjang
+
+User -> View: Isi nama pelanggan, nomor HP,\ntanggal ambil (untuk pesanan)
+View -> Component: Set customer data
+
+User -> View: Klik Proses Bayar
+View -> Component: processPayment()
+Component -> Component: validate(['items'=>'required|min:1', ...])
+alt Tidak ada item
+  Component --> View: Validasi gagal
+else Berhasil
+  Component -> TxModel: Transaction::create(['invoice_number'=>..., 'status'=>'Aktif', ...])
+  TxModel -> DB: INSERT INTO transactions
+
+  loop Setiap item pesanan
+    Component -> DetailModel: TransactionDetail::create(['transaction_id'=>..., ...])
+    DetailModel -> DB: INSERT INTO transaction_details
+  end
+
+  Component -> PaymentModel: Payment::create(['transaction_id'=>..., 'paid_amount'=>...])
+  PaymentModel -> DB: INSERT INTO payments
+
+  alt Metode bukan Siap Beli
+    Component -> ProductionModel: Production::create(['transaction_id'=>..., ...])
+    ProductionModel -> DB: INSERT INTO productions
+    Component -> NotifModel: Notification::create(['type'=>'new_order',...])
+    NotifModel -> DB: INSERT INTO notifications
+  else Siap Beli
+    Component -> DB: UPDATE products SET stock = stock - qty WHERE id = ?
+    Component -> TxModel: $transaction->update(['status'=>'Selesai'])
+    TxModel -> DB: UPDATE transactions
+  end
+
+  Component --> View: Redirect ke halaman struk
+end
+
+User -> View: Mencetak / mengunduh struk (opsional)
+
+@enduml

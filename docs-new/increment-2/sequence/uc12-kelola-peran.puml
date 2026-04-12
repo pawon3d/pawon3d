@@ -1,0 +1,41 @@
+@startuml Sequence_UC12
+title UC-12: Kelola Peran dan Hak Akses
+
+actor "Admin" as Admin
+participant "Halaman Peran\n(livewire/peran)" as View
+participant "Role\\Index\n(Livewire)" as Component
+participant "Role Model\n(Spatie)" as RoleModel
+participant "Permission Model\n(Spatie)" as PermModel
+database "Database" as DB
+
+Admin -> View: Membuka /peran
+View -> Component: mount()
+Component -> DB: SELECT roles WITH permissions, users_count
+DB --> Component: Daftar peran
+Component --> View: Render daftar peran
+
+== Tambah Peran ==
+Admin -> View: Klik Tambah Peran, isi form, klik Simpan
+View -> Component: save(name, max_users, permissions[])
+Component -> Component: validate(['name'=>'required|unique:roles'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+else Berhasil
+  Component -> RoleModel: Role::create(['name'=>$name, 'max_users'=>$max, 'guard_name'=>'web'])
+  RoleModel -> DB: INSERT INTO roles
+  Component -> RoleModel: $role->syncPermissions($permissions)
+  RoleModel -> DB: INSERT INTO role_has_permissions
+  Component --> View: Notifikasi sukses
+end
+
+== Ubah Permission Peran ==
+Admin -> View: Pilih peran → centang/hapus hak akses → Simpan
+View -> Component: updatePermissions($roleId, $permissions[])
+Component -> RoleModel: Role::findOrFail($roleId)
+RoleModel -> DB: SELECT roles WHERE id = ?
+Component -> RoleModel: $role->syncPermissions($permissions)
+RoleModel -> DB: DELETE FROM role_has_permissions WHERE role_id = ?
+RoleModel -> DB: INSERT INTO role_has_permissions (new set)
+Component --> View: Notifikasi sukses
+
+@enduml

@@ -303,33 +303,41 @@ class DatabaseSeeder extends Seeder
         //     'material_id' => Material::first()->id,
         // ]);
 
-        PaymentChannel::create([
-            'bank_name' => 'BRI',
-            'type' => 'transfer',
-            'account_number' => '0912389103',
-            'account_name' => 'Pawon 3D BRI',
-            'is_active' => true,
-        ]);
-        PaymentChannel::create([
-            'bank_name' => 'BCA',
-            'type' => 'transfer',
-            'account_number' => '0912389103',
-            'account_name' => 'Pawon 3D BCA',
-            'is_active' => true,
-        ]);
-        PaymentChannel::create([
-            'bank_name' => 'Mandiri',
-            'type' => 'transfer',
-            'account_number' => '0912389103',
-            'account_name' => 'Pawon 3D Mandiri',
-            'is_active' => true,
-        ]);
-        PaymentChannel::create([
-            'bank_name' => 'QRIS',
-            'type' => 'qris',
-            'qris_image' => 'https://example.com/qris-image.png',
-            'is_active' => false,
-        ]);
+        PaymentChannel::firstOrCreate(
+            ['bank_name' => 'BRI'],
+            [
+                'type' => 'transfer',
+                'account_number' => '0912389103',
+                'account_name' => 'Pawon 3D BRI',
+                'is_active' => true,
+            ]
+        );
+        PaymentChannel::firstOrCreate(
+            ['bank_name' => 'BCA'],
+            [
+                'type' => 'transfer',
+                'account_number' => '0912389103',
+                'account_name' => 'Pawon 3D BCA',
+                'is_active' => true,
+            ]
+        );
+        PaymentChannel::firstOrCreate(
+            ['bank_name' => 'Mandiri'],
+            [
+                'type' => 'transfer',
+                'account_number' => '0912389103',
+                'account_name' => 'Pawon 3D Mandiri',
+                'is_active' => true,
+            ]
+        );
+        PaymentChannel::firstOrCreate(
+            ['bank_name' => 'QRIS'],
+            [
+                'type' => 'qris',
+                'qris_image' => 'https://example.com/qris-image.png',
+                'is_active' => false,
+            ]
+        );
 
         $this->call([
             TestSeeder::class,

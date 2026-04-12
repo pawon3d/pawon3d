@@ -1,0 +1,47 @@
+@startuml Sequence_UC21
+title UC-21: Kelola Profil Pribadi
+
+actor "Pengguna" as User
+participant "Halaman Profil\n(livewire/profil)" as View
+participant "Profile\\Index\n(Livewire)" as Component
+participant "User Model" as UserModel
+database "Database" as DB
+
+User -> View: Membuka /profil
+View -> Component: mount()
+Component -> UserModel: auth()->user()
+UserModel -> DB: SELECT users WHERE id = auth_id
+DB --> Component: Data pengguna
+Component --> View: Render form profil
+
+== Ubah Data Profil ==
+User -> View: Ubah nama / nomor HP → klik Simpan
+View -> Component: save()
+Component -> Component: validate(['name'=>'required','phone'=>'nullable'])
+Component -> UserModel: $user->update(['name'=>$name,'phone'=>$phone])
+UserModel -> DB: UPDATE users SET name=?, phone=? WHERE id=?
+Component --> View: Notifikasi sukses
+
+== Ubah Foto Profil ==
+User -> View: Pilih foto baru → klik Unggah
+View -> Component: uploadPhoto($photo)
+Component -> Component: validate(['photo'=>'required|image|max:2048'])
+Component -> Component: $photo->store('avatars','public')
+Component -> UserModel: $user->update(['image'=>$path])
+UserModel -> DB: UPDATE users SET image = ? WHERE id = ?
+Component --> View: Notifikasi sukses + avatar diperbarui
+
+== Ubah Kata Sandi ==
+User -> View: Isi kata sandi lama, baru, konfirmasi → Simpan
+View -> Component: changePassword($current, $new, $confirm)
+Component -> Component: validate(['new_password'=>'min:8|confirmed'])
+Component -> Component: Hash::check($current, $user->password)
+alt Kata sandi saat ini salah
+  Component --> View: Pesan error
+else Berhasil
+  Component -> UserModel: $user->update(['password'=>Hash::make($new)])
+  UserModel -> DB: UPDATE users SET password = ? WHERE id = ?
+  Component --> View: Notifikasi sukses
+end
+
+@enduml

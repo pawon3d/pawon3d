@@ -1,0 +1,66 @@
+@startuml Sequence_UC07
+title UC-07: Kelola Produk dan Komposisi
+
+actor "Bagian Inventori" as User
+participant "Halaman Produk\n(livewire/product)" as View
+participant "Product\\Form\n(Livewire)" as Component
+participant "Product Model" as ProductModel
+participant "ProductComposition Model" as CompositionModel
+participant "OtherCost Model" as CostModel
+participant "Category Model" as CategoryModel
+database "Database" as DB
+
+User -> View: Membuka /produk → klik Tambah Produk
+View -> Component: mount()
+Component -> DB: SELECT categories, materials, units, type_costs
+DB --> Component: Data referensi
+Component --> View: Tampil form produk
+
+== Tambah Produk ==
+User -> View: Isi nama, metode, pcs, harga,\nkomposisi, biaya lalu simpan
+View -> Component: save()
+Component -> Component: validate(['name'=>'required',\n'method'=>'required|array|min:1',\n'pcs'=>'required|min:1',\n'image'=>'nullable|max:2048'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+else Berhasil
+  Component -> ProductModel: Product::create([...])
+  ProductModel -> DB: INSERT INTO products
+  DB --> ProductModel: Product baru
+
+  Component -> CategoryModel: Sync product_categories pivot
+  CategoryModel -> DB: INSERT INTO product_categories
+
+  loop Setiap item komposisi
+    Component -> CompositionModel: ProductComposition::create([...])
+    CompositionModel -> DB: INSERT INTO product_compositions
+  end
+
+  loop Setiap biaya tambahan
+    Component -> CostModel: OtherCost::create([...])
+    CostModel -> DB: INSERT INTO other_costs
+  end
+
+  Component -> ProductModel: Hitung ulang $product->capital
+  ProductModel -> DB: UPDATE products SET capital = ?
+
+  Component --> View: Notifikasi sukses → redirect daftar
+end
+
+== Ubah Komposisi ==
+User -> View: Buka rincian produk → ubah jumlah bahan → simpan
+View -> Component: updateComposition($compositionId, $qty)
+Component -> CompositionModel: ProductComposition::find($id)->update(['material_quantity'=>$qty])
+CompositionModel -> DB: UPDATE product_compositions
+Component -> ProductModel: Hitung ulang modal
+ProductModel -> DB: UPDATE products SET capital = ?
+Component --> View: Notifikasi sukses
+
+== Tambah Biaya Tambahan ==
+User -> View: Pilih jenis biaya, isi nominal → simpan
+View -> Component: saveCost()
+Component -> CostModel: OtherCost::create(['product_id'=>..., 'type_cost_id'=>..., 'price'=>...])
+CostModel -> DB: INSERT INTO other_costs
+Component -> ProductModel: Hitung ulang modal
+Component --> View: Notifikasi sukses
+
+@enduml

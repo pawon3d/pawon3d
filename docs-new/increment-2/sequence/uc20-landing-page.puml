@@ -1,0 +1,52 @@
+@startuml Sequence_UC20
+title UC-20: Mengakses Landing Page
+
+actor "Pengunjung" as Visitor
+participant "Halaman Landing\n(landing.blade.php)" as View
+participant "StoreProfile Model" as ProfileModel
+participant "Product Model" as ProductModel
+participant "Category Model" as CategoryModel
+database "Database" as DB
+
+== Halaman Utama ==
+Visitor -> View: GET /
+View -> ProfileModel: StoreProfile::first()
+ProfileModel -> DB: SELECT store_profiles LIMIT 1
+DB --> ProfileModel: Profil toko
+ProfileModel --> View: nama, tagline, banner, jam operasional
+View --> Visitor: Tampil halaman utama
+
+== Katalog Produk ==
+Visitor -> View: GET /landing-produk
+View -> ProductModel: Product::where('is_active',true)->with('categories')->get()
+ProductModel -> DB: SELECT products WHERE is_active = 1
+DB --> ProductModel: Daftar produk aktif
+View -> CategoryModel: Category::where('is_active',true)->get()
+CategoryModel -> DB: SELECT categories WHERE is_active = 1
+DB --> View: Daftar kategori
+View --> Visitor: Tampil katalog produk
+
+alt Pengunjung mencari produk
+  Visitor -> View: Ketik kata kunci
+  View -> ProductModel: Product::where('name','like',"%$keyword%")->get()
+  ProductModel -> DB: SELECT products WHERE name LIKE ?
+  DB --> View: Hasil pencarian
+  View --> Visitor: Tampil produk yang sesuai
+end
+
+== Detail Produk ==
+Visitor -> View: GET /landing-produk/{id}
+View -> ProductModel: Product::where('is_active',true)->findOrFail($id)
+ProductModel -> DB: SELECT products WHERE id = ? AND is_active = 1
+DB --> ProductModel: Data produk
+ProductModel --> View: Nama, deskripsi, harga, gambar
+View --> Visitor: Tampil halaman detail produk
+
+== Halaman FAQ ==
+Visitor -> View: GET /landing-faq
+View -> ProfileModel: StoreProfile::first()
+ProfileModel -> DB: SELECT store_profiles LIMIT 1
+DB --> ProfileModel: Info kontak toko
+View --> Visitor: Tampil halaman FAQ
+
+@enduml

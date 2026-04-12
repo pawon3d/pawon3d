@@ -1,0 +1,36 @@
+@startuml Sequence_UC16
+title UC-16: Aktivasi Akun
+
+actor "Pengguna Baru" as NewUser
+participant "Halaman Aktivasi\n(aktivasi-akun/{token})" as View
+participant "ActivateAccount\n(Livewire)" as Component
+participant "User Model" as UserModel
+database "Database" as DB
+
+NewUser -> View: Membuka tautan aktivasi dari email
+View -> Component: mount($token)
+Component -> UserModel: User::where('invitation_token',$token)->first()
+UserModel -> DB: SELECT users WHERE invitation_token = ?
+DB --> UserModel: User atau null
+
+alt Token tidak ditemukan
+  Component --> View: Tampil halaman "Token tidak valid"
+else Token ditemukan & belum expired
+  Component --> View: Tampil form pengaturan kata sandi
+
+  NewUser -> View: Mengisi kata sandi & konfirmasi\nlalu klik Aktivasi
+  View -> Component: activate($password, $passwordConfirmation)
+  Component -> Component: validate(['password'=>'required|min:8|confirmed'])
+
+  alt Validasi gagal
+    Component --> View: Tampil pesan kesalahan
+  else Berhasil
+    Component -> UserModel: $user->update(['password'=>Hash::make($password), 'is_active'=>true, 'activated_at'=>now(), 'invitation_token'=>null])
+    UserModel -> DB: UPDATE users SET password=?, is_active=1, activated_at=now(), invitation_token=NULL
+    Component -> Component: Auth::login($user)
+    Component --> View: Redirect ke dashboard
+    View --> NewUser: Tampil halaman dashboard
+  end
+end
+
+@enduml

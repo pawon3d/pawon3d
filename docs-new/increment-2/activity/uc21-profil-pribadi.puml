@@ -1,0 +1,61 @@
+@startuml Activity_UC21
+title UC-21: Kelola Profil Pribadi
+
+|Semua Pengguna|
+start
+:Pengguna membuka halaman Profil;
+
+|Sistem|
+:Sistem menampilkan data profil pengguna\n(nama, email, nomor HP, foto);
+
+|Semua Pengguna|
+fork
+  :Mengubah Data Profil;
+  :Pengguna mengubah nama atau nomor HP;
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  if (Nama kosong?) then (Ya)
+    :Sistem menampilkan validasi\nnama wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  :Sistem memperbarui data profil;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Foto Profil;
+  :Pengguna memilih foto baru;
+  :Pengguna menekan tombol Unggah;
+
+  |Sistem|
+  if (Ukuran file > 2MB?) then (Ya)
+    :Sistem menampilkan validasi\nukuran maksimal 2MB;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan foto profil baru;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Kata Sandi;
+  :Pengguna mengisi kata sandi saat ini,\nkata sandi baru, dan konfirmasi;
+  :Pengguna menekan tombol Ubah Kata Sandi;
+
+  |Sistem|
+  if (Kata sandi saat ini salah?) then (Ya)
+    :Sistem menampilkan validasi\nkata sandi tidak sesuai;
+    stop
+  else (Tidak)
+  endif
+  if (Konfirmasi tidak cocok?) then (Ya)
+    :Sistem menampilkan validasi\nkonfirmasi tidak sesuai;
+    stop
+  else (Tidak)
+  endif
+  :Sistem memperbarui kata sandi;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

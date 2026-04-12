@@ -1,0 +1,30 @@
+@startuml Activity_UC22
+title UC-22: Kelola Notifikasi
+
+|Semua Pengguna|
+start
+:Pengguna membuka ikon notifikasi;
+
+|Sistem|
+:Sistem menampilkan daftar notifikasi:\n- Notifikasi belum dibaca ditandai tebal\n- Notifikasi sudah dibaca tampil normal;
+
+|Semua Pengguna|
+fork
+  :Membaca Notifikasi;
+  :Pengguna menekan salah satu notifikasi;
+
+  |Sistem|
+  :Sistem menandai notifikasi\nmenjadi "Sudah Dibaca";
+  :Sistem menampilkan isi notifikasi\natau mengarahkan ke halaman terkait;
+
+fork again
+  :Tandai Semua Sudah Dibaca;
+  :Pengguna menekan tombol\n"Tandai Semua Dibaca";
+
+  |Sistem|
+  :Sistem memperbarui semua notifikasi\nmilik pengguna menjadi "Sudah Dibaca";
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

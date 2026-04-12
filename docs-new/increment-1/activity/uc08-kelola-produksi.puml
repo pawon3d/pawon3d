@@ -1,0 +1,74 @@
+@startuml Activity_UC08
+title UC-08: Kelola Produksi
+
+|Bagian Produksi|
+start
+:Pengguna memilih menu Produksi;
+
+|Sistem|
+:Sistem menampilkan daftar produksi\nyang sedang diproses;
+
+fork
+  ' == Alur Produksi Pesanan ==
+  :Pengguna memilih menu Antrian Produksi;
+  |Sistem|
+  :Sistem menampilkan daftar pesanan\nyang perlu diproduksi;
+
+  |Bagian Produksi|
+  :Pengguna memilih salah satu pesanan\npada antrian produksi;
+  :Pengguna meninjau detail produk dan jumlah;
+  :Pengguna membuka halaman Mulai Produksi;
+  :Pengguna mengisi jumlah yang diproduksi;
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  if (Stok bahan baku tidak cukup\nuntuk semua komposisi?) then (Ya)
+    :Sistem menampilkan pesan error\ndetail bahan baku yang kurang;
+    stop
+  else (Tidak)
+  endif
+  :Sistem mengurangi stok bahan baku;
+  :Sistem memperbarui status produksi;
+
+  |Bagian Produksi|
+  :Pengguna menekan tombol Selesaikan Produksi;
+
+  |Sistem|
+  :Sistem mengubah status produksi menjadi "Selesai";
+  :Sistem mengubah status transaksi\nmenjadi "Dapat Diambil";
+  :Sistem mengirimkan notifikasi ke Kasir;
+
+fork again
+  ' == Alur Produksi Siap Beli ==
+  :Pengguna menekan tombol Tambah Produksi Siap Beli;
+  :Pengguna memilih tanggal dan waktu produksi;
+  :Pengguna menambahkan produk\ndan jumlah rencana;
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  if (Jumlah rencana < 1?) then (Ya)
+    :Sistem menampilkan validasi\njumlah minimal 1;
+    stop
+  else (Tidak)
+  endif
+  if (Stok bahan baku\ntidak mencukupi?) then (Ya)
+    :Sistem menampilkan pesan error\ndetail bahan yang kurang;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menghasilkan nomor produksi\n(PS-YYMMDD-XXXX);
+  :Sistem menyimpan rencana produksi siap beli;
+  :Sistem menampilkan notifikasi sukses;
+
+  |Bagian Produksi|
+  :Pengguna membuka rincian produksi siap beli;
+  :Pengguna menekan tombol Selesaikan Produksi;
+
+  |Sistem|
+  :Sistem menambah stok produk\nsesuai jumlah yang diproduksi;
+  :Sistem memperbarui status menjadi "Selesai";
+
+end fork
+
+stop
+@enduml

@@ -1,0 +1,36 @@
+@startuml Sequence_UC01
+title UC-01: Login dan Logout
+
+actor "Pengguna" as User
+participant "Halaman Login\n(login.blade.php)" as View
+participant "LoginController\n/ Livewire Auth" as Auth
+participant "User Model" as UserModel
+database "Database" as DB
+
+== Login ==
+User -> View: Membuka halaman /login
+View --> User: Menampilkan form login
+
+User -> View: Mengisi email & password\nlalu submit
+View -> Auth: attempt(email, password)
+Auth -> UserModel: where('email')->first()
+UserModel -> DB: SELECT users WHERE email = ?
+DB --> UserModel: User record
+UserModel --> Auth: User instance
+
+alt Email tidak ditemukan / password salah
+  Auth --> View: Kembalikan error 'auth.failed'
+  View --> User: Tampilkan pesan "Email atau password salah"
+else Login berhasil
+  Auth --> View: Redirect ke /dashboard
+  View --> User: Tampilkan halaman dashboard
+end
+
+== Logout ==
+User -> View: Menekan tombol Logout
+View -> Auth: logout()
+Auth -> DB: Invalidate session
+Auth --> View: Redirect ke /login
+View --> User: Tampilkan halaman login
+
+@enduml

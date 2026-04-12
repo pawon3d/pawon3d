@@ -1,0 +1,50 @@
+@startuml Sequence_UC11
+title UC-11: Kelola Pengguna dan Undangan
+
+actor "Admin" as Admin
+participant "Halaman Pekerja\n(livewire/pekerja)" as View
+participant "User\\Index\n(Livewire)" as Component
+participant "User Model" as UserModel
+participant "Role Model\n(Spatie)" as RoleModel
+participant "Mail\n(Invitation)" as MailService
+database "Database" as DB
+
+Admin -> View: Membuka /pekerja
+View -> Component: mount()
+Component -> DB: SELECT users WITH roles
+DB --> Component: Daftar pengguna
+Component --> View: Render daftar pengguna
+
+== Kirim Undangan ==
+Admin -> View: Klik Undang Pengguna,\nisi form, klik Kirim
+View -> Component: invite(name, email, role_id)
+Component -> RoleModel: Role::findOrFail($role_id)
+RoleModel -> DB: SELECT roles WHERE id = ?
+DB --> RoleModel: Role
+Component -> DB: SELECT COUNT(*) FROM model_has_roles\nWHERE role_id = ?
+DB --> Component: Jumlah pengguna saat ini
+alt Batas pengguna pada peran penuh
+  Component --> View: Pesan error batas kapasitas
+else Masih tersedia
+  Component -> Component: validate([email=>'unique:users'])
+  alt Email sudah terdaftar
+    Component --> View: Pesan error email duplikat
+  else Berhasil
+    Component -> UserModel: User::create([..., 'invitation_token'=>Str::random(60), 'is_active'=>false])
+    UserModel -> DB: INSERT INTO users
+    Component -> RoleModel: $user->assignRole($role_id)
+    RoleModel -> DB: INSERT INTO model_has_roles
+    Component -> MailService: Mail::to($email)->send(new InvitationMail($token))
+    MailService --> Admin: Email undangan terkirim
+    Component --> View: Notifikasi sukses
+  end
+end
+
+== Nonaktifkan Pengguna ==
+Admin -> View: Klik toggle aktif/nonaktif
+View -> Component: toggleActive($userId)
+Component -> UserModel: User::findOrFail($id)->update(['is_active'=>!$current])
+UserModel -> DB: UPDATE users SET is_active = ?
+Component --> View: Notifikasi sukses
+
+@enduml

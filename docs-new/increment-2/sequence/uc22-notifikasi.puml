@@ -1,0 +1,31 @@
+@startuml Sequence_UC22
+title UC-22: Kelola Notifikasi
+
+actor "Pengguna" as User
+participant "Komponen Notifikasi\n(livewire/notification)" as View
+participant "Notification\\Index\n(Livewire)" as Component
+participant "Notification Model" as NotifModel
+database "Database" as DB
+
+User -> View: Klik ikon notifikasi
+View -> Component: mount()
+Component -> NotifModel: Notification::where('user_id',auth()->id())->latest()->get()
+NotifModel -> DB: SELECT notifications WHERE user_id = ? ORDER BY created_at DESC
+DB --> Component: Daftar notifikasi
+Component --> View: Render daftar notifikasi (belum dibaca dibold)
+
+== Baca Satu Notifikasi ==
+User -> View: Klik salah satu notifikasi
+View -> Component: markAsRead($notificationId)
+Component -> NotifModel: Notification::find($id)->update(['is_read'=>true])
+NotifModel -> DB: UPDATE notifications SET is_read = 1 WHERE id = ?
+Component --> View: Perbarui tampilan notifikasi
+
+== Tandai Semua Sudah Dibaca ==
+User -> View: Klik "Tandai Semua Dibaca"
+View -> Component: markAllAsRead()
+Component -> NotifModel: Notification::where('user_id',auth()->id())->update(['is_read'=>true])
+NotifModel -> DB: UPDATE notifications SET is_read = 1 WHERE user_id = ?
+Component --> View: Semua notifikasi tampil sudah dibaca
+
+@enduml

@@ -1,0 +1,51 @@
+@startuml Activity_UC04
+title UC-04: Kelola Supplier
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Supplier;
+
+|Sistem|
+:Sistem menampilkan daftar supplier\n(nama, kontak, dan telepon);
+
+|Bagian Inventori|
+fork
+  :Menambah Supplier;
+  :Pengguna menekan tombol Tambah Supplier;
+  :Pengguna mengisi nama, kontak, telepon,\nalamat, deskripsi, dan link Google Maps;
+  :Pengguna mengunggah gambar (opsional);
+  |Sistem|
+  if (Nama kosong?) then (Ya)
+    :Sistem menampilkan validasi\nnama toko wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  if (Format URL Google Maps\ntidak valid?) then (Ya)
+    :Sistem menampilkan validasi\nlink Google Maps harus berupa URL valid;
+    stop
+  else (Tidak)
+  endif
+  if (Ukuran gambar > 2MB?) then (Ya)
+    :Sistem menampilkan validasi\nukuran gambar maksimal 2MB;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan data supplier;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Supplier;
+  :Pengguna menekan tombol Rincian\npada supplier yang dipilih;
+  :Pengguna mengubah data yang diperlukan;
+  |Sistem|
+  if (Data valid?) then (Tidak)
+    :Sistem menampilkan validasi;
+    stop
+  else (Ya)
+  endif
+  :Sistem memperbarui data supplier;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

@@ -1,0 +1,47 @@
+@startuml Activity_UC05
+title UC-05: Kelola Bahan Baku
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Bahan Baku;
+
+|Sistem|
+:Sistem menampilkan daftar bahan baku\n(nama, status stok, dan satuan utama);
+
+|Bagian Inventori|
+fork
+  :Menambah Bahan Baku;
+  :Pengguna menekan tombol Tambah Bahan Baku;
+  :Pengguna mengisi nama, memilih satuan utama,\nmengisi minimum stok, dan deskripsi;
+  :Pengguna mengunggah gambar (opsional);
+  |Sistem|
+  if (Nama kosong?) then (Ya)
+    :Sistem menampilkan validasi\nnama bahan baku wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  if (Format gambar tidak valid\n(bukan jpg/jpeg/png)?) then (Ya)
+    :Sistem menampilkan validasi\nformat gambar tidak didukung;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan bahan baku\ndengan status awal "Kosong";
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Bahan Baku;
+  :Pengguna menekan tombol Rincian;
+  :Pengguna mengubah data bahan baku;
+  |Sistem|
+  if (Data valid?) then (Tidak)
+    :Sistem menampilkan validasi;
+    stop
+  else (Ya)
+  endif
+  :Sistem memperbarui data bahan baku;
+  :Sistem menghitung ulang status stok;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

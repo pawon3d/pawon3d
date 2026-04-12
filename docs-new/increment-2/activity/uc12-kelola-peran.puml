@@ -1,0 +1,50 @@
+@startuml Activity_UC12
+title UC-12: Kelola Peran dan Hak Akses
+
+|Admin|
+start
+:Admin membuka halaman Peran;
+
+|Sistem|
+:Sistem menampilkan daftar peran\nbeserta jumlah pengguna dan hak akses;
+
+|Admin|
+fork
+  :Menambah Peran Baru;
+  :Admin menekan tombol Tambah Peran;
+  :Admin mengisi nama peran;
+  :Admin menetapkan batas maksimum pengguna;
+  :Admin memilih hak akses (permission)\nyang diberikan ke peran ini;
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  if (Nama peran sudah ada?) then (Ya)
+    :Sistem menampilkan validasi\nnama peran harus unik;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan peran baru dengan\nhak akses yang dipilih;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Hak Akses Peran;
+  :Admin memilih peran yang akan diubah;
+  :Admin menambah atau mencabut\nhak akses tertentu;
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  :Sistem memperbarui daftar hak akses\npada peran tersebut;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Batas Maksimum Pengguna;
+  :Admin mengubah nilai batas pengguna\npada peran tertentu;
+  :Admin menekan tombol Simpan;
+
+  |Sistem|
+  :Sistem memperbarui nilai batas\nmaksimum pengguna pada peran;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml

@@ -1,0 +1,55 @@
+@startuml Sequence_UC17
+title UC-17: Kelola Stock Opname
+
+actor "Bagian Inventori" as User
+participant "Halaman Stock Opname\n(livewire/hitung)" as View
+participant "Hitung\\Index\n(Livewire)" as Component
+participant "Hitung Model" as HitungModel
+participant "HitungDetail Model" as DetailModel
+participant "MaterialDetail Model" as MatDetailModel
+participant "InventoryLog Model" as LogModel
+database "Database" as DB
+
+User -> View: Membuka /hitung
+View -> Component: mount()
+Component -> DB: SELECT hitungs ORDER BY hitung_date DESC
+DB --> Component: Daftar stock opname
+Component --> View: Render daftar sesi opname
+
+== Mulai Stock Opname ==
+User -> View: Klik Mulai Stock Opname
+View -> Component: create()
+Component -> HitungModel: Hitung::create(['hitung_number'=>..., 'status'=>'Draft', 'user_id'=>$userId])
+HitungModel -> DB: INSERT INTO hitungs
+
+Component -> DB: SELECT material_batches JOIN material_details
+DB --> Component: Semua batch aktif
+loop Setiap batch
+  Component -> DetailModel: HitungDetail::create(['hitung_id'=>..., 'material_id'=>..., 'material_batch_id'=>..., 'quantity_expect'=>...])
+  DetailModel -> DB: INSERT INTO hitung_details
+end
+Component --> View: Redirect ke halaman rincian opname
+
+== Isi Hasil Aktual ==
+User -> View: Isi quantity_actual setiap bahan
+View -> Component: updateDetail($detailId, $actual)
+Component -> DetailModel: HitungDetail::find($id)->update(['quantity_actual'=>$actual])
+DetailModel -> DB: UPDATE hitung_details
+Component --> View: Tampil selisih diperbarui
+
+== Selesaikan Stock Opname ==
+User -> View: Klik Selesaikan Stock Opname
+View -> Component: finish()
+Component -> DetailModel: HitungDetail::where('hitung_id',...)->get()
+DetailModel -> DB: SELECT hitung_details
+loop Setiap item dengan selisih negatif
+  Component -> MatDetailModel: Sesuaikan supply_quantity
+  MatDetailModel -> DB: UPDATE material_details
+  Component -> LogModel: InventoryLog::create(['action'=>'hitung',...])
+  LogModel -> DB: INSERT INTO inventory_logs
+end
+Component -> HitungModel: $hitung->update(['status'=>'Selesai','is_finish'=>true])
+HitungModel -> DB: UPDATE hitungs
+Component --> View: Notifikasi sukses
+
+@enduml

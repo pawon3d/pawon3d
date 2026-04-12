@@ -1,0 +1,46 @@
+@startuml Activity_UC20
+title UC-20: Mengakses Landing Page
+
+|Pengunjung|
+start
+:Pengunjung membuka alamat website;
+
+|Sistem|
+:Sistem menampilkan Halaman Utama:\n- Banner dan nama toko\n- Tagline usaha\n- Jam operasional\n- Tautan navigasi (Katalog, FAQ);
+
+|Pengunjung|
+fork
+  :Menjelajah Katalog Produk;
+  :Pengunjung memilih menu Katalog;
+
+  |Sistem|
+  :Sistem menampilkan daftar produk aktif\nbeserta nama, gambar, dan harga;
+
+  |Pengunjung|
+  :Pengunjung mencari produk\nberdasarkan kata kunci (opsional);
+
+  |Sistem|
+  :Sistem memfilter daftar produk\nsesuai kata kunci;
+
+  |Pengunjung|
+  :Pengunjung memilih salah satu produk;
+
+  |Sistem|
+  :Sistem menampilkan halaman detail produk:\n- Gambar produk\n- Nama produk\n- Deskripsi\n- Harga;
+
+fork again
+  :Membaca FAQ;
+  :Pengunjung memilih menu FAQ;
+
+  |Sistem|
+  :Sistem menampilkan halaman FAQ\nberisi daftar pertanyaan dan jawaban;
+
+  |Pengunjung|
+  :Pengunjung menekan salah satu pertanyaan;
+
+  |Sistem|
+  :Sistem menampilkan jawaban\n(accordion terbuka);
+
+end fork
+stop
+@enduml

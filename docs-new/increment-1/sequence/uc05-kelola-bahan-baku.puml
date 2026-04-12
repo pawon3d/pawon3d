@@ -1,0 +1,50 @@
+@startuml Sequence_UC05
+title UC-05: Kelola Bahan Baku
+
+actor "Bagian Inventori" as User
+participant "Halaman Bahan Baku\n(livewire/material)" as View
+participant "Material\\Form\n(Livewire)" as Component
+participant "Material Model" as MaterialModel
+participant "MaterialDetail Model" as DetailModel
+database "Database" as DB
+
+User -> View: Membuka /bahan-baku
+View -> Component: mount()
+Component -> DB: SELECT materials WITH units
+DB --> Component: Collection<Material>
+Component --> View: Render daftar bahan baku beserta stok
+
+== Tambah Bahan Baku ==
+User -> View: Klik Tambah lalu isi form\n(nama, satuan, harga beli, gambar) lalu simpan
+View -> Component: save()
+Component -> Component: validate(['name'=>'required|unique',\n'image'=>'nullable|mimes:jpg,jpeg,png|max:2048'])
+alt Validasi gagal
+  Component --> View: Pesan kesalahan
+  View --> User: Tampilkan error
+else Berhasil
+  Component -> MaterialModel: Material::create([...])
+  MaterialModel -> DB: INSERT INTO materials
+  DB --> MaterialModel: Material baru
+  Component -> DetailModel: MaterialDetail::create(['material_id'=>$id,...])
+  DetailModel -> DB: INSERT INTO material_details (satuan & harga utama)
+  Component --> View: Notifikasi sukses & daftar diperbarui
+end
+
+== Ubah Bahan Baku ==
+User -> View: Klik edit, ubah data, lalu simpan
+View -> Component: edit($id), save()
+Component -> MaterialModel: Material::findOrFail($id)
+MaterialModel -> DB: SELECT materials WHERE id = ?
+DB --> MaterialModel: Material record
+Component -> Component: validate & handle upload gambar baru
+Component -> MaterialModel: $material->update([...])
+MaterialModel -> DB: UPDATE materials WHERE id = ?
+
+Component -> DetailModel: MaterialDetail::updateOrCreate(['material_id'=>$id], [...])
+DetailModel -> DB: UPDATE material_details WHERE material_id = ?
+
+Component -> MaterialModel: Hitung ulang stok & status minimum
+MaterialModel -> DB: UPDATE materials SET status = ? WHERE id = ?
+Component --> View: Notifikasi sukses
+
+@enduml

@@ -160,7 +160,7 @@ class TestSeeder extends Seeder
 
         // TC-083, TC-084, TC-085..TC-130: Admin aktif
         $userAdmin = User::firstOrCreate(
-            ['email' => 'admin@pawon3d.com'],
+            ['email' => 'pawon3d@gmail.com'],
             [
                 'name' => 'Admin Pawon3D',
                 'phone' => '081100004400',
@@ -512,6 +512,44 @@ class TestSeeder extends Seeder
             ]
         );
 
+        $matKeju = Material::firstOrCreate(
+            ['name' => 'Keju Cheddar'],
+            [
+                'description' => 'Keju untuk topping dan adonan',
+                'status' => 'aman',
+                'is_active' => true,
+                'minimum' => 1,
+            ]
+        );
+        MaterialDetail::firstOrCreate(
+            ['material_id' => $matKeju->id, 'is_main' => true],
+            [
+                'unit_id' => $unitKg->id,
+                'quantity' => 1,
+                'supply_quantity' => 2,
+                'supply_price' => 90000,
+            ]
+        );
+
+        $matSusu = Material::firstOrCreate(
+            ['name' => 'Susu Cair'],
+            [
+                'description' => 'Susu cair full cream',
+                'status' => 'aman',
+                'is_active' => true,
+                'minimum' => 2,
+            ]
+        );
+        MaterialDetail::firstOrCreate(
+            ['material_id' => $matSusu->id, 'is_main' => true],
+            [
+                'unit_id' => $unitLiter->id,
+                'quantity' => 1,
+                'supply_quantity' => 6,
+                'supply_price' => 18000,
+            ]
+        );
+
         // ─────────────────────────────────────────────────────────────────────
         // 10. INGREDIENT CATEGORY DETAILS
         // ─────────────────────────────────────────────────────────────────────
@@ -523,6 +561,12 @@ class TestSeeder extends Seeder
         );
         IngredientCategoryDetail::firstOrCreate(
             ['ingredient_category_id' => $icBahanHalus->id, 'material_id' => $matCoklat->id]
+        );
+        IngredientCategoryDetail::firstOrCreate(
+            ['ingredient_category_id' => $icBahanHalus->id, 'material_id' => $matKeju->id]
+        );
+        IngredientCategoryDetail::firstOrCreate(
+            ['ingredient_category_id' => $icBahanHalus->id, 'material_id' => $matSusu->id]
         );
 
         // ─────────────────────────────────────────────────────────────────────
@@ -581,6 +625,26 @@ class TestSeeder extends Seeder
                 'unit_id' => $unitKg->id,
                 'date' => now()->subDays(25),
                 'batch_quantity' => 3,
+            ]
+        );
+
+        $batchKeju = MaterialBatch::firstOrCreate(
+            ['batch_number' => 'B-KJ-260101'],
+            [
+                'material_id' => $matKeju->id,
+                'unit_id' => $unitKg->id,
+                'date' => now()->subDays(20),
+                'batch_quantity' => 2,
+            ]
+        );
+
+        $batchSusu = MaterialBatch::firstOrCreate(
+            ['batch_number' => 'B-SS-260101'],
+            [
+                'material_id' => $matSusu->id,
+                'unit_id' => $unitLiter->id,
+                'date' => now()->subDays(10),
+                'batch_quantity' => 6,
             ]
         );
 
@@ -679,6 +743,68 @@ class TestSeeder extends Seeder
         ProductComposition::firstOrCreate(
             ['product_id' => $prodDonat->id, 'material_id' => $matTepung->id],
             ['unit_id' => $unitKg->id, 'material_quantity' => 0.20]
+        );
+
+        // Bolu Keju — metode: pesanan-reguler + siap-beli, stok tersedia
+        $prodBoluKeju = Product::firstOrCreate(
+            ['name' => 'Bolu Keju'],
+            [
+                'description' => 'Bolu lembut dengan topping keju cheddar',
+                'price' => 95000,
+                'stock' => 6,
+                'method' => ['pesanan-reguler', 'siap-beli'],
+                'is_active' => true,
+                'is_recipe' => true,
+                'pcs' => 10,
+                'pcs_capital' => 9500,
+                'capital' => 95000,
+            ]
+        );
+        ProductCategory::firstOrCreate(
+            ['product_id' => $prodBoluKeju->id, 'category_id' => $catKueKering->id]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodBoluKeju->id, 'material_id' => $matTepung->id],
+            ['unit_id' => $unitKg->id, 'material_quantity' => 0.40]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodBoluKeju->id, 'material_id' => $matGula->id],
+            ['unit_id' => $unitKg->id, 'material_quantity' => 0.15]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodBoluKeju->id, 'material_id' => $matTelur->id],
+            ['unit_id' => $unitPcs->id, 'material_quantity' => 8]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodBoluKeju->id, 'material_id' => $matKeju->id],
+            ['unit_id' => $unitKg->id, 'material_quantity' => 0.25]
+        );
+
+        // Puding Susu — metode: siap-beli + pesanan-kotak
+        $prodPudingSusu = Product::firstOrCreate(
+            ['name' => 'Puding Susu'],
+            [
+                'description' => 'Puding susu segar dengan tekstur lembut',
+                'price' => 25000,
+                'stock' => 12,
+                'method' => ['siap-beli', 'pesanan-kotak'],
+                'is_active' => true,
+                'is_recipe' => true,
+                'pcs' => 6,
+                'pcs_capital' => 4000,
+                'capital' => 24000,
+            ]
+        );
+        ProductCategory::firstOrCreate(
+            ['product_id' => $prodPudingSusu->id, 'category_id' => $catKueBasah->id]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodPudingSusu->id, 'material_id' => $matSusu->id],
+            ['unit_id' => $unitLiter->id, 'material_quantity' => 1]
+        );
+        ProductComposition::firstOrCreate(
+            ['product_id' => $prodPudingSusu->id, 'material_id' => $matGula->id],
+            ['unit_id' => $unitKg->id, 'material_quantity' => 0.10]
         );
 
         // ─────────────────────────────────────────────────────────────────────
@@ -824,6 +950,54 @@ class TestSeeder extends Seeder
             ]
         );
 
+        // Transaksi pesanan-reguler tambahan untuk variasi data operasional
+        $trxRegulerTambahan = Transaction::firstOrCreate(
+            [
+                'method' => 'pesanan-reguler',
+                'status' => 'belum-diproses',
+                'start_date' => now()->subDays(2)->toDateString(),
+            ],
+            [
+                'user_id' => $userKasir->id,
+                'customer_id' => $customer->id,
+                'name' => 'Ibu Sari',
+                'phone' => '081234567890',
+                'date' => now()->addDay()->toDateString(),
+                'time' => '11:00:00',
+                'end_date' => now()->addDay()->toDateString(),
+                'payment_status' => 'dp',
+                'total_amount' => 190000,
+                'created_by_shift' => $shiftAktif->id,
+            ]
+        );
+        TransactionDetail::firstOrCreate(
+            ['transaction_id' => $trxRegulerTambahan->id, 'product_id' => $prodBoluKeju->id],
+            ['quantity' => 2, 'price' => 95000]
+        );
+
+        // Transaksi siap-beli tambahan untuk memperkaya data laporan harian
+        $trxSiapBeliTambahan = Transaction::firstOrCreate(
+            [
+                'method' => 'siap-beli',
+                'status' => 'selesai',
+                'date' => now()->subDay()->toDateString(),
+                'time' => '16:00:00',
+            ],
+            [
+                'user_id' => $userKasir->id,
+                'customer_id' => $customer->id,
+                'name' => 'Ibu Sari',
+                'phone' => '081234567890',
+                'payment_status' => 'lunas',
+                'total_amount' => 75000,
+                'created_by_shift' => $shiftAktif->id,
+            ]
+        );
+        TransactionDetail::firstOrCreate(
+            ['transaction_id' => $trxSiapBeliTambahan->id, 'product_id' => $prodPudingSusu->id],
+            ['quantity' => 3, 'price' => 25000]
+        );
+
         // ─────────────────────────────────────────────────────────────────────
         // 18. PRODUCTIONS — TC-054..TC-064
         // PR = produksi pesanan, PS = produksi siap-beli
@@ -886,6 +1060,46 @@ class TestSeeder extends Seeder
         ProductionDetail::firstOrCreate(
             ['production_id' => $produksiSelesai->id, 'product_id' => $prodBrownies->id],
             ['quantity_plan' => 8, 'quantity_get' => 8, 'quantity_fail' => 0, 'cycle' => 1]
+        );
+
+        // Produksi pesanan-reguler tambahan untuk transaksi baru
+        $produksiRegulerTambahan = Production::firstOrCreate(
+            [
+                'transaction_id' => $trxRegulerTambahan->id,
+                'method' => 'pesanan-reguler',
+                'status' => 'Belum Diproses',
+            ],
+            [
+                'date' => now()->toDateString(),
+                'time' => '09:30:00',
+                'is_start' => false,
+                'is_finish' => false,
+            ]
+        );
+        ProductionDetail::firstOrCreate(
+            ['production_id' => $produksiRegulerTambahan->id, 'product_id' => $prodBoluKeju->id],
+            ['quantity_plan' => 2, 'quantity_get' => 0, 'quantity_fail' => 0, 'cycle' => 1]
+        );
+
+        // Produksi siap-beli tambahan yang sudah selesai
+        $produksiSiapBeliTambahan = Production::firstOrCreate(
+            [
+                'method' => 'siap-beli',
+                'status' => 'Selesai',
+                'date' => now()->subDays(4)->toDateString(),
+            ],
+            [
+                'transaction_id' => null,
+                'time' => '07:30:00',
+                'is_start' => true,
+                'is_finish' => true,
+                'start_date' => now()->subDays(4)->toDateString(),
+                'end_date' => now()->subDays(4)->toDateString(),
+            ]
+        );
+        ProductionDetail::firstOrCreate(
+            ['production_id' => $produksiSiapBeliTambahan->id, 'product_id' => $prodPudingSusu->id],
+            ['quantity_plan' => 20, 'quantity_get' => 20, 'quantity_fail' => 0, 'cycle' => 1]
         );
 
         // ─────────────────────────────────────────────────────────────────────
@@ -1317,14 +1531,14 @@ class TestSeeder extends Seeder
                 ['Categories', 'Kue Basah, Kue Kering, Minuman'],
                 ['Units', 'Kilogram (base), Gram, Liter (base), Mililiter, Pcs'],
                 ['Suppliers', 'Makmur, Sentosa'],
-                ['Materials (>= 3 pakai kg)', 'Tepung, Gula, Coklat, Mentega, Telur'],
-                ['Batches', 'Tepung 10kg, Gula 5kg, Coklat 0.1kg (kecil), Coklat 5kg, Mentega 3kg'],
-                ['Products', 'Brownies Coklat (siap-beli stok:5), Kue Lapis (stok:0), Donat Gula'],
+                ['Materials (>= 3 pakai kg)', 'Tepung, Gula, Coklat, Mentega, Telur, Keju, Susu Cair'],
+                ['Batches', 'Tepung 10kg, Gula 5kg, Coklat 0.1kg (kecil), Coklat 5kg, Mentega 3kg, Keju 2kg, Susu 6L'],
+                ['Products', 'Brownies Coklat, Kue Lapis, Donat Gula, Bolu Keju, Puding Susu'],
                 ['Type Costs', 'Kemasan, Gas, Listrik'],
                 ['Customers', 'Ibu Sari (poin:50), Pak Rudi'],
                 ['Shifts', '1 aktif (open), 1 tutup (closed)'],
-                ['Transactions', 'OR selesai, OK belum-diproses, OS selesai'],
-                ['Productions', 'pesanan-kotak Belum Diproses, siap-beli Dimulai, siap-beli Selesai'],
+                ['Transactions', 'OR selesai + OR belum-diproses, OK belum-diproses, OS selesai + OS selesai tambahan'],
+                ['Productions', 'pesanan-kotak Belum Diproses, pesanan-reguler Belum Diproses, siap-beli Dimulai, siap-beli Selesai x2'],
                 ['Expenses', 'Draft, Dimulai, Selesai (riwayat), Gagal'],
                 ['Hitung', 'Draft, Sedang Diproses, Catat Rusak, Selesai (riwayat)'],
                 ['Inventory Logs', '4 log (belanja x2, produksi, hitung)'],

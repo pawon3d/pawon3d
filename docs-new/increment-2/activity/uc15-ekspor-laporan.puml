@@ -1,0 +1,39 @@
+@startuml Activity_UC15
+title UC-15: Akses dan Ekspor Laporan
+
+|Semua Pengguna|
+start
+:Pengguna membuka menu Laporan;
+
+|Sistem|
+:Sistem menampilkan pilihan jenis laporan\nsesuai hak akses pengguna;
+
+|Semua Pengguna|
+:Pengguna memilih jenis laporan\n(Penjualan / Keuangan / Inventori /\nProduksi / Stock Opname);
+:Pengguna menentukan rentang tanggal;
+:Pengguna menerapkan filter tambahan\n(opsional, misalnya: produk, kategori);
+
+|Sistem|
+:Sistem mengambil data sesuai filter;
+:Sistem menampilkan ringkasan laporan\ndalam bentuk tabel dan grafik;
+
+|Semua Pengguna|
+fork
+  :Ekspor ke PDF;
+  :Pengguna menekan tombol Ekspor PDF;
+
+  |Sistem|
+  :Sistem menghasilkan file PDF laporan;
+  :Sistem memulai unduhan file;
+
+fork again
+  :Ekspor ke Excel;
+  :Pengguna menekan tombol Ekspor Excel;
+
+  |Sistem|
+  :Sistem menghasilkan file Excel laporan;
+  :Sistem memulai unduhan file;
+
+end fork
+stop
+@enduml

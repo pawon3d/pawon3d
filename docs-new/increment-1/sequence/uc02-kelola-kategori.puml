@@ -1,0 +1,44 @@
+@startuml Sequence_UC02
+title UC-02: Kelola Kategori Produk
+
+actor "Bagian Inventori" as User
+participant "Halaman Kategori\n(livewire/category)" as View
+participant "Category\\Index\n(Livewire)" as Component
+participant "Category Model" as CategoryModel
+database "Database" as DB
+
+User -> View: Membuka /kategori
+View -> Component: mount()
+Component -> DB: SELECT categories ORDER BY name
+DB --> Component: Collection<Category>
+Component --> View: Render daftar kategori
+
+== Tambah Kategori ==
+User -> View: Mengisi nama kategori\nlalu klik Simpan
+View -> Component: save()
+Component -> Component: validate(['name' => 'required|min:3|unique'])
+alt Validasi gagal
+  Component --> View: Tampilkan pesan kesalahan
+  View --> User: Pesan validasi
+else Validasi berhasil
+  Component -> CategoryModel: Category::create(['name' => $name])
+  CategoryModel -> DB: INSERT INTO categories
+  DB --> CategoryModel: Category baru
+  Component --> View: Tampilkan notifikasi sukses & list terbaru
+end
+
+== Ubah Kategori ==
+User -> View: Klik ikon edit, ubah nama, lalu simpan
+View -> Component: edit($id), save()
+Component -> CategoryModel: Category::findOrFail($id)->update(...)
+CategoryModel -> DB: UPDATE categories SET name = ? WHERE id = ?
+Component --> View: Notifikasi sukses
+
+== Hapus Kategori ==
+User -> View: Klik hapus pada kategori
+View -> Component: delete($id)
+Component -> CategoryModel: Category::findOrFail($id)->delete()
+CategoryModel -> DB: DELETE FROM categories WHERE id = ?
+Component --> View: Notifikasi sukses & list diperbarui
+
+@enduml

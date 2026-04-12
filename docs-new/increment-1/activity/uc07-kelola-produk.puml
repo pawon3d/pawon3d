@@ -1,0 +1,72 @@
+@startuml Activity_UC07
+title UC-07: Kelola Produk dan Komposisi
+
+|Bagian Inventori|
+start
+:Pengguna memilih menu Produk;
+
+|Sistem|
+:Sistem menampilkan daftar produk\n(nama, harga, metode, dan status);
+
+|Bagian Inventori|
+fork
+  :Menambah Produk;
+  :Pengguna menekan tombol Tambah Produk;
+  :Pengguna mengisi nama produk;
+  :Pengguna memilih minimal satu metode penjualan\n(Pesanan Reguler / Pesanan Kotak / Siap Beli);
+  :Pengguna memilih kategori produk;
+  :Pengguna menambahkan komposisi bahan baku\nbeserta jumlah per bahan;
+  :Pengguna mengisi jumlah pcs dan harga jual;
+  :Pengguna mengunggah gambar (opsional);
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  if (Nama kosong?) then (Ya)
+    :Sistem menampilkan validasi\nnama produk wajib diisi;
+    stop
+  else (Tidak)
+  endif
+  if (Tidak ada metode penjualan\nyang dipilih?) then (Ya)
+    :Sistem menampilkan validasi\npilih minimal satu metode;
+    stop
+  else (Tidak)
+  endif
+  if (Jumlah pcs < 1?) then (Ya)
+    :Sistem menampilkan validasi\njumlah pcs minimal 1;
+    stop
+  else (Tidak)
+  endif
+  if (Ukuran gambar > 2MB?) then (Ya)
+    :Sistem menampilkan validasi\nukuran gambar maksimal 2MB;
+    stop
+  else (Tidak)
+  endif
+  :Sistem menyimpan produk;
+  :Sistem menghitung harga modal\nberdasarkan komposisi bahan baku;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Mengubah Komposisi Produk;
+  :Pengguna membuka halaman rincian produk;
+  :Pengguna mengubah jumlah komposisi bahan baku;
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  :Sistem memperbarui komposisi produk;
+  :Sistem menghitung ulang harga modal;
+  :Sistem menampilkan notifikasi sukses;
+
+fork again
+  :Menambah Biaya Tambahan;
+  :Pengguna membuka bagian Biaya Tambahan;
+  :Pengguna memilih jenis biaya dan mengisi nominal;
+  :Pengguna menekan tombol Simpan;
+
+  |Sistem|
+  :Sistem memperbarui biaya tambahan;
+  :Sistem menghitung ulang harga modal\ndengan memasukkan biaya tambahan;
+  :Sistem menampilkan notifikasi sukses;
+
+end fork
+stop
+@enduml
