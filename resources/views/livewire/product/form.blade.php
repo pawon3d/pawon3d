@@ -717,7 +717,7 @@
                 </p>
                 <div class="w-full">
                     {{-- Mobile View: Pricing --}}
-                    <div class="block md:hidden space-y-4">
+                    <div class="space-y-4">
                         <div class="p-4 bg-white rounded-xl border border-[#D4D4D4] space-y-4">
                             @if ($pcs > 1)
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
@@ -750,7 +750,7 @@
                     </div>
 
                     {{-- Desktop View: Table --}}
-                    <table class="hidden md:table w-full text-sm">
+                    <table class="w-full text-sm">
                         <tbody class="bg-[#FAFAFA]">
                             @if ($pcs > 1)
                             <tr class="h-[60px]">
