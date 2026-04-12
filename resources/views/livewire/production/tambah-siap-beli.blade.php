@@ -2,7 +2,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-center sm:gap-4 mb-8 h-auto gap-4">
         <!-- Tombol Kembali -->
-        <flux:button href="{{ route('produksi.antrian-produksi') }}" icon="arrow-left" variant="secondary" wire:navigate class="w-full sm:w-auto flex justify-center">
+        <flux:button href="{{ route('produksi.antrian-produksi') }}" icon="arrow-left" variant="secondary" wire:navigate
+            class="w-full sm:w-auto flex justify-center">
             <span class="text-[16px] font-semibold text-[#f6f6f6]" style="font-family: Montserrat;">Kembali</span>
         </flux:button>
 
@@ -14,11 +15,11 @@
     <x-alert.info>
         <p class="flex-1 text-[14px] font-semibold text-[#dcd7c9] text-justify" style="font-family: Montserrat;">
             @if ($isEditMode)
-                Ubah Rencana Produksi. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan
-                tepat. Informasi akan digunakan untuk menghasilkan produk dan hasil produksi akan dijual.
+            Ubah Rencana Produksi. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan
+            tepat. Informasi akan digunakan untuk menghasilkan produk dan hasil produksi akan dijual.
             @else
-                Tambah Rencana Produksi. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan
-                tepat. Informasi akan digunakan untuk menghasilkan produk dan hasil produksi akan dijual.
+            Tambah Rencana Produksi. Lengkapi informasi yang diminta, pastikan informasi yang dimasukan benar dan
+            tepat. Informasi akan digunakan untuk menghasilkan produk dan hasil produksi akan dijual.
             @endif
         </p>
     </x-alert.info>
@@ -27,7 +28,7 @@
     <div class="flex flex-col gap-[30px]">
         <!-- Form Card -->
         <div
-            class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col lg:flex-row gap-[30px] lg:gap-[50px]">
+            class="bg-[#fafafa] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[30px] py-[25px] flex flex-col">
             <!-- Tanggal Produksi -->
             <div class="flex flex-col gap-[15px] w-full lg:w-[450px]">
                 <div class="flex flex-col gap-[15px]">
@@ -88,10 +89,10 @@
                 </div>
 
                 @error('start_date')
-                    <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
+                <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
                 @enderror
                 @error('time')
-                    <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
+                <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
                 @enderror
             </div>
 
@@ -112,7 +113,7 @@
                     style="font-family: Montserrat;" placeholder="Masukkan catatan" />
 
                 @error('note')
-                    <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
+                <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
                 @enderror
             </div>
         </div>
@@ -147,38 +148,38 @@
             <!-- Tabel Produk -->
             <div class="overflow-x-auto w-full">
                 <div class="flex flex-col min-w-[800px] overflow-hidden rounded-[15px]">
-                <!-- Table Header -->
-                <div class="flex w-full bg-[#3f4e4f] rounded-t-[15px]" style="height: 60px;">
-                    <div class="flex items-center px-[25px] py-[21px] w-[255px]">
-                        <p class="text-[14px] font-bold text-[#f8f4e1]" style="font-family: Montserrat; margin: 0;">
-                            Produk
-                        </p>
+                    <!-- Table Header -->
+                    <div class="flex w-full bg-[#3f4e4f] rounded-t-[15px]" style="height: 60px;">
+                        <div class="flex items-center px-[25px] py-[21px] w-[255px]">
+                            <p class="text-[14px] font-bold text-[#f8f4e1]" style="font-family: Montserrat; margin: 0;">
+                                Produk
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
+                            <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
+                                style="font-family: Montserrat; margin: 0; line-height: 1.2;">
+                                Jumlah<br>Diharapkan
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
+                            <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
+                                style="font-family: Montserrat; margin: 0; line-height: 1.2;">
+                                Jumlah<br>Disarankan
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
+                            <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
+                                style="font-family: Montserrat; margin: 0; line-height: 1.2;">
+                                Rencana<br>Produksi
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-end px-[25px] py-[21px] w-[72px]">
+                            <!-- Empty for delete button column -->
+                        </div>
                     </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
-                        <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
-                            style="font-family: Montserrat; margin: 0; line-height: 1.2;">
-                            Jumlah<br>Diharapkan
-                        </p>
-                    </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
-                        <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
-                            style="font-family: Montserrat; margin: 0; line-height: 1.2;">
-                            Jumlah<br>Disarankan
-                        </p>
-                    </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px] py-[21px]">
-                        <p class="text-[14px] font-bold text-[#f8f4e1] text-right"
-                            style="font-family: Montserrat; margin: 0; line-height: 1.2;">
-                            Rencana<br>Produksi
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-end px-[25px] py-[21px] w-[72px]">
-                        <!-- Empty for delete button column -->
-                    </div>
-                </div>
 
-                <!-- Table Body -->
-                @foreach ($production_details as $index => $detail)
+                    <!-- Table Body -->
+                    @foreach ($production_details as $index => $detail)
                     <div class="flex w-full bg-[#fafafa] border-b border-[#d4d4d4]" style="height: 60px;"
                         wire:key="product-{{ $index }}">
                         <!-- Produk -->
@@ -189,7 +190,7 @@
                                 style="font-family: Montserrat;">
                                 <option value="">- Pilih Produk -</option>
                                 @foreach ($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                <option value="{{ $product->id }}">{{ $product->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -212,8 +213,7 @@
 
                         <!-- Rencana Produksi -->
                         <div class="flex flex-1 items-center justify-end px-[25px]">
-                            <input type="number"
-                                wire:model.number.live="production_details.{{ $index }}.quantity_plan"
+                            <input type="number" wire:model.number.live="production_details.{{ $index }}.quantity_plan"
                                 class="w-full bg-[#fafafa] border border-[#666666] rounded-[5px] px-[10px] py-[6px] text-[14px] font-medium text-[#666666] text-right focus:ring-0 focus:border-[#666666]"
                                 style="font-family: Montserrat; min-width: 70px;" placeholder="0" />
                         </div>
@@ -221,58 +221,56 @@
                         <!-- Hapus -->
                         <div class="flex items-center justify-center px-[25px] w-[72px]">
                             <button wire:click="removeProduct({{ $index }})" type="button">
-                                <svg class="w-[22px] h-[22px] text-[#666666]" fill="currentColor"
-                                    viewBox="0 0 24 24">
+                                <svg class="w-[22px] h-[22px] text-[#666666]" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                                 </svg>
                             </button>
                         </div>
                     </div>
-                @endforeach
+                    @endforeach
 
-                <!-- Table Footer -->
-                <div class="flex w-full bg-[#eaeaea] border-b border-[#d4d4d4] rounded-b-[15px]"
-                    style="height: 60px;">
-                    <div class="flex items-center px-[25px] w-[255px]">
-                        <p class="text-[14px] font-bold text-[#666666]" style="font-family: Montserrat; margin: 0;">
-                            Total
-                        </p>
-                    </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px]">
-                        <p class="text-[14px] font-bold text-[#666666] text-right"
-                            style="font-family: Montserrat; margin: 0;">
-                            {{ $current_stock_total }}
-                        </p>
-                    </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px]">
-                        <p class="text-[14px] font-bold text-[#666666] text-right"
-                            style="font-family: Montserrat; margin: 0;">
-                            {{ $suggested_amount_total }}
-                        </p>
-                    </div>
-                    <div class="flex flex-1 items-center justify-end px-[25px]">
-                        <p class="text-[14px] font-bold text-[#666666] text-right"
-                            style="font-family: Montserrat; margin: 0;">
-                            {{ $quantity_plan_total }}
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-end px-[25px] w-[72px]">
-                        <!-- Empty -->
+                    <!-- Table Footer -->
+                    <div class="flex w-full bg-[#eaeaea] border-b border-[#d4d4d4] rounded-b-[15px]"
+                        style="height: 60px;">
+                        <div class="flex items-center px-[25px] w-[255px]">
+                            <p class="text-[14px] font-bold text-[#666666]" style="font-family: Montserrat; margin: 0;">
+                                Total
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px]">
+                            <p class="text-[14px] font-bold text-[#666666] text-right"
+                                style="font-family: Montserrat; margin: 0;">
+                                {{ $current_stock_total }}
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px]">
+                            <p class="text-[14px] font-bold text-[#666666] text-right"
+                                style="font-family: Montserrat; margin: 0;">
+                                {{ $suggested_amount_total }}
+                            </p>
+                        </div>
+                        <div class="flex flex-1 items-center justify-end px-[25px]">
+                            <p class="text-[14px] font-bold text-[#666666] text-right"
+                                style="font-family: Montserrat; margin: 0;">
+                                {{ $quantity_plan_total }}
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-end px-[25px] w-[72px]">
+                            <!-- Empty -->
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
             @error('production_details.*')
-                <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
+            <span class="text-[12px] text-red-500" style="font-family: Montserrat;">{{ $message }}</span>
             @enderror
         </div>
 
         <!-- Action Buttons -->
         <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-[30px] justify-end">
-            <flux:button variant="filled" icon="x-mark" href="{{ route('produksi.antrian-produksi') }}"
-                wire:navigate
+            <flux:button variant="filled" icon="x-mark" href="{{ route('produksi.antrian-produksi') }}" wire:navigate
                 class="w-full sm:w-auto bg-[#c4c4c4] rounded-[15px] shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] px-[25px] py-[10px] flex items-center justify-center gap-2">
                 <span class="text-[16px] font-semibold text-[#333333]" style="font-family: Montserrat;">Batal</span>
             </flux:button>
@@ -288,9 +286,9 @@
 </div>
 
 @script
-    <script type="text/javascript">
-        document.addEventListener('livewire:initialized', function() {
+<script type="text/javascript">
+    document.addEventListener('livewire:initialized', function() {
             // Inisialisasi sudah di Alpine.js x-init
         });
-    </script>
+</script>
 @endscript
