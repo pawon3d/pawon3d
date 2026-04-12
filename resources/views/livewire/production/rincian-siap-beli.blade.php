@@ -1,357 +1,216 @@
-<div class="px-4 sm:px-[30px] py-4 sm:py-[30px]" style="background: #eaeaea; min-height: 100vh;">
-    <!-- Header dengan tombol kembali dan judul -->
-    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-[50px] gap-4">
-        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto sm:gap-[15px]">
-            <flux:button href="{{ route('produksi', ['method' => 'siap-beli']) }}" icon="arrow-left" variant="secondary"
-                wire:navigate class="w-full sm:w-auto flex justify-center">
-                Kembali
-            </flux:button>
-            <h1 class="text-center sm:text-left"
-                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin: 0;">
-                Rincian Produksi</h1>
-        </div>
+<div class="min-h-screen bg-[#eaeaea] px-4 py-4 sm:px-8 sm:py-8">
+    <div class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 sm:gap-8">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+                <flux:button href="{{ route('produksi', ['method' => 'siap-beli']) }}" icon="arrow-left"
+                    variant="secondary" wire:navigate class="w-full justify-center sm:w-auto">
+                    Kembali
+                </flux:button>
+                <h1 class="text-center font-['Montserrat'] text-xl font-semibold text-[#666666] sm:text-left">
+                    Rincian Produksi
+                </h1>
+            </div>
 
-        @if ($status === 'Sedang Diproses')
-        <div class="w-full sm:w-auto flex justify-center" style="height: 40px; padding-right: 2px;">
+            @if ($status === 'Sedang Diproses')
             <flux:button variant="secondary" wire:click="riwayatPembaruan" class="w-full sm:w-auto">
                 Riwayat Pembaruan
             </flux:button>
+            @endif
         </div>
-        @endif
-    </div>
 
-    <div class="flex flex-col gap-[30px]">
-        <div
-            class="bg-[#fafafa] rounded-[15px] p-4 sm:p-[30px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] flex flex-col gap-[31px]">
-            <!-- Header: ID dan Status -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <h2
-                    class="text-[24px] sm:text-[30px] font-['Montserrat'] font-medium text-[#666666] m-0 text-center sm:text-left">
-                    {{ $production->production_number }}
-                </h2>
-                <div
-                    style="background: {{ $status === 'Belum Diproses' ? '#adadad' : ($status === 'Sedang Diproses' ? '#ffc400' : '#56c568') }}; padding: 8px 20px; border-radius: 30px;">
+        <div class="rounded-2xl bg-[#fafafa] p-4 shadow-[0px_2px_3px_rgba(0,0,0,0.1)] sm:p-7">
+            <div class="flex flex-col gap-6">
+                @php
+                $statusColor = match ($status) {
+                'Belum Diproses' => '#adadad',
+                'Sedang Diproses' => '#ffc400',
+                default => '#56c568',
+                };
+                @endphp
+
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <h2
+                        class="break-all text-center font-['Montserrat'] text-2xl font-medium text-[#666666] sm:text-left sm:text-3xl">
+                        {{ $production->production_number }}
+                    </h2>
                     <span
-                        style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 16px; color: #fafafa;">{{
-                        $status }}</span>
+                        class="inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-bold text-[#fafafa] sm:text-base"
+                        style="background-color: {{ $statusColor }};">
+                        {{ $status }}
+                    </span>
                 </div>
-            </div>
 
-            <!-- Info Tanggal dan Koki -->
-            <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-                <div class="flex flex-col md:flex-row flex-wrap gap-6 md:gap-[34px] justify-start">
-                    <!-- Rencana Produksi -->
-                    <div class="flex flex-col gap-[5px] text-left">
-                        <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                            Rencana Produksi</p>
-                        <div class="flex gap-[10px] font-['Montserrat'] text-[16px] text-[#666666]">
-                            <span>{{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}</span>
-                            <span>{{ \Carbon\Carbon::parse($production->time)->format('H:i') }}</span>
-                        </div>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="rounded-xl border border-[#d4d4d4] bg-[#f6f6f6] p-4">
+                        <p class="mb-1 font-['Montserrat'] text-sm font-semibold text-[#666666]">Rencana Produksi</p>
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">
+                            {{ \Carbon\Carbon::parse($production->start_date)->translatedFormat('d M Y') }}
+                            {{ \Carbon\Carbon::parse($production->time)->format('H:i') }}
+                        </p>
                     </div>
 
-                    <!-- Tanggal Mulai Produksi -->
-                    <div class="flex flex-col gap-[5px] text-left">
-                        <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                            Tanggal Mulai Produksi</p>
-                        <div class="flex gap-[10px] font-['Montserrat'] text-[16px] text-[#666666]">
-                            @if ($production->date)
-                            <span>{{ \Carbon\Carbon::parse($production->date)->format('d M Y') }}</span>
-                            <span>{{ \Carbon\Carbon::parse($production->date)->format('H:i') }}</span>
-                            @else
-                            <span>-</span>
-                            @endif
-                        </div>
+                    <div class="rounded-xl border border-[#d4d4d4] bg-[#f6f6f6] p-4">
+                        <p class="mb-1 font-['Montserrat'] text-sm font-semibold text-[#666666]">Tanggal Mulai Produksi
+                        </p>
+                        @if ($production->date)
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">
+                            {{ \Carbon\Carbon::parse($production->date)->format('d M Y') }}
+                            {{ \Carbon\Carbon::parse($production->date)->format('H:i') }}
+                        </p>
+                        @else
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">-</p>
+                        @endif
                     </div>
 
-                    <!-- Tanggal Produksi Selesai -->
-                    <div class="flex flex-col gap-[5px] text-left">
-                        <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                            Tanggal Produksi Selesai</p>
-                        <p class="font-['Montserrat'] text-[16px] text-[#666666] m-0">
+                    <div class="rounded-xl border border-[#d4d4d4] bg-[#f6f6f6] p-4">
+                        <p class="mb-1 font-['Montserrat'] text-sm font-semibold text-[#666666]">Tanggal Produksi
+                            Selesai</p>
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">
                             {{ $production->end_date ? \Carbon\Carbon::parse($production->end_date)->translatedFormat('d
                             M Y H:i') : '-' }}
                         </p>
                     </div>
-                </div>
 
-                <!-- Koki -->
-                <div class="flex flex-col gap-[5px] text-left xl:text-right">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                        Koki</p>
-                    <p class="font-['Montserrat'] text-[16px] text-[#666666] m-0">-
-                    </p>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="flex flex-col gap-[10px] sm:gap-[5px] w-full">
-                <div class="bg-[#eaeaea] h-[18px] sm:h-[45px] rounded-[5px] relative overflow-hidden">
-                    <div class="bg-[#3f4e4f] h-full rounded-[5px] transition-[width] duration-300"
-                        style="width: {{ $percentage }}%;">
+                    <div class="rounded-xl border border-[#d4d4d4] bg-[#f6f6f6] p-4">
+                        <p class="mb-1 font-['Montserrat'] text-sm font-semibold text-[#666666]">Koki</p>
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">-</p>
                     </div>
                 </div>
-                <div class="text-center">
-                    <span class="font-['Montserrat'] font-medium text-[12px] sm:text-[14px] text-[#525252]">
+
+                <div class="flex flex-col gap-2">
+                    <div class="h-4 overflow-hidden rounded-md bg-[#eaeaea] sm:h-5">
+                        <div class="h-full rounded-md bg-[#3f4e4f] transition-[width] duration-300"
+                            style="width: {{ $percentage }}%;"></div>
+                    </div>
+                    <p class="text-center font-['Montserrat'] text-xs font-medium text-[#525252] sm:text-sm">
                         {{ number_format($percentage, 0) }}% ({{ $total_quantity_get }} dari {{ $total_quantity_plan }})
-                    </span>
-                </div>
-            </div>
-
-            <!-- Rencana Produksi & Catatan -->
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
-                    <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                        Rencana Produksi</p>
-                    <button wire:click="buatCatatan"
-                        class="w-full sm:w-auto bg-[#666666] text-[#f6f6f6] px-[25px] py-[10px] rounded-[15px] border-none cursor-pointer shadow-[0px_2px_3px_rgba(0,0,0,0.1)] flex items-center justify-center gap-[5px]">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path
-                                d="M10.586 0.586C10.96 0.211 11.469 0 12 0C12.531 0 13.04 0.211 13.414 0.586C13.789 0.96 14 1.469 14 2C14 2.531 13.789 3.04 13.414 3.414L4.414 12.414C4.082 12.746 3.658 12.97 3.196 13.06L0 14L0.94 10.804C1.03 10.342 1.254 9.918 1.586 9.586L10.586 0.586Z"
-                                fill="#fafafa" />
-                        </svg>
-                        <span class="font-['Montserrat'] font-semibold text-[16px]">Buat Catatan</span>
-                    </button>
-                </div>
-
-                <div
-                    style="background: #eaeaea; border: 1px solid #d4d4d4; border-radius: 15px; padding: 10px 20px; min-height: 120px;">
-                    <p
-                        style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; margin: 0; text-align: justify;">
-                        {{ $production->note ?: 'Tidak ada catatan' }}
                     </p>
                 </div>
-            </div>
-        </div>
 
-        <!-- Card Daftar Produk -->
-        <div
-            class="bg-[#fafafa] rounded-[15px] p-4 sm:p-[30px] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] flex flex-col gap-6 sm:gap-[30px]">
-            <div class="flex flex-col gap-4 sm:gap-5">
-                <p class="font-['Montserrat'] font-medium text-[16px] text-[#666666] m-0">
-                    Daftar Produk</p>
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="font-['Montserrat'] text-base font-medium text-[#666666]">Rencana Produksi</p>
+                        <button wire:click="buatCatatan"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-[15px] bg-[#666666] px-5 py-2.5 text-sm font-semibold text-[#f6f6f6] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] sm:w-auto sm:text-base">
+                            <flux:icon icon="pencil" class="size-4" />
+                            Buat Catatan
+                        </button>
+                    </div>
 
-                <!-- Tabel -->
-                <div class="overflow-x-auto w-full rounded-t-[15px]">
-                    <div class="flex flex-col min-w-[900px]">
-                        <!-- Header Tabel -->
-                        <div
-                            style="display: flex; background: #3f4e4f; border-radius: 15px 15px 0 0; overflow: hidden;">
-                            <div
-                                style="flex: 1; padding: 21px 25px; height: 60px; display: flex; align-items: center; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1;">Produk</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">Rencana<br>Produksi</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">Selisih<br>Didapatkan</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">Jumlah<br>Didapatkan</span>
-                            </div>
-                            <div
-                                class="w-[165px] bg-[#3f4e4f] px-[25px] py-[21px] h-[60px] flex items-center justify-end">
-                                <p
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">
-                                    Ulang</p>
-                            </div>
-
-                            <div
-                                style="width: 115px; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">Pcs<br>Gagal</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 165px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">Pcs<br>Lebih</span>
-                            </div>
-                        </div>
-
-                        <!-- Body Tabel -->
-                        <div style="display: flex; flex-direction: column;">
-                            @foreach ($production_details as $detail)
-                            <div style="display: flex; background: #fafafa;">
-                                <div
-                                    style="flex: 1; padding: 21px 25px; height: 60px; display: flex; align-items: center; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
-                                        $detail->product->name }}</span>
-                                </div>
-                                <div
-                                    style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right;">{{
-                                        $detail->quantity_plan }}</span>
-                                </div>
-                                <div
-                                    style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right;">{{
-                                        $detail->quantity_get - $detail->quantity_plan }}</span>
-                                </div>
-                                <div
-                                    style="flex: 1; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right;">{{
-                                        $detail->quantity_get }}</span>
-                                </div>
-                                <div
-                                    class="w-[165px] bg-[#fafafa] border-b border-[#d4d4d4] px-[25px] h-[60px] flex items-center justify-end">
-                                    <p
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right; white-space: nowrap;">
-                                        {{ $detail->cycle }}</p>
-                                </div>
-
-                                <div
-                                    style="width: 115px; max-width: 135px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right;">{{
-                                        $detail->quantity_fail }}</span>
-                                </div>
-                                <div
-                                    style="flex: 1; max-width: 165px; padding: 21px 25px; height: 60px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px; border-bottom: 1px solid #d4d4d4;">
-                                    <span
-                                        style="font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 14px; color: #666666; text-align: right;">{{
-                                        max(0, $detail->quantity_get - $detail->quantity_plan) }}</span>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-
-                        <!-- Footer Tabel (Total) -->
-                        <div style="display: flex; background: #eaeaea; height: 60px;">
-                            <div
-                                style="flex: 1; padding: 21px 25px; display: flex; align-items: center; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Total</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right;">{{
-                                    $total_quantity_plan }}</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right;">{{
-                                    $total_selisih }}</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 135px; padding: 21px 25px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right;">{{
-                                    $total_quantity_get }}</span>
-                            </div>
-                            <div
-                                style="flex: 1; max-width: 165px; padding: 21px 25px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right;">{{
-                                    $total_pcs_lebih }}</span>
-                            </div>
-                            <div
-                                style="width: 115px; max-width: 135px; padding: 21px 25px; display: flex; align-items: center; justify-content: flex-end; min-width: 100px;">
-                                <span
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #666666; text-align: right;">{{
-                                    $total_pcs_gagal }}</span>
-                            </div>
-                        </div>
+                    <div class="min-h-[120px] rounded-[15px] border border-[#d4d4d4] bg-[#eaeaea] p-4 sm:p-5">
+                        <p class="font-['Montserrat'] text-sm text-[#666666] sm:text-base">{{ $production->note ?:
+                            'Tidak ada catatan' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="rounded-2xl bg-[#fafafa] p-4 shadow-[0px_2px_3px_rgba(0,0,0,0.1)] sm:p-7">
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <p class="font-['Montserrat'] text-base font-medium text-[#666666]">Daftar Produk</p>
+                <p class="text-xs text-[#8a8a8a] sm:hidden">Geser tabel ke samping</p>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-[#d4d4d4]">
+                <table class="min-w-[980px] w-full border-collapse text-sm font-['Montserrat']">
+                    <thead>
+                        <tr class="bg-[#3f4e4f] text-[#f8f4e1]">
+                            <th class="px-5 py-4 text-left font-bold">Produk</th>
+                            <th class="px-5 py-4 text-right font-bold">Rencana Produksi</th>
+                            <th class="px-5 py-4 text-right font-bold">Selisih Didapatkan</th>
+                            <th class="px-5 py-4 text-right font-bold">Jumlah Didapatkan</th>
+                            <th class="px-5 py-4 text-right font-bold">Ulang</th>
+                            <th class="px-5 py-4 text-right font-bold">Pcs Gagal</th>
+                            <th class="px-5 py-4 text-right font-bold">Pcs Lebih</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-[#fafafa] text-[#666666]">
+                        @foreach ($production_details as $detail)
+                        <tr class="border-t border-[#d4d4d4]">
+                            <td class="max-w-[260px] truncate px-5 py-4 font-medium">{{ $detail->product->name }}</td>
+                            <td class="px-5 py-4 text-right">{{ $detail->quantity_plan }}</td>
+                            <td class="px-5 py-4 text-right">{{ $detail->quantity_get - $detail->quantity_plan }}</td>
+                            <td class="px-5 py-4 text-right">{{ $detail->quantity_get }}</td>
+                            <td class="px-5 py-4 text-right">{{ $detail->cycle }}</td>
+                            <td class="px-5 py-4 text-right">{{ $detail->quantity_fail }}</td>
+                            <td class="px-5 py-4 text-right">{{ max(0, $detail->quantity_get - $detail->quantity_plan)
+                                }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t border-[#d4d4d4] bg-[#eaeaea] text-[#666666]">
+                            <td class="px-5 py-4 font-bold">Total</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_quantity_plan }}</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_selisih }}</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_quantity_get }}</td>
+                            <td class="px-5 py-4 text-right font-bold">-</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_pcs_gagal }}</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_pcs_lebih }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             @if ($status === 'Belum Diproses')
-            <!-- Tombol Hapus -->
             <button wire:click="confirmDelete"
-                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#eb5757] text-[#f8f4e1] px-[25px] py-[10px] rounded-[15px] border-none cursor-pointer shadow-[0px_2px_3px_rgba(0,0,0,0.1)]">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path
-                        d="M8 3V1H12V3H17V5H15V19C15 19.2652 14.8946 19.5196 14.7071 19.7071C14.5196 19.8946 14.2652 20 14 20H6C5.73478 20 5.48043 19.8946 5.29289 19.7071C5.10536 19.5196 5 19.2652 5 19V5H3V3H8ZM7 8V17H9V8H7ZM11 8V17H13V8H11Z"
-                        fill="currentColor" />
-                </svg>
-                <span class="font-['Montserrat'] font-semibold text-[16px]">Hapus Rencana Produksi</span>
+                class="inline-flex w-full items-center justify-center gap-2 rounded-[15px] bg-[#eb5757] px-6 py-2.5 text-sm font-semibold text-[#f8f4e1] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] sm:w-auto sm:text-base">
+                <flux:icon icon="trash" class="size-5" />
+                Hapus Rencana Produksi
             </button>
 
-            <!-- Tombol Ubah & Mulai -->
-            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                 <button wire:click="ubahProduksi"
-                    class="w-full sm:w-auto flex items-center justify-center gap-[5px] bg-[#feba17] text-[#f8f4e1] px-[25px] py-[10px] rounded-[15px] border-none cursor-pointer shadow-[0px_2px_3px_rgba(0,0,0,0.1)]"
+                    class="inline-flex w-full items-center justify-center gap-2 rounded-[15px] bg-[#feba17] px-6 py-2.5 text-sm font-bold text-[#f8f4e1] shadow-[0px_2px_3px_rgba(0,0,0,0.1)] sm:w-auto sm:text-base"
                     wire:navigate>
-                    <flux:icon icon="pencil-square" class="text-[#f6f6f6] shrink-0" />
-                    <span class="font-['Montserrat'] font-bold text-[16px]">Ubah Produksi</span>
+                    <flux:icon icon="pencil-square" class="size-5" />
+                    Ubah Produksi
                 </button>
 
                 <flux:button variant="secondary" icon="chef-hat" wire:click="start" class="w-full sm:w-auto">
-                    <span class="font-['Montserrat'] font-medium text-[16px]">Mulai Produksi</span>
+                    <span class="font-['Montserrat'] text-sm font-medium sm:text-base">Mulai Produksi</span>
                 </flux:button>
             </div>
             @else
-            <!-- Spacer kosong di kiri saat Sedang Diproses -->
-            <div></div>
+            <div class="hidden sm:block"></div>
 
-            <!-- Tombol Selesaikan & Dapatkan Produk -->
-            <div class="flex flex-col sm:flex-row gap-4 sm:gap-[30px] items-center justify-end w-full sm:w-auto">
-                <div class="flex flex-col sm:flex-row gap-4 items-center justify-end w-full sm:w-auto">
-                    <flux:button icon="check-circle" wire:click="selesaikanProduksi" class="w-full sm:w-auto">
-                        <div style="padding: 0 5px;">
-                            <span
-                                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Selesaikan
-                                Produksi</span>
-                        </div>
-                    </flux:button>
-                    {{-- @if ($total_quantity_get < $total_quantity_plan) --}} <flux:button wire:click="dapatkanProduk"
-                        icon="clipboard-document-list" variant="secondary" class="w-full sm:w-auto">
-                        <div style="padding: 0 5px;">
-                            <span
-                                style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">Dapatkan
-                                Produk</span>
-                        </div>
-                        </flux:button>
-                        {{-- @endif --}}
-                </div>
+            <div class="ml-auto flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                <flux:button icon="check-circle" wire:click="selesaikanProduksi" class="w-full sm:w-auto">
+                    <span class="font-['Montserrat'] text-sm font-semibold sm:text-base">Selesaikan Produksi</span>
+                </flux:button>
+
+                <flux:button wire:click="dapatkanProduk" icon="clipboard-document-list" variant="secondary"
+                    class="w-full sm:w-auto">
+                    <span class="font-['Montserrat'] text-sm font-semibold sm:text-base">Dapatkan Produk</span>
+                </flux:button>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    @if ($showNoteModal)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div class="w-full max-w-2xl rounded-[15px] bg-[#fafafa] p-5 shadow-xl sm:p-7">
+            <h3 class="mb-4 font-['Montserrat'] text-xl font-semibold text-[#666666]">Catatan Produksi</h3>
+            <textarea wire:model="noteInput" rows="6"
+                class="w-full resize-y rounded-xl border border-[#d4d4d4] px-4 py-3 font-['Montserrat'] text-base text-[#666666] focus:border-[#3f4e4f] focus:outline-none"
+                placeholder="Tulis catatan..."></textarea>
+
+            <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button wire:click="$set('showNoteModal', false)"
+                    class="w-full rounded-[15px] bg-[#c4c4c4] px-5 py-2.5 font-['Montserrat'] text-sm font-semibold text-white sm:w-auto sm:text-base">
+                    Batal
+                </button>
+                <button wire:click="simpanCatatan"
+                    class="w-full rounded-[15px] bg-[#3f4e4f] px-5 py-2.5 font-['Montserrat'] text-sm font-semibold text-white sm:w-auto sm:text-base">
+                    Simpan
+                </button>
             </div>
         </div>
-        @endif
     </div>
-</div>
-
-<!-- Modal Catatan -->
-@if ($showNoteModal)
-<div
-    style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50;">
-    <div style="background: #fafafa; border-radius: 15px; padding: 30px; width: 600px; max-width: 90%;">
-        <h3
-            style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 20px; color: #666666; margin-bottom: 20px;">
-            Catatan Produksi
-        </h3>
-        <textarea wire:model="noteInput" rows="6"
-            style="width: 100%; padding: 15px; border: 1px solid #d4d4d4; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-size: 16px; color: #666666; resize: vertical;"
-            placeholder="Tulis catatan..."></textarea>
-        <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-            <button wire:click="$set('showNoteModal', false)"
-                style="background: #c4c4c4; color: #fff; padding: 10px 25px; border-radius: 15px; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                Batal
-            </button>
-            <button wire:click="simpanCatatan"
-                style="background: #3f4e4f; color: #fff; padding: 10px 25px; border-radius: 15px; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px;">
-                Simpan
-            </button>
-        </div>
-    </div>
-</div>
-@endif
+    @endif
 </div>
 
 <script>
