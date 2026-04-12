@@ -160,7 +160,7 @@
                         <option value="tunai">Tunai</option>
                         @else
                         <option value="transfer">Transfer Bank</option>
-                        <option value="dompet digital">Dompet Digital</option>
+                        <option value="ewallet">Dompet Digital</option>
                         <option value="qris">QRIS</option>
                         @endif
                     </select>

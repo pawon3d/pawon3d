@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\Transaction\BuatPesanan;
 use App\Livewire\Transaction\Index;
+use App\Models\PaymentChannel;
 use App\Models\Product;
 use App\Models\Shift;
 use App\Models\Transaction;
@@ -333,6 +334,31 @@ it('TC-079: paying pesanan without date and time shows validation errors', funct
         ->set('paidAmount', 120000)
         ->call('pay')
         ->assertHasErrors(['date', 'time']);
+});
+
+// ─────────────────────────────────────────────
+// TC-080: Non-tunai loads payment methods
+// ─────────────────────────────────────────────
+
+it('TC-080: selecting non-tunai loads payment methods in BuatPesanan', function () {
+    $transaction = makeTransaction($this->user->id, 'pesanan-reguler');
+
+    PaymentChannel::create([
+        'type' => 'transfer',
+        'group' => 'non-tunai',
+        'bank_name' => 'Bank Test',
+        'account_number' => '1234567890',
+        'account_name' => 'Kasir Test',
+        'is_active' => true,
+    ]);
+
+    $component = Livewire::actingAs($this->user)
+        ->test(BuatPesanan::class, ['id' => (string) $transaction->id])
+        ->set('paymentGroup', 'non-tunai');
+
+    $paymentMethods = $component->get('paymentMethods');
+
+    expect($paymentMethods)->toHaveCount(1);
 });
 
 // ─────────────────────────────────────────────

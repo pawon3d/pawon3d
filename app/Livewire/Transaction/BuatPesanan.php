@@ -25,7 +25,7 @@ class BuatPesanan extends Component
 
     public array $details = [];
 
-    public array $paymentChannels = [];
+    public $paymentChannels = [];
 
     public string $paymentChannelId = '';
 
@@ -71,7 +71,7 @@ class BuatPesanan extends Component
 
     public int $availablePoints = 0;
 
-    public array $paymentMethods = [];
+    public $paymentMethods = [];
 
     public ?string $paymentGroup = null;
 
