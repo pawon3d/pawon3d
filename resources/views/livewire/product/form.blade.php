@@ -749,36 +749,6 @@
                         </div>
                     </div>
 
-                    {{-- Desktop View: Table --}}
-                    <table class="w-full text-sm">
-                        <tbody class="bg-[#FAFAFA]">
-                            @if ($pcs > 1)
-                            <tr class="h-[60px]">
-                                <td class="px-6 text-[#666666] font-medium">Modal per Resep</td>
-                                <td class="px-6 text-right text-[#666666] font-bold">
-                                    Rp{{ number_format($capital, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr class="h-[60px]">
-                                <td class="px-6 text-[#666666] font-medium">Modal per PCS</td>
-                                <td class="px-6 text-right text-[#666666] font-bold">
-                                    Rp{{ number_format($pcs_capital, 0, ',', '.') }}</td>
-                            </tr>
-                            @else
-                            <tr class="h-[60px]">
-                                <td class="px-6 text-[#666666] font-medium">Total Modal</td>
-                                <td class="px-6 text-right text-[#666666] font-bold">
-                                    Rp{{ number_format($capital, 0, ',', '.') }}</td>
-                            </tr>
-                            @endif
-                            <tr class="h-[60px]">
-                                <td class="px-6 text-[#666666] font-medium">Harga Jual</td>
-                                <td class="px-6 text-right">
-                                    <input type="number" min="0" wire:model.live="price" placeholder="0"
-                                        class="w-full max-w-[300px] px-5 py-2.5 bg-[#FAFAFA] border-[1.5px] border-[#ADADAD] rounded-xl text-right text-base font-medium text-[#666666] focus:outline-none focus:border-[#74512D] transition-colors" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
                 <flux:error name="price" />
             </div>
