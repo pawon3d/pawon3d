@@ -72,10 +72,13 @@ class Edit extends Component
         $this->transactionId = $id;
         $transaction = \App\Models\Transaction::find($id);        
 
-        if ($transaction->date && \Carbon\Carbon::parse($transaction->date)->diffInDays(now(), false) < 3) {
-            session()->flash('error', 'Transaksi tidak dapat diubah karena sudah lebih dari 3 hari.');
-            return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
-        }
+        // Menghitung selisih hari antara sekarang dan tanggal transaksi
+$selisihHari = \Carbon\Carbon::parse($transaction->date)->diffInDays(now());
+
+if ($transaction->date && $selisihHari < 3) {
+    session()->flash('error', 'Tidak dapat mengubah pesanan karena sudah tanggal ambil pesanan kurang dari 3 hari.');
+    return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
+}
         $this->transaction = $transaction;
         if ($transaction) {
             $this->details = $transaction->details->mapWithKeys(function ($detail) {
