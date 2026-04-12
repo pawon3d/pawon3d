@@ -219,7 +219,7 @@
                                     class="w-[165px] bg-[#3f4e4f] px-[25px] py-[21px] h-[60px] flex items-center justify-end">
                                     <p
                                         style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">
-                                        Pcs<br />Lebih</p>
+                                        Ulang</p>
                                 </div>
                                 <div
                                     class="w-[115px] bg-[#3f4e4f] px-[25px] py-[21px] h-[60px] flex items-center justify-end">
@@ -231,7 +231,8 @@
                                     class="w-[115px] bg-[#3f4e4f] px-[25px] py-[21px] h-[60px] flex items-center justify-end">
                                     <p
                                         style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: #f8f4e1; text-align: right; line-height: 1.2;">
-                                        Pcs<br />Lebih</p>
+                                        <br />Lebih
+                                    </p>
                                 </div>
                             </div>
 
