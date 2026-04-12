@@ -144,7 +144,7 @@
                             <td class="px-5 py-4 text-right font-bold">{{ $total_quantity_plan }}</td>
                             <td class="px-5 py-4 text-right font-bold">{{ $total_selisih }}</td>
                             <td class="px-5 py-4 text-right font-bold">{{ $total_quantity_get }}</td>
-                            <td class="px-5 py-4 text-right font-bold">-</td>
+                            <td class="px-5 py-4 text-right font-bold">{{ $total_cycle }}</td>
                             <td class="px-5 py-4 text-right font-bold">{{ $total_pcs_gagal }}</td>
                             <td class="px-5 py-4 text-right font-bold">{{ $total_pcs_lebih }}</td>
                         </tr>

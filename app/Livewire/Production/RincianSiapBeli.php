@@ -33,6 +33,7 @@ class RincianSiapBeli extends Component
     public int|float $total_pcs_gagal = 0;
 
     public int|float $total_pcs_lebih = 0;
+    public int|float $total_cycle = 0;
 
     public int|float $percentage = 0;
 
@@ -82,7 +83,7 @@ class RincianSiapBeli extends Component
         });
 
         // Total cycle (berapa kali produksi ulang)
-        $this->total_pcs_lebih_rusak = $this->production->details->sum('cycle');
+        $this->total_cycle = $this->production->details->sum('cycle');
 
         $this->percentage = $this->total_quantity_plan > 0
             ? ($this->total_quantity_get / $this->total_quantity_plan) * 100
