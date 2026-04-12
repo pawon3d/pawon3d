@@ -70,8 +70,10 @@ class Edit extends Component
         View::share('title', 'Ubah Pesanan');
         View::share('mainTitle', 'Kasir');
         $this->transactionId = $id;
-        $transaction = \App\Models\Transaction::find($id);
-        if (! in_array($transaction->status, ['Draft', 'temp'])) {
+        $transaction = \App\Models\Transaction::find($id);        
+
+        if ($transaction->date && \Carbon\Carbon::parse($transaction->date)->diffInDays(now(), false) < 3) {
+            session()->flash('error', 'Transaksi tidak dapat diubah karena sudah lebih dari 3 hari.');
             return redirect()->route('transaksi.rincian-pesanan', ['id' => $transaction->id]);
         }
         $this->transaction = $transaction;

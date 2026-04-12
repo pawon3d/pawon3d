@@ -145,6 +145,9 @@ class RincianPesanan extends Component
                 session()->forget('print');
             }
         }
+        if (session()->has('error')) {
+            $this->alert('error', session('error'));
+        }
         if (session()->has('notif')) {
             $this->alert('success', 'Notifikasi', [
                 'toast' => true,
