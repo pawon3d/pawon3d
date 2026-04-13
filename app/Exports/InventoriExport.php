@@ -6,8 +6,6 @@ use App\Models\Expense;
 use App\Models\ExpenseDetail;
 use App\Models\InventoryLog;
 use App\Models\Material;
-use App\Models\Product;
-use App\Models\ProductionDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -131,7 +129,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
 
             // Update first row with grand total
             if ($data->count() > 0 && $data->last()['expense_number'] === $expense->expense_number) {
-                $firstIndex = $data->search(fn($item) => $item['expense_number'] === $expense->expense_number);
+                $firstIndex = $data->search(fn ($item) => $item['expense_number'] === $expense->expense_number);
                 if ($firstIndex !== false) {
                     $firstItem = $data->get($firstIndex);
                     $firstItem['grand_total'] = $expense->grand_total_actual;
@@ -157,60 +155,49 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
             $grandTotal += $detail->total_actual;
         }
 
-        // Calculate production usage
+        // Calculate production usage from inventory logs so the result matches the dashboard report
+        $usedLogs = InventoryLog::with(['material.material_details', 'materialBatch.unit'])
+            ->where(function ($query) {
+                $query->whereIn('action', ['produksi', 'penjualan', 'rusak', 'hilang'])
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('action', 'hitung')
+                            ->where('quantity_change', '<', 0);
+                    });
+            })
+            ->whereDate('created_at', '<=', $endDate->toDateString())
+            ->get();
+
         $usedGrandTotal = 0;
         $materialUsage = [];
 
-        $products = Product::with(['product_compositions.material'])->get();
-        $groupProductByMaterial = $products->flatMap(function ($product) {
-            return $product->product_compositions->map(function ($composition) use ($product) {
-                return [
-                    'material_id' => $composition->material_id,
-                    'material_quantity' => $composition->material_quantity,
-                    'unit_id' => $composition->unit_id,
-                    'pcs' => $product->pcs,
-                    'product_id' => $product->id,
-                    'material_name' => $composition->material->name ?? 'Unknown',
-                ];
-            });
-        })->groupBy('material_id');
+        foreach ($usedLogs->groupBy('material_id') as $materialId => $logs) {
+            $totalQuantity = 0;
+            $totalCost = 0;
+            $materialName = $logs->first()->material->name ?? 'Unknown';
 
-        foreach ($groupProductByMaterial as $materialId => $compositions) {
-            foreach ($compositions as $composition) {
-                $productId = $composition['product_id'];
+            foreach ($logs as $log) {
+                $quantity = abs($log->quantity_change);
+                $unit = $log->materialBatch->unit ?? null;
+                $material = $log->material;
 
-                $productionDetailsQuery = ProductionDetail::where('product_id', $productId)
-                    ->whereHas('production', function ($query) use ($endDate) {
-                        $query->where('start_date', '<=', $endDate->toDateString());
-
-                        if ($this->selectedWorker !== 'semua') {
-                            $query->whereHas('workers', function ($workerQuery) {
-                                $workerQuery->where('user_id', $this->selectedWorker);
-                            });
-                        }
-                    });
-
-                $productionDetails = $productionDetailsQuery->get();
-                $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
-                $dividedQuantity = $composition['pcs'] > 0 ? $totalProduction / $composition['pcs'] : 0;
-                $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
-                $material = Material::find($materialId);
-                // Use supply_price instead of price_get
-                $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
-                $priceValue = $totalMaterialQuantity * $materialPrice;
-
-                if (! isset($materialUsage[$materialId])) {
-                    $materialUsage[$materialId] = [
-                        'material_name' => $composition['material_name'],
-                        'quantity_used' => 0,
-                        'value_used' => 0,
-                    ];
+                if (! $material || ! $unit) {
+                    continue;
                 }
 
-                $materialUsage[$materialId]['quantity_used'] += $totalMaterialQuantity;
-                $materialUsage[$materialId]['value_used'] += $priceValue;
-                $usedGrandTotal += $priceValue;
+                $price = $material->getUnitPriceInUnit($unit);
+                $cost = $quantity * $price;
+
+                $totalQuantity += $quantity;
+                $totalCost += $cost;
             }
+
+            $materialUsage[$materialId] = [
+                'material_name' => $materialName,
+                'quantity_used' => $totalQuantity,
+                'value_used' => $totalCost,
+            ];
+
+            $usedGrandTotal += $totalCost;
         }
 
         $remainGrandTotal = $grandTotal - $usedGrandTotal;
@@ -231,7 +218,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
         $data->push([
             'type' => 'persediaan',
             'col1' => 'Nilai Persediaan',
-            'col2' => 'Rp ' . number_format($grandTotal, 0, ',', '.'),
+            'col2' => 'Rp '.number_format($grandTotal, 0, ',', '.'),
             'col3' => '',
             'col4' => '',
         ]);
@@ -239,7 +226,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
         $data->push([
             'type' => 'persediaan',
             'col1' => 'Nilai Persediaan Terpakai',
-            'col2' => 'Rp ' . number_format($usedGrandTotal, 0, ',', '.'),
+            'col2' => 'Rp '.number_format($usedGrandTotal, 0, ',', '.'),
             'col3' => '',
             'col4' => '',
         ]);
@@ -247,7 +234,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
         $data->push([
             'type' => 'persediaan',
             'col1' => 'Nilai Persediaan Saat Ini',
-            'col2' => 'Rp ' . number_format($remainGrandTotal, 0, ',', '.'),
+            'col2' => 'Rp '.number_format($remainGrandTotal, 0, ',', '.'),
             'col3' => '',
             'col4' => '',
         ]);
@@ -285,7 +272,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
                 'type' => 'persediaan_detail',
                 'col1' => $material['material_name'],
                 'col2' => number_format($material['quantity_used'], 2, ',', '.'),
-                'col3' => 'Rp ' . number_format($material['value_used'], 0, ',', '.'),
+                'col3' => 'Rp '.number_format($material['value_used'], 0, ',', '.'),
                 'col4' => '',
             ]);
         }
@@ -397,6 +384,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
             if (in_array($item['type'], ['persediaan_header', 'persediaan_separator', 'persediaan_detail_header'])) {
                 $index--;
             }
+
             return [
                 $item['type'] === 'persediaan_header' || $item['type'] === 'persediaan_detail_header' ? '' : ($item['type'] === 'persediaan_separator' ? '' : $index),
                 $item['col1'],

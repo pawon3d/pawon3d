@@ -51,7 +51,7 @@ class PdfController extends Controller
 
         if ($search) {
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%');
             });
         }
 
@@ -75,20 +75,20 @@ class PdfController extends Controller
 
         // Susun rentang tanggal untuk laporan
         if ($startDate && $endDate) {
-            $range = Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($endDate)->translatedFormat('d F Y');
+            $range = Carbon::parse($startDate)->translatedFormat('d F Y').' sampai '.Carbon::parse($endDate)->translatedFormat('d F Y');
         } elseif (! $startDate && $endDate) {
             $earliest = Transaction::orderBy('created_at', 'asc')->value('created_at');
             $earliest = $earliest ? Carbon::parse($earliest)->translatedFormat('d F Y') : 'Tidak ada data';
-            $range = Carbon::parse($earliest)->translatedFormat('d F Y') . ' sampai ' . Carbon::parse($endDate)->translatedFormat('d F Y');
+            $range = Carbon::parse($earliest)->translatedFormat('d F Y').' sampai '.Carbon::parse($endDate)->translatedFormat('d F Y');
         } elseif ($startDate && ! $endDate) {
             $today = Carbon::now()->translatedFormat('d F Y');
-            $range = Carbon::parse($startDate)->translatedFormat('d F Y') . ' sampai ' . $today;
+            $range = Carbon::parse($startDate)->translatedFormat('d F Y').' sampai '.$today;
         } else {
             // Jika tidak ada filter tanggal, tampilkan seluruh rentang berdasarkan data
             $earliest = Transaction::orderBy('created_at', 'asc')->value('created_at');
             $earliest = $earliest ? Carbon::parse($earliest)->translatedFormat('d F Y') : 'Tidak ada data';
             $today = Carbon::now()->translatedFormat('d F Y');
-            $range = $earliest . ' sampai ' . $today;
+            $range = $earliest.' sampai '.$today;
         }
 
         // Data yang akan diteruskan ke view PDF
@@ -107,7 +107,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $categories = Category::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('products')
             ->withCount('products')
             ->orderBy('products_count', 'desc')
@@ -122,7 +122,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $categories = IngredientCategory::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.ingredient-category', compact('categories'));
@@ -134,7 +134,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $products = Product::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('category')->get();
 
         $pdf = PDF::loadView('pdf.product', compact('products'));
@@ -146,7 +146,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $suppliers = Supplier::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.supplier', compact('suppliers'));
@@ -158,7 +158,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $materials = Material::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('material_details')->get();
 
         foreach ($materials as $material) {
@@ -186,7 +186,7 @@ class PdfController extends Controller
             $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
                 ->where('is_finish', true)
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                    return $query->where('expense_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
@@ -196,7 +196,7 @@ class PdfController extends Controller
         } elseif ($request->status === 'all') {
             $expenses = \App\Models\Expense::with(['expenseDetails', 'supplier'])
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('expense_number', 'like', '%' . $request->search . '%');
+                    return $query->where('expense_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
@@ -225,7 +225,7 @@ class PdfController extends Controller
         $pdf = PDF::loadView('pdf.expense-detail', compact('expense', 'logName', 'status', 'total_quantity_expect', 'total_quantity_get', 'percentage', 'expenseDetails'));
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->download('rincian-belanja-persediaan-' . $expense->expense_number . '.pdf');
+        return $pdf->download('rincian-belanja-persediaan-'.$expense->expense_number.'.pdf');
     }
 
     public function generateHitungPDF(Request $request)
@@ -236,7 +236,7 @@ class PdfController extends Controller
             $hitungs = \App\Models\Hitung::with(['details'])
                 ->where('is_finish', true)
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
@@ -246,7 +246,7 @@ class PdfController extends Controller
         } elseif ($request->status === 'all') {
             $hitungs = \App\Models\Hitung::with(['details'])
                 ->when($request->search, function ($query) use ($request) {
-                    return $query->where('hitung_number', 'like', '%' . $request->search . '%');
+                    return $query->where('hitung_number', 'like', '%'.$request->search.'%');
                 })
                 ->latest()
                 ->get();
@@ -272,14 +272,14 @@ class PdfController extends Controller
         $pdf = PDF::loadView('pdf.hitung-detail', compact('hitung', 'logName', 'status', 'hitungDetails'));
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->download('rincian-hitung-persediaan-' . $hitung->hitung_number . '.pdf');
+        return $pdf->download('rincian-hitung-persediaan-'.$hitung->hitung_number.'.pdf');
     }
 
     public function generateUserPDF(Request $request)
     {
         set_time_limit(120);
         $users = \App\Models\User::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->with('roles')->get();
 
         $pdf = PDF::loadView('pdf.user', compact('users'));
@@ -291,7 +291,7 @@ class PdfController extends Controller
     {
         set_time_limit(120);
         $roles = \App\Models\SpatieRole::when($request->search, function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . $request->search . '%');
+            return $query->where('name', 'like', '%'.$request->search.'%');
         })->get();
 
         $pdf = PDF::loadView('pdf.role', compact('roles'));
@@ -314,7 +314,7 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->startOfDay();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->endOfDay() : Carbon::parse($customStartDate)->endOfDay();
-            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
 
@@ -327,7 +327,7 @@ class PdfController extends Controller
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek()->startOfDay();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek()->endOfDay();
-                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+                    $dateRange = $startDate->translatedFormat('d F Y').' - '.$endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth()->startOfDay();
@@ -404,7 +404,7 @@ class PdfController extends Controller
             'sesiData' => $sesiData,
         ]);
 
-        return $pdf->stream('laporan-kasir-sesi-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-sesi-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportCustomer($startDate, $endDate, $dateRange)
@@ -434,7 +434,7 @@ class PdfController extends Controller
             'customerData' => $customerData,
         ]);
 
-        return $pdf->stream('laporan-kasir-customer-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-customer-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportTransaksi($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
@@ -455,7 +455,7 @@ class PdfController extends Controller
 
         $transaksiData = $transactions->map(function ($trx) {
             $products = $trx->details->map(function ($detail) {
-                return $detail->product->name . ' (' . $detail->quantity . ')';
+                return $detail->product->name.' ('.$detail->quantity.')';
             })->implode(', ');
 
             return [
@@ -475,7 +475,7 @@ class PdfController extends Controller
             'transaksiData' => $transaksiData,
         ]);
 
-        return $pdf->stream('laporan-kasir-transaksi-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-transaksi-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportTerjual($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
@@ -502,7 +502,7 @@ class PdfController extends Controller
         $productSales = [];
 
         foreach ($products as $product) {
-            $sold = $details->where('product_id', $product->id)->sum(fn($d) => $d->quantity - $d->refund_quantity);
+            $sold = $details->where('product_id', $product->id)->sum(fn ($d) => $d->quantity - $d->refund_quantity);
             if ($sold > 0) {
                 // Get production count from productions table using start_date
                 $productionDetails = \App\Models\ProductionDetail::whereHas('production', function ($q) use ($startDate, $endDate) {
@@ -520,7 +520,7 @@ class PdfController extends Controller
             }
         }
 
-        usort($productSales, fn($a, $b) => $b['sold'] - $a['sold']);
+        usort($productSales, fn ($a, $b) => $b['sold'] - $a['sold']);
 
         $pdf = Pdf::loadView('pdf.laporan-kasir-terjual', [
             'dateRange' => $dateRange,
@@ -529,7 +529,7 @@ class PdfController extends Controller
             'productSales' => $productSales,
         ]);
 
-        return $pdf->stream('laporan-kasir-terjual-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-terjual-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportKeuangan($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
@@ -557,7 +557,7 @@ class PdfController extends Controller
         $year = Carbon::parse($startDate)->year;
 
         foreach (range(1, 12) as $month) {
-            $monthTransactions = $transactions->filter(fn($trx) => Carbon::parse($trx->start_date)->month === $month);
+            $monthTransactions = $transactions->filter(fn ($trx) => Carbon::parse($trx->start_date)->month === $month);
             $monthDetails = $details->filter(function ($d) use ($month, $transactions) {
                 $trx = $transactions->firstWhere('id', $d->transaction_id);
 
@@ -594,7 +594,7 @@ class PdfController extends Controller
             'keuanganData' => $keuanganData,
         ]);
 
-        return $pdf->stream('laporan-kasir-keuangan-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-kasir-keuangan-'.now()->format('Y-m-d').'.pdf');
     }
 
     public function laporanInventori(Request $request)
@@ -611,7 +611,7 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->startOfDay();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->endOfDay() : Carbon::parse($customStartDate)->endOfDay();
-            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
 
@@ -624,7 +624,7 @@ class PdfController extends Controller
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek();
-                    $dateRange = $startDate->translatedFormat('d F Y') . ' - ' . $endDate->translatedFormat('d F Y');
+                    $dateRange = $startDate->translatedFormat('d F Y').' - '.$endDate->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth();
@@ -634,7 +634,7 @@ class PdfController extends Controller
                 case 'Tahun':
                     $startDate = $selectedDateCarbon->copy()->startOfYear();
                     $endDate = $selectedDateCarbon->copy()->endOfYear();
-                    $dateRange = 'Tahun ' . $selectedDateCarbon->year;
+                    $dateRange = 'Tahun '.$selectedDateCarbon->year;
                     break;
                 default:
                     $startDate = $selectedDateCarbon->copy()->startOfDay();
@@ -711,59 +711,49 @@ class PdfController extends Controller
                 $grandTotal += $detail->total_actual;
             }
 
-            // Calculate cumulative production material usage until end date
+            // Calculate cumulative usage from inventory logs so the export matches the dashboard report
+            $usedLogs = \App\Models\InventoryLog::with(['material.material_details', 'materialBatch.unit'])
+                ->where(function ($query) {
+                    $query->whereIn('action', ['produksi', 'penjualan', 'rusak', 'hilang'])
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('action', 'hitung')
+                                ->where('quantity_change', '<', 0);
+                        });
+                })
+                ->whereDate('created_at', '<=', $endDate->toDateString())
+                ->get();
+
             $usedGrandTotal = 0;
             $materialUsage = [];
 
-            $products = \App\Models\Product::with(['product_compositions.material'])->get();
-            $groupProductByMaterial = $products->flatMap(function ($product) {
-                return $product->product_compositions->map(function ($composition) use ($product) {
-                    return [
-                        'material_id' => $composition->material_id,
-                        'material_quantity' => $composition->material_quantity,
-                        'unit_id' => $composition->unit_id,
-                        'pcs' => $product->pcs,
-                        'product_id' => $product->id,
-                        'material_name' => $composition->material->name ?? 'Unknown',
-                    ];
-                });
-            })->groupBy('material_id');
+            foreach ($usedLogs->groupBy('material_id') as $materialId => $logs) {
+                $totalQuantity = 0;
+                $totalCost = 0;
+                $materialName = $logs->first()->material->name ?? 'Unknown';
 
-            foreach ($groupProductByMaterial as $materialId => $compositions) {
-                foreach ($compositions as $composition) {
-                    $productId = $composition['product_id'];
+                foreach ($logs as $log) {
+                    $quantity = abs($log->quantity_change);
+                    $unit = $log->materialBatch->unit ?? null;
+                    $material = $log->material;
 
-                    $productionDetailsQuery = \App\Models\ProductionDetail::where('product_id', $productId)
-                        ->whereHas('production', function ($query) use ($endDate, $selectedWorker) {
-                            $query->where('start_date', '<=', $endDate->toDateString());
-
-                            if ($selectedWorker !== 'semua') {
-                                $query->whereHas('workers', function ($workerQuery) use ($selectedWorker) {
-                                    $workerQuery->where('user_id', $selectedWorker);
-                                });
-                            }
-                        });
-
-                    $productionDetails = $productionDetailsQuery->get();
-                    $totalProduction = $productionDetails->sum('quantity_get') + $productionDetails->sum('quantity_fail');
-                    $dividedQuantity = $composition['pcs'] > 0 ? $totalProduction / $composition['pcs'] : 0;
-                    $totalMaterialQuantity = $dividedQuantity * $composition['material_quantity'];
-                    $material = \App\Models\Material::find($materialId);
-                    $materialPrice = $material->material_details->where('unit_id', $composition['unit_id'])->first()->supply_price ?? 0;
-                    $priceValue = $totalMaterialQuantity * $materialPrice;
-
-                    if (! isset($materialUsage[$materialId])) {
-                        $materialUsage[$materialId] = [
-                            'material_name' => $composition['material_name'],
-                            'quantity_used' => 0,
-                            'value_used' => 0,
-                        ];
+                    if (! $material || ! $unit) {
+                        continue;
                     }
 
-                    $materialUsage[$materialId]['quantity_used'] += $totalMaterialQuantity;
-                    $materialUsage[$materialId]['value_used'] += $priceValue;
-                    $usedGrandTotal += $priceValue;
+                    $price = $material->getUnitPriceInUnit($unit);
+                    $cost = $quantity * $price;
+
+                    $totalQuantity += $quantity;
+                    $totalCost += $cost;
                 }
+
+                $materialUsage[$materialId] = [
+                    'material_name' => $materialName,
+                    'quantity_used' => $totalQuantity,
+                    'value_used' => $totalCost,
+                ];
+
+                $usedGrandTotal += $totalCost;
             }
 
             $remainGrandTotal = $grandTotal - $usedGrandTotal;
@@ -802,7 +792,7 @@ class PdfController extends Controller
 
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->stream('export-inventori-' . $reportContent . '-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('export-inventori-'.$reportContent.'-'.now()->format('Y-m-d').'.pdf');
     }
 
     public function laporanProduksi(Request $request)
@@ -820,7 +810,7 @@ class PdfController extends Controller
         if ($filterPeriod === 'Custom' && $customStartDate) {
             $startDate = Carbon::parse($customStartDate)->toDateString();
             $endDate = $customEndDate ? Carbon::parse($customEndDate)->toDateString() : $startDate;
-            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
+            $dateRange = Carbon::parse($customStartDate)->translatedFormat('d F Y').' - '.Carbon::parse($customEndDate ?? $customStartDate)->translatedFormat('d F Y');
         } else {
             $selectedDateCarbon = Carbon::parse($selectedDate);
 
@@ -833,7 +823,7 @@ class PdfController extends Controller
                 case 'Minggu':
                     $startDate = $selectedDateCarbon->copy()->startOfWeek()->toDateString();
                     $endDate = $selectedDateCarbon->copy()->endOfWeek()->toDateString();
-                    $dateRange = Carbon::parse($startDate)->translatedFormat('d F Y') . ' - ' . Carbon::parse($endDate)->translatedFormat('d F Y');
+                    $dateRange = Carbon::parse($startDate)->translatedFormat('d F Y').' - '.Carbon::parse($endDate)->translatedFormat('d F Y');
                     break;
                 case 'Bulan':
                     $startDate = $selectedDateCarbon->copy()->startOfMonth()->toDateString();
@@ -843,7 +833,7 @@ class PdfController extends Controller
                 case 'Tahun':
                     $startDate = $selectedDateCarbon->copy()->startOfYear()->toDateString();
                     $endDate = $selectedDateCarbon->copy()->endOfYear()->toDateString();
-                    $dateRange = 'Tahun ' . $selectedDateCarbon->year;
+                    $dateRange = 'Tahun '.$selectedDateCarbon->year;
                     break;
                 default:
                     $startDate = $selectedDateCarbon->toDateString();
@@ -881,7 +871,7 @@ class PdfController extends Controller
             ->where('is_finish', true);
 
         if ($selectedWorker !== 'semua') {
-            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
+            $productionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $selectedWorker));
         }
 
         if ($selectedMethod !== 'semua') {
@@ -899,7 +889,7 @@ class PdfController extends Controller
                     'total' => $detail->quantity_get + $detail->quantity_fail,
                     'success' => $detail->quantity_get,
                     'fail' => $detail->quantity_fail,
-                    'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                    'workers' => $production->workers->map(fn ($w) => $w->worker->name ?? '-')->join(', '),
                     'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
                 ];
             }
@@ -912,7 +902,7 @@ class PdfController extends Controller
             'productionData' => $productionData,
         ]);
 
-        return $pdf->stream('laporan-produksi-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-produksi-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportBerhasil($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
@@ -922,7 +912,7 @@ class PdfController extends Controller
             ->where('is_finish', true);
 
         if ($selectedWorker !== 'semua') {
-            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
+            $productionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $selectedWorker));
         }
 
         if ($selectedMethod !== 'semua') {
@@ -939,7 +929,7 @@ class PdfController extends Controller
                         'date' => Carbon::parse($production->start_date)->translatedFormat('d F Y'),
                         'product' => $detail->product->name ?? '-',
                         'success' => $detail->quantity_get,
-                        'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                        'workers' => $production->workers->map(fn ($w) => $w->worker->name ?? '-')->join(', '),
                         'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
                     ];
                 }
@@ -953,7 +943,7 @@ class PdfController extends Controller
             'productionData' => $productionData,
         ]);
 
-        return $pdf->stream('laporan-produksi-berhasil-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-produksi-berhasil-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function exportGagal($startDate, $endDate, $dateRange, $selectedWorker, $selectedMethod, $workerName, $methodName)
@@ -963,7 +953,7 @@ class PdfController extends Controller
             ->where('is_finish', true);
 
         if ($selectedWorker !== 'semua') {
-            $productionsQuery->whereHas('workers', fn($q) => $q->where('user_id', $selectedWorker));
+            $productionsQuery->whereHas('workers', fn ($q) => $q->where('user_id', $selectedWorker));
         }
 
         if ($selectedMethod !== 'semua') {
@@ -980,7 +970,7 @@ class PdfController extends Controller
                         'date' => Carbon::parse($production->start_date)->translatedFormat('d F Y'),
                         'product' => $detail->product->name ?? '-',
                         'fail' => $detail->quantity_fail,
-                        'workers' => $production->workers->map(fn($w) => $w->worker->name ?? '-')->join(', '),
+                        'workers' => $production->workers->map(fn ($w) => $w->worker->name ?? '-')->join(', '),
                         'method' => $production->method ? ucfirst(str_replace('-', ' ', $production->method)) : 'Tidak Diketahui',
                     ];
                 }
@@ -994,7 +984,7 @@ class PdfController extends Controller
             'productionData' => $productionData,
         ]);
 
-        return $pdf->stream('laporan-produksi-gagal-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->stream('laporan-produksi-gagal-'.now()->format('Y-m-d').'.pdf');
     }
 
     private function calculateDiff($current, $previous)
@@ -1020,7 +1010,7 @@ class PdfController extends Controller
         $selectedWorker = $request->get('selectedWorker', 'semua');
         $selectedMethod = $request->get('selectedMethod', 'semua');
 
-        $filename = 'Laporan_Kasir_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Laporan_Kasir_'.ucfirst($reportContent).'_'.Carbon::parse($selectedDate)->format('d-M-Y').'.xlsx';
 
         return Excel::download(
             new KasirExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker, $selectedMethod),
@@ -1039,7 +1029,7 @@ class PdfController extends Controller
         $selectedWorker = $request->get('selectedWorker', 'semua');
         $selectedMethod = $request->get('selectedMethod', 'semua');
 
-        $filename = 'Laporan_Produksi_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Laporan_Produksi_'.ucfirst($reportContent).'_'.Carbon::parse($selectedDate)->format('d-M-Y').'.xlsx';
 
         return Excel::download(
             new ProduksiExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker, $selectedMethod),
@@ -1057,7 +1047,7 @@ class PdfController extends Controller
         $customEndDate = $request->get('customEndDate');
         $selectedWorker = $request->get('selectedWorker', 'semua');
 
-        $filename = 'Export_Inventori_' . ucfirst($reportContent) . '_' . Carbon::parse($selectedDate)->format('d-M-Y') . '.xlsx';
+        $filename = 'Export_Inventori_'.ucfirst($reportContent).'_'.Carbon::parse($selectedDate)->format('d-M-Y').'.xlsx';
 
         return Excel::download(
             new InventoriExport($reportContent, $filterPeriod, $selectedDate, $customStartDate, $customEndDate, $selectedWorker),
@@ -1081,6 +1071,6 @@ class PdfController extends Controller
         ])->setPaper([0, 0, 227, 841.89], 'portrait'); // A4 height untuk auto-adjust
 
         // Stream PDF untuk ditampilkan di browser (bukan download)
-        return $pdf->stream('struk-' . $transaction->invoice_number . '.pdf');
+        return $pdf->stream('struk-'.$transaction->invoice_number.'.pdf');
     }
 }
