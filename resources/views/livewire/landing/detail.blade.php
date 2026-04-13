@@ -108,13 +108,7 @@
                                             {{ $relatedProduct->name }}
                                         </p>
                                     </div>
-                                    @if ($relatedProduct->pcs)
-                                        <div class="flex items-start justify-center w-full">
-                                            <span
-                                                class="font-medium text-sm md:text-base text-[#666666]">({{ $relatedProduct->pcs }}
-                                                pcs)</span>
-                                        </div>
-                                    @endif
+                                    
                                 </div>
 
                                 {{-- Price --}}
