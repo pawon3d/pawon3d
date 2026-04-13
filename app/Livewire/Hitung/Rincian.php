@@ -40,7 +40,7 @@ class Rincian extends Component
     #[Computed]
     public function hitung(): Hitung
     {
-        return Hitung::with(['details', 'details.material', 'details.materialBatch.unit'])
+        return Hitung::with(['details', 'details.material.material_details', 'details.materialBatch.unit'])
             ->findOrFail($this->hitung_id);
     }
 
@@ -67,22 +67,28 @@ class Rincian extends Component
 
     protected function calculateTotalModal($detail, $batch): float
     {
-        if (! $batch || ! $detail) {
+        if (! $batch || ! $detail || ! $detail->material) {
+            return 0;
+        }
+
+        $quantity = $batch->batch_quantity ?? 0;
+        if ($quantity <= 0) {
             return 0;
         }
 
         // Try to find the price from material_details
-        $materialDetail = \App\Models\MaterialDetail::where('material_id', $batch->material_id)
-            ->where('unit_id', $batch->unit_id)
-            ->first();
+        $materialDetail = $detail->material->material_details
+            ->firstWhere('unit_id', $batch->unit_id);
 
-        if ($materialDetail && $materialDetail->price > 0) {
-            return $batch->batch_quantity * $materialDetail->price;
+        if ($materialDetail && $materialDetail->supply_price > 0) {
+            return $quantity * $materialDetail->supply_price;
         }
 
         // Fallback: try to find any unit's price and convert
-        $anyDetail = \App\Models\MaterialDetail::where('material_id', $batch->material_id)->first();
-        if ($anyDetail && $anyDetail->price > 0) {
+        $anyDetail = $detail->material->material_details
+            ->firstWhere('supply_price', '>', 0);
+
+        if ($anyDetail && $anyDetail->supply_price > 0) {
             // Get unit conversion
             $fromUnit = $batch->unit;
             $toUnit = $anyDetail->unit;
@@ -93,9 +99,9 @@ class Rincian extends Component
                     ->first();
 
                 if ($conversion && $conversion->conversion_factor > 0) {
-                    $convertedQty = $batch->batch_quantity * $conversion->conversion_factor;
+                    $convertedQty = $quantity * $conversion->conversion_factor;
 
-                    return $convertedQty * $anyDetail->price;
+                    return $convertedQty * $anyDetail->supply_price;
                 }
             }
         }
