@@ -41,11 +41,11 @@ class Show extends Component
 
     public bool $showPaymentModal = false;
 
-    public array $payments = [];
+    public $payments = [];
 
-    public array $refunds = [];
+    public $refunds = [];
 
-    public array $cancellations = [];
+    public $cancellations = [];
 
     public float $totalPaidInModal = 0;
 
@@ -53,7 +53,7 @@ class Show extends Component
 
     public float $netPaidInModal = 0;
 
-    public array $activityLogs = [];
+    public $activityLogs = [];
 
     public string $historySearch = '';
 
@@ -264,19 +264,19 @@ class Show extends Component
         $this->payments = Payment::whereHas('transaction', function ($q) {
             $q->where('customer_id', $this->customerId)
                 ->orWhere('phone', $this->phone);
-        })->with(['transaction', 'channel'])->orderBy('paid_at', 'desc')->get();
+        })->with(['transaction', 'channel'])->orderBy('paid_at', 'desc')->get()->all();
 
         // Load refunds related to this customer's transactions
         $this->refunds = \App\Models\Refund::whereHas('transaction', function ($q) {
             $q->where('customer_id', $this->customerId)
                 ->orWhere('phone', $this->phone);
-        })->with(['transaction', 'channel'])->orderBy('refunded_at', 'desc')->get();
+        })->with(['transaction', 'channel'])->orderBy('refunded_at', 'desc')->get()->all();
 
         // Load cancelled transactions
         $this->cancellations = \App\Models\Transaction::where(function ($q) {
             $q->where('customer_id', $this->customerId)
                 ->orWhere('phone', $this->phone);
-        })->whereNotNull('cancelled_at')->orderBy('cancelled_at', 'desc')->get();
+        })->whereNotNull('cancelled_at')->orderBy('cancelled_at', 'desc')->get()->all();
 
         $this->totalPaidInModal = collect($this->payments)->sum('paid_amount');
         $this->totalRefundInModal = collect($this->refunds)->sum('total_amount');

@@ -71,3 +71,12 @@ test('customer can be deleted from show page', function () {
 
     expect(Customer::find($this->customer->id))->toBeNull();
 });
+
+test('payment detail modal can be opened without type errors', function () {
+    Livewire\Livewire::test(\App\Livewire\Customer\Show::class, ['id' => $this->customer->id])
+        ->call('showDetailModal')
+        ->assertSet('showPaymentModal', true)
+        ->assertSet('payments', [])
+        ->assertSet('refunds', [])
+        ->assertSet('cancellations', []);
+});
