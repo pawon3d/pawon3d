@@ -47,7 +47,60 @@ class Rincian extends Component
     #[Computed]
     public function hitungDetails()
     {
-        return $this->hitung->details;
+        $details = $this->hitung->details;
+
+        // Calculate total and loss_total for each detail
+        return $details->map(function ($detail) {
+            $calculatedTotal = $this->calculateTotalModal($detail, $detail->materialBatch);
+            $detail->total = $calculatedTotal;
+
+            if ($this->hitung->action === 'Hitung Persediaan') {
+                $selisih = ($detail->quantity_actual ?? 0) - $detail->quantity_expect;
+                $detail->loss_total = $selisih * ($calculatedTotal > 0 ? $calculatedTotal / $detail->quantity_expect : 0);
+            } else {
+                $detail->loss_total = ($detail->quantity_actual ?? 0) * ($calculatedTotal > 0 ? $calculatedTotal / $detail->quantity_expect : 0);
+            }
+
+            return $detail;
+        });
+    }
+
+    protected function calculateTotalModal($detail, $batch): float
+    {
+        if (! $batch || ! $detail) {
+            return 0;
+        }
+
+        // Try to find the price from material_details
+        $materialDetail = \App\Models\MaterialDetail::where('material_id', $batch->material_id)
+            ->where('unit_id', $batch->unit_id)
+            ->first();
+
+        if ($materialDetail && $materialDetail->price > 0) {
+            return $batch->batch_quantity * $materialDetail->price;
+        }
+
+        // Fallback: try to find any unit's price and convert
+        $anyDetail = \App\Models\MaterialDetail::where('material_id', $batch->material_id)->first();
+        if ($anyDetail && $anyDetail->price > 0) {
+            // Get unit conversion
+            $fromUnit = $batch->unit;
+            $toUnit = $anyDetail->unit;
+
+            if ($fromUnit && $toUnit && $fromUnit->id !== $toUnit->id) {
+                $conversion = \App\Models\UnitConversion::where('from_unit_id', $fromUnit->id)
+                    ->where('to_unit_id', $toUnit->id)
+                    ->first();
+
+                if ($conversion && $conversion->conversion_factor > 0) {
+                    $convertedQty = $batch->batch_quantity * $conversion->conversion_factor;
+
+                    return $convertedQty * $anyDetail->price;
+                }
+            }
+        }
+
+        return 0;
     }
 
     public function mount(string $id): void

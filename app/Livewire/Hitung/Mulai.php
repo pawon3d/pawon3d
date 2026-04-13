@@ -36,7 +36,7 @@ class Mulai extends Component
     public function mount($id): void
     {
         $this->hitung_id = $id;
-        $hitung = Hitung::with(['details.material', 'details.materialBatch.unit'])
+        $hitung = Hitung::with(['details.material.material_details', 'details.materialBatch.unit'])
             ->findOrFail($this->hitung_id);
 
         $this->hitungAction = $hitung->action;
@@ -46,6 +46,9 @@ class Mulai extends Component
             $batch = $detail->materialBatch;
             $selisihDidapatkan = $detail->quantity_actual - $detail->quantity_expect;
             $jumlahSebenarnya = $detail->quantity_expect - $detail->quantity_actual;
+
+            // Hitung total modal berdasarkan harga material terkini
+            $total = $this->calculateTotalModal($detail, $batch);
 
             return [
                 'id' => (string) $detail->id,
@@ -58,11 +61,52 @@ class Mulai extends Component
                 'selisih_didapatkan' => (float) $selisihDidapatkan,
                 'jumlah_sebenarnya' => (float) max(0, $jumlahSebenarnya),
                 'quantity_input' => 0,
+                'total' => (float) $total,
             ];
         })->toArray();
 
         View::share('title', $hitung->action);
         View::share('mainTitle', 'Inventori');
+    }
+
+    /**
+     * Hitung total modal untuk detail hitung berdasarkan batch quantity dan harga material
+     */
+    protected function calculateTotalModal($detail, $batch): float
+    {
+        if (! $batch || ! $detail->material) {
+            return 0;
+        }
+
+        $quantity = $batch->batch_quantity ?? 0;
+        if ($quantity <= 0) {
+            return 0;
+        }
+
+        // Ambil harga dari material_details dengan unit yang sesuai
+        $price = $detail->material->material_details
+            ->firstWhere('unit_id', $batch->unit_id)?->supply_price ?? 0;
+
+        // Jika harga 0, coba konversi dari unit lain yang sudah ada harga
+        if ($price == 0 && $detail->material) {
+            $targetUnit = $batch->unit;
+            $otherDetails = $detail->material->material_details
+                ->where('unit_id', '!=', $batch->unit_id)
+                ->where('supply_price', '>', 0);
+
+            foreach ($otherDetails as $otherDetail) {
+                if ($otherDetail->unit && $targetUnit) {
+                    // Konversi harga dari unit lain ke unit target
+                    $convertedQuantity = $otherDetail->unit->convertTo(1, $targetUnit);
+                    if ($convertedQuantity !== null && $convertedQuantity != 0) {
+                        $price = $otherDetail->supply_price / $convertedQuantity;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return (float) ($quantity * $price);
     }
 
     public function riwayatPembaruan(): void
@@ -166,13 +210,16 @@ class Mulai extends Component
 
             // Update quantity_actual pada hitung detail
             $newQuantityActual = $hitungDetail->quantity_actual + $inputQuantity;
-            $hitungDetail->update(['quantity_actual' => $newQuantityActual]);
 
-            // Hitung loss_total
+            // Gunakan total yang telah dihitung ulang dari array, bukan dari database
+            $currentTotal = (float) ($detail['total'] ?? $hitungDetail->total);
+
+            // Hitung price per unit dari total dan quantity_expect
             $pricePerUnit = $hitungDetail->quantity_expect > 0
-                ? $hitungDetail->total / $hitungDetail->quantity_expect
+                ? $currentTotal / $hitungDetail->quantity_expect
                 : 0;
 
+            // Hitung loss_total berdasarkan action type
             if ($this->hitungAction === 'Hitung Persediaan') {
                 // Selisih modal = harga per unit × (aktual - expected)
                 // Positif = kelebihan, Negatif = kekurangan/kerugian
@@ -182,7 +229,12 @@ class Mulai extends Component
                 $lossTotal = $pricePerUnit * $newQuantityActual;
             }
 
-            $hitungDetail->update(['loss_total' => $lossTotal]);
+            // Update both total (jika sama dengan 0 atau salah) dan loss_total
+            $hitungDetail->update([
+                'quantity_actual' => $newQuantityActual,
+                'total' => $currentTotal,
+                'loss_total' => $lossTotal,
+            ]);
 
             // TIDAK update MaterialBatch di sini
             // Pengurangan batch_quantity dilakukan saat finish() di Rincian.php
