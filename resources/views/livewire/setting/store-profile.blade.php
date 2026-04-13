@@ -455,6 +455,30 @@
                                 value="Mengupload File..." readonly wire:loading.class.remove="hidden"
                                 wire:target="documentFile">
                         </div>
+
+                        @if ($edit && is_string($documentFile) && $documentFile !== '')
+                        @php
+                        $documentFileUrl = asset('storage/' . $documentFile);
+                        $documentExtension = strtolower(pathinfo($documentFile, PATHINFO_EXTENSION));
+                        @endphp
+
+                        <a href="{{ asset('storage/' . $documentFile) }}" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex w-fit items-center rounded-lg bg-[#3F4E4F] px-3 py-2 text-sm font-medium text-white hover:bg-[#2f3a3b]">
+                            Lihat File
+                        </a>
+
+                        <div class="space-y-2">
+                            <p class="text-sm font-medium text-gray-700">Pratinjau Dokumen</p>
+
+                            @if ($documentExtension === 'pdf')
+                            <iframe src="{{ $documentFileUrl }}" class="h-72 w-full rounded-lg border border-gray-300"
+                                title="Pratinjau Dokumen PDF"></iframe>
+                            @elseif (in_array($documentExtension, ['jpg', 'jpeg', 'png'], true))
+                            <img src="{{ $documentFileUrl }}" alt="Pratinjau dokumen"
+                                class="h-72 w-full rounded-lg border border-gray-300 object-contain bg-white" />
+                            @endif
+                        </div>
+                        @endif
                     </div>
                     <flux:error name="documentFile" />
                 </div>

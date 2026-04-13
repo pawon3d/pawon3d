@@ -127,6 +127,20 @@ test('can edit document', function () {
     expect($document->document_name)->toBe('Updated Document');
 });
 
+test('shows view file link when editing document with existing file', function () {
+    $document = StoreDocument::create([
+        'document_name' => 'Document With File',
+        'document_number' => 'DOC-001',
+        'document_file' => 'store_documents/sample.pdf',
+    ]);
+
+    Livewire::test(StoreProfile::class)
+        ->call('editModal', $document->id)
+        ->assertSet('edit', true)
+        ->assertSee('Lihat File')
+        ->assertSee('Pratinjau Dokumen');
+});
+
 test('can delete document', function () {
     $document = StoreDocument::create([
         'document_name' => 'To Be Deleted',
