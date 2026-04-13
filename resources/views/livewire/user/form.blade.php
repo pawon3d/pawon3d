@@ -218,8 +218,7 @@
                     <div class="flex flex-col gap-4">
                         <p class="text-base font-medium text-[#666666]">Peran</p>
                         <p class="text-sm font-normal text-[#666666]">
-                            {{ $this->isEditMode() ? 'Pilih peran yang akan dijalankan.' : 'Masukkan nomor telepon aktif
-                            (WhatsApp).' }}
+                            Pilih peran yang akan dijalankan oleh pekerja.
                         </p>
                     </div>
                     <select wire:model="role"
