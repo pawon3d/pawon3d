@@ -90,7 +90,10 @@ it('calculates persediaan used value from inventory logs', function () {
     $rows = $export->collection();
 
     $usedRow = $rows->firstWhere('col1', 'Nilai Persediaan Terpakai');
+    $detailRow = $rows->firstWhere('col1', 'Tepung Terigu');
 
     expect($usedRow)->not->toBeNull();
     expect((int) str_replace(['Rp ', '.', ','], ['', '', ''], $usedRow['col2']))->toBe(30000);
+    expect($detailRow)->not->toBeNull();
+    expect($detailRow['col2'])->toBe('2,00 kg');
 });

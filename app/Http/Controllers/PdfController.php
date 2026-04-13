@@ -729,6 +729,7 @@ class PdfController extends Controller
             foreach ($usedLogs->groupBy('material_id') as $materialId => $logs) {
                 $totalQuantity = 0;
                 $totalCost = 0;
+                $unitAlias = null;
                 $materialName = $logs->first()->material->name ?? 'Unknown';
 
                 foreach ($logs as $log) {
@@ -745,12 +746,17 @@ class PdfController extends Controller
 
                     $totalQuantity += $quantity;
                     $totalCost += $cost;
+
+                    if (! $unitAlias) {
+                        $unitAlias = $unit->alias;
+                    }
                 }
 
                 $materialUsage[$materialId] = [
                     'material_name' => $materialName,
                     'quantity_used' => $totalQuantity,
                     'value_used' => $totalCost,
+                    'unit_alias' => $unitAlias,
                 ];
 
                 $usedGrandTotal += $totalCost;

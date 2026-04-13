@@ -173,6 +173,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
         foreach ($usedLogs->groupBy('material_id') as $materialId => $logs) {
             $totalQuantity = 0;
             $totalCost = 0;
+            $unitAlias = null;
             $materialName = $logs->first()->material->name ?? 'Unknown';
 
             foreach ($logs as $log) {
@@ -189,12 +190,17 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
 
                 $totalQuantity += $quantity;
                 $totalCost += $cost;
+
+                if (! $unitAlias) {
+                    $unitAlias = $unit->alias;
+                }
             }
 
             $materialUsage[$materialId] = [
                 'material_name' => $materialName,
                 'quantity_used' => $totalQuantity,
                 'value_used' => $totalCost,
+                'unit_alias' => $unitAlias,
             ];
 
             $usedGrandTotal += $totalCost;
@@ -271,7 +277,7 @@ class InventoriExport implements FromCollection, WithHeadings, WithMapping, With
             $data->push([
                 'type' => 'persediaan_detail',
                 'col1' => $material['material_name'],
-                'col2' => number_format($material['quantity_used'], 2, ',', '.'),
+                'col2' => number_format($material['quantity_used'], 2, ',', '.').($material['unit_alias'] ? ' '.$material['unit_alias'] : ''),
                 'col3' => 'Rp '.number_format($material['value_used'], 0, ',', '.'),
                 'col4' => '',
             ]);
