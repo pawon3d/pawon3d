@@ -30,6 +30,16 @@ beforeEach(function () {
     $this->actingAs($this->admin);
 });
 
+test('edit form handles null gender and missing role', function () {
+    $user = User::factory()->create([
+        'gender' => null,
+    ]);
+
+    Livewire::test(Form::class, ['id' => (string) $user->id])
+        ->assertSet('gender', '')
+        ->assertSet('role', '');
+});
+
 test('cannot create user with role that has reached max_users limit', function () {
     // Create a role with max_users = 1
     $limitedRole = SpatieRole::create([
